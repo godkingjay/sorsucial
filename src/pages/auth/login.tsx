@@ -1,10 +1,13 @@
 import Head from "next/head";
+import React from "react";
 
-export default function Home() {
+type LoginPageProps = {};
+
+const LoginPage: React.FC<LoginPageProps> = () => {
 	return (
 		<>
 			<Head>
-				<title>SorSUcial</title>
+				<title>SorSUcial | Login</title>
 				<meta
 					name="description"
 					content="SorSUcial is the unofficial social media for the University of Sorsogon State University."
@@ -18,7 +21,9 @@ export default function Home() {
 					href="/assets/logo/sorsu-xs.png"
 				/>
 			</Head>
-			<main></main>
+			<div>LoginPage</div>
 		</>
 	);
-}
+};
+
+export default LoginPage;

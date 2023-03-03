@@ -6,18 +6,16 @@ import { RecoilRoot } from "recoil";
 
 export default function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
-	
+
 	return (
 		<RecoilRoot>
-			{
-				router.pathname.split("/")[1].match(/auth/g) ? (
+			{router.pathname.split("/")[1].match(/auth/g) ? (
+				<Component {...pageProps} />
+			) : (
+				<Layout>
 					<Component {...pageProps} />
-				) : (
-					<Layout>
-						<Component {...pageProps} />
-					</Layout>
-				)
-			}
+				</Layout>
+			)}
 		</RecoilRoot>
 	);
 }

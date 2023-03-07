@@ -1,30 +1,35 @@
 import { auth } from "@/firebase/clientApp";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 const useUser = () => {
-	const [user] = useAuthState(auth);
-	const [loadingUser, setLoadingUser] = useState(true);
+	const [user, loading, error] = useAuthState(auth);
+	const [loadingUser, setLoadingUser] = useState(false);
 	const router = useRouter();
 
-	const getUserDetails = async () => {
-		setLoadingUser(false);
-	};
+	const getUserDetails = async () => {};
+
+	const userMemo = useMemo(() => {
+		return user;
+	}, [user]);
 
 	useEffect(() => {
-		if (!user) {
-      setLoadingUser(false);
+		setLoadingUser(true);
+		if (!user && !loading) {
+			setLoadingUser(false);
 			router.push("/auth/login");
 		} else {
 			getUserDetails();
 		}
-	}, [user]);
+	}, [user, loading]);
 
 	return {
-		user,
-    loadingUser,
-    setLoadingUser
+		authUser: userMemo,
+		authLoading: loading,
+		authError: error,
+		loadingUser,
+		setLoadingUser,
 	};
 };
 

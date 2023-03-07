@@ -21,8 +21,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 					href="/assets/logo/sorsu-xs.png"
 				/>
 			</Head>
-			<div>
-			</div>
+			<div className="flex-1 relative"></div>
 		</>
 	);
 };

@@ -7,7 +7,15 @@ module.exports = {
 		extend: {
 			boxShadow: {},
 			colors: {
+				"logo-100": "#ff808080",
+				"logo-200": "#f0404040",
+				"logo-300": "#c00000",
+				"logo-400": "#a00000",
 				"logo-500": "#800000",
+				"logo-600": "#600000",
+				"logo-700": "#400000",
+				"logo-800": "#200000",
+				"logo-900": "#100000",
 			},
 			fontSize: {
 				"2xs": "0.625rem",

@@ -6,14 +6,21 @@ module.exports = {
 	theme: {
 		extend: {
 			boxShadow: {},
-			colors: {},
-			screens: {
-				xs: "480px",
-				"2xs": "360px",
+			colors: {
+				"logo-500": "#800000",
 			},
 			fontSize: {
 				"2xs": "0.625rem",
 				"3xs": "0.5rem",
+			},
+			screens: {
+				xs: "480px",
+				"2xs": "360px",
+			},
+			width: {
+				"2xs": "256px",
+				xs: "320px",
+				sm: "384px",
 			},
 		},
 	},

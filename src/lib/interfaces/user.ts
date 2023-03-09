@@ -72,9 +72,9 @@ interface SiteUser {
  *
  * ----------------------------------------------------------------
  *
- * @interface Connections - The connections object.
+ * @interface Connection - The connections object.
  * @category Interfaces
- * @subcategory User
+ * @subcategory SiteUser
  *
  * ----------------------------------------------------------------
  *
@@ -89,11 +89,41 @@ interface SiteUser {
  *
  * @author Jarrian Vince Gojar
  */
-interface Connections {
+interface Connection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
 	requestAt: Timestamp;
 	acceptAt?: Timestamp;
+	lastChangeAt: Timestamp;
+}
+
+/**
+ * This interface is used to define the structure of a user's groups object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @interface Group
+ * @category Interfaces
+ * @subcategory SiteUser
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} groupId - The unique identifier of the group.
+ * @property {boolean} isOwner - Whether or not the user is the owner of the group.
+ * @property {boolean} isAdmin - Whether or not the user is an admin of the group.
+ * @property {boolean} isModerator - Whether or not the user is a moderator of the group.
+ * @property {Timestamp} lastChangeAt - The date and time the group was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+interface Group {
+	groupId: string;
+	isOwner: boolean;
+	isAdmin: boolean;
+	isModerator: boolean;
 	lastChangeAt: Timestamp;
 }

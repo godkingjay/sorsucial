@@ -61,8 +61,8 @@ export interface SiteUser {
 	stateOrProvince?: string;
 	cityOrMunicipality?: string;
 	streetAddress?: string;
-	createdAt?: Timestamp;
-	previousNames?: Timestamp;
+	createdAt: Timestamp;
+	previousNameChangeAt?: Timestamp;
 	lastLoginAt?: Timestamp;
 	lastChangeAt?: Timestamp;
 }
@@ -146,9 +146,6 @@ export interface UserGroup {
  *
  * @property {string} postId - The unique identifier of the post.
  * @property {string} [groupId] - The unique identifier of the group.
- * @property {number} numberOfLikes - The number of likes the post has.
- * @property {number} numberOfComments - The number of comments the post has.
- * @property {Timestamp} [lastChangeAt] - The date and time the post was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -157,9 +154,6 @@ export interface UserGroup {
 export interface UserPost {
 	postId: string;
 	groupId?: string;
-	numberOfLikes: number;
-	numberOfComments: number;
-	lastChangeAt?: Timestamp;
 }
 
 /**
@@ -204,11 +198,6 @@ export interface UserPostLike {
  *
  * @property {string} discussionId - The unique identifier of the discussion.
  * @property {string} [groupId] - The unique identifier of the group.
- * @property {number} numberOfVotes - The number of votes the discussion has.
- * @property {number} numberOfReplies - The number of replies the discussion has.
- * @property {number} numberOfUpvotes - The number of upvotes the discussion has.
- * @property {number} numberOfDownvotes - The number of downvotes the discussion has.
- * @property {Timestamp} [lastChangeAt] - The date and time the discussion was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -217,11 +206,6 @@ export interface UserPostLike {
 export interface UserDiscussion {
 	discussionId: string;
 	groupId?: string;
-	numberOfVotes: number;
-	numberOfReplies: number;
-	numberOfUpvotes: number;
-	numberOfDownvotes: number;
-	lastChangeAt?: Timestamp;
 }
 
 /**

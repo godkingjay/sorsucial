@@ -32,10 +32,10 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {string} [stateOrProvince] - The state or province of the user.
  * @property {string} [cityOrMunicipality] - The city or municipality of the user.
  * @property {string} [streetAddress] - The street address of the user.
- * @property {Timestamp} createdAt - The date and time the user was created.
+ * @property {Timestamp} [createdAt] - The date and time the user was created.
  * @property {Timestamp} [previousNames] - The previous names of the user.
- * @property {Timestamp} lastLoginAt - The date and time the user last logged in.
- * @property {Timestamp} lastChangeAt - The date and time the user was last changed.
+ * @property {Timestamp} [lastLoginAt] - The date and time the user last logged in.
+ * @property {Timestamp} [lastChangeAt] - The date and time the user was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -61,10 +61,10 @@ export interface SiteUser {
 	stateOrProvince?: string;
 	cityOrMunicipality?: string;
 	streetAddress?: string;
-	createdAt: Timestamp;
+	createdAt?: Timestamp;
 	previousNames?: Timestamp;
-	lastLoginAt: Timestamp;
-	lastChangeAt: Timestamp;
+	lastLoginAt?: Timestamp;
+	lastChangeAt?: Timestamp;
 }
 
 /**
@@ -83,9 +83,9 @@ export interface SiteUser {
  * @property {string} userId - The unique identifier of the user.
  * @property {boolean} isAccepted - Whether or not the connection request has been accepted.
  * @property {boolean} isRejected - Whether or not the connection request has been rejected.
- * @property {Timestamp} requestAt - The date and time the connection request was sent.
+ * @property {Timestamp} [requestAt] - The date and time the connection request was sent.
  * @property {Timestamp} [acceptAt] - The date and time the connection request was accepted.
- * @property {Timestamp} lastChangeAt - The date and time the connection request was last changed.
+ * @property {Timestamp} [lastChangeAt] - The date and time the connection request was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -95,9 +95,9 @@ export interface UserConnection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	requestAt: Timestamp;
+	requestAt?: Timestamp;
 	acceptAt?: Timestamp;
-	lastChangeAt: Timestamp;
+	lastChangeAt?: Timestamp;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface UserConnection {
  * @property {boolean} isOwner - Whether or not the user is the owner of the group.
  * @property {boolean} isAdmin - Whether or not the user is an admin of the group.
  * @property {boolean} isModerator - Whether or not the user is a moderator of the group.
- * @property {Timestamp} lastChangeAt - The date and time the group was last changed.
+ * @property {Timestamp} [lastChangeAt] - The date and time the group was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -128,7 +128,7 @@ export interface UserGroup {
 	isOwner: boolean;
 	isAdmin: boolean;
 	isModerator: boolean;
-	lastChangeAt: Timestamp;
+	lastChangeAt?: Timestamp;
 }
 
 /**
@@ -148,6 +148,7 @@ export interface UserGroup {
  * @property {string} [groupId] - The unique identifier of the group.
  * @property {number} numberOfLikes - The number of likes the post has.
  * @property {number} numberOfComments - The number of comments the post has.
+ * @property {Timestamp} [lastChangeAt] - The date and time the post was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -158,6 +159,7 @@ export interface UserPost {
 	groupId?: string;
 	numberOfLikes: number;
 	numberOfComments: number;
+	lastChangeAt?: Timestamp;
 }
 
 /**
@@ -206,6 +208,7 @@ export interface UserPostLike {
  * @property {number} numberOfReplies - The number of replies the discussion has.
  * @property {number} numberOfUpvotes - The number of upvotes the discussion has.
  * @property {number} numberOfDownvotes - The number of downvotes the discussion has.
+ * @property {Timestamp} [lastChangeAt] - The date and time the discussion was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -218,4 +221,5 @@ export interface UserDiscussion {
 	numberOfReplies: number;
 	numberOfUpvotes: number;
 	numberOfDownvotes: number;
+	lastChangeAt?: Timestamp;
 }

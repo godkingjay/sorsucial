@@ -67,12 +67,12 @@ export interface SiteUser {
 }
 
 /**
- * This interface is used to define the structure of a user's connections object.
+ * This interface is used to define the structure of a user's connection object.
  * This is the object that is stored in the database.
  *
  * ----------------------------------------------------------------
  *
- * @interface Connection - The connections object.
+ * @interface UserConnection - The connections object.
  * @category Interfaces
  * @subcategory SiteUser
  *
@@ -89,7 +89,7 @@ export interface SiteUser {
  *
  * @author Jarrian Vince Gojar
  */
-export interface Connection {
+export interface UserConnection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
@@ -99,12 +99,12 @@ export interface Connection {
 }
 
 /**
- * This interface is used to define the structure of a user's groups object.
+ * This interface is used to define the structure of a user's group object.
  * This is the object that is stored in the database.
  *
  * ----------------------------------------------------------------
  *
- * @interface Group
+ * @interface UserGroup
  * @category Interfaces
  * @subcategory SiteUser
  *
@@ -120,7 +120,7 @@ export interface Connection {
  *
  * @author Jarrian Vince Gojar
  */
-export interface Group {
+export interface UserGroup {
 	groupId: string;
 	isOwner: boolean;
 	isAdmin: boolean;

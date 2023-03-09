@@ -130,3 +130,32 @@ export interface UserGroup {
 	isModerator: boolean;
 	lastChangeAt: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a user's post object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface UserPost
+ * @category Interfaces
+ * @subcategory SiteUser
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} [group] - The unique identifier of the group.
+ * @property {number} numberOfLikes - The number of likes the post has.
+ * @property {number} numberOfComments - The number of comments the post has.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface UserPost {
+	postId: string;
+	group?: string;
+	numberOfLikes: number;
+	numberOfComments: number;
+}

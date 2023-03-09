@@ -4,9 +4,14 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * This interface is used to define the structure of a user object.
  * This is the object that is stored in the database.
  *
+ * ----------------------------------------------------------------
+ *
  * @interface SiteUser - The user object.
  * @category Interfaces
  * @subcategory User
+ *
+ * ----------------------------------------------------------------
+ *
  * @property {string} uid - The unique identifier of the user.
  * @property {string} firstName - The first name of the user.
  * @property {string} lastName - The last name of the user.
@@ -30,6 +35,10 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {Timestamp} [previousNames] - The previous names of the user.
  * @property {Timestamp} lastLoginAt - The date and time the user last logged in.
  * @property {Timestamp} lastChangeAt - The date and time the user was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
  */
 interface SiteUser {
 	uid: string;
@@ -57,6 +66,29 @@ interface SiteUser {
 	lastChangeAt: Timestamp;
 }
 
+/**
+ * This interface is used to define the structure of a user's connections object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @interface Connections - The connections object.
+ * @category Interfaces
+ * @subcategory User
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {boolean} isAccepted - Whether or not the connection request has been accepted.
+ * @property {boolean} isRejected - Whether or not the connection request has been rejected.
+ * @property {Timestamp} requestAt - The date and time the connection request was sent.
+ * @property {Timestamp} [acceptAt] - The date and time the connection request was accepted.
+ * @property {Timestamp} lastChangeAt - The date and time the connection request was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
 interface Connections {
 	userId: string;
 	isAccepted: boolean;

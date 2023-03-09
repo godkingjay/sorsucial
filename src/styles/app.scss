@@ -1,0 +1,47 @@
+@layer components {
+	.divider {
+		@apply w-full h-[1px] bg-gray-200;
+	}
+
+	.text-link {
+		@apply text-xs text-center text-blue-500 underline cursor-pointer hover:text-blue-800 focus:text-blue-800 outline-0 focus:outline-1 outline-dashed outline-offset-2;
+	}
+
+	.auth-form {
+		@apply w-full h-full flex flex-col;
+
+		.auth-input-text {
+			@apply w-full h-12 flex flex-col bg-white px-2 py-1 rounded-md border border-gray-300 justify-center;
+
+			.label {
+				@apply text-2xs font-bold text-gray-500 duration-300 h-min relative uppercase w-max;
+
+				&:after {
+					content: "*";
+					@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[110%] duration-300;
+				}
+			}
+
+			.input-field {
+				@apply text-sm outline-none h-0 duration-300 px-1;
+			}
+
+			&:hover,
+			&:focus-within {
+				@apply border-gray-500;
+
+				.label {
+					@apply text-3xs;
+				}
+
+				.input-field {
+					@apply h-8;
+				}
+			}
+		}
+	}
+
+	.page-button {
+		@apply h-12 w-full bg-logo-300 rounded-full font-bold text-white border-2 border-logo-300;
+	}
+}

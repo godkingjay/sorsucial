@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 				<p>Loading</p>
 			) : (
 				<>
-					<NavBar />
+					{authUser && <NavBar />}
 					{children}
 				</>
 			)}

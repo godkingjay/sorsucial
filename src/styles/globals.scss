@@ -2,22 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "styles.scss";
+@import "app.scss";
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  background-color: transparent;
-  min-width: 0px;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	background-color: transparent;
+	min-width: 0px;
 }
 
 @layer components {
-  .limit-width {
-    max-width: 1536px;
-  }
+	.limit-width {
+		max-width: 1536px;
+	}
 
-  .scroll-y-style::-webkit-scrollbar {
+	.scroll-y-style::-webkit-scrollbar {
 		height: 100%;
 		width: 8px;
 		background: #0001;
@@ -26,10 +26,10 @@
 
 	.scroll-y-style::-webkit-scrollbar-thumb {
 		background: #0002;
-    -webkit-border-radius: 1ex;
+		-webkit-border-radius: 1ex;
 		@apply rounded-full;
 	}
-  
+
 	.scroll-x-style::-webkit-scrollbar {
 		height: 4px;
 		width: 100%;
@@ -39,7 +39,7 @@
 
 	.scroll-x-style::-webkit-scrollbar-thumb {
 		background: #0004;
-    -webkit-border-radius: 1ex;
+		-webkit-border-radius: 1ex;
 		@apply rounded-full;
 	}
 }

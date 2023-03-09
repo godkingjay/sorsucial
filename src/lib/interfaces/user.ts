@@ -40,7 +40,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  *
  * @author Jarrian Vince Gojar
  */
-interface SiteUser {
+export interface SiteUser {
 	uid: string;
 	firstName: string;
 	lastName: string;
@@ -89,7 +89,7 @@ interface SiteUser {
  *
  * @author Jarrian Vince Gojar
  */
-interface Connection {
+export interface Connection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
@@ -120,7 +120,7 @@ interface Connection {
  *
  * @author Jarrian Vince Gojar
  */
-interface Group {
+export interface Group {
 	groupId: string;
 	isOwner: boolean;
 	isAdmin: boolean;

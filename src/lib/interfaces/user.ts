@@ -6,6 +6,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  *
  * ----------------------------------------------------------------
  *
+ * @export
  * @interface SiteUser - The user object.
  * @category Interfaces
  * @subcategory User
@@ -72,6 +73,7 @@ export interface SiteUser {
  *
  * ----------------------------------------------------------------
  *
+ * @export
  * @interface UserConnection - The connections object.
  * @category Interfaces
  * @subcategory SiteUser
@@ -104,6 +106,7 @@ export interface UserConnection {
  *
  * ----------------------------------------------------------------
  *
+ * @export
  * @interface UserGroup
  * @category Interfaces
  * @subcategory SiteUser

@@ -25,3 +25,12 @@ interface SiteUser {
 	lastLoginAt: Timestamp;
 	lastChangeAt: Timestamp;
 }
+
+interface Connections {
+	userId: string;
+	isAccepted: boolean;
+	isRejected: boolean;
+	requestAt: Timestamp;
+	acceptAt?: Timestamp;
+	lastChangeAt: Timestamp;
+}

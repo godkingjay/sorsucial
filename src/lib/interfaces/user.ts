@@ -186,3 +186,36 @@ export interface UserPostLike {
 	postId: string;
 	groupId?: string;
 }
+
+/**
+ * This interface is used to define the structure of a user's discussion object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface UserDiscussion
+ * @category Interfaces
+ * @subcategory SiteUser
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} discussionId - The unique identifier of the discussion.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {number} numberOfVotes - The number of votes the discussion has.
+ * @property {number} numberOfReplies - The number of replies the discussion has.
+ * @property {number} numberOfUpvotes - The number of upvotes the discussion has.
+ * @property {number} numberOfDownvotes - The number of downvotes the discussion has.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface UserDiscussion {
+	discussionId: string;
+	groupId?: string;
+	numberOfVotes: number;
+	numberOfReplies: number;
+	numberOfUpvotes: number;
+	numberOfDownvotes: number;
+}

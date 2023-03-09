@@ -145,7 +145,7 @@ export interface UserGroup {
  * ----------------------------------------------------------------
  *
  * @property {string} postId - The unique identifier of the post.
- * @property {string} [group] - The unique identifier of the group.
+ * @property {string} [groupId] - The unique identifier of the group.
  * @property {number} numberOfLikes - The number of likes the post has.
  * @property {number} numberOfComments - The number of comments the post has.
  *
@@ -155,7 +155,34 @@ export interface UserGroup {
  */
 export interface UserPost {
 	postId: string;
-	group?: string;
+	groupId?: string;
 	numberOfLikes: number;
 	numberOfComments: number;
+}
+
+/**
+ * This interface is used to define the structure of a user's post like object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface UserPostLike
+ * @category Interfaces
+ * @subcategory SiteUser
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the post like.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} [groupId] - The unique identifier of the group.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface UserPostLike {
+	id: string;
+	postId: string;
+	groupId?: string;
 }

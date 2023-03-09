@@ -29,6 +29,8 @@ module.exports = {
 				"2xs": "256px",
 				xs: "320px",
 				sm: "384px",
+				xl: "640px",
+				"2xl": "764px",
 			},
 		},
 	},

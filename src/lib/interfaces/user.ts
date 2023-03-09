@@ -223,3 +223,32 @@ export interface UserDiscussion {
 	numberOfDownvotes: number;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a user's discussion vote object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface UserDiscussionVote
+ * @category Interfaces
+ * @subcategory SiteUser
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the discussion vote.
+ * @property {string} discussionId - The unique identifier of the discussion.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {1 | -1} vote - The vote of the user.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface UserDiscussionVote {
+	id: string;
+	discussionId: string;
+	groupId?: string;
+	vote: 1 | -1;
+}

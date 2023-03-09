@@ -7,7 +7,7 @@ import { Timestamp } from "firebase/firestore";
  * ----------------------------------------------------------------
  *
  * @export
- * @interface Group
+ * @interface SiteGroup
  * @category Interfaces
  *
  * ----------------------------------------------------------------
@@ -26,7 +26,7 @@ import { Timestamp } from "firebase/firestore";
  *
  * @author Jarrian Vince Gojar
  */
-export interface Group {
+export interface SiteGroup {
 	id: string;
 	name: string;
 	creatorId: string;
@@ -35,5 +35,34 @@ export interface Group {
 	numberOfMembers: number;
 	imageURL?: string;
 	lastPostAt?: Timestamp;
+	lastChangeAt?: Timestamp;
+}
+
+/**
+ * This interface is used to define the structure of a group member object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface GroupMember
+ * @category Interfaces
+ * @subcategory SiteGroup
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {"owner" | "admin" | "moderator" | "member"} role - The role of the user in the group.
+ * @property {Timestamp} joinedAt - The date and time when the user joined the group.
+ * @property {Timestamp} [lastChangeAt] - The date and time when the user's role was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface GroupMember {
+	userId: string;
+	role: "owner" | "admin" | "moderator" | "member";
+	joinedAt: Timestamp;
 	lastChangeAt?: Timestamp;
 }

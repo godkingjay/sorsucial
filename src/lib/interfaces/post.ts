@@ -61,7 +61,7 @@ export interface SitePost {
  * ----------------------------------------------------------------
  *
  * @export
- * @interface imageOrVideo
+ * @interface ImageOrVideo
  * @category Interfaces
  * @subcategory SitePost
  *
@@ -82,7 +82,7 @@ export interface SitePost {
  *
  * @author Jarrian Vince Gojar
  */
-export interface imageOrVideo {
+export interface ImageOrVideo {
 	id: string;
 	index: number;
 	postId: string;

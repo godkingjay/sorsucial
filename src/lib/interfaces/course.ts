@@ -43,3 +43,35 @@ export interface Course {
 	endAt?: Timestamp;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a course instructor object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface CourseInstructor
+ * @category Interfaces
+ * @subcategory Course
+ * @see {@link Course}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} courseId - The unique identifier of the course.
+ * @property {Timestamp} [startAt] - The date and time the user started teaching the course.
+ * @property {Timestamp} [endAt] - The date and time the user stopped teaching the course.
+ * @property {Timestamp} [lastChangeAt] - The date and time the course instructor was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface CourseInstructor {
+	userId: string;
+	courseId: string;
+	startAt?: Timestamp;
+	endAt?: Timestamp;
+	lastChangeAt?: Timestamp;
+}

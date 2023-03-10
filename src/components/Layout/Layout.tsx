@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	const { authUser, loadingUser, authLoading, setLoadingUser } = useUser();
 
 	return (
-		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative">
+		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
 			{authLoading || loadingUser ? (
 				<p>Loading</p>
 			) : (

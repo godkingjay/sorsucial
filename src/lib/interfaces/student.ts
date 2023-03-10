@@ -41,3 +41,31 @@ export interface Student {
 	graduatedAt?: Timestamp;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a student course object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface StudentCourse
+ * @category Interfaces
+ * @subcategory Student
+ * @see {@link Student}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {number} courseId - The unique identifier of the course.
+ * @property {string} [description] - The description of the course.
+ * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface StudentCourse {
+	courseId: number;
+	description?: string;
+	lastChangeAt?: Timestamp;
+}

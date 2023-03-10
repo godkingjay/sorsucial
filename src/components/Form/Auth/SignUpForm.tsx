@@ -163,7 +163,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 					{!emailSent ? (
 						<>
 							<div className="w-full flex flex-col gap-y-4 justify-center z-10 py-4">
-								<div className="w-full flex flex-col relative z-10 gap-y-1">
+								<div className="w-full flex flex-col relative z-10 gap-y-2">
 									<div
 										className={`auth-input-container ${
 											signUpForm.email ? "auth-input-container-filled" : ""
@@ -186,11 +186,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 											/>
 										</div>
 									</div>
-									{!validEmail && (
-										<div className="text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center right-0 top-[105%] p-2">
-											<p>Please input a school provided email address.</p>
-										</div>
-									)}
+									<div
+										className={`${
+											validEmail ? "h-0 py-0" : "h-max py-4"
+										} px-4 absolute top-[110%] right-0 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
+									>
+										<p>Please input a school provided email address.</p>
+									</div>
 								</div>
 
 								{signUpError && (

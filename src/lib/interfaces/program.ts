@@ -51,8 +51,8 @@ export interface Program {
  * @export
  * @interface Course
  * @category Interfaces
- * @subcategory Course
- * @see {@link Course}
+ * @subcategory Program
+ * @see {@link Program}
  *
  * ----------------------------------------------------------------
  *
@@ -73,31 +73,31 @@ export interface Course {
 }
 
 /**
- * This interface is used to define the structure of a course instructor object.
+ * This interface is used to define the structure of a program instructor object.
  * This is the object that is stored in the database.
  *
  * ----------------------------------------------------------------
  *
  * @export
- * @interface CourseInstructor
+ * @interface ProgramInstructor
  * @category Interfaces
- * @subcategory Course
- * @see {@link Course}
+ * @subcategory Program
+ * @see {@link Program}
  *
  * ----------------------------------------------------------------
  *
- * @property {string} courseId - The unique identifier of the course.
+ * @property {string} userId - The unique identifier of the user.
  * @property {string} instructorId - The unique identifier of the instructor.
- * @property {Timestamp} [startAt] - The date and time the course started.
- * @property {Timestamp} [endAt] - The date and time the course ended.
- * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ * @property {Timestamp} [startAt] - The date and time the instructor started teaching in the program.
+ * @property {Timestamp} [endAt] - The date and time the instructor ended teaching in the program.
+ * @property {Timestamp} [lastChangeAt] - The date and time the program instructor was last changed.
  *
  * ----------------------------------------------------------------
  *
  * @author Jarrian Vince Gojar
  */
 export interface CourseInstructor {
-	courseId: string;
+	userId: string;
 	instructorId: string;
 	startAt?: Timestamp;
 	endAt?: Timestamp;

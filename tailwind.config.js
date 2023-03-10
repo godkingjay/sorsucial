@@ -5,10 +5,9 @@ module.exports = {
 	content: ["./src/**/*.{js,jsx,ts,tsx}"],
 	theme: {
 		extend: {
-			boxShadow: {},
 			colors: {
-				"logo-100": "#ff808080",
-				"logo-200": "#f0404040",
+				"logo-100": "#ff4040",
+				"logo-200": "#f00000",
 				"logo-300": "#c00000",
 				"logo-400": "#a00000",
 				"logo-500": "#800000",

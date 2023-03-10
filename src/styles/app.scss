@@ -10,26 +10,46 @@
 	.auth-form {
 		@apply w-full h-full flex flex-col;
 
-		.auth-input-text {
-			@apply w-full h-12 flex flex-col bg-white px-2 py-1 rounded-md border border-gray-300 justify-center;
+		.auth-input-container {
+			@apply w-full h-14 flex flex-row bg-gray-100 px-2 py-1 rounded-md border border-transparent items-center gap-x-2;
 
-			.label {
-				@apply text-2xs font-bold text-gray-500 duration-300 h-min relative uppercase w-max;
+			.auth-input-text {
+				@apply flex-1 h-full flex flex-col justify-center;
 
-				&:after {
-					content: "*";
-					@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[110%] duration-300;
+				.label {
+					@apply text-xs font-bold text-gray-500 duration-300 h-min relative uppercase w-max;
+
+					&:after {
+						content: "*";
+						@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[110%] duration-300;
+					}
 				}
-			}
 
-			.input-field {
-				@apply text-sm outline-none h-0 duration-300 px-1;
+				.input-field {
+					@apply outline-none h-0 duration-300 px-1 origin-bottom;
+				}
 			}
 
 			&:hover,
 			&:focus-within {
 				@apply border-gray-500;
 
+				.auth-input-text {
+					.label {
+						@apply text-3xs;
+					}
+
+					.input-field {
+						@apply h-8;
+					}
+				}
+			}
+		}
+
+		.auth-input-container-filled {
+			@apply border-gray-500;
+
+			.auth-input-text {
 				.label {
 					@apply text-3xs;
 				}
@@ -42,6 +62,6 @@
 	}
 
 	.page-button {
-		@apply h-12 w-full bg-logo-300 rounded-full font-bold text-white border-2 border-logo-300;
+		@apply h-12 w-full bg-logo-300 rounded-full font-bold text-white border-2 border-logo-300 justify-center items-center grid disabled:bg-gray-500 disabled:border-gray-500 disabled:pointer-events-none;
 	}
 }

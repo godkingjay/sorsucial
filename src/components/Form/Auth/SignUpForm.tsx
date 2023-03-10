@@ -2,13 +2,16 @@ import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm
 import { auth } from "@/firebase/clientApp";
 import { authError } from "@/firebase/error";
 import React, { useState } from "react";
-import { FiLoader } from "react-icons/fi";
+import { FiLoader, FiMail } from "react-icons/fi";
+import { RiMailSendLine } from "react-icons/ri";
+import { MdEmail } from "react-icons/md";
 import { authForm } from "../AuthForm";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 import {
 	fetchSignInMethodsForEmail,
 	sendSignInLinkToEmail,
 } from "firebase/auth";
+import Link from "next/link";
 
 type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
@@ -147,7 +150,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 				<div className="flex flex-col flex-1 gap-y-6">
 					<div className="flex flex-col gap-y-4 text-center items-center">
 						<div className="h-20 w-20">
-							<SorSUcialLogo className="h-full w-full aspect-square [&_*]:fill-logo-300" />
+							<SorSUcialLogo className="h-full w-full aspect-square [&_path]:fill-logo-300" />
 						</div>
 						<div className="flex flex-col gap-y-1">
 							<h2 className="font-bold">Create An Account</h2>
@@ -157,60 +160,83 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 							</p>
 						</div>
 					</div>
-					<div className="w-full flex flex-col gap-y-4 justify-center z-10 py-4">
-						<div className="w-full flex flex-col relative z-10 gap-y-1">
-							<div
-								className={`auth-input-container ${
-									signUpForm.email ? "auth-input-container-filled" : ""
-								}`}
-							>
-								<div className="auth-input-text">
-									<label
-										htmlFor="email"
-										className="label"
+					{!emailSent ? (
+						<>
+							<div className="w-full flex flex-col gap-y-4 justify-center z-10 py-4">
+								<div className="w-full flex flex-col relative z-10 gap-y-1">
+									<div
+										className={`auth-input-container ${
+											signUpForm.email ? "auth-input-container-filled" : ""
+										}`}
 									>
-										EMAIL
-									</label>
-									<input
-										required
-										type="email"
-										name="email"
-										title="Email"
-										className="input-field"
-										onChange={handleInputChange}
-									/>
+										<div className="auth-input-text">
+											<label
+												htmlFor="email"
+												className="label"
+											>
+												EMAIL
+											</label>
+											<input
+												required
+												type="email"
+												name="email"
+												title="Email"
+												className="input-field"
+												onChange={handleInputChange}
+											/>
+										</div>
+									</div>
+									{!validEmail && (
+										<div className="text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center right-0 top-[105%] p-2">
+											<p>Please input a school provided email address.</p>
+										</div>
+									)}
 								</div>
-							</div>
-							{!validEmail && (
-								<div className="text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center right-0 top-[105%] p-2">
-									<p>Please input a school provided email address.</p>
-								</div>
-							)}
-						</div>
 
-						{signUpError && (
-							<div>
-								<ErrorBannerTextSm
-									message={authError[signUpError] || signUpError}
-								/>
+								{signUpError && (
+									<div>
+										<ErrorBannerTextSm
+											message={authError[signUpError] || signUpError}
+										/>
+									</div>
+								)}
 							</div>
-						)}
-					</div>
-					<div className="w-full">
-						<button
-							type="submit"
-							name="signup"
-							title="Sign Up"
-							className="page-button bg-logo-300 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
-							disabled={signingUp}
-						>
-							{!signingUp ? (
-								"Sign Up"
-							) : (
-								<FiLoader className="h-6 w-6 text-white animate-spin" />
-							)}
-						</button>
-					</div>
+							<div className="w-full">
+								<button
+									type="submit"
+									name="signup"
+									title="Sign Up"
+									className="page-button bg-logo-300 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
+									disabled={signingUp}
+								>
+									{!signingUp ? (
+										"Sign Up"
+									) : (
+										<FiLoader className="h-6 w-6 text-white animate-spin" />
+									)}
+								</button>
+							</div>
+						</>
+					) : (
+						<div className="flex flex-col w-full p-[12px] border-2 border-logo-300 border-dashed rounded-md gap-y-2 items-center">
+							<div className="h-10 w-10 aspect-square text-logo-300">
+								<MdEmail className="w-full h-full" />
+							</div>
+							<div className="flex-1">
+								<p className="break-words text-sm text-center whitespace-normal">
+									An email has been sent to your email{" "}
+									<Link
+										href="https://mail.google.com/mail/u/0/"
+										tabIndex={0}
+										target="_blank"
+										className="text-link text-sm font-bold"
+									>
+										{signUpForm.email}
+									</Link>
+								</p>
+							</div>
+						</div>
+					)}
 				</div>
 				<div className="w-full flex flex-col items-center mt-auto">
 					<p className="text-black text-xs">

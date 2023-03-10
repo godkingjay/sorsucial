@@ -48,6 +48,7 @@ export interface SiteGroup {
  * @interface GroupMember
  * @category Interfaces
  * @subcategory SiteGroup
+ * @see {@link SitGroup}
  *
  * ----------------------------------------------------------------
  *

@@ -288,6 +288,8 @@ export interface PollItemLogo {
  *
  * @export
  * @interface PollVote
+ * @category Interfaces
+ * @subcategory PostPoll
  *
  * ----------------------------------------------------------------
  *

@@ -59,7 +59,7 @@ export interface Course {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
- * @property {string} courseId - The unique identifier of the course.
+ * @property {string} instructorId - The unique identifier of the instructor.
  * @property {Timestamp} [startAt] - The date and time the user started teaching the course.
  * @property {Timestamp} [endAt] - The date and time the user stopped teaching the course.
  * @property {Timestamp} [lastChangeAt] - The date and time the course instructor was last changed.
@@ -70,7 +70,7 @@ export interface Course {
  */
 export interface CourseInstructor {
 	userId: string;
-	courseId: string;
+	instructorId: string;
 	startAt?: Timestamp;
 	endAt?: Timestamp;
 	lastChangeAt?: Timestamp;

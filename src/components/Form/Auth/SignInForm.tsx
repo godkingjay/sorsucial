@@ -134,7 +134,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 								<button
 									type="button"
 									title={showPassword ? "Hide Password" : "Show Password"}
-									className="aspect-square h-5 w-5 [&:hover_path]:fill-logo-300 [&:focus_path]:fill-logo-300"
+									className="aspect-square h-5 w-5 text-gray-500 hover:text-logo-300 focus:text-logo-300"
 									onClick={handleShowPassword}
 								>
 									{showPassword ? (

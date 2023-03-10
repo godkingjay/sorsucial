@@ -1,7 +1,11 @@
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import { auth } from "@/firebase/clientApp";
+import { authError } from "@/firebase/error";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { FiLoader } from "react-icons/fi";
+import { MdInfoOutline } from "react-icons/md";
 
 type LoginFormProps = {};
 
@@ -11,13 +15,16 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 		email: "",
 		password: "",
 	});
-	const [loginError, setLoginError] = useState("");
+	const [loginError, setLoginError] = useState<string>("");
+	const [loggingIn, setLoggingIn] = useState(false);
+	const [validEmail, setValidEmail] = useState(false);
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setLoginError("");
 		setLoginForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
@@ -26,7 +33,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (loginForm.email && loginForm.password) {
+		if (loginForm.email && loginForm.password && !loginError) {
+			setLoggingIn(true);
 			try {
 				await signInWithEmailAndPassword(
 					auth,
@@ -36,9 +44,10 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 					throw error;
 				});
 			} catch (error: any) {
-				console.log("Login error: " + error.message);
+				console.log("Login Error!");
 				setLoginError(error.message);
 			}
+			setLoggingIn(false);
 		}
 	};
 
@@ -53,8 +62,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 			<div className="divider"></div>
 			<div className="w-full flex flex-col p-4 gap-y-6 h-full">
 				<div className="flex flex-col flex-1 gap-y-6">
-					<div className="w-full flex flex-col gap-y-4 flex-1 justify-center">
-						<div className="w-full flex flex-col">
+					<div className="w-full flex flex-col gap-y-4 flex-1 justify-center z-10">
+						<div className="w-full flex flex-col relative z-10">
 							<div
 								className={`auth-input-container ${
 									loginForm.email ? "auth-input-container-filled" : ""
@@ -74,11 +83,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 										title="Email"
 										className="input-field"
 										onChange={handleInputChange}
+										pattern="^[A-Za-z0-9._]@sorsu.edu.ph$"
 									/>
 								</div>
 							</div>
 						</div>
-						<div className="w-full">
+						<div className="w-full -z-10">
 							<div
 								className={`auth-input-container ${
 									loginForm.password ? "auth-input-container-filled" : ""
@@ -98,6 +108,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 										title="Password"
 										className="input-field"
 										onChange={handleInputChange}
+										minLength={8}
+										maxLength={256}
 									/>
 								</div>
 								<button
@@ -114,6 +126,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 								</button>
 							</div>
 						</div>
+						{loginError && (
+							<div>
+								<ErrorBannerTextSm message={authError[loginError]} />
+							</div>
+						)}
 					</div>
 					<div className="divider"></div>
 					<div className="w-full flex-1">
@@ -121,9 +138,14 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 							type="submit"
 							name="login"
 							title="Login"
-							className="page-button hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
+							className="page-button bg-logo-300 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
+							disabled={loggingIn}
 						>
-							Login
+							{!loggingIn ? (
+								"Login"
+							) : (
+								<FiLoader className="h-6 w-6 text-white animate-spin" />
+							)}
 						</button>
 					</div>
 				</div>

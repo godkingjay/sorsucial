@@ -6,9 +6,9 @@ import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 
-type LoginPageProps = {};
+type SignInPageProps = {};
 
-const LoginPage: React.FC<LoginPageProps> = () => {
+const SignInPage: React.FC<SignInPageProps> = () => {
 	const { authUser, authLoading } = useUser();
 	const router = useRouter();
 
@@ -57,4 +57,4 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 	);
 };
 
-export default LoginPage;
+export default SignInPage;

@@ -18,7 +18,7 @@ const useUser = () => {
 	// 	setLoadingUser(true);
 	// 	if (!user && !loading) {
 	// 		setLoadingUser(false);
-	// 		router.push("/auth/login");
+	// 		router.push("/auth/signin");
 	// 	} else {
 	// 		getUserDetails();
 	// 	}

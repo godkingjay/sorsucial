@@ -24,7 +24,7 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 		if (isSignInWithEmailLink(auth, router.asPath)) {
 			initializeCreateAccount();
 		} else {
-			router.push("/auth/login");
+			router.push("/auth/signin");
 		}
 	}, [router]);
 

@@ -43,3 +43,31 @@ export interface Staff {
 	workEndAt?: Timestamp;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a staff object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface InstructorCourse
+ * @category Interfaces
+ * @subcategory Staff
+ * @see {@link Staff}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} courseId - The unique identifier of the course.
+ * @property {string} [description] - The description of the course.
+ * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface InstructorCourse {
+	courseId: string;
+	description?: string;
+	lastChangeAt?: Timestamp;
+}

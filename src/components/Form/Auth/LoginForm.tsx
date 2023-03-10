@@ -5,14 +5,17 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
+import { authForm } from "../AuthForm";
 
-type LoginFormProps = {};
+type LoginFormProps = {
+	handleFormChange: (form: authForm) => void;
+};
 
 const LoginRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };
 
-const LoginForm: React.FC<LoginFormProps> = () => {
+const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [loginForm, setLoginForm] = useState({
 		email: "",
@@ -165,14 +168,19 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 						</button>
 					</div>
 				</div>
-				<div className="w-full flex flex-col items-center mt-auto">
+				<button
+					type="button"
+					title="Sign Up"
+					className="w-full flex flex-col items-center mt-auto"
+					onClick={() => handleFormChange("signup")}
+				>
 					<p
 						tabIndex={0}
 						className="text-link"
 					>
 						No account Yet? Sign Up instead.
 					</p>
-				</div>
+				</button>
 			</div>
 		</form>
 	);

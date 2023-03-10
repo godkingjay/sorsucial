@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import LoginForm from "./Auth/LoginForm";
+import SignUpForm from "./Auth/SignUpForm";
 
 type AuthFormProps = {};
 
-export type authPage = "login" | "signup" | "resetPassword";
+export type authForm = "login" | "signup" | "resetPassword";
 
 const AuthForm: React.FC<AuthFormProps> = () => {
-	const [authPage, setAuthPage] = useState<authPage>("login");
+	const [authForm, setAuthForm] = useState<authForm>("login");
+
+	const handleFormChange = (form: authForm) => {
+		setAuthForm(form);
+	};
 
 	return (
 		<>
-			<LoginForm />
+			{authForm === "login" && (
+				<LoginForm handleFormChange={handleFormChange} />
+			)}
+			{/* {authForm === "signup" && <SignUpForm />} */}
 		</>
 	);
 };

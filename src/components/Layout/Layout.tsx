@@ -1,8 +1,6 @@
 import React from "react";
 import useUser from "@/hooks/useUser";
 import NavBar from "../NavBar/NavBar";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase/clientApp";
 
 type LayoutProps = {
 	children: React.ReactNode;

@@ -79,3 +79,51 @@ export interface DiscussionVote {
 	groupId?: string;
 	voteValue: 1 | -1;
 }
+
+/**
+ * This interface is used to define the structure of a reply object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface Reply
+ * @category Interfaces
+ * @subcategory Discussion
+ * @see {@link Discussion}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the reply.
+ * @property {string} creatorID - The unique identifier of the reply creator.
+ * @property {string} discussionId - The unique identifier of the discussion.
+ * @property {string} replyForId - The unique identifier of the reply.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {string} replyText - The text of the reply.
+ * @property {number} replyLevel - The level of the reply.
+ * @property {number} numberOfVotes - The number of votes of the reply.
+ * @property {number} numberOfReplies - The number of replies of the reply.
+ * @property {boolean} isHidden - The status of the reply.
+ * @property {"reply" | "approved" | "disapproved"} replyStatus - The status of the reply.
+ * @property {Timestamp} createdAt - The date and time when the reply was created.
+ * @property {Timestamp} [lastChangeAt] - The date and time when the reply was last changed.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface Reply {
+	id: string;
+	creatorID: string;
+	discussionId: string;
+	replyForId: string;
+	groupId?: string;
+	replyText: string;
+	replyLevel: number;
+	numberOfVotes: number;
+	numberOfReplies: number;
+	isHidden: boolean;
+	replyStatus: "reply" | "approved" | "disapproved";
+	createdAt: Timestamp;
+	lastChangeAt?: Timestamp;
+}

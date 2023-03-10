@@ -45,6 +45,20 @@
 				}
 			}
 		}
+
+		.auth-input-container-filled {
+			@apply border-gray-500;
+
+			.auth-input-text {
+				.label {
+					@apply text-3xs;
+				}
+
+				.input-field {
+					@apply h-8;
+				}
+			}
+		}
 	}
 
 	.page-button {

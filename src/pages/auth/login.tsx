@@ -1,12 +1,27 @@
 import AuthForm from "@/components/Form/AuthForm";
 import Head from "next/head";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/router";
 
 type LoginPageProps = {};
 
 const LoginPage: React.FC<LoginPageProps> = () => {
+	const { authUser, authLoading } = useUser();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (authUser && !authLoading) {
+			router.push("/");
+		}
+	}, [authUser, authLoading]);
+
+	if (authLoading) {
+		return <div>Loading</div>;
+	}
+
 	return (
 		<>
 			<Head>

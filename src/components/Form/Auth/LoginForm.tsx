@@ -1,3 +1,5 @@
+import { auth } from "@/firebase/clientApp";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
@@ -9,6 +11,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 		email: "",
 		password: "",
 	});
+	const [loginError, setLoginError] = useState("");
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
@@ -21,8 +24,29 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 		}));
 	};
 
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (loginForm.email && loginForm.password) {
+			try {
+				await signInWithEmailAndPassword(
+					auth,
+					loginForm.email,
+					loginForm.password
+				).catch((error) => {
+					throw error;
+				});
+			} catch (error: any) {
+				console.log("Login error: " + error.message);
+				setLoginError(error.message);
+			}
+		}
+	};
+
 	return (
-		<form className="auth-form">
+		<form
+			className="auth-form"
+			onSubmit={handleSubmit}
+		>
 			<h2 className="font-bold w-full text-center text-2xl text-logo-500 py-4 uppercase">
 				Login
 			</h2>
@@ -31,7 +55,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 				<div className="flex flex-col flex-1 gap-y-6">
 					<div className="w-full flex flex-col gap-y-4 flex-1 justify-center">
 						<div className="w-full flex flex-col">
-							<div className="auth-input-container">
+							<div
+								className={`auth-input-container ${
+									loginForm.email ? "auth-input-container-filled" : ""
+								}`}
+							>
 								<div className="auth-input-text">
 									<label
 										htmlFor="email"
@@ -51,7 +79,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 							</div>
 						</div>
 						<div className="w-full">
-							<div className="auth-input-container">
+							<div
+								className={`auth-input-container ${
+									loginForm.password ? "auth-input-container-filled" : ""
+								}`}
+							>
 								<div className="auth-input-text">
 									<label
 										htmlFor="password"
@@ -86,7 +118,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 					<div className="divider"></div>
 					<div className="w-full flex-1">
 						<button
-							type="button"
+							type="submit"
 							name="login"
 							title="Login"
 							className="page-button hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"

@@ -53,3 +53,44 @@ export interface SitePost {
 	numberOfComments: number;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a post image or video object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface imageOrVideo
+ * @category Interfaces
+ * @subcategory SitePost
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the image or video.
+ * @property {number} index - The index of the image or video.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} filePath - The path of the image or video.
+ * @property {string} fileName - The name of the image or video.
+ * @property {string} fileType - The type of the image or video.
+ * @property {string} fileUrl - The URL of the image or video.
+ * @property {string} fileExtension - The extension of the image or video.
+ * @property {string} [fileTitle] - The title of the image or video.
+ * @property {string} [fileDescription] - The description of the image or video.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface imageOrVideo {
+	id: string;
+	index: number;
+	postId: string;
+	filePath: string;
+	fileName: string;
+	fileType: string;
+	fileUrl: string;
+	fileExtension: string;
+	fileTitle?: string;
+	fileDescription?: string;
+}

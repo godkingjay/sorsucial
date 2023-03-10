@@ -4,10 +4,21 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 type LoginFormProps = {};
 
 const LoginForm: React.FC<LoginFormProps> = () => {
-	const [showPassword, setShowPassword] = useState(true);
+	const [showPassword, setShowPassword] = useState(false);
+	const [loginForm, setLoginForm] = useState({
+		email: "",
+		password: "",
+	});
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
+	};
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setLoginForm((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
 	};
 
 	return (
@@ -34,6 +45,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 										name="email"
 										title="Email"
 										className="input-field"
+										onChange={handleInputChange}
 									/>
 								</div>
 							</div>
@@ -53,6 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 										name="password"
 										title="Password"
 										className="input-field"
+										onChange={handleInputChange}
 									/>
 								</div>
 								<button

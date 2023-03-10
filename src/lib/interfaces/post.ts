@@ -135,3 +135,38 @@ export interface PostFile {
 	fileTitle?: string;
 	fileDescription?: string;
 }
+
+/**
+ * This interface is used to define the structure of a post link object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PostLink
+ * @category Interfaces
+ * @subcategory SitePost
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the link.
+ * @property {number} index - The index of the link.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} [linkTitle] - The title of the link.
+ * @property {string} [linkDescription] - The description of the link.
+ * @property {string} url - The URL of the link.
+ * @property {boolean} blocked - Whether the link is blocked.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PostLink {
+	id: string;
+	index: number;
+	postId: string;
+	linkTitle?: string;
+	linkDescription?: string;
+	url: string;
+	blocked: boolean;
+}

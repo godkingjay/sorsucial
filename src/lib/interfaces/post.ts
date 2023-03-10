@@ -170,3 +170,38 @@ export interface PostLink {
 	url: string;
 	blocked: boolean;
 }
+
+/**
+ * This interface is used to define the structure of a post poll object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PostPoll
+ * @category Interfaces
+ * @subcategory SitePost
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the poll.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} pollTitle - The title of the poll.
+ * @property {string} [pollDescription] - The description of the poll.
+ * @property {number} numberOfVotes - The number of votes of the poll.
+ * @property {number} [maxVotes] - The maximum number of votes of the poll.
+ * @property {boolean} isActive - Whether the poll is active.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PostPoll {
+	id: string;
+	postId: string;
+	pollTitle: string;
+	pollDescription?: string;
+	numberOfVotes: number;
+	maxVotes?: number;
+	isActive: boolean;
+}

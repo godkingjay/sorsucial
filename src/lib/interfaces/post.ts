@@ -94,3 +94,44 @@ export interface ImageOrVideo {
 	fileTitle?: string;
 	fileDescription?: string;
 }
+
+/**
+ * This interface is used to define the structure of a post file object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface File
+ * @category Interfaces
+ * @subcategory SitePost
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the file.
+ * @property {number} index - The index of the file.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} filePath - The path of the file.
+ * @property {string} fileName - The name of the file.
+ * @property {string} fileType - The type of the file.
+ * @property {string} fileUrl - The URL of the file.
+ * @property {string} fileExtension - The extension of the file.
+ * @property {string} [fileTitle] - The title of the file.
+ * @property {string} [fileDescription] - The description of the file.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface File {
+	id: string;
+	index: number;
+	postId: string;
+	filePath: string;
+	fileName: string;
+	fileType: string;
+	fileUrl: string;
+	fileExtension: string;
+	fileTitle?: string;
+	fileDescription?: string;
+}

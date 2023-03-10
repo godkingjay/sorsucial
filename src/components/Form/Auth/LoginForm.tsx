@@ -9,6 +9,10 @@ import { MdInfoOutline } from "react-icons/md";
 
 type LoginFormProps = {};
 
+const LoginRegex = {
+	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
+};
+
 const LoginForm: React.FC<LoginFormProps> = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [loginForm, setLoginForm] = useState({
@@ -17,7 +21,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 	});
 	const [loginError, setLoginError] = useState<string>("");
 	const [loggingIn, setLoggingIn] = useState(false);
-	const [validEmail, setValidEmail] = useState(false);
+	const [validEmail, setValidEmail] = useState(true);
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
@@ -25,6 +29,9 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setLoginError("");
+		if (e.target.name === "email") {
+			setValidEmail(true);
+		}
 		setLoginForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
@@ -33,7 +40,13 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (loginForm.email && loginForm.password && !loginError) {
+		if (LoginRegex.email.test(loginForm.email)) {
+			setValidEmail(true);
+		} else {
+			setValidEmail(false);
+			return;
+		}
+		if (validEmail && loginForm.password && !loginError) {
 			setLoggingIn(true);
 			try {
 				await signInWithEmailAndPassword(
@@ -63,7 +76,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 			<div className="w-full flex flex-col p-4 gap-y-6 h-full">
 				<div className="flex flex-col flex-1 gap-y-6">
 					<div className="w-full flex flex-col gap-y-4 flex-1 justify-center z-10">
-						<div className="w-full flex flex-col relative z-10">
+						<div className="w-full flex flex-col relative z-10 gap-y-1">
 							<div
 								className={`auth-input-container ${
 									loginForm.email ? "auth-input-container-filled" : ""
@@ -83,10 +96,14 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 										title="Email"
 										className="input-field"
 										onChange={handleInputChange}
-										pattern="^[A-Za-z0-9._]@sorsu.edu.ph$"
 									/>
 								</div>
 							</div>
+							{!validEmail && (
+								<div className="text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center right-0 top-[105%] p-2">
+									<p>Please input a school provided email address.</p>
+								</div>
+							)}
 						</div>
 						<div className="w-full -z-10">
 							<div

@@ -5,7 +5,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
-import { MdInfoOutline } from "react-icons/md";
 
 type LoginFormProps = {};
 

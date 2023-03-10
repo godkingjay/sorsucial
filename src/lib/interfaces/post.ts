@@ -337,7 +337,7 @@ export interface PostLike {
 }
 
 /**
- * This interface is used to define the structure of a post object.
+ * This interface is used to define the structure of a post comment object.
  * This is the object that is stored in the database.
  *
  * ----------------------------------------------------------------

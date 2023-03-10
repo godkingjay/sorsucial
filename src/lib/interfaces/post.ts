@@ -205,3 +205,38 @@ export interface PostPoll {
 	maxVotes?: number;
 	isActive: boolean;
 }
+
+/**
+ * This interface is used to define the structure of a poll item object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PollItem
+ * @category Interfaces
+ * @subcategory PostPoll
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the poll item.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} pollId - The unique identifier of the poll.
+ * @property {string} [pollItemTitle] - The title of the poll item.
+ * @property {number} voteStatus - The vote status of the poll item.
+ * @property {string} [logoType] - The logo type of the poll item.
+ * @property {string} [emoji] - The emoji of the poll item.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PollItem {
+	id: string;
+	postId: string;
+	pollId: string;
+	pollItemTitle?: string;
+	voteStatus: number;
+	logoType?: "emoji" | "image";
+	emoji?: string;
+}

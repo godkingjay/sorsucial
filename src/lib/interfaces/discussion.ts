@@ -127,3 +127,35 @@ export interface Reply {
 	createdAt: Timestamp;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a reply vote object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface ReplyVote
+ * @category Interfaces
+ * @subcategory Reply
+ * @see {@link Reply}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} replyId - The unique identifier of the reply.
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {string} discussionId - The unique identifier of the discussion.
+ * @property {1 | -1} voteValue - The value of the vote.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface ReplyVote {
+	replyId: string;
+	userId: string;
+	groupId?: string;
+	discussionId: string;
+	voteValue: 1 | -1;
+}

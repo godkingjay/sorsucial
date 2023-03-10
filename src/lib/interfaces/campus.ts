@@ -14,6 +14,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  *
  * @property {string} id - The unique identifier of the campus.
  * @property {string} name - The name of the campus.
+ * @property {string} [description] - The description of the campus.
  * @property {string[]} departments - The list of departments in the campus.
  * @property {string} [streetAddress] - The street address of the campus.
  * @property {string} [stateOrProvince] - The state or province of the campus.
@@ -30,6 +31,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
 export interface Campus {
 	id: string;
 	name: string;
+	description?: string;
 	departments: string[];
 	streetAddress?: string;
 	stateOrProvince?: string;

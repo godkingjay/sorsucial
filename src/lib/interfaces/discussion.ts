@@ -49,3 +49,33 @@ export interface Discussion {
 	createdAt: Timestamp;
 	lastChangeAt?: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a discussion vote object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface DiscussionVote
+ * @category Interfaces
+ * @subcategory Discussion
+ * @see {@link Discussion}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} discussionId - The unique identifier of the discussion.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {1 | -1} voteValue - The value of the vote.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {number}
+ */
+export interface DiscussionVote {
+	userId: string;
+	discsussionId: string;
+	groupId?: string;
+	voteValue: 1 | -1;
+}

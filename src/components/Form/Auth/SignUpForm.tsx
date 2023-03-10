@@ -27,11 +27,29 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 	const [validEmail, setValidEmail] = useState(true);
 	const [emailSent, setEmailSent] = useState(false);
 
+	/**
+	 * This function is used to handle the input change event for the email and password fields.
+	 * It sets the state of the email and password fields to the value of the input field.
+	 * It also sets the state of the error message to an empty string.
+	 *
+	 * @param {React.ChangeEvent<HTMLInputElement>} e - The change event for the email and password fields
+	 */
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSignUpError("");
+
+		/**
+		 * Checks if the input field is the email field and sets the state of the validEmail variable to true.
+		 * This will hide the error message for the email field.
+		 */
 		if (e.target.name === "email") {
 			setValidEmail(true);
 		}
+
+		/**
+		 * Sets the state of the email and password fields to the value of the input field.
+		 * The name attribute of the input field is used as the key for the state object.
+		 * The value attribute of the input field is used as the value for the state object.
+		 */
 		setLoginForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,

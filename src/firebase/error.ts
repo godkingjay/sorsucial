@@ -12,4 +12,6 @@ export const authError: {
 	"Firebase: Error (auth/user-disabled).": "User has been disabled.",
 	"Firebase: Error (auth/email-already-in-use).":
 		"A user with that email already exists.",
+	"Firebase: Exceeded daily quota for email sign-in. (auth/quota-exceeded).":
+		"Something went wrong. Please try again later.",
 };

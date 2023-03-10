@@ -45,7 +45,7 @@ const SignInPage: React.FC<SignInPageProps> = () => {
 						<div className="w-full max-w-2xl h-max sm:h-[486px] bg-white rounded-2xl shadow-xl grid grid-rows-2 grid-cols-1 sm:grid-rows-1 sm:grid-cols-2">
 							<div className="h-full w-full bg-logo-400 rounded-t-2xl sm:rounded-bl-2xl sm:rounded-tr-none flex flex-col items-center justify-center gap-y-4">
 								<div className="h-48 w-48">
-									<SorSUcialLogo className="h-full w-full aspect-square [&_*]:fill-white" />
+									<SorSUcialLogo className="h-full w-full aspect-square [&_path]:fill-white" />
 								</div>
 							</div>
 							<AuthForm />

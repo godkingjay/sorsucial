@@ -71,7 +71,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 			className="auth-form"
 			onSubmit={handleSubmit}
 		>
-			<h2 className="font-bold w-full text-center text-2xl text-black py-4 uppercase">
+			<h2 className="font-bold w-full text-center text-2xl text-logo-400 py-4 uppercase">
 				Sign In
 			</h2>
 			<div className="divider"></div>

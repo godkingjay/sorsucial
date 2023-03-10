@@ -378,3 +378,32 @@ export interface PostComment {
 	isHidden: boolean;
 	createdAt: Timestamp;
 }
+
+/**
+ * This interface is used to define the structure of a comment like object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface CommentLike
+ * @category Interfaces
+ * @subcategory PostComment
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} commentId - The unique identifier of the comment.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface CommentLike {
+	userId: string;
+	groupId?: string;
+	postId: string;
+	commentId: string;
+}

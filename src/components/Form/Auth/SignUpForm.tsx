@@ -14,6 +14,11 @@ type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
 };
 
+/**
+ * This object contains the regex for the email field.
+ * The email field must be a valid Sorsu email address.
+ * The regex also checks if the email address contains only letters, numbers, underscores, and dashes.
+ */
 const SignUpRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };

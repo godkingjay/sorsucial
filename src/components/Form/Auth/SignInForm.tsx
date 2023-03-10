@@ -168,19 +168,19 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 						</button>
 					</div>
 				</div>
-				<button
-					type="button"
-					title="Sign Up"
-					className="w-full flex flex-col items-center mt-auto"
-					onClick={() => handleFormChange("signup")}
-				>
-					<p
-						tabIndex={0}
-						className="text-link"
-					>
-						No account Yet? Sign Up instead.
+				<div className="w-full flex flex-col items-center mt-auto">
+					<p className="text-black text-xs">
+						No account Yet?{" "}
+						<button
+							type="button"
+							title="Sign Up"
+							onClick={() => handleFormChange("signup")}
+							className="text-link font-bold"
+						>
+							Sign Up
+						</button>
 					</p>
-				</button>
+				</div>
 			</div>
 		</form>
 	);

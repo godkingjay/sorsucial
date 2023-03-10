@@ -7,22 +7,22 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
 import { authForm } from "../AuthForm";
 
-type LoginFormProps = {
+type SignInFormProps = {
 	handleFormChange: (form: authForm) => void;
 };
 
-const LoginRegex = {
+const SignInRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };
 
-const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
+const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	const [showPassword, setShowPassword] = useState(false);
-	const [loginForm, setLoginForm] = useState({
+	const [signInForm, setSignInForm] = useState({
 		email: "",
 		password: "",
 	});
-	const [loginError, setLoginError] = useState<string>("");
-	const [loggingIn, setLoggingIn] = useState(false);
+	const [signInError, setSignInError] = useState<string>("");
+	const [signingIn, setSigningIn] = useState(false);
 	const [validEmail, setValidEmail] = useState(true);
 
 	const handleShowPassword = () => {
@@ -30,11 +30,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setLoginError("");
+		setSignInError("");
 		if (e.target.name === "email") {
 			setValidEmail(true);
 		}
-		setLoginForm((prev) => ({
+		setSignInForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
@@ -42,27 +42,27 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (LoginRegex.email.test(loginForm.email)) {
+		if (SignInRegex.email.test(signInForm.email)) {
 			setValidEmail(true);
 		} else {
 			setValidEmail(false);
 			return;
 		}
-		if (validEmail && loginForm.password && !loginError) {
-			setLoggingIn(true);
+		if (validEmail && signInForm.password && !signInError) {
+			setSigningIn(true);
 			try {
 				await signInWithEmailAndPassword(
 					auth,
-					loginForm.email,
-					loginForm.password
+					signInForm.email,
+					signInForm.password
 				).catch((error) => {
 					throw error;
 				});
 			} catch (error: any) {
-				console.log("Login Error!");
-				setLoginError(error.message);
+				console.log("SignIn Error!");
+				setSignInError(error.message);
 			}
-			setLoggingIn(false);
+			setSigningIn(false);
 		}
 	};
 
@@ -72,16 +72,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 			onSubmit={handleSubmit}
 		>
 			<h2 className="font-bold w-full text-center text-2xl text-logo-500 py-4 uppercase">
-				Login
+				Sign In
 			</h2>
 			<div className="divider"></div>
 			<div className="w-full flex flex-col p-4 gap-y-6 h-full">
 				<div className="flex flex-col flex-1 gap-y-6">
-					<div className="w-full flex flex-col gap-y-4 flex-1 justify-center z-10">
+					<div className="w-full flex flex-col gap-y-4 z-10 py-4">
 						<div className="w-full flex flex-col relative z-10 gap-y-1">
 							<div
 								className={`auth-input-container ${
-									loginForm.email ? "auth-input-container-filled" : ""
+									signInForm.email ? "auth-input-container-filled" : ""
 								}`}
 							>
 								<div className="auth-input-text">
@@ -110,7 +110,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 						<div className="w-full -z-10">
 							<div
 								className={`auth-input-container ${
-									loginForm.password ? "auth-input-container-filled" : ""
+									signInForm.password ? "auth-input-container-filled" : ""
 								}`}
 							>
 								<div className="auth-input-text">
@@ -145,23 +145,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 								</button>
 							</div>
 						</div>
-						{loginError && (
+						{signInError && (
 							<div>
-								<ErrorBannerTextSm message={authError[loginError]} />
+								<ErrorBannerTextSm message={authError[signInError]} />
 							</div>
 						)}
 					</div>
 					<div className="divider"></div>
-					<div className="w-full flex-1">
+					<div className="w-full">
 						<button
 							type="submit"
-							name="login"
-							title="Login"
-							className="page-button bg-logo-300 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
-							disabled={loggingIn}
+							name="signIn"
+							title="SignIn"
+							className="page-button bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={signingIn}
 						>
-							{!loggingIn ? (
-								"Login"
+							{!signingIn ? (
+								"Sign In"
 							) : (
 								<FiLoader className="h-6 w-6 text-white animate-spin" />
 							)}
@@ -186,4 +186,4 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleFormChange }) => {
 	);
 };
 
-export default LoginForm;
+export default SignInForm;

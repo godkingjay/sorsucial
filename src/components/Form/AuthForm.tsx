@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LoginForm from "./Auth/LoginForm";
+import SignInForm from "./Auth/SignInForm";
 import SignUpForm from "./Auth/SignUpForm";
 
 type AuthFormProps = {};
@@ -16,9 +16,11 @@ const AuthForm: React.FC<AuthFormProps> = () => {
 	return (
 		<>
 			{authForm === "login" && (
-				<LoginForm handleFormChange={handleFormChange} />
+				<SignInForm handleFormChange={handleFormChange} />
 			)}
-			{/* {authForm === "signup" && <SignUpForm />} */}
+			{authForm === "signup" && (
+				<SignUpForm handleFormChange={handleFormChange} />
+			)}
 		</>
 	);
 };

@@ -11,7 +11,7 @@
 		@apply w-full h-full flex flex-col;
 
 		.auth-input-container {
-			@apply w-full h-12 flex flex-row bg-white px-2 py-1 rounded-md border border-gray-300 items-center gap-x-2;
+			@apply w-full h-12 flex flex-row bg-gray-100 px-2 py-1 rounded-md border border-transparent items-center gap-x-2;
 
 			.auth-input-text {
 				@apply flex-1 h-full flex flex-col justify-center;

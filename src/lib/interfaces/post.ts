@@ -335,3 +335,46 @@ export interface PostLike {
 	postId: string;
 	groupId?: string;
 }
+
+/**
+ * This interface is used to define the structure of a post object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PostComment
+ * @category Interfaces
+ * @subcategory SitePost
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the comment.
+ * @property {string} creatorId - The unique identifier of the user who created the comment.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} [groupId] - The unique identifier of the group.
+ * @property {string} [commentForId] - The unique identifier of the comment that this comment is for.
+ * @property {string} commentText - The text of the comment.
+ * @property {number} commentLevel - The level of the comment.
+ * @property {number} numberOfLikes - The number of likes of the comment.
+ * @property {number} numberOfReplies - The number of replies of the comment.
+ * @property {boolean} isHidden - Whether the comment is hidden.
+ * @property {Timestamp} createdAt - The date and time when the comment was created.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PostComment {
+	id: string;
+	creatorId: string;
+	postId: string;
+	groupId?: string;
+	commentForId?: string;
+	commentText: string;
+	commentLevel: number;
+	numberOfLikes: number;
+	numberOfReplies: number;
+	isHidden: boolean;
+	createdAt: Timestamp;
+}

@@ -240,3 +240,69 @@ export interface PollItem {
 	logoType?: "emoji" | "image";
 	emoji?: string;
 }
+
+/**
+ * This interface is used to define the structure of a poll item logo object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PollItemLogo
+ * @category Interfaces
+ * @subcategory PollItem
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the poll item logo.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} pollId - The unique identifier of the poll.
+ * @property {string} pollItemId - The unique identifier of the poll item.
+ * @property {string} fileName - The name of the image or video.
+ * @property {string} fileType - The type of the image or video.
+ * @property {string} filePath - The path of the image or video.
+ * @property {string} fileURL - The URL of the image or video.
+ * @property {string} fileExtension - The extension of the image or video.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PollItemLogo {
+	id: string;
+	postId: string;
+	pollId: string;
+	pollItemId: string;
+	fileName: string;
+	fileType: string;
+	filePath: string;
+	fileURL: string;
+	fileExtension: string;
+}
+
+/**
+ * This interface is used to define the structure of a poll vote object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface PollVote
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} postId - The unique identifier of the post.
+ * @property {string} pollId - The unique identifier of the poll.
+ * @property {string} pollItemId - The unique identifier of the poll item.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PollVote {
+	userId: string;
+	postId: string;
+	pollId: string;
+	pollItemId: string;
+}

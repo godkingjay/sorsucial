@@ -1,11 +1,16 @@
+import { UserState } from "@/atoms/userAtom";
 import Image from "next/image";
 import React from "react";
+import RightNav from "./RightNav";
 
-type NavBarProps = {};
+type NavBarProps = {
+	userStateValue: UserState;
+	authLoading: boolean;
+};
 
-const NavBar: React.FC<NavBarProps> = () => {
+const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
 	return (
-		<div className="sticky top-0 w-full h-14 bg-white shadow-lg">
+		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
 			<div className="h-14 w-full flex flex-row items-center gap-x-2">
 				<div className="h-full w-2xs max-w-2xs">
 					<div className="flex flex-row w-full h-full items-center">
@@ -24,7 +29,7 @@ const NavBar: React.FC<NavBarProps> = () => {
 					Mid
 				</div>
 				<div className="h-full w-2xs max-w-2xs flex flex-row items-center justify-end">
-					Right
+					<RightNav userStateValue={userStateValue} />
 				</div>
 			</div>
 		</div>

@@ -1,17 +1,21 @@
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import useUser from "@/hooks/useUser";
 import { CreateAccountType } from "@/pages/auth/create-account";
 import React, { SetStateAction, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
+import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 
 type CreateAccountFormProps = {
 	createAccount: CreateAccountType;
 	setCreateAccount: (value: SetStateAction<CreateAccountType>) => void;
+	createUser: (email: string, password: string) => void;
 };
 
 const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	createAccount,
 	setCreateAccount,
+	createUser,
 }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showRepeatPassword, setRepeatShowPassword] = useState(false);
@@ -40,6 +44,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
 		setCreatingAccount(true);
 		try {
+			await createUser(createAccount.email, createAccount.password);
 		} catch (error: any) {
 			console.log("Account Creation Failed!");
 			setCreateAccountError(error.message);
@@ -48,104 +53,133 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	};
 
 	return (
-		<form
-			className="auth-form gap-y-8"
-			onSubmit={handleFormSubmit}
-		>
-			<div className="w-full flex flex-col relative z-10 gap-y-4">
-				<div
-					className={`auth-input-container ${
-						createAccount.password ? "auth-input-container-filled" : ""
-					}`}
-				>
-					<div className="auth-input-text">
-						<label
-							htmlFor="password"
-							className="label"
-						>
-							Password
-						</label>
-						<input
-							required
-							type={showPassword ? "text" : "password"}
-							name="password"
-							title="Password"
-							className="input-field"
-							onChange={handleInputChange}
-							minLength={8}
-							maxLength={256}
-						/>
-					</div>
-					<button
-						type="button"
-						title={showPassword ? "Hide Password" : "Show Password"}
-						className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
-						onClick={() => setShowPassword((prev) => !prev)}
-					>
-						{showPassword ? (
-							<AiFillEye className="h-full w-full" />
-						) : (
-							<AiFillEyeInvisible className="h-full w-full" />
-						)}
-					</button>
-				</div>
-				<div
-					className={`auth-input-container ${
-						createAccount.repeatPassword ? "auth-input-container-filled" : ""
-					}`}
-				>
-					<div className="auth-input-text">
-						<label
-							htmlFor="repeatPassword"
-							className="label"
-						>
-							Repeat Password
-						</label>
-						<input
-							required
-							type={showRepeatPassword ? "text" : "password"}
-							name="repeatPassword"
-							title="Repeat Password"
-							className="input-field"
-							onChange={handleInputChange}
-							minLength={8}
-							maxLength={256}
-						/>
-					</div>
-					<button
-						type="button"
-						title={showRepeatPassword ? "Hide Password" : "Show Password"}
-						className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
-						onClick={() => setRepeatShowPassword((prev) => !prev)}
-					>
-						{showRepeatPassword ? (
-							<AiFillEye className="h-full w-full" />
-						) : (
-							<AiFillEyeInvisible className="h-full w-full" />
-						)}
-					</button>
-				</div>
-				{createAccountError && (
-					<div className="h-max w-full">
-						<ErrorBannerTextSm message="Password does not match" />
-					</div>
-				)}
+		<div className="w-full max-w-md flex flex-col bg-white shadow-shadow-around-sm rounded-xl">
+			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
+				<h1 className="text-center font-bold text-lg">Create Account</h1>
 			</div>
-			<div>
-				<button
-					type="submit"
-					title="Create Account"
-					className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
-					disabled={creatingAccount}
-				>
-					{!creatingAccount ? (
-						"Sign Up"
-					) : (
-						<FiLoader className="h-6 w-6 text-white animate-spin" />
-					)}
-				</button>
+			<div className="py-4 flex flex-col gap-y-4">
+				<div className="flex flex-col mx-4">
+					<div className="flex flex-col sm:flex-row gap-4 items-center bg-gray-100 p-4 rounded-lg">
+						<div className="h-16 w-16 aspect-square">
+							<SorSUcialLogo className="h-full w-full [&_path]:fill-logo-300" />
+						</div>
+						<div className="flex flex-col gap-y-2 flex-1">
+							<p className="break-words text-center sm:text-left">
+								Create an account for{" "}
+								<span className="font-bold text-logo-300">
+									{createAccount.email}
+								</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div className="px-4">
+					<div className="divider my-4"></div>
+				</div>
+				<div className="px-4">
+					<form
+						className="auth-form gap-y-8"
+						onSubmit={handleFormSubmit}
+					>
+						<div className="w-full flex flex-col relative z-10 gap-y-4">
+							<div
+								className={`auth-input-container ${
+									createAccount.password ? "auth-input-container-filled" : ""
+								}`}
+							>
+								<div className="auth-input-text">
+									<label
+										htmlFor="password"
+										className="label"
+									>
+										Password
+									</label>
+									<input
+										required
+										type={showPassword ? "text" : "password"}
+										name="password"
+										title="Password"
+										className="input-field"
+										onChange={handleInputChange}
+										minLength={8}
+										maxLength={256}
+									/>
+								</div>
+								<button
+									type="button"
+									title={showPassword ? "Hide Password" : "Show Password"}
+									className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
+									onClick={() => setShowPassword((prev) => !prev)}
+								>
+									{showPassword ? (
+										<AiFillEye className="h-full w-full" />
+									) : (
+										<AiFillEyeInvisible className="h-full w-full" />
+									)}
+								</button>
+							</div>
+							<div
+								className={`auth-input-container ${
+									createAccount.repeatPassword
+										? "auth-input-container-filled"
+										: ""
+								}`}
+							>
+								<div className="auth-input-text">
+									<label
+										htmlFor="repeatPassword"
+										className="label"
+									>
+										Repeat Password
+									</label>
+									<input
+										required
+										type={showRepeatPassword ? "text" : "password"}
+										name="repeatPassword"
+										title="Repeat Password"
+										className="input-field"
+										onChange={handleInputChange}
+										minLength={8}
+										maxLength={256}
+									/>
+								</div>
+								<button
+									type="button"
+									title={showRepeatPassword ? "Hide Password" : "Show Password"}
+									className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
+									onClick={() => setRepeatShowPassword((prev) => !prev)}
+								>
+									{showRepeatPassword ? (
+										<AiFillEye className="h-full w-full" />
+									) : (
+										<AiFillEyeInvisible className="h-full w-full" />
+									)}
+								</button>
+							</div>
+							{createAccountError && (
+								<div className="h-max w-full">
+									<ErrorBannerTextSm message="Password does not match" />
+								</div>
+							)}
+						</div>
+						<div>
+							<button
+								type="submit"
+								title="Create Account"
+								className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
+								disabled={creatingAccount}
+							>
+								{!creatingAccount ? (
+									"Sign Up"
+								) : (
+									<FiLoader className="h-6 w-6 text-white animate-spin" />
+								)}
+							</button>
+						</div>
+					</form>
+				</div>
 			</div>
-		</form>
+		</div>
 	);
 };
 

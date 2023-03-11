@@ -49,8 +49,8 @@ export interface SiteUser {
 	phoneNumber: string;
 	isFirstLogin: boolean;
 	role: "admin" | "staff" | "student" | "instructor" | "user" | null;
-	imageURL: string | null;
-	birthDate?: Timestamp | null;
+	imageURL: string;
+	birthDate?: Timestamp;
 	gender: "male" | "female" | "other" | null;
 	currentStatusText?: string;
 	currentStatusEmoji?: string;

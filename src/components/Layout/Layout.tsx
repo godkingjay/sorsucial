@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 				<p>Loading</p>
 			) : (
 				<>
-					{authUser && (
+					{authUser && !userStateValue.user.isFirstLogin && (
 						<NavBar
 							userStateValue={userStateValue}
 							authLoading={authLoading}

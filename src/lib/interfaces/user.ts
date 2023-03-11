@@ -21,7 +21,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {boolean} isFirstLogin - Whether or not this is the first time the user has logged in.
  * @property {"admin" | "staff" | "student" | "instructor" | "user"} role - The role of the user.
  * @property {string} imageURL - The URL of the user's profile image.
- * @property {Timestamp} birthDate - The date of birth of the user.
+ * @property {Timestamp} [birthDate] - The date of birth of the user.
  * @property {"male" | "female" | "other"} gender - The gender of the user.
  * @property {string} [currentStatusText] - The current status text of the user.
  * @property {string} [currentStatusEmoji] - The current status emoji of the user.
@@ -48,10 +48,10 @@ export interface SiteUser {
 	email: string;
 	phoneNumber: string;
 	isFirstLogin: boolean;
-	role: "admin" | "staff" | "student" | "instructor" | "user";
-	imageURL: string;
-	birthDate: Timestamp;
-	gender: "male" | "female" | "other";
+	role: "admin" | "staff" | "student" | "instructor" | "user" | null;
+	imageURL: string | null;
+	birthDate?: Timestamp | null;
+	gender: "male" | "female" | "other" | null;
 	currentStatusText?: string;
 	currentStatusEmoji?: string;
 	numberOfConnections: number;
@@ -61,7 +61,7 @@ export interface SiteUser {
 	stateOrProvince?: string;
 	cityOrMunicipality?: string;
 	streetAddress?: string;
-	createdAt: Timestamp;
+	createdAt: Timestamp | null;
 	previousNameChangeAt?: Timestamp;
 	lastLoginAt?: Timestamp;
 	lastChangeAt?: Timestamp;

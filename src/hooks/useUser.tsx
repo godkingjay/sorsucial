@@ -14,15 +14,15 @@ const useUser = () => {
 		return user;
 	}, [user]);
 
-	// useEffect(() => {
-	// 	setLoadingUser(true);
-	// 	if (!user && !loading) {
-	// 		setLoadingUser(false);
-	// 		router.push("/auth/signin");
-	// 	} else {
-	// 		getUserDetails();
-	// 	}
-	// }, [user, loading]);
+	useEffect(() => {
+		setLoadingUser(true);
+		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
+			setLoadingUser(false);
+			router.push("/auth/signin");
+		} else {
+			getUserDetails();
+		}
+	}, [user, loading]);
 
 	return {
 		authUser: userMemo,

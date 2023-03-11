@@ -6,9 +6,9 @@ import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 
-type LoginPageProps = {};
+type SignInPageProps = {};
 
-const LoginPage: React.FC<LoginPageProps> = () => {
+const SignInPage: React.FC<SignInPageProps> = () => {
 	const { authUser, authLoading } = useUser();
 	const router = useRouter();
 
@@ -25,27 +25,19 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 	return (
 		<>
 			<Head>
-				<title>SorSUcial | Login</title>
+				<title>SorSUcial | Sign In</title>
 				<meta
 					name="description"
 					content="SorSUcial is the unofficial social media for the University of Sorsogon State University."
 				/>
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1"
-				/>
-				<link
-					rel="icon"
-					href="/assets/logo/sorsu-xs.png"
-				/>
 			</Head>
 			<div className="flex-1 relative bg-logo-500">
 				<div className="w-full h-full flex flex-col items-center">
-					<div className="w-full flex-1 limit-width flex flex-col p-8 items-center justify-center">
+					<div className="w-full flex-1 limit-width flex flex-col px-8 py-16 items-center justify-center">
 						<div className="w-full max-w-2xl h-max sm:h-[486px] bg-white rounded-2xl shadow-xl grid grid-rows-2 grid-cols-1 sm:grid-rows-1 sm:grid-cols-2">
 							<div className="h-full w-full bg-logo-400 rounded-t-2xl sm:rounded-bl-2xl sm:rounded-tr-none flex flex-col items-center justify-center gap-y-4">
 								<div className="h-48 w-48">
-									<SorSUcialLogo className="h-full w-full aspect-square [&_*]:fill-white" />
+									<SorSUcialLogo className="h-full w-full aspect-square [&_path]:fill-white" />
 								</div>
 							</div>
 							<AuthForm />
@@ -57,4 +49,4 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 	);
 };
 
-export default LoginPage;
+export default SignInPage;

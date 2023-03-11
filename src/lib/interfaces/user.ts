@@ -77,6 +77,7 @@ export interface SiteUser {
  * @interface UserConnection - The connections object.
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *
@@ -110,6 +111,7 @@ export interface UserConnection {
  * @interface UserGroup
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *
@@ -141,6 +143,7 @@ export interface UserGroup {
  * @interface UserPost
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *
@@ -166,6 +169,7 @@ export interface UserPost {
  * @interface UserPostLike
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *
@@ -193,6 +197,7 @@ export interface UserPostLike {
  * @interface UserDiscussion
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *
@@ -218,6 +223,7 @@ export interface UserDiscussion {
  * @interface UserDiscussionVote
  * @category Interfaces
  * @subcategory SiteUser
+ * @see {@link SiteUser}
  *
  * ----------------------------------------------------------------
  *

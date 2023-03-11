@@ -64,6 +64,7 @@ export interface SitePost {
  * @interface PostImageOrVideo
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -105,6 +106,7 @@ export interface PostImageOrVideo {
  * @interface PostFile
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -146,6 +148,7 @@ export interface PostFile {
  * @interface PostLink
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -181,6 +184,7 @@ export interface PostLink {
  * @interface PostPoll
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -216,6 +220,7 @@ export interface PostPoll {
  * @interface PollItem
  * @category Interfaces
  * @subcategory PostPoll
+ * @see {@link PostPoll}
  *
  * ----------------------------------------------------------------
  *
@@ -251,6 +256,7 @@ export interface PollItem {
  * @interface PollItemLogo
  * @category Interfaces
  * @subcategory PollItem
+ * @see {@link PollItem}
  *
  * ----------------------------------------------------------------
  *
@@ -290,6 +296,7 @@ export interface PollItemLogo {
  * @interface PollVote
  * @category Interfaces
  * @subcategory PostPoll
+ * @see {@link PostPoll}
  *
  * ----------------------------------------------------------------
  *
@@ -319,6 +326,7 @@ export interface PollVote {
  * @interface PostLike
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -346,6 +354,7 @@ export interface PostLike {
  * @interface PostComment
  * @category Interfaces
  * @subcategory SitePost
+ * @see {@link SitePost}
  *
  * ----------------------------------------------------------------
  *
@@ -389,6 +398,7 @@ export interface PostComment {
  * @interface CommentLike
  * @category Interfaces
  * @subcategory PostComment
+ * @see {@link PostComment}
  *
  * ----------------------------------------------------------------
  *

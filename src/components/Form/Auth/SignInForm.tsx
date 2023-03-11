@@ -78,7 +78,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 			<div className="w-full flex flex-col p-4 gap-y-6 h-full">
 				<div className="flex flex-col flex-1 gap-y-6">
 					<div className="w-full flex flex-col gap-y-4 z-10 py-4">
-						<div className="w-full flex flex-col relative z-10 gap-y-1">
+						<div className="w-full flex flex-col relative z-10 gap-y-2">
 							<div
 								className={`auth-input-container ${
 									signInForm.email ? "auth-input-container-filled" : ""
@@ -101,11 +101,13 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 									/>
 								</div>
 							</div>
-							{!validEmail && (
-								<div className="text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center right-0 top-[105%] p-2">
-									<p>Please input a school provided email address.</p>
-								</div>
-							)}
+							<div
+								className={`${
+									validEmail ? "h-0 py-0" : "h-max py-4"
+								} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
+							>
+								<p>Please input a school provided email address.</p>
+							</div>
 						</div>
 						<div className="w-full -z-10">
 							<div
@@ -134,7 +136,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 								<button
 									type="button"
 									title={showPassword ? "Hide Password" : "Show Password"}
-									className="aspect-square h-5 w-5 [&:hover_path]:fill-logo-300 [&:focus_path]:fill-logo-300"
+									className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
 									onClick={handleShowPassword}
 								>
 									{showPassword ? (

@@ -9,9 +9,10 @@ type LayoutProps = {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
 	const { authUser, loadingUser, authLoading, setLoadingUser, userStateValue } =
 		useUser();
+
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
-			{authLoading ? (
+			{authLoading || loadingUser ? (
 				<p>Loading</p>
 			) : (
 				<>

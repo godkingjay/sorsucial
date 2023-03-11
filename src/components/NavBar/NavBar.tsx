@@ -5,7 +5,7 @@ type NavBarProps = {};
 
 const NavBar: React.FC<NavBarProps> = () => {
 	return (
-		<div className="sticky top-0 w-full h-14 bg-white shadow-lg">
+		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
 			<div className="h-14 w-full flex flex-row items-center gap-x-2">
 				<div className="h-full w-2xs max-w-2xs">
 					<div className="flex flex-row w-full h-full items-center">

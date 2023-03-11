@@ -20,13 +20,12 @@ const useUser = () => {
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const router = useRouter();
 
-	const getUserDetails = async () => {};
-
 	const userMemo = useMemo(() => {
 		return user;
 	}, [user]);
 
 	const setCurrentUserState = async () => {
+		setLoadingUser(true);
 		if (user) {
 			try {
 				const userDocRef = doc(firestore, "users", user.uid);
@@ -45,6 +44,7 @@ const useUser = () => {
 				console.log("Hook(setUser): Setting Current User State Error !");
 			}
 		}
+		setLoadingUser(false);
 	};
 
 	const createUser = async (email: string, password: string) => {
@@ -93,17 +93,9 @@ const useUser = () => {
 	};
 
 	useEffect(() => {
-		setLoadingUser(true);
 		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
-			setLoadingUser(false);
 			router.push("/auth/signin");
-		} else {
-			getUserDetails();
-		}
-	}, [user, loading]);
-
-	useEffect(() => {
-		if (user && !loading) {
+		} else if (user && !loading) {
 			setCurrentUserState();
 		}
 	}, [user, loading]);

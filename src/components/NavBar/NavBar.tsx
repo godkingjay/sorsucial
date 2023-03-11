@@ -1,6 +1,7 @@
 import { UserState } from "@/atoms/userAtom";
 import Image from "next/image";
 import React from "react";
+import RightNav from "./RightNav";
 
 type NavBarProps = {
 	userStateValue: UserState;
@@ -28,7 +29,7 @@ const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
 					Mid
 				</div>
 				<div className="h-full w-2xs max-w-2xs flex flex-row items-center justify-end">
-					Right
+					<RightNav userStateValue={userStateValue} />
 				</div>
 			</div>
 		</div>

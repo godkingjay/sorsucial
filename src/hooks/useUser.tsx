@@ -100,6 +100,12 @@ const useUser = () => {
 		}
 	}, [user, loading]);
 
+	useEffect(() => {
+		if (user && userStateValue.user.isFirstLogin) {
+			router.push("/user/create-user");
+		}
+	}, [userStateValue.user]);
+
 	return {
 		authUser: userMemo,
 		authLoading: loading,

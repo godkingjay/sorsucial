@@ -1,9 +1,13 @@
+import { UserState } from "@/atoms/userAtom";
 import Image from "next/image";
 import React from "react";
 
-type NavBarProps = {};
+type NavBarProps = {
+	userStateValue: UserState;
+	authLoading: boolean;
+};
 
-const NavBar: React.FC<NavBarProps> = () => {
+const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
 	return (
 		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
 			<div className="h-14 w-full flex flex-row items-center gap-x-2">

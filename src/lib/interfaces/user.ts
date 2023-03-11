@@ -18,7 +18,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {string} lastName - The last name of the user.
  * @property {string} email - The email address of the user.
  * @property {string} phoneNumber - The phone number of the user.
- * @property {boolean} isFirsLogin - Whether or not this is the first time the user has logged in.
+ * @property {boolean} isFirstLogin - Whether or not this is the first time the user has logged in.
  * @property {"admin" | "staff" | "student" | "instructor" | "user"} role - The role of the user.
  * @property {string} imageURL - The URL of the user's profile image.
  * @property {Timestamp} birthDate - The date of birth of the user.
@@ -47,7 +47,7 @@ export interface SiteUser {
 	lastName: string;
 	email: string;
 	phoneNumber: string;
-	isFirsLogin: boolean;
+	isFirstLogin: boolean;
 	role: "admin" | "staff" | "student" | "instructor" | "user";
 	imageURL: string;
 	birthDate: Timestamp;

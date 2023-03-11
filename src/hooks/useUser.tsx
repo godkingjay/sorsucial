@@ -115,6 +115,7 @@ const useUser = () => {
 		loadingUser,
 		setLoadingUser,
 		createUser,
+		userStateValue,
 	};
 };
 

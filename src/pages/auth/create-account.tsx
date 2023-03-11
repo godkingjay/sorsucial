@@ -16,18 +16,20 @@ export type CreateAccountType = {
 };
 
 const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
-	const { authUser, authLoading, createUser } = useUser();
+	const { authUser, authLoading, createAccount } = useUser();
 	const [loadingCreateAccount, setLoadingCreateAccount] = useState(false);
-	const [createAccount, setCreateAccount] = useState<CreateAccountType>({
-		email: "",
-		password: "",
-		repeatPassword: "",
-	});
+	const [createAccountForm, setCreateAccountForm] = useState<CreateAccountType>(
+		{
+			email: "",
+			password: "",
+			repeatPassword: "",
+		}
+	);
 
 	const router = useRouter();
 
 	const initializeCreateAccount = async () => {
-		setCreateAccount((prev) => ({
+		setCreateAccountForm((prev) => ({
 			...prev,
 			email: localStorage.getItem("emailForSignIn") as string,
 		}));
@@ -64,9 +66,9 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 			<div className="grid place-items-center h-full relative px-8 py-16">
 				{!loadingCreateAccount ? (
 					<CreateAccountForm
+						createAccountForm={createAccountForm}
+						setCreateAccountForm={setCreateAccountForm}
 						createAccount={createAccount}
-						setCreateAccount={setCreateAccount}
-						createUser={createUser}
 					/>
 				) : (
 					<CreateAccountSkeleton />

@@ -47,7 +47,7 @@ const useUser = () => {
 		setLoadingUser(false);
 	};
 
-	const createUser = async (email: string, password: string) => {
+	const createAccount = async (email: string, password: string) => {
 		try {
 			await createUserWithEmailAndPassword(auth, email, password)
 				.then(async ({ user: userCredential }) => {
@@ -112,7 +112,7 @@ const useUser = () => {
 		authError: error,
 		loadingUser,
 		setLoadingUser,
-		createUser,
+		createAccount,
 		userStateValue,
 	};
 };

@@ -1,4 +1,5 @@
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import useUser from "@/hooks/useUser";
 import { CreateAccountType } from "@/pages/auth/create-account";
 import React, { SetStateAction, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -7,11 +8,13 @@ import { FiLoader } from "react-icons/fi";
 type CreateAccountFormProps = {
 	createAccount: CreateAccountType;
 	setCreateAccount: (value: SetStateAction<CreateAccountType>) => void;
+	createUser: (email: string, password: string) => void;
 };
 
 const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	createAccount,
 	setCreateAccount,
+	createUser,
 }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showRepeatPassword, setRepeatShowPassword] = useState(false);
@@ -40,6 +43,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
 		setCreatingAccount(true);
 		try {
+			await createUser(createAccount.email, createAccount.password);
 		} catch (error: any) {
 			console.log("Account Creation Failed!");
 			setCreateAccountError(error.message);

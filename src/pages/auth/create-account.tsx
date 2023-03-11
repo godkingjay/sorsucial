@@ -1,6 +1,7 @@
 import CreateAccountForm from "@/components/Form/Auth/CreateAccountForm";
 import CreateAccountSkeleton from "@/components/Skeleton/Auth/CreateAccountSkeleton";
 import { auth } from "@/firebase/clientApp";
+import useUser from "@/hooks/useUser";
 import { isSignInWithEmailLink } from "firebase/auth";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -16,6 +17,7 @@ export type CreateAccountType = {
 };
 
 const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
+	const { authUser, authLoading, createUser } = useUser();
 	const [loadingCreateAccount, setLoadingCreateAccount] = useState(false);
 	const [createAccount, setCreateAccount] = useState<CreateAccountType>({
 		email: "",
@@ -44,6 +46,12 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 			router.push("/auth/signin");
 		}
 	}, [router]);
+
+	useEffect(() => {
+		if (authUser && !authLoading) {
+			router.push("/");
+		}
+	}, [authUser, authLoading]);
 
 	return (
 		<>
@@ -83,6 +91,7 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 								<CreateAccountForm
 									createAccount={createAccount}
 									setCreateAccount={setCreateAccount}
+									createUser={createUser}
 								/>
 							</div>
 						</div>

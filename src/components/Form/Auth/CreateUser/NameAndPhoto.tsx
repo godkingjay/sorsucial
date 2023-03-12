@@ -1,5 +1,5 @@
 import React from "react";
-import { CreateUserType, validImageTypes } from "./CreateUserForm";
+import { CreateUserType, NameRegex, validImageTypes } from "./CreateUserForm";
 import Image from "next/image";
 import { HiOutlineUpload } from "react-icons/hi";
 
@@ -81,6 +81,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 								className="input-field"
 								onChange={handleInputChange}
 								value={createUserForm.firstName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
 							/>
 						</div>
 					</div>
@@ -106,6 +109,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 								className="input-field"
 								onChange={handleInputChange}
 								value={createUserForm.lastName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
 							/>
 						</div>
 					</div>
@@ -131,6 +137,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 								className="input-field"
 								onChange={handleInputChange}
 								value={createUserForm.middleName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
 							/>
 						</div>
 					</div>

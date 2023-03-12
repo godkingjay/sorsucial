@@ -1,8 +1,6 @@
 import { Timestamp } from "firebase/firestore";
-import NextImage from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { FiLoader } from "react-icons/fi";
-import { HiOutlineUpload } from "react-icons/hi";
 import NameAndPhoto from "./NameAndPhoto";
 import BirthdateAndGender from "./BirthdateAndGender";
 import Address from "./Address";
@@ -12,6 +10,7 @@ import {
 	getCitiesMunicipality,
 	getProvinces,
 } from "@/lib/api/psgc";
+import ReviewProfile from "./ReviewProfile";
 
 type CreateUserFormProps = {};
 
@@ -32,6 +31,8 @@ export type CreateUserType = {
 	cityOrMunicipality: string;
 	stateOrProvince: string;
 };
+
+export const NameRegex = /^[a-zA-Z\s'-]{0,49}$/;
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 
@@ -166,6 +167,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.name.match(/(firstName|lastName|middleName)/)) {
+			if (!e.target.value.match(NameRegex)) {
+				return;
+			}
+		}
+
 		setCreateUserForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
@@ -280,6 +287,9 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								barangayOptions={barangayOptions}
 								handleInputChange={handleInputChange}
 							/>
+						)}
+						{createUserFormPage === 4 && (
+							<ReviewProfile createUserForm={createUserForm} />
 						)}
 						<div className="flex flex-col w-full gap-y-4 mt-auto">
 							<div className="divider"></div>

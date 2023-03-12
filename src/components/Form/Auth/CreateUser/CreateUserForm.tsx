@@ -5,6 +5,7 @@ import { FiLoader } from "react-icons/fi";
 import { HiOutlineUpload } from "react-icons/hi";
 import NameAndPhoto from "./NameAndPhoto";
 import BirthdateAndGender from "./BirthdateAndGender";
+import Address from "./Address";
 
 type CreateUserFormProps = {};
 
@@ -96,7 +97,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 
 						img.onload = () => {
 							const canvas = document.createElement("canvas");
-							const ctx = canvas.getContext("2d");
+							const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 							let width, height;
 
@@ -114,7 +115,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 							const xOffset = (img.width - width) / 2;
 							const yOffset = (img.height - height) / 2;
 
-							ctx?.drawImage(
+							ctx.fillStyle = "#fff";
+							ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+							ctx.drawImage(
 								img,
 								xOffset,
 								yOffset,
@@ -207,6 +211,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								gender={createUserForm.gender}
 							/>
 						)}
+						{createUserFormPage === 3 && <Address />}
 						<div className="flex flex-col w-full gap-y-4">
 							<div className="divider"></div>
 							<div className="pagination-buttons flex flex-row w-full items-center justify-between">

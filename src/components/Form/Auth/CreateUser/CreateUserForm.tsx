@@ -31,7 +31,6 @@ export type CreateUserType = {
 	barangay: string;
 	cityOrMunicipality: string;
 	stateOrProvince: string;
-	postalCode: string;
 };
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
@@ -68,7 +67,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		barangay: "",
 		cityOrMunicipality: "",
 		stateOrProvince: "",
-		postalCode: "",
 	});
 	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 	const profilePhotoRef = useRef<HTMLInputElement>(null);
@@ -316,6 +314,17 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 										type="submit"
 										title="Create Account"
 										className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
+										disabled={
+											creatingUser ||
+											!createUserForm.firstName ||
+											!createUserForm.lastName ||
+											!createUserForm.profilePhoto ||
+											!createUserForm.birthdate ||
+											!createUserForm.gender ||
+											!createUserForm.stateOrProvince ||
+											!createUserForm.cityOrMunicipality ||
+											!createUserForm.barangay
+										}
 									>
 										{!creatingUser ? (
 											"Create User"

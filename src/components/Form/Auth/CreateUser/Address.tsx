@@ -24,11 +24,12 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="stateOrProvince"
-					className="create-user-field-title"
+					className="create-user-field-title create-user-field-title-required"
 				>
 					Province
 				</label>
 				<select
+					required
 					name="stateOrProvince"
 					id="stateOrProvince"
 					value={createUserForm.stateOrProvince}
@@ -54,11 +55,12 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="cityOrMunicipality"
-					className="create-user-field-title"
+					className="create-user-field-title create-user-field-title-required"
 				>
 					City or Municipality
 				</label>
 				<select
+					required
 					name="cityOrMunicipality"
 					id="cityOrMunicipality"
 					value={createUserForm.cityOrMunicipality}
@@ -87,11 +89,12 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="barangay"
-					className="create-user-field-title"
+					className="create-user-field-title create-user-field-title-required"
 				>
 					Barangay
 				</label>
 				<select
+					required
 					name="barangay"
 					id="barangay"
 					value={createUserForm.barangay}

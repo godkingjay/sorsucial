@@ -65,7 +65,14 @@
 		}
 
 		.create-user-field-title {
-			@apply font-bold text-logo-300;
+			@apply font-bold text-logo-300 relative;
+		}
+
+		.create-user-field-title-required {
+			&::after {
+				content: "*";
+				@apply absolute h-full w-full text-red-500 translate-x-2;
+			}
 		}
 	}
 

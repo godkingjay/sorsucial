@@ -18,11 +18,12 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="birthdate"
-					className="create-user-field-title"
+					className="create-user-field-title create-user-field-title-required"
 				>
 					Birthdate
 				</label>
 				<input
+					required
 					type="date"
 					name="birthdate"
 					id="birthdate"
@@ -34,11 +35,12 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="gender"
-					className="create-user-field-title"
+					className="create-user-field-title create-user-field-title-required"
 				>
 					Gender
 				</label>
 				<select
+					required
 					name="gender"
 					id="gender"
 					value={gender as string}

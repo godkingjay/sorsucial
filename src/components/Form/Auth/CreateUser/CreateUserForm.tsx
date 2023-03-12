@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 import { HiOutlineUpload } from "react-icons/hi";
 import NameAndPhoto from "./NameAndPhoto";
+import BirthdateAndGender from "./BirthdateAndGender";
 
 type CreateUserFormProps = {};
 
@@ -19,8 +20,8 @@ export type CreateUserType = {
 		size: number;
 		type: string;
 	} | null;
-	birthDate: Timestamp | null;
-	gender: "male" | "female" | "other" | null;
+	birthdate: Timestamp | null;
+	gender: "male" | "female" | "other" | "none";
 	streetAddress: string;
 	cityOrMunicipality: string;
 	stateOrProvince: string;
@@ -28,6 +29,25 @@ export type CreateUserType = {
 };
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
+
+export const genderOptions = [
+	{
+		value: "none",
+		label: "-- Select --",
+	},
+	{
+		value: "male",
+		label: "Male",
+	},
+	{
+		value: "female",
+		label: "Female",
+	},
+	{
+		value: "other",
+		label: "Other",
+	},
+];
 
 const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	const [creatingUser, setCreatingUser] = useState(false);
@@ -38,8 +58,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		phoneNumber: "",
 		role: "user",
 		profilePhoto: null,
-		birthDate: null,
-		gender: null,
+		birthdate: null,
+		gender: "none",
 		streetAddress: "",
 		cityOrMunicipality: "",
 		stateOrProvince: "",
@@ -47,6 +67,11 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	});
 	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 	const profilePhotoRef = useRef<HTMLInputElement>(null);
+	const [birthdate, setBirthdate] = useState("");
+
+	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+	};
 
 	const validateImage = (profilePhoto: File) => {
 		if (profilePhoto.size > 1024 * 1024) {
@@ -56,10 +81,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 			return false;
 		}
 		return true;
-	};
-
-	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
 	};
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,12 +161,27 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		}));
 	};
 
+	const handleBirthdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setBirthdate(e.target.value);
+		setCreateUserForm((prev) => ({
+			...prev,
+			birthdate: Timestamp.fromDate(new Date(e.target.value)),
+		}));
+	};
+
+	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setCreateUserForm((prev) => ({
+			...prev,
+			gender: e.target.value as CreateUserType["gender"],
+		}));
+	};
+
 	const handlePageChange = (page: number) => {
 		setCreateUserFormPage((prev) => prev + page);
 	};
 
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-shadow-around-sm rounded-xl">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create User</h1>
 			</div>
@@ -161,6 +197,14 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								profilePhotoRef={profilePhotoRef}
 								handleFileChange={handleFileChange}
 								handleInputChange={handleInputChange}
+							/>
+						)}
+						{createUserFormPage === 2 && (
+							<BirthdateAndGender
+								birthdate={birthdate}
+								handleBirthdateChange={handleBirthdateChange}
+								handleGenderChange={handleGenderChange}
+								gender={createUserForm.gender}
 							/>
 						)}
 						<div className="flex flex-col w-full gap-y-4">

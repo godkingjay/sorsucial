@@ -18,11 +18,6 @@
 
 				.label {
 					@apply text-xs font-bold text-gray-500 duration-300 h-min relative uppercase w-max;
-
-					&:after {
-						content: "*";
-						@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[110%] duration-300;
-					}
 				}
 
 				.input-field {
@@ -41,6 +36,15 @@
 
 					.input-field {
 						@apply h-8;
+					}
+				}
+			}
+
+			.required-field {
+				.label {
+					&:after {
+						content: "*";
+						@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[110%] duration-300;
 					}
 				}
 			}

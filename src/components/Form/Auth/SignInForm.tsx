@@ -91,7 +91,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 								}
 								`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="email"
 										className="label"
@@ -122,7 +122,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 									signInForm.password ? "auth-input-container-filled" : ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="password"
 										className="label"

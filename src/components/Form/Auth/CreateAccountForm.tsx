@@ -89,7 +89,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 										: ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="password"
 										className="label"
@@ -127,7 +127,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 										: ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="repeatPassword"
 										className="label"

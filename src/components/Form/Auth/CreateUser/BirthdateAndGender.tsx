@@ -18,7 +18,7 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="birthdate"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					Birthdate
 				</label>
@@ -34,7 +34,7 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="gender"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					Gender
 				</label>

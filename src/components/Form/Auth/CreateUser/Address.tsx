@@ -24,7 +24,7 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="stateOrProvince"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					Province
 				</label>
@@ -54,7 +54,7 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="cityOrMunicipality"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					City or Municipality
 				</label>
@@ -87,7 +87,7 @@ const Address: React.FC<AddressProps> = ({
 			<div className="flex flex-col w-full gap-y-2">
 				<label
 					htmlFor="barangay"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					Barangay
 				</label>
@@ -123,7 +123,7 @@ const Address: React.FC<AddressProps> = ({
 			<div className="w-full flex flex-col relative z-10 gap-y-2">
 				<label
 					htmlFor="streetAddress"
-					className="font-bold text-logo-300"
+					className="create-user-field-title"
 				>
 					Street Address
 				</label>

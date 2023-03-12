@@ -4,7 +4,7 @@ type CreateAccountSkeletonProps = {};
 
 const CreateAccountSkeleton: React.FC<CreateAccountSkeletonProps> = () => {
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-shadow-around-sm rounded-xl min-h-[384px] animate-pulse gap-y-4 h-max">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[384px] animate-pulse gap-y-4 h-max">
 			<div className="h-12 bg-logo-300 text-white rounded-t-xl flex flex-row items-center px-8 justify-center">
 				<div className="bg-gray-500 bg-opacity-10 h-8 w-full max-w-xs rounded-md"></div>
 			</div>

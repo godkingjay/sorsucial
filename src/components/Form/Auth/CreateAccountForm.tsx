@@ -7,15 +7,15 @@ import { FiLoader } from "react-icons/fi";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 
 type CreateAccountFormProps = {
-	createAccount: CreateAccountType;
-	setCreateAccount: (value: SetStateAction<CreateAccountType>) => void;
-	createUser: (email: string, password: string) => void;
+	createAccountForm: CreateAccountType;
+	setCreateAccountForm: (value: SetStateAction<CreateAccountType>) => void;
+	createAccount: (email: string, password: string) => void;
 };
 
 const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
+	createAccountForm,
+	setCreateAccountForm,
 	createAccount,
-	setCreateAccount,
-	createUser,
 }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showRepeatPassword, setRepeatShowPassword] = useState(false);
@@ -24,7 +24,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCreateAccountError("");
-		setCreateAccount((prev) => ({
+		setCreateAccountForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
@@ -37,14 +37,14 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 			return;
 		}
 
-		if (createAccount.password !== createAccount.repeatPassword) {
+		if (createAccountForm.password !== createAccountForm.repeatPassword) {
 			setCreateAccountError("Passwords do not match.");
 			return;
 		}
 
 		setCreatingAccount(true);
 		try {
-			await createUser(createAccount.email, createAccount.password);
+			await createAccount(createAccountForm.email, createAccountForm.password);
 		} catch (error: any) {
 			console.log("Account Creation Failed!");
 			setCreateAccountError(error.message);
@@ -53,7 +53,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	};
 
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-shadow-around-sm rounded-xl">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create Account</h1>
 			</div>
@@ -67,7 +67,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							<p className="break-words text-center sm:text-left">
 								Create an account for{" "}
 								<span className="font-bold text-logo-300">
-									{createAccount.email}
+									{createAccountForm.email}
 								</span>
 							</p>
 						</div>
@@ -84,10 +84,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						<div className="w-full flex flex-col relative z-10 gap-y-4">
 							<div
 								className={`auth-input-container ${
-									createAccount.password ? "auth-input-container-filled" : ""
+									createAccountForm.password
+										? "auth-input-container-filled"
+										: ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="password"
 										className="label"
@@ -120,12 +122,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							</div>
 							<div
 								className={`auth-input-container ${
-									createAccount.repeatPassword
+									createAccountForm.repeatPassword
 										? "auth-input-container-filled"
 										: ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="repeatPassword"
 										className="label"

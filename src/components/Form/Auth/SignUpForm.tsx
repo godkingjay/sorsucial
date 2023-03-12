@@ -169,7 +169,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 											signUpForm.email ? "auth-input-container-filled" : ""
 										}`}
 									>
-										<div className="auth-input-text">
+										<div className="auth-input-text required-field">
 											<label
 												htmlFor="email"
 												className="label"

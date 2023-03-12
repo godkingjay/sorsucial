@@ -32,6 +32,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {string} [postalCode] - The postal code of the user.
  * @property {string} [stateOrProvince] - The state or province of the user.
  * @property {string} [cityOrMunicipality] - The city or municipality of the user.
+ * @property {string} [barangay] - The barangay of the user.
  * @property {string} [streetAddress] - The street address of the user.
  * @property {Timestamp} createdAt - The date and time the user was created.
  * @property {Timestamp} [previousNames] - The previous names of the user.
@@ -50,7 +51,7 @@ export interface SiteUser {
 	email: string;
 	phoneNumber?: string;
 	isFirstLogin: boolean;
-	role: "admin" | "staff" | "student" | "instructor" | "user" | null;
+	role: "admin" | "staff" | "student" | "instructor" | "user";
 	imageURL?: string;
 	birthDate?: Timestamp;
 	gender?: "male" | "female" | "other";
@@ -62,6 +63,7 @@ export interface SiteUser {
 	postalCode?: string;
 	stateOrProvince?: string;
 	cityOrMunicipality?: string;
+	barangay?: string;
 	streetAddress?: string;
 	createdAt: Timestamp | null;
 	previousNameChangeAt?: Timestamp;

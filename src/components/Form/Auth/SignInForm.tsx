@@ -32,7 +32,9 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSignInError("");
 		if (e.target.name === "email") {
-			setValidEmail(true);
+			setValidEmail(() =>
+				e.target.value.match(SignInRegex.email) ? true : false
+			);
 		}
 		setSignInForm((prev) => ({
 			...prev,
@@ -80,11 +82,16 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 					<div className="w-full flex flex-col gap-y-4 z-10 py-4">
 						<div className="w-full flex flex-col relative z-10 gap-y-2">
 							<div
-								className={`auth-input-container ${
-									signInForm.email ? "auth-input-container-filled" : ""
-								}`}
+								className={`auth-input-container
+								${signInForm.email ? "auth-input-container-filled" : ""}
+								${
+									validEmail && signInForm.email
+										? " !border-green-500"
+										: " !border-red-500 text-red-500"
+								}
+								`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="email"
 										className="label"
@@ -115,7 +122,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 									signInForm.password ? "auth-input-container-filled" : ""
 								}`}
 							>
-								<div className="auth-input-text">
+								<div className="auth-input-text required-field">
 									<label
 										htmlFor="password"
 										className="label"

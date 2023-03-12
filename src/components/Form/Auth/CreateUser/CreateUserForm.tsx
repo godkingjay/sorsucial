@@ -6,6 +6,12 @@ import { HiOutlineUpload } from "react-icons/hi";
 import NameAndPhoto from "./NameAndPhoto";
 import BirthdateAndGender from "./BirthdateAndGender";
 import Address from "./Address";
+import {
+	OptionsData,
+	getBarangay,
+	getCitiesMunicipality,
+	getProvinces,
+} from "@/lib/api/psgc";
 
 type CreateUserFormProps = {};
 
@@ -13,8 +19,6 @@ export type CreateUserType = {
 	firstName: string;
 	lastName: string;
 	middleName?: string;
-	phoneNumber: string;
-	role: "student" | "staff" | "instructor" | "user";
 	profilePhoto: {
 		name: string;
 		url: string;
@@ -24,6 +28,7 @@ export type CreateUserType = {
 	birthdate: Timestamp | null;
 	gender: "male" | "female" | "other" | "none";
 	streetAddress: string;
+	barangay: string;
 	cityOrMunicipality: string;
 	stateOrProvince: string;
 	postalCode: string;
@@ -56,12 +61,11 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		firstName: "",
 		lastName: "",
 		middleName: "",
-		phoneNumber: "",
-		role: "user",
 		profilePhoto: null,
 		birthdate: null,
 		gender: "none",
 		streetAddress: "",
+		barangay: "",
 		cityOrMunicipality: "",
 		stateOrProvince: "",
 		postalCode: "",
@@ -69,6 +73,11 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 	const profilePhotoRef = useRef<HTMLInputElement>(null);
 	const [birthdate, setBirthdate] = useState("");
+	const [provinceOptions, setProvinceOptions] = useState<OptionsData[]>([]);
+	const [cityOrMunicipalityOptions, setCityOrMunicipalityOptions] = useState<
+		OptionsData[]
+	>([]);
+	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
 
 	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -180,19 +189,72 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		}));
 	};
 
+	const fetchProvinces = async () => {
+		await getProvinces()
+			.then((data) => setProvinceOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchCitiesMunicipality = async (province: string) => {
+		await getCitiesMunicipality(province)
+			.then((data) => setCityOrMunicipalityOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchBarangay = async (cityOrMunicipality: string) => {
+		await getBarangay(cityOrMunicipality)
+			.then((data) => setBarangayOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const handleAddressSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		if (e.target.name === "stateOrProvince" && e.target.value) {
+			setCreateUserForm((prev) => ({
+				...prev,
+				cityOrMunicipality: "",
+				barangay: "",
+			}));
+			fetchCitiesMunicipality(
+				provinceOptions.find((option) => option.name === e.target.value)
+					?.code as string
+			);
+		}
+
+		if (e.target.name === "cityOrMunicipality" && e.target.value) {
+			setCreateUserForm((prev) => ({
+				...prev,
+				barangay: "",
+			}));
+			fetchBarangay(
+				cityOrMunicipalityOptions.find(
+					(option) => option.name === e.target.value
+				)?.code as string
+			);
+		}
+
+		setCreateUserForm((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
+	};
+
 	const handlePageChange = (page: number) => {
 		setCreateUserFormPage((prev) => prev + page);
 	};
 
+	useEffect(() => {
+		fetchProvinces();
+	}, []);
+
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[564px]">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create User</h1>
 			</div>
-			<div className="py-4 flex flex-col gap-y-4">
-				<div className="px-4">
+			<div className="py-4 flex flex-col gap-y-4 flex-1">
+				<div className="px-4 flex flex-col w-full flex-1">
 					<form
-						className="auth-form gap-y-8"
+						className="auth-form gap-y-4"
 						onSubmit={handleFormSubmit}
 					>
 						{createUserFormPage === 1 && (
@@ -211,8 +273,17 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								gender={createUserForm.gender}
 							/>
 						)}
-						{createUserFormPage === 3 && <Address />}
-						<div className="flex flex-col w-full gap-y-4">
+						{createUserFormPage === 3 && (
+							<Address
+								createUserForm={createUserForm}
+								handleAddressSelect={handleAddressSelect}
+								provinceOptions={provinceOptions}
+								cityOrMunicipalityOptions={cityOrMunicipalityOptions}
+								barangayOptions={barangayOptions}
+								handleInputChange={handleInputChange}
+							/>
+						)}
+						<div className="flex flex-col w-full gap-y-4 mt-auto">
 							<div className="divider"></div>
 							<div className="pagination-buttons flex flex-row w-full items-center justify-between">
 								{createUserFormPage > 1 && (
@@ -244,7 +315,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 									<button
 										type="submit"
 										title="Create Account"
-										className="page-button bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+										className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
 									>
 										{!creatingUser ? (
 											"Create User"

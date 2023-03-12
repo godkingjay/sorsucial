@@ -53,7 +53,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	};
 
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-shadow-around-sm rounded-xl">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create Account</h1>
 			</div>

@@ -1,10 +1,41 @@
-import React, { useState } from "react";
+import { Timestamp } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 
 type CreateUserFormProps = {};
 
+export type CreateUserType = {
+	firstName: string;
+	lastName: string;
+	middleName?: string;
+	phoneNumber: string;
+	role: "student" | "staff" | "instructor" | "user";
+	imageURL: string;
+	birthDate: Timestamp | null;
+	gender: "male" | "female" | "other" | null;
+	streetAddress: string;
+	cityOrMunicipality: string;
+	stateOrProvince: string;
+	postalCode: string;
+};
+
 const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	const [creatingUser, setCreatingUser] = useState(false);
+	const [createUserForm, setCreateUserForm] = useState<CreateUserType>({
+		firstName: "",
+		lastName: "",
+		middleName: "",
+		phoneNumber: "",
+		role: "user",
+		imageURL: "",
+		birthDate: null,
+		gender: null,
+		streetAddress: "",
+		cityOrMunicipality: "",
+		stateOrProvince: "",
+		postalCode: "",
+	});
+	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 
 	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -16,43 +47,26 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 				<h1 className="text-center font-bold text-lg">Create User</h1>
 			</div>
 			<div className="py-4 flex flex-col gap-y-4">
-				{/* <div className="flex flex-col mx-4">
-					<div className="flex flex-col sm:flex-row gap-4 items-center bg-gray-100 p-4 rounded-lg">
-						<div className="h-16 w-16 aspect-square">
-							<SorSUcialLogo className="h-full w-full [&_path]:fill-logo-300" />
-						</div>
-						<div className="flex flex-col gap-y-2 flex-1">
-							<p className="break-words text-center sm:text-left">
-								Create an account for{" "}
-								<span className="font-bold text-logo-300">
-									{createAccount.email}
-								</span>
-							</p>
-						</div>
-					</div>
-				</div> */}
-				<div className="px-4">
-					<div className="divider my-4"></div>
-				</div>
 				<div className="px-4">
 					<form
 						className="auth-form gap-y-8"
 						onSubmit={handleFormSubmit}
 					>
-						<div>
-							<button
-								type="submit"
-								title="Create Account"
-								className="page-button bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-								disabled={creatingUser}
-							>
-								{!creatingUser ? (
-									"Create User"
-								) : (
-									<FiLoader className="h-6 w-6 text-white animate-spin" />
-								)}
-							</button>
-						</div>
+						{createUserFormPage === 1 && (
+							<div>
+								<button
+									type="submit"
+									title="Create Account"  
+									className="page-button bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+								>
+									{!creatingUser ? (
+										"Create User"
+									) : (
+										<FiLoader className="h-6 w-6 text-white animate-spin" />
+									)}
+								</button>
+							</div>
+						)}
 					</form>
 				</div>
 			</div>

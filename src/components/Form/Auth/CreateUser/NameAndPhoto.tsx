@@ -17,7 +17,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 	handleInputChange,
 }) => {
 	return (
-		<div className="flex w-full flex-col gap-y-4 items-center">
+		<div className="flex w-full flex-col gap-y-8 items-center">
 			<div className="w-full flex flex-col items-center">
 				<button
 					type="button"

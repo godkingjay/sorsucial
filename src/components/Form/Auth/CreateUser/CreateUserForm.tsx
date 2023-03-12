@@ -252,14 +252,14 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	}, []);
 
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[564px]">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[576px]">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create User</h1>
 			</div>
 			<div className="py-4 flex flex-col gap-y-4 flex-1">
 				<div className="px-4 flex flex-col w-full flex-1">
 					<form
-						className="auth-form gap-y-4"
+						className="auth-form gap-y-4 flex-1 flex flex-col"
 						onSubmit={handleFormSubmit}
 					>
 						{createUserFormPage === 1 && (
@@ -319,7 +319,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 						{createUserFormPage === 4 && (
 							<>
 								<div className="divider"></div>
-								<div>
+								<div className="h-max">
 									<button
 										type="submit"
 										title="Create Account"

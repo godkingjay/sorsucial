@@ -14,7 +14,7 @@ const CreateUserPage: React.FC<CreateUserPageProps> = () => {
 					content="SorSUcial is the unofficial social media for the University of Sorsogon State University."
 				/>
 			</Head>
-			<div className="flex flex-col items-center relative px-8 py-16">
+			<div className="flex flex-col items-center relative px-8 py-16 min-h-[100dvh]">
 				<CreateUserForm />
 			</div>
 		</>

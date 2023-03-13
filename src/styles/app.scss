@@ -64,14 +64,32 @@
 			}
 		}
 
-		.create-user-field-title {
-			@apply font-bold text-logo-300 relative;
-		}
+		.create-user-dropdown-group,
+		.create-user-input-group {
+			@apply flex flex-col w-full gap-y-2;
 
-		.create-user-field-title-required {
-			&::after {
-				content: "*";
-				@apply absolute h-full w-full text-red-500 translate-x-2;
+			.create-user-field-title {
+				@apply font-bold text-logo-300 relative;
+			}
+
+			.create-user-field-title-required {
+				&::after {
+					content: "*";
+					@apply absolute h-full w-full text-red-500 translate-x-2;
+				}
+			}
+
+			.create-user-dropdown {
+				@apply bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold cursor-pointer;
+
+				&:hover,
+				&:focus {
+					@apply border-gray-500;
+				}
+
+				&:disabled {
+					@apply opacity-50 pointer-events-none border-transparent;
+				}
 			}
 		}
 	}

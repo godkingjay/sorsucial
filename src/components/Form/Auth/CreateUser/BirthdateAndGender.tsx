@@ -15,7 +15,7 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 }) => {
 	return (
 		<div className="flex flex-col w-full gap-y-4">
-			<div className="flex flex-col w-full gap-y-2">
+			<div className="create-user-dropdown-group">
 				<label
 					htmlFor="birthdate"
 					className="create-user-field-title create-user-field-title-required"
@@ -29,10 +29,10 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 					id="birthdate"
 					value={birthdate}
 					onChange={handleBirthdateChange}
-					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
+					className="create-user-dropdown"
 				/>
 			</div>
-			<div className="flex flex-col w-full gap-y-2">
+			<div className="create-user-dropdown-group">
 				<label
 					htmlFor="gender"
 					className="create-user-field-title create-user-field-title-required"
@@ -45,7 +45,7 @@ const BirthdateAndGender: React.FC<BirthdateAndGenderProps> = ({
 					id="gender"
 					value={gender as string}
 					onChange={handleGenderChange}
-					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
+					className="create-user-dropdown"
 				>
 					{genderOptions.map((option) => (
 						<option

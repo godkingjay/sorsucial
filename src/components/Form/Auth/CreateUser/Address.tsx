@@ -126,8 +126,8 @@ const Address: React.FC<AddressProps> = ({
 				>
 					Street Address
 				</label>
-				<div className={`auth-input-container auth-input-container-filled`}>
-					<div className="auth-input-text required-field">
+				<div className={`create-user-container create-user-container-filled`}>
+					<div className="create-user-input-text required-field">
 						<input
 							required
 							type="streetAddress"

@@ -91,6 +91,23 @@
 					@apply opacity-50 pointer-events-none border-transparent;
 				}
 			}
+
+			.create-user-container {
+				@apply w-full h-14 flex flex-row bg-gray-100 px-2 py-1 rounded-md border border-transparent items-center gap-x-2;
+
+				.create-user-input-text {
+					@apply flex-1 h-full flex flex-col justify-center;
+
+					.input-field {
+						@apply outline-none;
+					}
+				}
+
+				&:hover,
+				&:focus-within {
+					@apply border-gray-500;
+				}
+			}
 		}
 	}
 

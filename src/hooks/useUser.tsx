@@ -1,14 +1,24 @@
 import { userState } from "@/atoms/userAtom";
-import { auth, firestore } from "@/firebase/clientApp";
-import { SiteUser } from "@/lib/interfaces/user";
+import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
+import { auth, firestore, storage } from "@/firebase/clientApp";
+import { SiteUser, UserImage } from "@/lib/interfaces/user";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
 	Timestamp,
+	collection,
 	doc,
 	getDoc,
 	serverTimestamp,
 	setDoc,
+	writeBatch,
 } from "firebase/firestore";
+import {
+	UploadTask,
+	getDownloadURL,
+	ref,
+	uploadBytes,
+	uploadString,
+} from "firebase/storage";
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -92,6 +102,122 @@ const useUser = () => {
 		}
 	};
 
+	const createUser = async (userData: CreateUserType) => {
+		try {
+			const batch = writeBatch(firestore);
+			const imageDocRef = doc(
+				collection(firestore, `users/${user?.uid}/images`)
+			);
+
+			await uploadProfilePhoto(userData.profilePhoto, imageDocRef.id).catch(
+				(error: any) => {
+					console.log("Hook: Upload Profile Photo Error: ", error.message);
+					throw error;
+				}
+			);
+
+			const profilePhotoDocRef = doc(
+				collection(firestore, `users/${user?.uid}/images`),
+				imageDocRef.id
+			);
+			const profilePhotoDoc = await getDoc(profilePhotoDocRef).catch(
+				(error: any) => {
+					console.log(
+						"Hook: Getting Profile Photo Document Error: ",
+						error.message
+					);
+					throw error;
+				}
+			);
+
+			if (profilePhotoDoc.exists()) {
+				const profilePhotoDocData = profilePhotoDoc.data() as UserImage;
+
+				const userDocRef = doc(collection(firestore, "users"), user?.uid);
+				const newUser = {
+					firstName: userData.firstName,
+					middleName: userData.middleName,
+					lastName: userData.lastName,
+					isFirstLogin: false,
+					imageURL: profilePhotoDocData.fileURL,
+					birthDate: userData.birthdate as Timestamp,
+					gender: userData.gender as SiteUser["gender"],
+					stateOrProvince: userData.stateOrProvince,
+					cityOrMunicipality: userData.cityOrMunicipality,
+					barangay: userData.barangay,
+					streetAddress: userData.streetAddress,
+					lastChangeAt: serverTimestamp() as Timestamp,
+				};
+
+				batch.update(userDocRef, newUser);
+
+				await batch.commit().catch((error: any) => {
+					console.log("Hook: Creating User Document Error: ", error.message);
+					throw error;
+				});
+
+				setUserStateValue((prev) => ({
+					...prev,
+					user: {
+						...userStateValue.user,
+						...newUser,
+					},
+				}));
+			} else {
+				console.log("Hook: Profile Photo Document Not Found!");
+			}
+		} catch (error: any) {
+			console.log("Hook: User Creation Error!");
+			throw error;
+		}
+	};
+
+	const uploadProfilePhoto = async (
+		image: CreateUserType["profilePhoto"],
+		imageId: string
+	) => {
+		try {
+			const storageRef = ref(storage, `users/${user?.uid}/images/${imageId}`);
+			const response = await fetch(image?.url as string);
+			const blob = await response.blob();
+
+			await uploadBytes(storageRef, blob).catch((error: any) => {
+				console.log("Hook: Uploading Profile Photo Error: ", error.message);
+				throw error;
+			});
+
+			const downloadURL = await getDownloadURL(storageRef);
+
+			const profilePhotoDocRef = doc(
+				firestore,
+				`users/${user?.uid}/images`,
+				imageId
+			);
+
+			const newImage: UserImage = {
+				id: imageId,
+				userId: user?.uid as string,
+				fileName: image?.name as string,
+				fileType: image?.type as string,
+				filePath: storageRef.fullPath,
+				fileURL: downloadURL,
+				fileExtension: image?.name.split(".").pop() as string,
+				createdAt: serverTimestamp() as Timestamp,
+			};
+
+			await setDoc(profilePhotoDocRef, newImage).catch((error: any) => {
+				console.log(
+					"Hook: Creating Profile Photo Document Error: ",
+					error.message
+				);
+				throw error;
+			});
+		} catch (error: any) {
+			console.log("Hook: Upload Profile Photo Error!");
+			throw error;
+		}
+	};
+
 	useEffect(() => {
 		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
 			router.push("/auth/signin");
@@ -114,6 +240,7 @@ const useUser = () => {
 		setLoadingUser,
 		createAccount,
 		userStateValue,
+		createUser,
 	};
 };
 

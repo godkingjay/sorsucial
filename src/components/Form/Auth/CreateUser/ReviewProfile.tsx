@@ -56,12 +56,12 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 			<div className="flex flex-col gap-y-4">
 				<div className="flex flex-col gap-y-4">
 					<div className="flex flex-col gap-2">
-						<p className="create-user-field-title underline underline-offset-2">
+						<p className="font-bold text-logo-300 underline underline-offset-2">
 							Details
 						</p>
 					</div>
 					<div className="flex flex-col gap-y-2">
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>Birthdate:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.birthdate
@@ -71,7 +71,7 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 									: "[BIRTHDATE!]"}
 							</p>
 						</div>
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>Gender:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.gender === "none"
@@ -89,12 +89,12 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 			<div className="flex flex-col gap-y-4">
 				<div className="flex flex-col gap-y-4">
 					<div className="flex flex-col gap-2">
-						<p className="create-user-field-title underline underline-offset-2">
+						<p className="font-bold text-logo-300 underline underline-offset-2">
 							Address
 						</p>
 					</div>
 					<div className="flex flex-col gap-y-2">
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>Province:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.stateOrProvince
@@ -102,7 +102,7 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 									: "[PROVINCE!]"}
 							</p>
 						</div>
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>City or Municipality:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.cityOrMunicipality
@@ -110,7 +110,7 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 									: "[CITY_OR_MUNICIPALITY!]"}
 							</p>
 						</div>
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>Barangay:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.barangay
@@ -118,7 +118,7 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 									: "[BARANGAY!]"}
 							</p>
 						</div>
-						<div className="text-xs font-bold flex flex-row gap-x-4">
+						<div className="text-xs font-bold flex flex-row gap-x-2">
 							<p>Street Address:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.streetAddress

@@ -66,9 +66,7 @@ const Address: React.FC<AddressProps> = ({
 					value={createUserForm.cityOrMunicipality}
 					onChange={(e) => handleAddressSelect(e)}
 					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
-					disabled={
-						createUserForm.stateOrProvince === "" && provinceOptions.length > 0
-					}
+					disabled={!createUserForm.stateOrProvince}
 				>
 					<option
 						key={""}
@@ -101,10 +99,8 @@ const Address: React.FC<AddressProps> = ({
 					onChange={(e) => handleAddressSelect(e)}
 					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
 					disabled={
-						(createUserForm.stateOrProvince === "" &&
-							provinceOptions.length > 0) ||
-						(createUserForm.cityOrMunicipality === "" &&
-							cityOrMunicipalityOptions.length > 0)
+						!createUserForm.stateOrProvince ||
+						!createUserForm.cityOrMunicipality
 					}
 				>
 					<option

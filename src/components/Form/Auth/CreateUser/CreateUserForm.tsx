@@ -32,7 +32,14 @@ export type CreateUserType = {
 	stateOrProvince: string;
 };
 
-export const NameRegex = /^[a-zA-Z\s'-]{0,49}$/;
+export type CreateUserErrorType = {
+	firstName: boolean;
+	lastName: boolean;
+	middleName: boolean;
+};
+
+export const NameRegex =
+	/^(?=.{1,49}$)([A-Z][a-z]*(?:[\s'-]([A-Z][a-z]*|[A-Z]?[a-z]+))*)$/;
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 
@@ -69,6 +76,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		cityOrMunicipality: "",
 		stateOrProvince: "",
 	});
+	const [createUserFormError, setCreateUserFormError] =
+		useState<CreateUserErrorType>({
+			firstName: false,
+			lastName: false,
+			middleName: false,
+		});
 	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 	const profilePhotoRef = useRef<HTMLInputElement>(null);
 	const [birthdate, setBirthdate] = useState("");
@@ -77,6 +90,23 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		OptionsData[]
 	>([]);
 	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
+
+	const checkIfFormIsValid = () => {
+		setCreateUserFormError((prev) => ({
+			...prev,
+			firstName: !NameRegex.test(createUserForm.firstName),
+			lastName: !NameRegex.test(createUserForm.lastName),
+			middleName: !NameRegex.test(createUserForm.middleName || ""),
+			profilePhoto: !createUserForm.profilePhoto,
+			birthdate: !createUserForm.birthdate,
+			gender: !createUserForm.gender,
+			barangay: !createUserForm.barangay,
+			cityOrMunicipality: !createUserForm.cityOrMunicipality,
+			stateOrProvince: !createUserForm.stateOrProvince,
+		}));
+	};
+
+	console.log(createUserFormError);
 
 	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -167,12 +197,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.name.match(/(firstName|lastName|middleName)/)) {
-			if (!e.target.value.match(NameRegex)) {
-				return;
-			}
-		}
-
 		setCreateUserForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
@@ -251,6 +275,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		fetchProvinces();
 	}, []);
 
+	useEffect(() => {
+		checkIfFormIsValid();
+	}, [createUserForm]);
+
 	return (
 		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[576px]">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
@@ -265,6 +293,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 						{createUserFormPage === 1 && (
 							<NameAndPhoto
 								createUserForm={createUserForm}
+								createUserFormError={createUserFormError}
 								profilePhotoRef={profilePhotoRef}
 								handleFileChange={handleFileChange}
 								handleInputChange={handleInputChange}

@@ -1,10 +1,17 @@
 import React from "react";
-import { CreateUserType, NameRegex, validImageTypes } from "./CreateUserForm";
+import {
+	CreateUserErrorType,
+	CreateUserType,
+	NameRegex,
+	validImageTypes,
+} from "./CreateUserForm";
 import Image from "next/image";
 import { HiOutlineUpload } from "react-icons/hi";
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 
 type NameAndPhotoProps = {
 	createUserForm: CreateUserType;
+	createUserFormError: CreateUserErrorType;
 	profilePhotoRef: React.RefObject<HTMLInputElement>;
 	handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -12,6 +19,7 @@ type NameAndPhotoProps = {
 
 const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 	createUserForm,
+	createUserFormError,
 	profilePhotoRef,
 	handleFileChange,
 	handleInputChange,
@@ -65,6 +73,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						className={`auth-input-container
 										${createUserForm.firstName ? "auth-input-container-filled" : ""}
 									`}
+						data-error={
+							createUserFormError.firstName && createUserForm.firstName !== ""
+						}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -93,6 +104,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						className={`auth-input-container
 										${createUserForm.lastName ? "auth-input-container-filled" : ""}
 									`}
+						data-error={
+							createUserFormError.lastName && createUserForm.lastName !== ""
+						}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -121,6 +135,9 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						className={`auth-input-container
 										${createUserForm.middleName ? "auth-input-container-filled" : ""}
 									`}
+						data-error={
+							createUserFormError.middleName && createUserForm.middleName !== ""
+						}
 					>
 						<div className="auth-input-text">
 							<label

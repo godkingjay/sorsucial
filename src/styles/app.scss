@@ -48,6 +48,20 @@
 					}
 				}
 			}
+
+			&[data-error="true"] {
+				@apply border-red-500;
+
+				.auth-input-text {
+					.label {
+						@apply text-red-500;
+					}
+
+					.input-field {
+						@apply text-red-500;
+					}
+				}
+			}
 		}
 
 		.auth-input-container-filled {

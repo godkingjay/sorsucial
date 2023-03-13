@@ -11,6 +11,10 @@ import {
 	getProvinces,
 } from "@/lib/api/psgc";
 import ReviewProfile from "./ReviewProfile";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/router";
+import { useSetRecoilState } from "recoil";
+import { errorUploadModalState } from "@/atoms/modalAtom";
 
 type CreateUserFormProps = {};
 
@@ -90,6 +94,9 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		OptionsData[]
 	>([]);
 	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
+	const { createUser } = useUser();
+	const router = useRouter();
+	const setUploadErrorModal = useSetRecoilState(errorUploadModalState);
 
 	const checkIfFormIsValid = () => {
 		setCreateUserFormError((prev) => ({
@@ -106,17 +113,34 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		}));
 	};
 
-	console.log(createUserFormError);
-
-	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setCreatingUser(true);
+		try {
+			await createUser(createUserForm).then(() => {
+				router.push("/");
+			});
+		} catch (error: any) {
+			console.log("Create User Error!");
+		}
+		setCreatingUser(false);
 	};
 
 	const validateImage = (profilePhoto: File) => {
-		if (profilePhoto.size > 1024 * 1024) {
+		if (profilePhoto.size > 1024 * 1024 * 2) {
+			setUploadErrorModal((prev) => ({
+				...prev,
+				open: true,
+				message: "Image size is too large. Maximum size is 2MB.",
+			}));
 			return false;
 		}
 		if (!validImageTypes.includes(profilePhoto.type)) {
+			setUploadErrorModal((prev) => ({
+				...prev,
+				open: true,
+				message: "Invalid image type. Only PNG and JPEG/JPG are allowed.",
+			}));
 			return false;
 		}
 		return true;
@@ -329,6 +353,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 										title="Back"
 										className="page-button w-24 text-sm h-10 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400 mr-auto"
 										onClick={() => handlePageChange(-1)}
+										disabled={createUserFormPage === 1 || creatingUser}
 									>
 										Back
 									</button>
@@ -339,6 +364,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 										title="Back"
 										className="page-button w-24 text-sm bg-blue-500 border-blue-500 h-10 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600 ml-auto"
 										onClick={() => handlePageChange(1)}
+										disabled={createUserFormPage === 4 || creatingUser}
 									>
 										Next
 									</button>

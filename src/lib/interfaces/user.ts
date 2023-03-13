@@ -268,6 +268,7 @@ export interface UserDiscussionVote {
  * @property {string} fileType - The type of the image.
  * @property {string} fileURL - The URL of the image.
  * @property {string} fileExtension - The extension of the image.
+ * @property {Timestamp} createdAt - The date and time the image was created.
  *
  * ----------------------------------------------------------------
  *
@@ -281,4 +282,5 @@ export interface UserImage {
 	fileType: string;
 	fileURL: string;
 	fileExtension: string;
+	createdAt: Timestamp;
 }

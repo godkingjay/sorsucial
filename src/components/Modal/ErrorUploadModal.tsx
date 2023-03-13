@@ -1,5 +1,5 @@
 import { ErrorUploadModal } from "@/atoms/modalAtom";
-import React from "react";
+import React, { useEffect } from "react";
 import { AiFillFileExclamation } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
@@ -19,6 +19,15 @@ const ErrorUpload: React.FC<ErrorUploadProps> = ({
 			message: "",
 		});
 	};
+
+	useEffect(() => {
+		if (errorUploadModal.open) {
+			const timeout = setTimeout(() => {
+				handleClose();
+			}, 5000);
+			return () => clearTimeout(timeout);
+		}
+	}, [errorUploadModal]);
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] grid place-items-center px-8 py-16 overflow-y-auto scroll-y-style">

@@ -1,6 +1,7 @@
 import React from "react";
 import useUser from "@/hooks/useUser";
 import NavBar from "../NavBar/NavBar";
+import Modals from "../Modal/Modals";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -25,6 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 					{children}
 				</>
 			)}
+			<Modals />
 		</main>
 	);
 };

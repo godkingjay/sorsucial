@@ -21,7 +21,7 @@ const Address: React.FC<AddressProps> = ({
 }) => {
 	return (
 		<div className="flex flex-col w-full gap-y-4">
-			<div className="flex flex-col w-full gap-y-2">
+			<div className="create-user-dropdown-group">
 				<label
 					htmlFor="stateOrProvince"
 					className="create-user-field-title create-user-field-title-required"
@@ -34,7 +34,7 @@ const Address: React.FC<AddressProps> = ({
 					id="stateOrProvince"
 					value={createUserForm.stateOrProvince}
 					onChange={(e) => handleAddressSelect(e)}
-					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
+					className="create-user-dropdown"
 				>
 					<option
 						key={""}
@@ -52,7 +52,7 @@ const Address: React.FC<AddressProps> = ({
 					))}
 				</select>
 			</div>
-			<div className="flex flex-col w-full gap-y-2">
+			<div className="create-user-dropdown-group">
 				<label
 					htmlFor="cityOrMunicipality"
 					className="create-user-field-title create-user-field-title-required"
@@ -65,10 +65,8 @@ const Address: React.FC<AddressProps> = ({
 					id="cityOrMunicipality"
 					value={createUserForm.cityOrMunicipality}
 					onChange={(e) => handleAddressSelect(e)}
-					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
-					disabled={
-						createUserForm.stateOrProvince === "" && provinceOptions.length > 0
-					}
+					className="create-user-dropdown"
+					disabled={!createUserForm.stateOrProvince}
 				>
 					<option
 						key={""}
@@ -86,7 +84,7 @@ const Address: React.FC<AddressProps> = ({
 					))}
 				</select>
 			</div>
-			<div className="flex flex-col w-full gap-y-2">
+			<div className="create-user-dropdown-group">
 				<label
 					htmlFor="barangay"
 					className="create-user-field-title create-user-field-title-required"
@@ -99,12 +97,10 @@ const Address: React.FC<AddressProps> = ({
 					id="barangay"
 					value={createUserForm.barangay}
 					onChange={(e) => handleAddressSelect(e)}
-					className="bg-gray-100 p-2 rounded-md shadow-around-sm border border-transparent font-semibold hover:border-gray-500 focus:border-500"
+					className="create-user-dropdown"
 					disabled={
-						(createUserForm.stateOrProvince === "" &&
-							provinceOptions.length > 0) ||
-						(createUserForm.cityOrMunicipality === "" &&
-							cityOrMunicipalityOptions.length > 0)
+						!createUserForm.stateOrProvince ||
+						!createUserForm.cityOrMunicipality
 					}
 				>
 					<option
@@ -123,15 +119,15 @@ const Address: React.FC<AddressProps> = ({
 					))}
 				</select>
 			</div>
-			<div className="w-full flex flex-col relative z-10 gap-y-2">
+			<div className="create-user-input-group z-10 relative">
 				<label
 					htmlFor="streetAddress"
 					className="create-user-field-title"
 				>
 					Street Address
 				</label>
-				<div className={`auth-input-container auth-input-container-filled`}>
-					<div className="auth-input-text required-field">
+				<div className={`create-user-container create-user-container-filled`}>
+					<div className="create-user-input-text required-field">
 						<input
 							required
 							type="streetAddress"

@@ -11,6 +11,10 @@ import {
 	getProvinces,
 } from "@/lib/api/psgc";
 import ReviewProfile from "./ReviewProfile";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/router";
+import { useSetRecoilState } from "recoil";
+import { errorUploadModalState } from "@/atoms/modalAtom";
 
 type CreateUserFormProps = {};
 
@@ -32,7 +36,14 @@ export type CreateUserType = {
 	stateOrProvince: string;
 };
 
-export const NameRegex = /^[a-zA-Z\s'-]{0,49}$/;
+export type CreateUserErrorType = {
+	firstName: boolean;
+	lastName: boolean;
+	middleName: boolean;
+};
+
+export const NameRegex =
+	/^(?=.{1,49}$)([A-Z][a-z]*(?:[\s'-]([A-Z][a-z]*|[A-Z]?[a-z]+))*)$/;
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 
@@ -69,6 +80,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		cityOrMunicipality: "",
 		stateOrProvince: "",
 	});
+	const [createUserFormError, setCreateUserFormError] =
+		useState<CreateUserErrorType>({
+			firstName: false,
+			lastName: false,
+			middleName: false,
+		});
 	const [createUserFormPage, setCreateUserFormPage] = useState(1);
 	const profilePhotoRef = useRef<HTMLInputElement>(null);
 	const [birthdate, setBirthdate] = useState("");
@@ -77,16 +94,53 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		OptionsData[]
 	>([]);
 	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
+	const { createUser } = useUser();
+	const router = useRouter();
+	const setUploadErrorModal = useSetRecoilState(errorUploadModalState);
 
-	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const checkIfFormIsValid = () => {
+		setCreateUserFormError((prev) => ({
+			...prev,
+			firstName: !NameRegex.test(createUserForm.firstName),
+			lastName: !NameRegex.test(createUserForm.lastName),
+			middleName: !NameRegex.test(createUserForm.middleName || ""),
+			profilePhoto: !createUserForm.profilePhoto,
+			birthdate: !createUserForm.birthdate,
+			gender: !createUserForm.gender,
+			barangay: !createUserForm.barangay,
+			cityOrMunicipality: !createUserForm.cityOrMunicipality,
+			stateOrProvince: !createUserForm.stateOrProvince,
+		}));
+	};
+
+	const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setCreatingUser(true);
+		try {
+			await createUser(createUserForm).then(() => {
+				router.push("/");
+			});
+		} catch (error: any) {
+			console.log("Create User Error!");
+		}
+		setCreatingUser(false);
 	};
 
 	const validateImage = (profilePhoto: File) => {
-		if (profilePhoto.size > 1024 * 1024) {
+		if (profilePhoto.size > 1024 * 1024 * 2) {
+			setUploadErrorModal((prev) => ({
+				...prev,
+				open: true,
+				message: "Image size is too large. Maximum size is 2MB.",
+			}));
 			return false;
 		}
 		if (!validImageTypes.includes(profilePhoto.type)) {
+			setUploadErrorModal((prev) => ({
+				...prev,
+				open: true,
+				message: "Invalid image type. Only PNG and JPEG/JPG are allowed.",
+			}));
 			return false;
 		}
 		return true;
@@ -167,12 +221,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.name.match(/(firstName|lastName|middleName)/)) {
-			if (!e.target.value.match(NameRegex)) {
-				return;
-			}
-		}
-
 		setCreateUserForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
@@ -251,20 +299,25 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		fetchProvinces();
 	}, []);
 
+	useEffect(() => {
+		checkIfFormIsValid();
+	}, [createUserForm]);
+
 	return (
-		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[564px]">
+		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl min-h-[576px]">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
 				<h1 className="text-center font-bold text-lg">Create User</h1>
 			</div>
 			<div className="py-4 flex flex-col gap-y-4 flex-1">
 				<div className="px-4 flex flex-col w-full flex-1">
 					<form
-						className="auth-form gap-y-4"
+						className="auth-form gap-y-4 flex-1 flex flex-col"
 						onSubmit={handleFormSubmit}
 					>
 						{createUserFormPage === 1 && (
 							<NameAndPhoto
 								createUserForm={createUserForm}
+								createUserFormError={createUserFormError}
 								profilePhotoRef={profilePhotoRef}
 								handleFileChange={handleFileChange}
 								handleInputChange={handleInputChange}
@@ -300,6 +353,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 										title="Back"
 										className="page-button w-24 text-sm h-10 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400 mr-auto"
 										onClick={() => handlePageChange(-1)}
+										disabled={createUserFormPage === 1 || creatingUser}
 									>
 										Back
 									</button>
@@ -310,6 +364,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 										title="Back"
 										className="page-button w-24 text-sm bg-blue-500 border-blue-500 h-10 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600 ml-auto"
 										onClick={() => handlePageChange(1)}
+										disabled={createUserFormPage === 4 || creatingUser}
 									>
 										Next
 									</button>
@@ -319,7 +374,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 						{createUserFormPage === 4 && (
 							<>
 								<div className="divider"></div>
-								<div>
+								<div className="h-max">
 									<button
 										type="submit"
 										title="Create Account"

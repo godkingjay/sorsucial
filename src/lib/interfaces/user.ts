@@ -246,3 +246,41 @@ export interface UserDiscussionVote {
 	groupId?: string;
 	vote: 1 | -1;
 }
+
+/**
+ * This interface is used to define the structure of a user's image object.
+ * This is the object that is stored in the database.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @export
+ * @interface UserImage
+ * @category Interfaces
+ * @subcategory SiteUser
+ * @see {@link SiteUser}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the image.
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} filePath - The path of the image.
+ * @property {string} fileName - The name of the image.
+ * @property {string} fileType - The type of the image.
+ * @property {string} fileURL - The URL of the image.
+ * @property {string} fileExtension - The extension of the image.
+ * @property {Timestamp} createdAt - The date and time the image was created.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface UserImage {
+	id: string;
+	userId: string;
+	filePath: string;
+	fileName: string;
+	fileType: string;
+	fileURL: string;
+	fileExtension: string;
+	createdAt: Timestamp;
+}

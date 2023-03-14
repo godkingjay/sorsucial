@@ -36,7 +36,9 @@ const NavBar: React.FC<NavBarProps> = ({
 					</div>
 				</div>
 				<div className="h-full flex-1 flex flex-col items-center">
-					<div className="w-full max-w-3xl h-full bg-green-100">Mid</div>
+					<div className="w-full max-w-3xl h-full flex flex-row items-center">
+						Mid
+					</div>
 				</div>
 				<div className="h-full flex flex-row items-center justify-end md:w-56">
 					<RightNav

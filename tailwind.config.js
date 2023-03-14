@@ -7,6 +7,8 @@ module.exports = {
 		extend: {
 			boxShadow: {
 				"around-sm": "0 0 2px 1px #0001",
+				"around-lg": "0 0 16px 0 #0001",
+				"around-xl": "0 0 24px 0 #0002",
 			},
 			colors: {
 				"logo-100": "#ff4040",

@@ -2,6 +2,8 @@ import { UserState } from "@/atoms/userAtom";
 import Image from "next/image";
 import React from "react";
 import RightNav from "./RightNav";
+import { useRecoilState } from "recoil";
+import { navigationBarState } from "@/atoms/navigationBarAtom";
 
 type NavBarProps = {
 	userStateValue: UserState;
@@ -9,6 +11,9 @@ type NavBarProps = {
 };
 
 const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
+	const [navigationBarStateValue, setNavigationBarStateValue] =
+		useRecoilState(navigationBarState);
+
 	return (
 		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
 			<div className="h-14 w-full flex flex-row items-center gap-x-2">
@@ -29,7 +34,11 @@ const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
 					Mid
 				</div>
 				<div className="h-full w-2xs max-w-2xs flex flex-row items-center justify-end">
-					<RightNav userStateValue={userStateValue} />
+					<RightNav
+						userStateValue={userStateValue}
+						navigationBarStateValue={navigationBarStateValue}
+						setNavigationBarStateValue={setNavigationBarStateValue}
+					/>
 				</div>
 			</div>
 		</div>

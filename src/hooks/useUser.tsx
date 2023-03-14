@@ -248,33 +248,75 @@ const useUser = () => {
 	 * @param {CreateUserType["profilePhoto"]} image
 	 * @param {string} imageId
 	 *
+	 * @returns {Promise<void>}
+	 *
 	 * @throws {Error} If there is an error uploading the profile photo to Firebase Storage.
 	 * @throws {Error} If there is an error creating the user image document in Firestore.
-	 *
-	 * @returns {Promise<void>}
 	 */
 	const uploadProfilePhoto = async (
 		image: CreateUserType["profilePhoto"],
 		imageId: string
 	) => {
+		/**
+		 * Try to upload the profile photo to Firebase Storage and create a new user image document in Firestore.
+		 * If there is an error, throw an error.
+		 */
 		try {
+			/**
+			 * Create new user image reference in Firebase Storage.
+			 */
 			const storageRef = ref(storage, `users/${user?.uid}/images/${imageId}`);
+			/**
+			 * Fetch the profile photo from the URL.
+			 */
 			const response = await fetch(image?.url as string);
+			/**
+			 * Convert the response to a blob.
+			 */
 			const blob = await response.blob();
 
+			/**
+			 * Upload the blob to Firebase Storage.
+			 * If there is an error, throw an error.
+			 */
 			await uploadBytes(storageRef, blob).catch((error: any) => {
 				console.log("Hook: Uploading Profile Photo Error: ", error.message);
 				throw error;
 			});
 
-			const downloadURL = await getDownloadURL(storageRef);
+			/**
+			 * Get the download URL of the profile photo from Firebase Storage.
+			 * If there is an error, throw an error.
+			 *
+			 * @param storageRef reference to the profile photo in Firebase Storage.
+			 *
+			 * @returns {Promise<string>} download URL of the profile photo.
+			 *
+			 * @throws {Error} If there is an error getting the download URL of the profile photo.
+			 */
+			const downloadURL = await getDownloadURL(storageRef).catch(
+				(error: any) => {
+					console.log(
+						"Hook: Getting Profile Photo Download URL Error: ",
+						error.message
+					);
+					throw error;
+				}
+			);
 
+			/**
+			 * Upload the profile photo to Firebase Storage.
+			 */
 			const profilePhotoDocRef = doc(
 				firestore,
 				`users/${user?.uid}/images`,
 				imageId
 			);
 
+			/**
+			 * Create an object to hold the profile photo from Firebase Storage.
+			 * This will be used to create a new user image document in Firestore.
+			 */
 			const newImage: UserImage = {
 				id: imageId,
 				userId: user?.uid as string,
@@ -286,6 +328,11 @@ const useUser = () => {
 				createdAt: serverTimestamp() as Timestamp,
 			};
 
+			/**
+			 * Create a new user image document in Firestore.
+			 * If there is an error, throw an error.
+			 * If there is no error, return void.
+			 */
 			await setDoc(profilePhotoDocRef, newImage).catch((error: any) => {
 				console.log(
 					"Hook: Creating Profile Photo Document Error: ",

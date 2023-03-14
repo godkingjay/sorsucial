@@ -12,12 +12,14 @@ type RightNavProps = {
 	userStateValue: UserState;
 	navigationBarStateValue: NavigationBarState;
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
+	logOutUser: () => void;
 };
 
 const RightNav: React.FC<RightNavProps> = ({
 	userStateValue,
 	navigationBarStateValue,
 	setNavigationBarStateValue,
+	logOutUser,
 }) => {
 	const handleUserDropdown = () => {
 		setNavigationBarStateValue((prev) => ({
@@ -27,6 +29,14 @@ const RightNav: React.FC<RightNavProps> = ({
 				open: !prev.userDropdown.open,
 			},
 		}));
+	};
+
+	const handleLogOutUser = () => {
+		try {
+			logOutUser();
+		} catch (error: any) {
+			console.log("Loggout Error!");
+		}
 	};
 
 	return (
@@ -109,6 +119,7 @@ const RightNav: React.FC<RightNavProps> = ({
 											type="button"
 											title="Log Out"
 											className="user-dropdown-group log-out"
+											onClick={handleLogOutUser}
 										>
 											<div className="icon-container">
 												<GoSignOut className="icon translate-x-[10%] translate-y-[10%]" />

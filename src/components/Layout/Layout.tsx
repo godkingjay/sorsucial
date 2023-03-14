@@ -8,8 +8,14 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-	const { authUser, loadingUser, authLoading, setLoadingUser, userStateValue } =
-		useUser();
+	const {
+		authUser,
+		loadingUser,
+		authLoading,
+		setLoadingUser,
+		userStateValue,
+		logOutUser,
+	} = useUser();
 
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
@@ -21,6 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 						<NavBar
 							userStateValue={userStateValue}
 							authLoading={authLoading}
+							logOutUser={logOutUser}
 						/>
 					)}
 					{children}

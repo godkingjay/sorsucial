@@ -8,9 +8,14 @@ import { navigationBarState } from "@/atoms/navigationBarAtom";
 type NavBarProps = {
 	userStateValue: UserState;
 	authLoading: boolean;
+	logOutUser: () => void;
 };
 
-const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
+const NavBar: React.FC<NavBarProps> = ({
+	userStateValue,
+	authLoading,
+	logOutUser,
+}) => {
 	const [navigationBarStateValue, setNavigationBarStateValue] =
 		useRecoilState(navigationBarState);
 
@@ -38,6 +43,7 @@ const NavBar: React.FC<NavBarProps> = ({ userStateValue, authLoading }) => {
 						userStateValue={userStateValue}
 						navigationBarStateValue={navigationBarStateValue}
 						setNavigationBarStateValue={setNavigationBarStateValue}
+						logOutUser={logOutUser}
 					/>
 				</div>
 			</div>

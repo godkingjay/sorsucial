@@ -43,16 +43,46 @@ const useUser = () => {
 		return user;
 	}, [user]);
 
+	/**
+	 * Async function to set the current user state and retrieve user data from Firestore.
+	 *
+	 * @return {void}
+	 */
 	const setCurrentUserState = async () => {
+		/**
+		 * Set loading state to true while user data is retrieved
+		 */
 		setLoadingUser(true);
+
+		/**
+		 * If user exists, retrieve user data from Firestore
+		 */
 		if (user) {
 			try {
+				/**
+				 * Create user document reference
+				 */
 				const userDocRef = doc(firestore, "users", user.uid);
+
+				/**
+				 * Get user document data from Firestore
+				 */
 				const userDoc = await getDoc(userDocRef).catch((error) => {
 					console.log("Hook: Getting User Document Error: ", error.message);
 				});
+
+				/**
+				 * If user document exists, set user state
+				 */
 				if (userDoc) {
+					/**
+					 * Get user document data
+					 */
 					const userDocData = userDoc.data() as SiteUser;
+
+					/**
+					 * Set user state
+					 */
 					setUserStateValue({
 						user: {
 							...userDocData,
@@ -63,6 +93,8 @@ const useUser = () => {
 				console.log("Hook(setUser): Setting Current User State Error !");
 			}
 		}
+
+		// Set loading state to false when user data retrieval is complete
 		setLoadingUser(false);
 	};
 

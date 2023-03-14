@@ -267,6 +267,8 @@ const useUser = () => {
 			});
 
 			resetUserStateValue();
+
+			router.push("/auth/signin");
 		} catch (error: any) {
 			console.log("Hook: Sign Out Error!");
 			throw error;

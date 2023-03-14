@@ -2,10 +2,12 @@ import Link from "next/link";
 import React, { useState } from "react";
 import {
 	MdAdminPanelSettings,
+	MdFeed,
 	MdOutlineKeyboardDoubleArrowLeft,
 	MdOutlineKeyboardDoubleArrowRight,
 } from "react-icons/md";
 import { FaBullhorn } from "react-icons/fa";
+import { RiDiscussFill } from "react-icons/ri";
 
 type PageLeftSidebarProps = {};
 
@@ -25,28 +27,35 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 				}}
 			>
 				<div
-					className="page-left-sidebar p-1 py-2"
+					className="page-left-sidebar"
 					data-open={open}
 				>
-					<button
-						type="button"
-						title={open ? "Close" : "Open"}
-						className="open-close-button"
-						onClick={handleOpen}
-					>
-						<div className="label-container">
-							<p className="label">SorSUcial</p>
-						</div>
-						<div className="icon-container">
-							{open ? (
-								<MdOutlineKeyboardDoubleArrowLeft className="icon" />
-							) : (
-								<MdOutlineKeyboardDoubleArrowRight className="icon" />
-							)}
-						</div>
-					</button>
-					<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
+					<div className="w-full flex flex-col gap-y-2">
+						<button
+							type="button"
+							title={open ? "Close" : "Open"}
+							className="open-close-button"
+							onClick={handleOpen}
+						>
+							<div className="label-container">
+								<p className="label">SorSUcial</p>
+							</div>
+							<div className="icon-container">
+								{open ? (
+									<MdOutlineKeyboardDoubleArrowLeft className="icon" />
+								) : (
+									<MdOutlineKeyboardDoubleArrowRight className="icon" />
+								)}
+							</div>
+						</button>
+						<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
+					</div>
 					<ul className="flex flex-col">
+						<li>
+							<p className="list-header">
+								{open ? "Site Administration" : "• • •"}
+							</p>
+						</li>
 						<li>
 							<Link
 								href="/admin/dashboard"
@@ -62,19 +71,49 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 							</Link>
 						</li>
 					</ul>
-					<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
 					<ul className="flex flex-col">
+						<li>
+							<p className="list-header">{open ? "Home" : "• • •"}</p>
+						</li>
 						<li>
 							<Link
 								href="/"
-								title="Announcement"
+								title="Announcements"
 								className="sidebar-nav-group"
 							>
 								<div className="icon-container">
 									<FaBullhorn className="icon" />
 								</div>
 								<div className="label-container">
-									<p className="label">Announcement</p>
+									<p className="label">Announcements</p>
+								</div>
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="/feeds/"
+								title="Feeds"
+								className="sidebar-nav-group"
+							>
+								<div className="icon-container">
+									<MdFeed className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Feeds</p>
+								</div>
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="/discussions/"
+								title="Discussions"
+								className="sidebar-nav-group"
+							>
+								<div className="icon-container">
+									<RiDiscussFill className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Discussions</p>
 								</div>
 							</Link>
 						</li>

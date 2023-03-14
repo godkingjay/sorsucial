@@ -195,7 +195,7 @@
 	}
 
 	.page-left-sidebar {
-		@apply bg-slate-800 w-14 h-full flex flex-col gap-y-2 duration-100;
+		@apply bg-slate-800 w-14 h-full flex flex-col gap-y-4 duration-100 p-1 py-2;
 
 		.open-close-button {
 			@apply p-2 h-12 flex flex-row items-center w-full duration-200 gap-x-2;
@@ -222,16 +222,6 @@
 
 				.icon-container {
 					@apply text-cyan-300;
-				}
-			}
-		}
-
-		&[data-open="true"] {
-			@apply w-64;
-
-			.open-close-button {
-				.label-container {
-					@apply flex-1 flex;
 				}
 			}
 		}
@@ -271,13 +261,27 @@
 			}
 		}
 
+		.list-header {
+			@apply w-full text-center text-xs font-semibold uppercase px-2 text-slate-600 pointer-events-none truncate py-1;
+		}
+
 		&[data-open="true"] {
 			@apply w-64;
+
+			.open-close-button {
+				.label-container {
+					@apply flex-1 flex;
+				}
+			}
 
 			.sidebar-nav-group {
 				.label-container {
 					@apply flex-1 flex;
 				}
+			}
+
+			.list-header {
+				@apply text-left;
 			}
 		}
 	}

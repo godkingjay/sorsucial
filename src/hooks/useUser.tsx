@@ -241,6 +241,18 @@ const useUser = () => {
 		}
 	};
 
+	/**
+	 * Async function to upload profile photo to Firebase Storage
+	 * and create a new user image document in Firestore.
+	 *
+	 * @param {CreateUserType["profilePhoto"]} image
+	 * @param {string} imageId
+	 *
+	 * @throws {Error} If there is an error uploading the profile photo to Firebase Storage.
+	 * @throws {Error} If there is an error creating the user image document in Firestore.
+	 *
+	 * @returns {Promise<void>}
+	 */
 	const uploadProfilePhoto = async (
 		image: CreateUserType["profilePhoto"],
 		imageId: string

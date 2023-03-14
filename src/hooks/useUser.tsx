@@ -287,6 +287,25 @@ const useUser = () => {
 		}
 	};
 
+	/**
+	 * Sign out the current user.
+	 * Reset the user state value.
+	 * Redirect to the sign-in page.
+	 *
+	 * @throws {Error} - An error object containing the error message.
+	 * @returns {Promise<void>} - A promise that resolves to void.
+	 *
+	 * @example
+	 * const { logOutUser } = useUser();
+	 *
+	 * const handleLogOut = async () => {
+	 * 	try {
+	 * 		await logOutUser();
+	 * 	} catch (error) {
+	 * 		console.log("Error: ", error.message);
+	 * 	}
+	 * };
+	 */
 	const logOutUser = async () => {
 		try {
 			await signOut(auth).catch((error: any) => {

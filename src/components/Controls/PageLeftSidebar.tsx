@@ -1,5 +1,7 @@
+import Link from "next/link";
 import React, { useState } from "react";
 import {
+	MdAdminPanelSettings,
 	MdOutlineKeyboardDoubleArrowLeft,
 	MdOutlineKeyboardDoubleArrowRight,
 } from "react-icons/md";
@@ -43,6 +45,22 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 						</div>
 					</button>
 					<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
+					<ul className="flex flex-col">
+						<li>
+							<Link
+								href="/admin/dashboard"
+								title="Administration"
+								className="sidebar-nav-group"
+							>
+								<div className="icon-container">
+									<MdAdminPanelSettings className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Administration</p>
+								</div>
+							</Link>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>

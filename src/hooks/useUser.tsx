@@ -98,12 +98,37 @@ const useUser = () => {
 		setLoadingUser(false);
 	};
 
+	/**
+	 * Async function to create a new user account and user document in Firestore.
+	 *
+	 * @param {string} email
+	 * @param {string} password
+	 */
 	const createAccount = async (email: string, password: string) => {
+		/**
+		 * Create new user document in Firestore
+		 * and set user state
+		 */
 		try {
+			/**
+			 * Create new user document in Firestore
+			 */
 			await createUserWithEmailAndPassword(auth, email, password)
 				.then(async ({ user: userCredential }) => {
+					/**
+					 * If user document exists, set user state
+					 * and create user document in Firestore
+					 * with user data
+					 */
 					if (userCredential) {
+						/**
+						 * Create user document reference
+						 */
 						const userDocRef = doc(firestore, "users", userCredential.uid);
+
+						/**
+						 * Create new user object
+						 */
 						const newUser: SiteUser = {
 							uid: userCredential.uid,
 							email: userCredential.email as string,
@@ -116,6 +141,9 @@ const useUser = () => {
 							createdAt: serverTimestamp() as Timestamp,
 						};
 
+						/**
+						 * Create user document in Firestore
+						 */
 						await setDoc(userDocRef, newUser)
 							.then(() => {
 								setUserStateValue({

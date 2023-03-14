@@ -8,23 +8,115 @@ import { FiLoader } from "react-icons/fi";
 import { authForm } from "../AuthForm";
 import { useRouter } from "next/router";
 
+/**
+ * The SignInFormProps interface is used to type the props of the SignInForm component.
+ *
+ * The SignInFormProps interface has the following properties:
+ * - handleFormChange: A function that is used to change the form.
+ */
 type SignInFormProps = {
 	handleFormChange: (form: authForm) => void;
 };
 
+/**
+ * The SignInRegex object is used to store the regular expressions used to validate the input fields.
+ *
+ * The SignInRegex object has the following properties:
+ * - email: The regular expression used to validate the email input field.
+ * The email input field should only accept emails with the domain name @sorsu.edu.ph.
+ * The email input field should only accept letters, numbers, periods, underscores, and dashes.
+ *
+ * The SignInRegex object is used to validate the input fields.
+ *
+ * The SignInRegex object is used to determine if the user is allowed to sign in.
+ */
 const SignInRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };
 
+/**
+ * The SignInForm component is used to sign in the user.
+ *
+ * The SignInForm component has the following properties:
+ * - handleFormChange: A function that is used to change the form.
+ *
+ * The SignInForm component is used in the AuthForm component.
+ */
 const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
+	/**
+	 * The showPassword state value is used to determine if the password input field should be shown as plain text or as password.
+	 */
 	const [showPassword, setShowPassword] = useState(false);
+	/**
+	 * The signInForm state value is used to store the values of the input fields.
+	 *
+	 * The signInForm state value is an object with the following properties:
+	 * - email: The email input field value.
+	 * - password: The password input field value.
+	 *
+	 * The signInForm state value is initialized to an empty string for both properties.
+	 *
+	 * The signInForm state value is updated when the user types in the input fields.
+	 *
+	 * The signInForm state value is used to sign in the user.
+	 *
+	 * The signInForm state value is also used to validate the input fields.
+	 *
+	 * The signInForm state value is also used to determine if the user is allowed to sign in.
+	 */
 	const [signInForm, setSignInForm] = useState({
 		email: "",
 		password: "",
 	});
+
+	/**
+	 * The signInError state value is used to store the error message of the sign in process.
+	 *
+	 * The signInError state value is initialized to an empty string.
+	 *
+	 * The signInError state value is updated when the user submits the form.
+	 *
+	 * The signInError state value is used to display the error message of the sign in process.
+	 *
+	 * The signInError state value is also used to determine if the error banner should be shown.
+	 *
+	 * The signInError state value is also used to determine if the user is allowed to sign in.
+	 */
 	const [signInError, setSignInError] = useState<string>("");
+
+	/**
+	 * The signingIn state value is used to determine if the user is signing in.
+	 *
+	 * The signingIn state value is initialized to false.
+	 *
+	 * The signingIn state value is updated when the user submits the form.
+	 *
+	 * The signingIn state value is used to determine if the user is allowed to sign in.
+	 *
+	 * The signingIn state value is also used to determine if the loading spinner should be shown.
+	 *
+	 * The signingIn state value is also used to determine if the user is allowed to click the show password button.
+	 */
 	const [signingIn, setSigningIn] = useState(false);
+
+	/**
+	 * The validEmail state value is used to determine if the email input field value is a valid email address.
+	 *
+	 * The validEmail state value is initialized to true.
+	 *
+	 * The validEmail state value is updated when the user types in the email input field.
+	 *
+	 * The validEmail state value is used to determine if the user is allowed to sign in.
+	 */
 	const [validEmail, setValidEmail] = useState(true);
+
+	/**
+	 * The router state value is used to navigate to the home page.
+	 *
+	 * The router state value is initialized to the useRouter() function.
+	 *
+	 * The router state value is used to navigate to the home page when the user successfully signs in.
+	 */
 	const router = useRouter();
 
 	/**

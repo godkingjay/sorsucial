@@ -5,6 +5,7 @@ import {
 	MdOutlineKeyboardDoubleArrowLeft,
 	MdOutlineKeyboardDoubleArrowRight,
 } from "react-icons/md";
+import { FaBullhorn } from "react-icons/fa";
 
 type PageLeftSidebarProps = {};
 
@@ -24,7 +25,7 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 				}}
 			>
 				<div
-					className="page-left-sidebar p-1"
+					className="page-left-sidebar p-1 py-2"
 					data-open={open}
 				>
 					<button
@@ -57,6 +58,23 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								</div>
 								<div className="label-container">
 									<p className="label">Administration</p>
+								</div>
+							</Link>
+						</li>
+					</ul>
+					<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
+					<ul className="flex flex-col">
+						<li>
+							<Link
+								href="/"
+								title="Announcement"
+								className="sidebar-nav-group"
+							>
+								<div className="icon-container">
+									<FaBullhorn className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Announcement</p>
 								</div>
 							</Link>
 						</li>

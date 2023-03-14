@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 					<div className="flex-1 flex flex-row">
 						<PageLeftSidebar />
 						<div className="flex-1 flex flex-row justify-center min-w-[256px]">
-							<div className="max-w-3xl w-full bg-white">{children}</div>
+							<div className="max-w-3xl w-full">{children}</div>
 						</div>
 					</div>
 				</>

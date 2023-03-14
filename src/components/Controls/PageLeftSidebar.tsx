@@ -8,6 +8,7 @@ import {
 } from "react-icons/md";
 import { FaBullhorn } from "react-icons/fa";
 import { RiDiscussFill } from "react-icons/ri";
+import { HiUserGroup } from "react-icons/hi";
 
 type PageLeftSidebarProps = {};
 
@@ -114,6 +115,20 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								</div>
 								<div className="label-container">
 									<p className="label">Discussions</p>
+								</div>
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="/groups/"
+								title="Groups"
+								className="sidebar-nav-group"
+							>
+								<div className="icon-container">
+									<HiUserGroup className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Groups</p>
 								</div>
 							</Link>
 						</li>

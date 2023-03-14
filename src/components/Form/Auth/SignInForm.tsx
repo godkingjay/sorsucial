@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
 import { authForm } from "../AuthForm";
+import { useRouter } from "next/router";
 
 type SignInFormProps = {
 	handleFormChange: (form: authForm) => void;
@@ -24,6 +25,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	const [signInError, setSignInError] = useState<string>("");
 	const [signingIn, setSigningIn] = useState(false);
 	const [validEmail, setValidEmail] = useState(true);
+	const router = useRouter();
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
@@ -60,6 +62,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 				).catch((error) => {
 					throw error;
 				});
+
+				router.push("/");
 			} catch (error: any) {
 				console.log("SignIn Error!");
 				setSignInError(error.message);

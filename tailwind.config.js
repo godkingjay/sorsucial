@@ -7,6 +7,8 @@ module.exports = {
 		extend: {
 			boxShadow: {
 				"around-sm": "0 0 2px 1px #0001",
+				"around-lg": "0 0 16px 0 #0001",
+				"around-xl": "0 0 24px 0 #0002",
 			},
 			colors: {
 				"logo-100": "#ff4040",
@@ -23,9 +25,12 @@ module.exports = {
 				"2xs": "0.625rem",
 				"3xs": "0.5rem",
 			},
+			maxWidth: {
+				"2xs": "256px",
+			},
 			screens: {
-				xs: "480px",
 				"2xs": "360px",
+				xs: "480px",
 			},
 			width: {
 				"2xs": "256px",

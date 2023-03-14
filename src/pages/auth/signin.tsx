@@ -30,7 +30,7 @@ const SignInPage: React.FC<SignInPageProps> = () => {
 					content="SorSUcial is the unofficial social media for the University of Sorsogon State University."
 				/>
 			</Head>
-			<div className="flex-1 relative">
+			<div className="flex-1 relative h-full">
 				<div className="w-full h-full flex flex-col items-center">
 					<div className="w-full flex-1 limit-width flex flex-col px-8 py-16 items-center justify-center">
 						<div className="w-full max-w-2xl h-max sm:h-[486px] bg-white rounded-2xl shadow-around-sm grid grid-rows-2 grid-cols-1 sm:grid-rows-1 sm:grid-cols-2">

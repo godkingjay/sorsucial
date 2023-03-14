@@ -13,15 +13,9 @@ import {
 	setDoc,
 	writeBatch,
 } from "firebase/firestore";
-import {
-	UploadTask,
-	getDownloadURL,
-	ref,
-	uploadBytes,
-	uploadString,
-} from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
 

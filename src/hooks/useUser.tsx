@@ -244,10 +244,12 @@ const useUser = () => {
 	/**
 	 * useEffect Hook to check if the user is authenticated and redirect to the sign-in page if not.
 	 * Also updates the current user state if the user is authenticated and the page is not loading.
+	 *
 	 * @param {object} user - The current user object.
 	 * @param {boolean} loading - Flag indicating whether the page is currently loading.
 	 * @param {object} router - The Next.js router object.
 	 * @param {function} setCurrentUserState - The function to update the current user state.
+	 *
 	 * @return {void}
 	 */
 	useEffect(() => {

@@ -193,4 +193,47 @@
 			}
 		}
 	}
+
+	.page-left-sidebar {
+		@apply bg-slate-800 w-14 h-full flex flex-col gap-y-1 duration-100;
+
+		.open-close-button {
+			@apply p-2 h-12 flex flex-row items-center justify-center w-full duration-200;
+
+			.label-container {
+				@apply hidden h-full;
+
+				.label {
+					@apply text-white truncate font-bold uppercase;
+				}
+			}
+
+			.icon-container {
+				@apply h-8 w-8 aspect-square text-white;
+
+				.icon {
+					@apply h-full w-full;
+				}
+			}
+
+			&:hover,
+			&:focus {
+				@apply bg-slate-700 rounded-lg;
+
+				.icon-container {
+					@apply text-cyan-300;
+				}
+			}
+		}
+
+		&[data-open="true"] {
+			@apply w-64;
+
+			.open-close-button {
+				.label-container {
+					@apply flex-1 flex flex-row items-center;
+				}
+			}
+		}
+	}
 }

@@ -20,7 +20,7 @@ const NavBar: React.FC<NavBarProps> = ({
 		useRecoilState(navigationBarState);
 
 	return (
-		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
+		<div className="sticky top-0 w-full h-14 bg-white shadow-sm z-[1000]">
 			<div className="h-14 w-full flex flex-row items-center">
 				<div className="h-full lg:w-full lg:max-w-2xs">
 					<div className="flex flex-row w-full h-full items-center">

@@ -1,3 +1,4 @@
+import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { auth, firestore, storage } from "@/firebase/clientApp";
@@ -29,6 +30,7 @@ const useUser = () => {
 	const [loadingUser, setLoadingUser] = useState(false);
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const resetUserStateValue = useResetRecoilState(userState);
+	const resetNavigationBarStateValue = useResetRecoilState(navigationBarState);
 	const router = useRouter();
 
 	/**
@@ -372,11 +374,37 @@ const useUser = () => {
 				throw error;
 			});
 
-			resetUserStateValue();
+			await resetUserData();
 
 			router.push("/auth/signin");
 		} catch (error: any) {
 			console.log("Hook: Sign Out Error!");
+			throw error;
+		}
+	};
+
+	/**
+	 * Reset the user state value.
+	 * Reset the navigation bar state value.
+	 * If there is an error, throw an error.
+	 * If there is no error, return void.
+	 */
+	const resetUserData = async () => {
+		/**
+		 * Try to reset the user state value and the navigation bar state value.
+		 * If there is an error, throw an error.
+		 */
+		try {
+			/**
+			 * Reset the user state value.
+			 */
+			resetUserStateValue();
+			/**
+			 * Reset the navigation bar state value.
+			 */
+			resetNavigationBarStateValue();
+		} catch (error: any) {
+			console.log("Hook: Reset User Data Error!");
 			throw error;
 		}
 	};

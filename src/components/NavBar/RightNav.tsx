@@ -53,8 +53,8 @@ const RightNav: React.FC<RightNavProps> = ({
 							<Image
 								src={userStateValue.user.imageURL}
 								alt="User Profile Picture"
-								width={32}
-								height={32}
+								width={48}
+								height={48}
 								loading="lazy"
 								className="rounded-full h-full w-full"
 							/>

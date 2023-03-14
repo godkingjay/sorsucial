@@ -2,6 +2,7 @@ import React from "react";
 import useUser from "@/hooks/useUser";
 import NavBar from "../NavBar/NavBar";
 import Modals from "../Modal/Modals";
+import PageLeftSidebar from "../Controls/PageLeftSidebar";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -30,7 +31,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 							logOutUser={logOutUser}
 						/>
 					)}
-					{children}
+					<div className="flex-1 flex flex-row">
+						{authUser && !userStateValue.user.isFirstLogin && (
+							<PageLeftSidebar />
+						)}
+						{children}
+					</div>
 				</>
 			)}
 			<Modals />

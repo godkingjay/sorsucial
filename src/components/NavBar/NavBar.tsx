@@ -21,8 +21,8 @@ const NavBar: React.FC<NavBarProps> = ({
 
 	return (
 		<div className="sticky top-0 w-full h-14 bg-white shadow-sm">
-			<div className="h-14 w-full flex flex-row items-center gap-x-2">
-				<div className="h-full w-2xs max-w-2xs">
+			<div className="h-14 w-full flex flex-row items-center">
+				<div className="h-full lg:w-full lg:max-w-2xs">
 					<div className="flex flex-row w-full h-full items-center">
 						<div className="aspect-square h-14 w-14 p-2 bg-logo-500">
 							<Image
@@ -35,10 +35,10 @@ const NavBar: React.FC<NavBarProps> = ({
 						</div>
 					</div>
 				</div>
-				<div className="h-full flex-1 max-w-3xl mx-auto flex flex-row items-center">
-					Mid
+				<div className="h-full flex-1 flex flex-col items-center">
+					<div className="w-full max-w-3xl h-full bg-green-100">Mid</div>
 				</div>
-				<div className="h-full w-2xs max-w-2xs flex flex-row items-center justify-end">
+				<div className="h-full flex flex-row items-center justify-end md:w-56">
 					<RightNav
 						userStateValue={userStateValue}
 						navigationBarStateValue={navigationBarStateValue}

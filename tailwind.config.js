@@ -25,9 +25,12 @@ module.exports = {
 				"2xs": "0.625rem",
 				"3xs": "0.5rem",
 			},
+			maxWidth: {
+				"2xs": "256px",
+			},
 			screens: {
-				xs: "480px",
 				"2xs": "360px",
+				xs: "480px",
 			},
 			width: {
 				"2xs": "256px",

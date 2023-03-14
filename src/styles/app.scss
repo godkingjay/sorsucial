@@ -129,6 +129,10 @@
 		@apply h-12 w-full bg-logo-300 rounded-full font-bold text-white border-2 border-logo-300 justify-center items-center grid disabled:bg-gray-500 disabled:border-gray-500 disabled:pointer-events-none;
 	}
 
+	.menu-dropdown {
+		@apply bg-white w-full p-4 shadow-around-xl rounded-lg flex-1 overflow-y-auto scroll-y-style pointer-events-auto;
+	}
+
 	.user-dropdown {
 		@apply bg-white w-full p-4 shadow-around-xl rounded-lg flex-1 overflow-y-auto scroll-y-style pointer-events-auto;
 

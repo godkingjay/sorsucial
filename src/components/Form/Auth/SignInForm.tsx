@@ -27,34 +27,120 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	const [validEmail, setValidEmail] = useState(true);
 	const router = useRouter();
 
+	/**
+	 * Handles the show password button click event and toggles the showPassword state value.
+	 */
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
 	};
 
+	/**
+	 * Handles the input change event and updates the signInForm state value.
+	 *
+	 * @param e The input change event.
+	 */
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		/**
+		 * Resets the signInError state value to an empty string.
+		 *
+		 * This is to prevent the error banner from showing up when the user is typing in the input field.
+		 */
 		setSignInError("");
+
+		/**
+		 * Checks if the input field is the email input field.
+		 *
+		 * If the input field is the email input field, then the validEmail state value is updated.
+		 *
+		 * If the input field is not the email input field, then the validEmail state value is not updated.
+		 *
+		 * The validEmail state value is used to determine if the user is allowed to sign in.
+		 */
 		if (e.target.name === "email") {
 			setValidEmail(() =>
 				e.target.value.match(SignInRegex.email) ? true : false
 			);
 		}
+
+		/**
+		 * Updates the signInForm state value.
+		 *
+		 * The name of the input field is used as the key of the state value.
+		 */
 		setSignInForm((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
 	};
 
+	/**
+	 * Handles the submit event of the form.
+	 *
+	 * @param e The submit event.
+	 */
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		/**
+		 * Prevents the default submit event.
+		 *
+		 * This is to prevent the page from reloading when the user submits the form.
+		 */
 		e.preventDefault();
+
+		/**
+		 * Checks if the email input field is valid.
+		 *
+		 * If the email input field is valid, then the user is signed in.
+		 *
+		 * If the email input field is invalid, then the user is not signed in.
+		 */
 		if (SignInRegex.email.test(signInForm.email)) {
+			/**
+			 * Sets the validEmail state value to true.
+			 *
+			 * This is to allow the user to sign in if the email input field is valid.
+			 */
 			setValidEmail(true);
 		} else {
+			/**
+			 * Sets the validEmail state value to false.
+			 *
+			 * This is to prevent the user from signing in if the email input field is invalid.
+			 */
 			setValidEmail(false);
 			return;
 		}
+
+		/**
+		 * Checks if the email and password input fields are not empty.
+		 *
+		 * If the email and password input fields are not empty, then the user is signed in.
+		 */
 		if (validEmail && signInForm.password && !signInError) {
+			/**
+			 * Sets the signingIn state value to true.
+			 *
+			 * This is to prevent the user from signing in multiple times.
+			 */
 			setSigningIn(true);
+			/**
+			 * Signs in the user using the email and password input fields.
+			 *
+			 * If the user is successfully signed in, then the user is redirected to the home page.
+			 *
+			 * If the user is not successfully signed in, then the user is not redirected to the home page.
+			 *
+			 * The error message is displayed in the error banner.
+			 *
+			 * The signingIn state value is set to false.
+			 *
+			 * This is to allow the user to sign in again.
+			 */
 			try {
+				/**
+				 * Signs in the user using the email and password input fields.
+				 *
+				 * @throws An error if the user is not successfully signed in.
+				 */
 				await signInWithEmailAndPassword(
 					auth,
 					signInForm.email,
@@ -63,11 +149,29 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 					throw error;
 				});
 
+				/**
+				 * Redirects the user to the home page.
+				 *
+				 * This is to prevent the user from accessing the sign in page if the user is already signed in.
+				 */
 				router.push("/");
 			} catch (error: any) {
 				console.log("SignIn Error!");
+				/**
+				 * Displays the error message in the error banner.
+				 *
+				 * This is to inform the user that the user is not successfully signed in.
+				 *
+				 * The error message is retrieved from the authError object.
+				 */
 				setSignInError(error.message);
 			}
+
+			/**
+			 * Sets the signingIn state value to false.
+			 *
+			 * This is to allow the user to sign in again.
+			 */
 			setSigningIn(false);
 		}
 	};

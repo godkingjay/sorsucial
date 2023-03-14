@@ -2,7 +2,7 @@ import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { auth, firestore, storage } from "@/firebase/clientApp";
 import { SiteUser, UserImage } from "@/lib/interfaces/user";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import {
 	Timestamp,
 	collection,
@@ -22,14 +22,23 @@ import {
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 
 const useUser = () => {
 	const [user, loading, error] = useAuthState(auth);
 	const [loadingUser, setLoadingUser] = useState(false);
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
+	const resetUserStateValue = useResetRecoilState(userState);
 	const router = useRouter();
 
+	/**
+	 * useMemo Hook to create a memoized version of the current user object.
+	 *
+	 * @param {object} user - The current user object.
+	 *
+	 * @return {object} - The memoized user object.
+	 *
+	 */
 	const userMemo = useMemo(() => {
 		return user;
 	}, [user]);
@@ -218,6 +227,29 @@ const useUser = () => {
 		}
 	};
 
+	const logOutUser = async () => {
+		try {
+			await signOut(auth).catch((error: any) => {
+				console.log("Hook: Sign Out Error: ", error.message);
+				throw error;
+			});
+
+			resetUserStateValue();
+		} catch (error: any) {
+			console.log("Hook: Sign Out Error!");
+			throw error;
+		}
+	};
+
+	/**
+	 * useEffect Hook to check if the user is authenticated and redirect to the sign-in page if not.
+	 * Also updates the current user state if the user is authenticated and the page is not loading.
+	 * @param {object} user - The current user object.
+	 * @param {boolean} loading - Flag indicating whether the page is currently loading.
+	 * @param {object} router - The Next.js router object.
+	 * @param {function} setCurrentUserState - The function to update the current user state.
+	 * @return {void}
+	 */
 	useEffect(() => {
 		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
 			router.push("/auth/signin");
@@ -226,6 +258,13 @@ const useUser = () => {
 		}
 	}, [user, loading]);
 
+	/**
+	 * useEffect Hook to check if the user is authenticated and if it is the first login.
+	 * Redirects to the "create user" page if the user is authenticated and it's their first login.
+	 * @param {object} userStateValue - The current user state object.
+	 * @param {object} router - The Next.js router object.
+	 * @return {void}
+	 */
 	useEffect(() => {
 		if (user && userStateValue.user.isFirstLogin) {
 			router.push("/user/create-user");
@@ -241,6 +280,7 @@ const useUser = () => {
 		createAccount,
 		userStateValue,
 		createUser,
+		logOutUser,
 	};
 };
 

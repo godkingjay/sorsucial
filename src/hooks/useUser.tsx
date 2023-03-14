@@ -263,8 +263,10 @@ const useUser = () => {
 	/**
 	 * useEffect Hook to check if the user is authenticated and if it is the first login.
 	 * Redirects to the "create user" page if the user is authenticated and it's their first login.
+	 *
 	 * @param {object} userStateValue - The current user state object.
 	 * @param {object} router - The Next.js router object.
+	 *
 	 * @return {void}
 	 */
 	useEffect(() => {

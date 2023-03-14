@@ -2,7 +2,6 @@ import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { UserState } from "@/atoms/userAtom";
 import React from "react";
 import { FiMenu } from "react-icons/fi";
-import { IoMenu } from "react-icons/io5";
 
 type MenuDropdownProps = {
 	userStateValue: UserState;

@@ -438,7 +438,7 @@ const useUser = () => {
 	 * @return {void}
 	 */
 	useEffect(() => {
-		if (user && userStateValue.user.isFirstLogin) {
+		if (user && userStateValue.user.isFirstLogin && !loading && !loadingUser) {
 			router.push("/user/create-user");
 		}
 	}, [userStateValue.user]);

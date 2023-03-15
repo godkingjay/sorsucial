@@ -64,37 +64,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		}
 	};
 
-	const checkAdminDirectory = (
-		level: string
-	): NavigationBarState["adminPageNavBar"]["current"] => {
-		switch (level) {
-			case undefined || null:
-				return "";
-				break;
-
-			case "manage-users":
-				return "manage-users";
-				break;
-
-			case "manage-groups":
-				return "manage-groups";
-				break;
-
-			case "manage-requests":
-				return "manage-requests";
-				break;
-
-			default:
-				return "none";
-				break;
-		}
-	};
-
 	useEffect(() => {
 		const directory = router.pathname.split("/");
 		const mainDirectory = directory[1];
-		const levelTwoDirectory = directory[2];
-
 		setCurrentDirectory({
 			main: router.pathname.split("/")[1],
 		});
@@ -103,13 +75,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 			pageLeftSidebar: {
 				...prev.pageLeftSidebar,
 				current: checkCurrentDirectory(mainDirectory),
-			},
-		}));
-		setNavigationBarStateValue((prev) => ({
-			...prev,
-			adminPageNavBar: {
-				...prev.adminPageNavBar,
-				current: checkAdminDirectory(levelTwoDirectory),
 			},
 		}));
 	}, [router.pathname]);
@@ -140,6 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 							<AdminPageLayout
 								navigationBarStateValue={navigationBarStateValue}
 								setNavigationBarStateValue={setNavigationBarStateValue}
+								router={router}
 							>
 								{children}
 							</AdminPageLayout>

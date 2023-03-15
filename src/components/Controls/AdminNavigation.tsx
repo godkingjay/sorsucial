@@ -2,6 +2,7 @@ import {
 	NavigationBarState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
+import Link from "next/link";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { GoRequestChanges } from "react-icons/go";
@@ -14,16 +15,23 @@ type AdminNavigationProps = {
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 };
 
-const AdminNavigation: React.FC<AdminNavigationProps> = () => {
+const AdminNavigation: React.FC<AdminNavigationProps> = ({
+	navigationBarStateValue,
+	setNavigationBarStateValue,
+}) => {
 	return (
 		<div className="sticky top-14">
 			<div className="admin-nav-wrapper">
 				<ul className="admin-nav-container">
 					<li>
-						<button
+						<Link
+							href="/admin"
 							type="button"
 							title="Dashboard"
 							className="admin-nav-group"
+							data-active={
+								navigationBarStateValue.adminPageNavBar.current === ""
+							}
 						>
 							<div className="icon-container">
 								<MdSpaceDashboard className="icon" />
@@ -31,16 +39,21 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="label-container">
 								<p className="label">Dashboard</p>
 							</div>
-						</button>
+						</Link>
 					</li>
 					<li className="divider-container">
 						<div className="divider"></div>
 					</li>
 					<li>
-						<button
+						<Link
+							href="/admin/manage-users"
 							type="button"
 							title="Users"
 							className="admin-nav-group"
+							data-active={
+								navigationBarStateValue.adminPageNavBar.current ===
+								"manage-users"
+							}
 						>
 							<div className="icon-container">
 								<FaUserCircle className="icon" />
@@ -48,13 +61,17 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="label-container">
 								<p className="label">Users</p>
 							</div>
-						</button>
+						</Link>
 					</li>
 					<li>
 						<button
 							type="button"
 							title="Groups"
 							className="admin-nav-group"
+							data-active={
+								navigationBarStateValue.adminPageNavBar.current ===
+								"manage-groups"
+							}
 						>
 							<div className="icon-container">
 								<HiUserGroup className="icon" />
@@ -72,6 +89,10 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							type="button"
 							title="Requests"
 							className="admin-nav-group"
+							data-active={
+								navigationBarStateValue.adminPageNavBar.current ===
+								"manage-requests"
+							}
 						>
 							<div className="icon-container">
 								<GoRequestChanges className="icon" />

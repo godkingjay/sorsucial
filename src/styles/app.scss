@@ -265,7 +265,7 @@
 			}
 
 			&[data-active="true"] {
-				@apply bg-slate-700 rounded-lg border-cyan-400;
+				@apply bg-slate-600 rounded-lg;
 
 				.label-container {
 					.label {

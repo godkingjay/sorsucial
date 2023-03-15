@@ -6,6 +6,7 @@ import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
+import useAdmin from "@/hooks/useAdmin";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
@@ -28,6 +29,8 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	authUser,
 	userStateValue,
 }) => {
+	const { adminStateValue, adminFetchUsers } = useAdmin();
+
 	useEffect(() => {
 		const levelTwo = router.pathname.split("/")[2];
 		if (levelTwo) {

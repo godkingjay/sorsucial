@@ -131,7 +131,7 @@ const useUser = () => {
 							firstName: "",
 							lastName: "",
 							isFirstLogin: true,
-							role: "user",
+							role: ["user"],
 							numberOfConnections: 0,
 							numberOfFollowers: 0,
 							createdAt: serverTimestamp() as Timestamp,
@@ -506,7 +506,7 @@ const useUser = () => {
 		if (user && userStateValue.user.isFirstLogin && !loading && !loadingUser) {
 			router.push("/user/create-user");
 		}
-	}, [userStateValue.user]);
+	}, [user, userStateValue.user]);
 
 	return {
 		authUser: userMemo,

@@ -202,7 +202,7 @@
 		@apply bg-slate-800 w-14 h-full flex flex-col gap-y-4 duration-100 p-1 py-2 overflow-y-auto scroll-y-style;
 
 		.open-close-button {
-			@apply p-2 h-12 flex flex-row items-center w-full duration-200 gap-x-2 border-2 border-transparent;
+			@apply p-1.5 h-12 flex flex-row items-center w-full duration-200 gap-x-2 border-2 border-transparent;
 
 			.label-container {
 				@apply hidden h-full flex-row items-center;

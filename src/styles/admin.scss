@@ -1,0 +1,42 @@
+@layer components {
+	.admin-nav-wrapper {
+		@apply h-14 w-full shadow-md bg-slate-700 overflow-x-auto scroll-x-style;
+
+		.admin-nav-container {
+			@apply h-full w-max flex flex-row items-center p-2 gap-x-1;
+
+			.admin-nav-group {
+				@apply flex flex-row items-center p-2 text-white gap-x-3 duration-200;
+
+				.icon-container {
+					@apply h-6 w-6 aspect-square;
+
+					.icon {
+						@apply h-full w-full;
+					}
+				}
+
+				.label-container {
+					@apply flex flex-1 flex-row h-full items-center;
+
+					.label {
+						@apply font-semibold text-sm;
+					}
+				}
+
+				&:hover,
+				&:focus {
+					@apply bg-slate-600 rounded-md text-cyan-300;
+				}
+			}
+
+			.divider-container {
+				@apply h-full mx-2;
+
+				.divider {
+					@apply h-full w-[1px] bg-white bg-opacity-20;
+				}
+			}
+		}
+	}
+}

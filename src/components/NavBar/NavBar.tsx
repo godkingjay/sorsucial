@@ -2,23 +2,24 @@ import { UserState } from "@/atoms/userAtom";
 import Image from "next/image";
 import React from "react";
 import RightNav from "./RightNav";
-import { useRecoilState } from "recoil";
-import { navigationBarState } from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater } from "recoil";
+import { NavigationBarState } from "@/atoms/navigationBarAtom";
 
 type NavBarProps = {
 	userStateValue: UserState;
 	authLoading: boolean;
 	logOutUser: () => void;
+	navigationBarStateValue: NavigationBarState;
+	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 };
 
 const NavBar: React.FC<NavBarProps> = ({
 	userStateValue,
 	authLoading,
 	logOutUser,
+	navigationBarStateValue,
+	setNavigationBarStateValue,
 }) => {
-	const [navigationBarStateValue, setNavigationBarStateValue] =
-		useRecoilState(navigationBarState);
-
 	return (
 		<div className="sticky top-0 w-full h-14 bg-white shadow-sm z-[1000]">
 			<div className="h-14 w-full flex flex-row items-center">

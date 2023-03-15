@@ -7,6 +7,11 @@ import { useRouter } from "next/router";
 import MainPageLayout from "./MainPageLayout";
 import LoadingScreen from "../Skeleton/LoadingScreen";
 import AdminPageLayout from "./AdminPageLayout";
+import { useRecoilState } from "recoil";
+import {
+	NavigationBarState,
+	navigationBarState,
+} from "@/atoms/navigationBarAtom";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -24,13 +29,52 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		userStateValue,
 		logOutUser,
 	} = useUser();
+	const [navigationBarStateValue, setNavigationBarStateValue] =
+		useRecoilState(navigationBarState);
 
 	const router = useRouter();
+
+	const checkCurrentDirectory =
+		(): NavigationBarState["pageLeftSidebar"]["current"] => {
+			const mainDirectory = router.pathname.split("/")[1];
+			switch (mainDirectory) {
+				case "":
+					return "";
+					break;
+
+				case "admin":
+					return "admin";
+					break;
+
+				case "feeds":
+					return "feeds";
+					break;
+
+				case "discussions":
+					return "discussions";
+					break;
+
+				case "groups":
+					return "groups";
+					break;
+
+				default:
+					return "none";
+					break;
+			}
+		};
 
 	useEffect(() => {
 		setCurrentDirectory({
 			main: router.pathname.split("/")[1],
 		});
+		setNavigationBarStateValue((prev) => ({
+			...prev,
+			pageLeftSidebar: {
+				...prev.pageLeftSidebar,
+				current: checkCurrentDirectory(),
+			},
+		}));
 	}, [router.pathname]);
 
 	return (
@@ -44,11 +88,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 							userStateValue={userStateValue}
 							authLoading={authLoading}
 							logOutUser={logOutUser}
+							navigationBarStateValue={navigationBarStateValue}
+							setNavigationBarStateValue={setNavigationBarStateValue}
 						/>
 					)}
 					<div className="flex-1 flex flex-row">
 						{authUser && !userStateValue.user.isFirstLogin && (
-							<PageLeftSidebar />
+							<PageLeftSidebar
+								navigationBarStateValue={navigationBarStateValue}
+								setNavigationBarStateValue={setNavigationBarStateValue}
+							/>
 						)}
 						{currentDirectory.main === "admin" ? (
 							<AdminPageLayout>{children}</AdminPageLayout>

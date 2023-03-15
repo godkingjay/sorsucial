@@ -9,14 +9,26 @@ import {
 import { FaBullhorn } from "react-icons/fa";
 import { RiDiscussFill } from "react-icons/ri";
 import { HiUserGroup } from "react-icons/hi";
+import { NavigationBarState } from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater } from "recoil";
 
-type PageLeftSidebarProps = {};
+type PageLeftSidebarProps = {
+	navigationBarStateValue: NavigationBarState;
+	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
+};
 
-const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
-	const [open, setOpen] = useState(false);
-
+const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
+	navigationBarStateValue,
+	setNavigationBarStateValue,
+}) => {
 	const handleOpen = () => {
-		setOpen((prev) => !prev);
+		setNavigationBarStateValue((prev) => ({
+			...prev,
+			pageLeftSidebar: {
+				...prev.pageLeftSidebar,
+				open: !prev.pageLeftSidebar.open,
+			},
+		}));
 	};
 
 	return (
@@ -29,12 +41,14 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 			>
 				<div
 					className="page-left-sidebar"
-					data-open={open}
+					data-open={navigationBarStateValue.pageLeftSidebar.open}
 				>
 					<div className="w-full flex flex-col gap-y-2">
 						<button
 							type="button"
-							title={open ? "Close" : "Open"}
+							title={
+								navigationBarStateValue.pageLeftSidebar.open ? "Close" : "Open"
+							}
 							className="open-close-button"
 							onClick={handleOpen}
 						>
@@ -42,7 +56,7 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								<p className="label">SorSUcial</p>
 							</div>
 							<div className="icon-container">
-								{open ? (
+								{navigationBarStateValue.pageLeftSidebar.open ? (
 									<MdOutlineKeyboardDoubleArrowLeft className="icon" />
 								) : (
 									<MdOutlineKeyboardDoubleArrowRight className="icon" />
@@ -54,7 +68,9 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 					<ul className="flex flex-col">
 						<li>
 							<p className="list-header">
-								{open ? "Site Administration" : "• • •"}
+								{navigationBarStateValue.pageLeftSidebar.open
+									? "Site Administration"
+									: "• • •"}
 							</p>
 						</li>
 						<li>
@@ -62,6 +78,10 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								href="/admin/"
 								title="Administration"
 								className="sidebar-nav-group"
+								role="button"
+								data-active={
+									navigationBarStateValue.pageLeftSidebar.current === "admin"
+								}
 							>
 								<div className="icon-container">
 									<MdAdminPanelSettings className="icon" />
@@ -74,13 +94,21 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 					</ul>
 					<ul className="flex flex-col">
 						<li>
-							<p className="list-header">{open ? "Home" : "• • •"}</p>
+							<p className="list-header">
+								{navigationBarStateValue.pageLeftSidebar.open
+									? "Home"
+									: "• • •"}
+							</p>
 						</li>
 						<li>
 							<Link
 								href="/"
 								title="Announcements"
 								className="sidebar-nav-group"
+								role="button"
+								data-active={
+									navigationBarStateValue.pageLeftSidebar.current === ""
+								}
 							>
 								<div className="icon-container">
 									<FaBullhorn className="icon" />
@@ -95,6 +123,10 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								href="/feeds/"
 								title="Feeds"
 								className="sidebar-nav-group"
+								role="button"
+								data-active={
+									navigationBarStateValue.pageLeftSidebar.current === "feeds"
+								}
 							>
 								<div className="icon-container">
 									<MdFeed className="icon" />
@@ -109,6 +141,11 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								href="/discussions/"
 								title="Discussions"
 								className="sidebar-nav-group"
+								role="button"
+								data-active={
+									navigationBarStateValue.pageLeftSidebar.current ===
+									"discussions"
+								}
 							>
 								<div className="icon-container">
 									<RiDiscussFill className="icon" />
@@ -123,6 +160,10 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 								href="/groups/"
 								title="Groups"
 								className="sidebar-nav-group"
+								role="button"
+								data-active={
+									navigationBarStateValue.pageLeftSidebar.current === "groups"
+								}
 							>
 								<div className="icon-container">
 									<HiUserGroup className="icon" />

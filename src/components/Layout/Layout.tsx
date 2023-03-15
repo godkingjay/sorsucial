@@ -5,6 +5,7 @@ import Modals from "../Modal/Modals";
 import PageLeftSidebar from "../Controls/PageLeftSidebar";
 import { useRouter } from "next/router";
 import MainPageLayout from "./MainPageLayout";
+import LoadingScreen from "../Skeleton/LoadingScreen";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -25,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
 			{authLoading || loadingUser ? (
-				<p>Loading</p>
+				<LoadingScreen />
 			) : (
 				<>
 					{authUser && !userStateValue.user.isFirstLogin && (

@@ -1,81 +1,86 @@
-import React from "react";
-import { FaUserCircle } from "react-icons/fa";
-import { HiUserGroup } from "react-icons/hi";
-import { MdSpaceDashboard } from "react-icons/md";
-import { BsFillPersonBadgeFill } from "react-icons/bs";
+import React, { useEffect } from "react";
+import AdminNavigation from "../Controls/AdminNavigation";
+import { NavigationBarState } from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater } from "recoil";
+import { NextRouter } from "next/router";
+import { User } from "firebase/auth";
+import { UserState } from "@/atoms/userAtom";
+import LoadingScreen from "../Skeleton/LoadingScreen";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
+	navigationBarStateValue: NavigationBarState;
+	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
+	router: NextRouter;
+	loadingUser: boolean;
+	authLoading: boolean;
+	authUser: User;
+	userStateValue: UserState;
 };
 
-const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({ children }) => {
+const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
+	children,
+	navigationBarStateValue,
+	setNavigationBarStateValue,
+	router,
+	loadingUser,
+	authLoading,
+	authUser,
+	userStateValue,
+}) => {
+	useEffect(() => {
+		const levelTwo = router.pathname.split("/")[2];
+		if (levelTwo) {
+			const isPathOfAdmin = [
+				"manage-users",
+				"manage-groups",
+				"manage-requests",
+			].includes(levelTwo);
+
+			if (isPathOfAdmin) {
+				setNavigationBarStateValue((prev) => ({
+					...prev,
+					adminPageNavBar: {
+						...prev.adminPageNavBar,
+						current:
+							levelTwo as NavigationBarState["adminPageNavBar"]["current"],
+					},
+				}));
+			} else {
+				router.push("/admin");
+			}
+		} else {
+			setNavigationBarStateValue((prev) => ({
+				...prev,
+				adminPageNavBar: {
+					...prev.adminPageNavBar,
+					current: "",
+				},
+			}));
+		}
+	}, [router.pathname]);
+
+	useEffect(() => {
+		if (
+			!loadingUser &&
+			!authLoading &&
+			authUser &&
+			!userStateValue.user.role.includes("admin")
+		) {
+			router.push("/");
+		}
+	}, [loadingUser, authLoading, authUser, userStateValue.user.role]);
+
+	if (loadingUser || authLoading || !authUser || !userStateValue.user.uid) {
+		return <LoadingScreen />;
+	}
+
 	return (
 		<div className="flex flex-col flex-1">
-			<div className="sticky top-14">
-				<div className="h-14 w-full shadow-md bg-slate-700">
-					<ul className="h-full w-full flex flex-row items-center p-2 gap-x-1">
-						<li>
-							<button
-								type="button"
-								title="Dashboard"
-								className="flex flex-row items-center p-2 text-white gap-x-2 duration-200 hover:bg-slate-600 hover:rounded-md"
-							>
-								<div className="h-8 w-8 aspect-square">
-									<MdSpaceDashboard className="h-full w-full" />
-								</div>
-								<div className="flex-1 flex flex-row h-full items-center">
-									<p className="font-semibold text-sm">Dashboard</p>
-								</div>
-							</button>
-						</li>
-						<li className="h-full">
-							<div className="h-full w-[1px] bg-white bg-opacity-20 mx-2"></div>
-						</li>
-						<li>
-							<button
-								type="button"
-								title="Users"
-								className="flex flex-row items-center p-2 text-white gap-x-2 duration-200 hover:bg-slate-600 hover:rounded-md"
-							>
-								<div className="h-8 w-8 aspect-square">
-									<FaUserCircle className="h-full w-full" />
-								</div>
-								<div className="flex-1 flex flex-row h-full items-center">
-									<p className="font-semibold text-sm">Users</p>
-								</div>
-							</button>
-						</li>
-						<li>
-							<button
-								type="button"
-								title="Groups"
-								className="flex flex-row items-center p-2 text-white gap-x-2 duration-200 hover:bg-slate-600 hover:rounded-md"
-							>
-								<div className="h-8 w-8 aspect-square">
-									<HiUserGroup className="h-full w-full" />
-								</div>
-								<div className="flex-1 flex flex-row h-full items-center">
-									<p className="font-semibold text-sm">Groups</p>
-								</div>
-							</button>
-						</li>
-						<li>
-							<button
-								type="button"
-								title="Requests"
-								className="flex flex-row items-center p-2 text-white gap-x-2 duration-200 hover:bg-slate-600 hover:rounded-md"
-							>
-								<div className="h-8 w-8 aspect-square">
-									<BsFillPersonBadgeFill className="h-full w-full" />
-								</div>
-								<div className="flex-1 flex flex-row h-full items-center">
-									<p className="font-semibold text-sm">Requests</p>
-								</div>
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
+			<AdminNavigation
+				navigationBarStateValue={navigationBarStateValue}
+				setNavigationBarStateValue={setNavigationBarStateValue}
+			/>
 			<div className="flex-1 w-full">{children}</div>
 		</div>
 	);

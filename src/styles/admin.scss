@@ -6,7 +6,7 @@
 			@apply h-full w-max flex flex-row items-center p-2 gap-x-1;
 
 			.admin-nav-group {
-				@apply flex flex-row items-center p-2 text-white gap-x-3 duration-200;
+				@apply flex flex-row items-center p-2 text-white gap-x-3 duration-200 border-2 border-transparent;
 
 				.icon-container {
 					@apply h-6 w-6 aspect-square;
@@ -26,6 +26,10 @@
 
 				&:hover,
 				&:focus {
+					@apply bg-slate-600 rounded-md text-cyan-300;
+				}
+
+				&[data-active="true"] {
 					@apply bg-slate-600 rounded-md text-cyan-300;
 				}
 			}

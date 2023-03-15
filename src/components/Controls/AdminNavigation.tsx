@@ -64,7 +64,8 @@ const AdminNavigation: React.FC<AdminNavigationProps> = ({
 						</Link>
 					</li>
 					<li>
-						<button
+						<Link
+							href="/admin/manage-groups"
 							type="button"
 							title="Groups"
 							className="admin-nav-group"
@@ -79,13 +80,14 @@ const AdminNavigation: React.FC<AdminNavigationProps> = ({
 							<div className="label-container">
 								<p className="label">Groups</p>
 							</div>
-						</button>
+						</Link>
 					</li>
 					<li className="divider-container">
 						<div className="divider"></div>
 					</li>
 					<li>
-						<button
+						<Link
+							href="/admin/manage-requests"
 							type="button"
 							title="Requests"
 							className="admin-nav-group"
@@ -100,7 +102,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = ({
 							<div className="label-container">
 								<p className="label">Requests</p>
 							</div>
-						</button>
+						</Link>
 					</li>
 				</ul>
 			</div>

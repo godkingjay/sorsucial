@@ -503,7 +503,13 @@ const useUser = () => {
 	 * @return {void}
 	 */
 	useEffect(() => {
-		if (user && userStateValue.user.isFirstLogin && !loading && !loadingUser) {
+		if (
+			user &&
+			userStateValue.user.isFirstLogin &&
+			!loading &&
+			!loadingUser &&
+			userStateValue.user.uid
+		) {
 			router.push("/user/create-user");
 		}
 	}, [user, userStateValue.user]);

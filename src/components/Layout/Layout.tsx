@@ -81,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
-			{authLoading || loadingUser ? (
+			{authLoading || loadingUser || !authUser || !userStateValue.user.uid ? (
 				<LoadingScreen />
 			) : (
 				<>
@@ -99,6 +99,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 							<PageLeftSidebar
 								navigationBarStateValue={navigationBarStateValue}
 								setNavigationBarStateValue={setNavigationBarStateValue}
+								userStateValue={userStateValue}
 							/>
 						)}
 						{currentDirectory.main === "admin" ? (
@@ -106,6 +107,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 								navigationBarStateValue={navigationBarStateValue}
 								setNavigationBarStateValue={setNavigationBarStateValue}
 								router={router}
+								loadingUser={loadingUser}
+								authLoading={authLoading}
+								authUser={authUser}
+								userStateValue={userStateValue}
 							>
 								{children}
 							</AdminPageLayout>

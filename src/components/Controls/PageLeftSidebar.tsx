@@ -11,15 +11,18 @@ import { RiDiscussFill } from "react-icons/ri";
 import { HiUserGroup } from "react-icons/hi";
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { SetterOrUpdater } from "recoil";
+import { UserState } from "@/atoms/userAtom";
 
 type PageLeftSidebarProps = {
 	navigationBarStateValue: NavigationBarState;
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
+	userStateValue: UserState;
 };
 
 const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 	navigationBarStateValue,
 	setNavigationBarStateValue,
+	userStateValue,
 }) => {
 	const handleOpen = () => {
 		setNavigationBarStateValue((prev) => ({
@@ -65,33 +68,35 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 						</button>
 						<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
 					</div>
-					<ul className="flex flex-col">
-						<li>
-							<p className="list-header">
-								{navigationBarStateValue.pageLeftSidebar.open
-									? "Site Administration"
-									: "• • •"}
-							</p>
-						</li>
-						<li>
-							<Link
-								href="/admin/"
-								title="Administration"
-								className="sidebar-nav-group"
-								role="button"
-								data-active={
-									navigationBarStateValue.pageLeftSidebar.current === "admin"
-								}
-							>
-								<div className="icon-container">
-									<MdAdminPanelSettings className="icon" />
-								</div>
-								<div className="label-container">
-									<p className="label">Administration</p>
-								</div>
-							</Link>
-						</li>
-					</ul>
+					{userStateValue.user.role.includes("admin") && (
+						<ul className="flex flex-col">
+							<li>
+								<p className="list-header">
+									{navigationBarStateValue.pageLeftSidebar.open
+										? "Site Administration"
+										: "• • •"}
+								</p>
+							</li>
+							<li>
+								<Link
+									href="/admin/"
+									title="Administration"
+									className="sidebar-nav-group"
+									role="button"
+									data-active={
+										navigationBarStateValue.pageLeftSidebar.current === "admin"
+									}
+								>
+									<div className="icon-container">
+										<MdAdminPanelSettings className="icon" />
+									</div>
+									<div className="label-container">
+										<p className="label">Administration</p>
+									</div>
+								</Link>
+							</li>
+						</ul>
+					)}
 					<ul className="flex flex-col">
 						<li>
 							<p className="list-header">

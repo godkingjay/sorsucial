@@ -59,7 +59,7 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = () => {
 						</li>
 						<li>
 							<Link
-								href="/admin/dashboard"
+								href="/admin/"
 								title="Administration"
 								className="sidebar-nav-group"
 							>

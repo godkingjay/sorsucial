@@ -1,9 +1,13 @@
+import MainPageLayout from "@/components/Layout/MainPageLayout";
+
 export default function Home() {
 	return (
 		<>
-			<main>
-				<p>Test</p>
-			</main>
+			<MainPageLayout>
+				<main>
+					<p>Test</p>
+				</main>
+			</MainPageLayout>
 		</>
 	);
 }

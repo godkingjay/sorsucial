@@ -36,12 +36,7 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 
 	return (
 		<div className="z-[100] w-max h-full sticky top-0">
-			<div
-				className="sticky top-14 w-max h-full max-h-screen"
-				style={{
-					height: "calc(100vh - 56px)",
-				}}
-			>
+			<div className="sticky top-14 w-max h-full max-h-screen page-left-sidebar-wrapper">
 				<div
 					className="page-left-sidebar"
 					data-open={navigationBarStateValue.pageLeftSidebar.open}

@@ -14,7 +14,7 @@ type AdminPageLayoutProps = {
 	router: NextRouter;
 	loadingUser: boolean;
 	authLoading: boolean;
-	authUser: User;
+	authUser?: User | null;
 	userStateValue: UserState;
 };
 

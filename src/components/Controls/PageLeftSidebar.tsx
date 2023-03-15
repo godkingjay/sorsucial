@@ -68,7 +68,7 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 						</button>
 						<div className="h-[1px] w-full bg-white bg-opacity-10"></div>
 					</div>
-					{userStateValue.user.role.includes("admin") && (
+					{userStateValue.user.roles.includes("admin") && (
 						<ul className="flex flex-col">
 							<li>
 								<p className="list-header">

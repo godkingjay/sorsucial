@@ -131,7 +131,7 @@ const useUser = () => {
 							firstName: "",
 							lastName: "",
 							isFirstLogin: true,
-							role: ["user"],
+							roles: ["user"],
 							numberOfConnections: 0,
 							numberOfFollowers: 0,
 							createdAt: serverTimestamp() as Timestamp,

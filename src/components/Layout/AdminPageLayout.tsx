@@ -65,11 +65,11 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 			!loadingUser &&
 			!authLoading &&
 			authUser &&
-			!userStateValue.user.role.includes("admin")
+			!userStateValue.user.roles.includes("admin")
 		) {
 			router.push("/");
 		}
-	}, [loadingUser, authLoading, authUser, userStateValue.user.role]);
+	}, [loadingUser, authLoading, authUser, userStateValue.user.roles]);
 
 	if (loadingUser || authLoading || !authUser || !userStateValue.user.uid) {
 		return <LoadingScreen />;

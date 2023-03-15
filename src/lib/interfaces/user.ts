@@ -51,7 +51,7 @@ export interface SiteUser {
 	email: string;
 	phoneNumber?: string;
 	isFirstLogin: boolean;
-	role: "admin" | "staff" | "student" | "instructor" | "user";
+	role: ("admin" | "staff" | "student" | "instructor" | "user")[];
 	imageURL?: string;
 	birthDate?: Timestamp;
 	gender?: "male" | "female" | "other";

@@ -13,15 +13,9 @@ import {
 	setDoc,
 	writeBatch,
 } from "firebase/firestore";
-import {
-	UploadTask,
-	getDownloadURL,
-	ref,
-	uploadBytes,
-	uploadString,
-} from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
 
@@ -137,7 +131,7 @@ const useUser = () => {
 							firstName: "",
 							lastName: "",
 							isFirstLogin: true,
-							role: "user",
+							role: ["user"],
 							numberOfConnections: 0,
 							numberOfFollowers: 0,
 							createdAt: serverTimestamp() as Timestamp,
@@ -173,13 +167,41 @@ const useUser = () => {
 		}
 	};
 
+	/**
+	 * Async function to create a new user document in Firestore.
+	 *
+	 * @param {object} userData - The user data object.
+	 *
+	 * @return {void}
+	 *
+	 * @throws {Error} - If there is an error creating the user document.
+	 */
 	const createUser = async (userData: CreateUserType) => {
+		/**
+		 * Create new user document in Firestore and set user state with user data from form input fields.
+		 */
 		try {
+			/**
+			 * Batch write to Firestore to create user document.
+			 */
 			const batch = writeBatch(firestore);
+			/**
+			 * Create image document reference.
+			 */
 			const imageDocRef = doc(
 				collection(firestore, `users/${user?.uid}/images`)
 			);
 
+			/**
+			 * Upload profile photo to Firebase Storage.
+			 *
+			 * @param {CreateUserType["profilePhoto"]} profilePhoto - The profile photo file.
+			 * @param {string} imageDocId - The image document ID.
+			 *
+			 * @return {Promise<void>}
+			 *
+			 * @throws {Error} - If there is an error uploading the profile photo.
+			 */
 			await uploadProfilePhoto(userData.profilePhoto, imageDocRef.id).catch(
 				(error: any) => {
 					console.log("Hook: Upload Profile Photo Error: ", error.message);
@@ -187,10 +209,21 @@ const useUser = () => {
 				}
 			);
 
+			/**
+			 * Create a reference to the profile photo document.
+			 */
 			const profilePhotoDocRef = doc(
 				collection(firestore, `users/${user?.uid}/images`),
 				imageDocRef.id
 			);
+
+			/**
+			 * Get profile photo document data from Firestore.
+			 *
+			 * @return {Promise<void>}
+			 *
+			 * @throws {Error} - If there is an error getting the profile photo document.
+			 */
 			const profilePhotoDoc = await getDoc(profilePhotoDocRef).catch(
 				(error: any) => {
 					console.log(
@@ -201,10 +234,29 @@ const useUser = () => {
 				}
 			);
 
+			/**
+			 * If profile photo document exists, create user document in Firestore with user data.
+			 */
 			if (profilePhotoDoc.exists()) {
+				/**
+				 * Get profile photo document data.
+				 *
+				 * @type {UserImage}
+				 */
 				const profilePhotoDocData = profilePhotoDoc.data() as UserImage;
 
+				/**
+				 * Create user document reference.
+				 */
 				const userDocRef = doc(collection(firestore, "users"), user?.uid);
+
+				/**
+				 * Create new user object.
+				 * This object will be used to update the user document in Firestore.
+				 * This object will also be used to set the user state.
+				 *
+				 * @type {SiteUser}
+				 */
 				const newUser = {
 					firstName: userData.firstName,
 					middleName: userData.middleName,
@@ -220,13 +272,26 @@ const useUser = () => {
 					lastChangeAt: serverTimestamp() as Timestamp,
 				};
 
+				/**
+				 * Update user document in Firestore.
+				 */
 				batch.update(userDocRef, newUser);
 
+				/**
+				 * Commit batch write to Firestore.
+				 *
+				 * @return {Promise<void>}
+				 *
+				 * @throws {Error} - If there is an error creating the user document.
+				 */
 				await batch.commit().catch((error: any) => {
 					console.log("Hook: Creating User Document Error: ", error.message);
 					throw error;
 				});
 
+				/**
+				 * Set user state with new user data.
+				 */
 				setUserStateValue((prev) => ({
 					...prev,
 					user: {
@@ -438,10 +503,16 @@ const useUser = () => {
 	 * @return {void}
 	 */
 	useEffect(() => {
-		if (user && userStateValue.user.isFirstLogin && !loading && !loadingUser) {
+		if (
+			user &&
+			userStateValue.user.isFirstLogin &&
+			!loading &&
+			!loadingUser &&
+			userStateValue.user.uid
+		) {
 			router.push("/user/create-user");
 		}
-	}, [userStateValue.user]);
+	}, [user, userStateValue.user]);
 
 	return {
 		authUser: userMemo,

@@ -5,11 +5,9 @@ type AdminPageProps = {};
 
 const AdminPage: React.FC<AdminPageProps> = () => {
 	return (
-		<AdminPageLayout>
-			<main>
-				<p>AdminPage</p>
-			</main>
-		</AdminPageLayout>
+		<main>
+			<p>AdminPage</p>
+		</main>
 	);
 };
 

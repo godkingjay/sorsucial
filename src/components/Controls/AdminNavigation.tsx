@@ -9,8 +9,8 @@ type AdminNavigationProps = {};
 const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 	return (
 		<div className="sticky top-14">
-			<div className="h-14 w-full shadow-md bg-slate-700">
-				<ul className="h-full w-full flex flex-row items-center p-2 gap-x-1">
+			<div className="h-14 w-full shadow-md bg-slate-700 overflow-x-auto scroll-x-style">
+				<ul className="h-full w-max flex flex-row items-center p-2 gap-x-1">
 					<li>
 						<button
 							type="button"
@@ -20,7 +20,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="h-6 w-6 aspect-square">
 								<MdSpaceDashboard className="h-full w-full" />
 							</div>
-							<div className="flex-1 flex flex-row h-full items-center">
+							<div className="flex flex-1 flex-row h-full items-center">
 								<p className="font-semibold text-sm">Dashboard</p>
 							</div>
 						</button>
@@ -37,7 +37,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="h-6 w-6 aspect-square">
 								<FaUserCircle className="h-full w-full" />
 							</div>
-							<div className="flex-1 flex flex-row h-full items-center">
+							<div className="flex flex-1 flex-row h-full items-center">
 								<p className="font-semibold text-sm">Users</p>
 							</div>
 						</button>
@@ -51,7 +51,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="h-6 w-6 aspect-square">
 								<HiUserGroup className="h-full w-full" />
 							</div>
-							<div className="flex-1 flex flex-row h-full items-center">
+							<div className="flex flex-1 flex-row h-full items-center">
 								<p className="font-semibold text-sm">Groups</p>
 							</div>
 						</button>
@@ -65,7 +65,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 							<div className="h-6 w-6 aspect-square">
 								<GoRequestChanges className="h-full w-full" />
 							</div>
-							<div className="flex-1 flex flex-row h-full items-center">
+							<div className="flex flex-1 flex-row h-full items-center">
 								<p className="font-semibold text-sm">Requests</p>
 							</div>
 						</button>

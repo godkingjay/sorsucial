@@ -14,6 +14,9 @@ export interface NavigationBarState {
 		open: boolean;
 		current: "" | "admin" | "feeds" | "discussions" | "groups" | "none";
 	};
+	adminPageNavBar: {
+		current: "" | "manage-users" | "manage-groups" | "manage-requests" | "none";
+	};
 }
 
 export const defaultNavigationBarState: NavigationBarState = {
@@ -28,6 +31,9 @@ export const defaultNavigationBarState: NavigationBarState = {
 	},
 	pageLeftSidebar: {
 		open: false,
+		current: "",
+	},
+	adminPageNavBar: {
 		current: "",
 	},
 };

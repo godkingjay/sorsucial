@@ -34,37 +34,67 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	const router = useRouter();
 
-	const checkCurrentDirectory =
-		(): NavigationBarState["pageLeftSidebar"]["current"] => {
-			const mainDirectory = router.pathname.split("/")[1];
-			switch (mainDirectory) {
-				case "":
-					return "";
-					break;
+	const checkCurrentDirectory = (
+		level: string
+	): NavigationBarState["pageLeftSidebar"]["current"] => {
+		switch (level) {
+			case "":
+				return "";
+				break;
 
-				case "admin":
-					return "admin";
-					break;
+			case "admin":
+				return "admin";
+				break;
 
-				case "feeds":
-					return "feeds";
-					break;
+			case "feeds":
+				return "feeds";
+				break;
 
-				case "discussions":
-					return "discussions";
-					break;
+			case "discussions":
+				return "discussions";
+				break;
 
-				case "groups":
-					return "groups";
-					break;
+			case "groups":
+				return "groups";
+				break;
 
-				default:
-					return "none";
-					break;
-			}
-		};
+			default:
+				return "none";
+				break;
+		}
+	};
+
+	const checkAdminDirectory = (
+		level: string
+	): NavigationBarState["adminPageNavBar"]["current"] => {
+		switch (level) {
+			case undefined || null:
+				return "";
+				break;
+
+			case "manage-users":
+				return "manage-users";
+				break;
+
+			case "manage-groups":
+				return "manage-groups";
+				break;
+
+			case "manage-requests":
+				return "manage-requests";
+				break;
+
+			default:
+				return "none";
+				break;
+		}
+	};
 
 	useEffect(() => {
+		const directory = router.pathname.split("/");
+		const mainDirectory = directory[1];
+		const levelTwoDirectory = directory[2];
+
 		setCurrentDirectory({
 			main: router.pathname.split("/")[1],
 		});
@@ -72,7 +102,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 			...prev,
 			pageLeftSidebar: {
 				...prev.pageLeftSidebar,
-				current: checkCurrentDirectory(),
+				current: checkCurrentDirectory(mainDirectory),
+			},
+		}));
+		setNavigationBarStateValue((prev) => ({
+			...prev,
+			adminPageNavBar: {
+				...prev.adminPageNavBar,
+				current: checkAdminDirectory(levelTwoDirectory),
 			},
 		}));
 	}, [router.pathname]);
@@ -100,7 +137,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 							/>
 						)}
 						{currentDirectory.main === "admin" ? (
-							<AdminPageLayout>{children}</AdminPageLayout>
+							<AdminPageLayout
+								navigationBarStateValue={navigationBarStateValue}
+								setNavigationBarStateValue={setNavigationBarStateValue}
+							>
+								{children}
+							</AdminPageLayout>
 						) : (
 							<MainPageLayout>{children}</MainPageLayout>
 						)}

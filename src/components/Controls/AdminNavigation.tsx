@@ -1,10 +1,18 @@
+import {
+	NavigationBarState,
+	navigationBarState,
+} from "@/atoms/navigationBarAtom";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { GoRequestChanges } from "react-icons/go";
 import { HiUserGroup } from "react-icons/hi";
 import { MdSpaceDashboard } from "react-icons/md";
+import { SetterOrUpdater } from "recoil";
 
-type AdminNavigationProps = {};
+type AdminNavigationProps = {
+	navigationBarStateValue: NavigationBarState;
+	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
+};
 
 const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 	return (
@@ -41,9 +49,6 @@ const AdminNavigation: React.FC<AdminNavigationProps> = () => {
 								<p className="label">Users</p>
 							</div>
 						</button>
-					</li>
-					<li className="divider-container">
-						<div className="divider"></div>
 					</li>
 					<li>
 						<button

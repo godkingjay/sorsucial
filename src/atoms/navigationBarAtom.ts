@@ -10,6 +10,10 @@ export interface NavigationBarState {
 	userDropdown: {
 		open: boolean;
 	};
+	pageLeftSidebar: {
+		open: boolean;
+		current: "" | "admin" | "feeds" | "discussions" | "groups" | "none";
+	};
 }
 
 export const defaultNavigationBarState: NavigationBarState = {
@@ -21,6 +25,10 @@ export const defaultNavigationBarState: NavigationBarState = {
 	},
 	userDropdown: {
 		open: false,
+	},
+	pageLeftSidebar: {
+		open: false,
+		current: "",
 	},
 };
 

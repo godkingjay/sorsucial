@@ -30,7 +30,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 			...prev,
 			addUser: {
 				...prev.addUser,
-				isOpen: true,
+				open: true,
 			},
 		}));
 	};
@@ -67,6 +67,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 										type="button"
 										title="Add New User"
 										className="flex flex-row items-center h-10 p-2 bg-green-500 rounded-md gap-x-2 hover:bg-green-600"
+										onClick={handleAddNewUser}
 									>
 										<div className="h-6 w-6 aspect-square text-white">
 											<TiUserAdd className="h-full w-full" />

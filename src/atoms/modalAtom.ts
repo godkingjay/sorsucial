@@ -18,12 +18,14 @@ export const errorUploadModalState = atom({
 export type AdminModalState = {
 	addUser: {
 		open: boolean;
+		tab: "single" | "bulk" | "list" | "import";
 	};
 };
 
 const defaultAdminModalState: AdminModalState = {
 	addUser: {
 		open: false,
+		tab: "single",
 	},
 };
 

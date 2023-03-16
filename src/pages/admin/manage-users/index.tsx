@@ -8,7 +8,8 @@ import { TiUserAdd } from "react-icons/ti";
 type AdminManageUsersPageProps = {};
 
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
-	const { adminStateValue, adminFetchUsers } = useAdmin();
+	const { adminStateValue, adminFetchUsers, setAdminModalStateValue } =
+		useAdmin();
 	const { userStateValue } = useUser();
 	const [fetchingUsers, setFetchingUsers] = useState(false);
 	const fetchingUsersMounted = useRef(false);
@@ -23,6 +24,16 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 		}
 		setFetchingUsers(false);
 	}, [adminFetchUsers]);
+
+	const handleAddNewUser = () => {
+		setAdminModalStateValue((prev) => ({
+			...prev,
+			addUser: {
+				...prev.addUser,
+				isOpen: true,
+			},
+		}));
+	};
 
 	useEffect(() => {
 		if (

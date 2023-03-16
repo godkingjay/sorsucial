@@ -1,4 +1,5 @@
 import { adminState } from "@/atoms/adminAtom";
+import { adminModalState } from "@/atoms/modalAtom";
 import { firestore } from "@/firebase/clientApp";
 import { SiteUser } from "@/lib/interfaces/user";
 import {
@@ -14,6 +15,8 @@ import { useRecoilState, useResetRecoilState } from "recoil";
 
 const useAdmin = () => {
 	const [adminStateValue, setAdminStateValue] = useRecoilState(adminState);
+	const [adminModalStateValue, setAdminModalStateValue] =
+		useRecoilState(adminModalState);
 	const resetAdminStateValue = useResetRecoilState(adminState);
 
 	const adminFetchUsers = async ({
@@ -60,6 +63,8 @@ const useAdmin = () => {
 	return {
 		adminStateValue,
 		adminFetchUsers,
+		adminModalStateValue,
+		setAdminModalStateValue,
 	};
 };
 

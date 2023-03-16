@@ -12,6 +12,7 @@ import {
 	NavigationBarState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
+import AdminModals from "../Modal/AdminModals";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -121,6 +122,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 				</>
 			)}
 			<Modals />
+			{userStateValue.user.roles.includes("admin") && <AdminModals />}
 		</main>
 	);
 };

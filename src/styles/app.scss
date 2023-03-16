@@ -140,7 +140,7 @@
 			@apply w-full p-2 flex flex-row items-center gap-x-4 cursor-pointer duration-200 rounded-none relative;
 
 			.image-container {
-				@apply h-12 w-12 bg-gray-300 text-center truncate grid place-items-center rounded-full aspect-square;
+				@apply h-12 w-12 bg-white text-center truncate grid place-items-center rounded-full aspect-square text-gray-300;
 
 				.image {
 					@apply h-full w-full;

@@ -37,8 +37,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 						loading="lazy"
 						className="rounded-full h-full w-full"
 					/>
-				) : userStateValue.user.gender ? (
-					<></>
 				) : (
 					<FaUserCircle className="h-full w-full" />
 				)}
@@ -70,7 +68,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 										className="image"
 									/>
 								) : (
-									<></>
+									<FaUserCircle className="h-full w-full" />
 								)}
 							</div>
 							<div className="label-container">

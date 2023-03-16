@@ -55,10 +55,10 @@
 					@apply flex flex-row;
 
 					td {
-						@apply border-logo-300 border-r border-l bg-logo-200 font-bold px-2 py-1 text-white h-10 flex flex-row items-center w-32;
+						@apply border-cyan-600 border bg-cyan-500 font-bold px-2 py-1 text-white h-10 flex flex-row items-center w-32;
 
 						&:first-child {
-							@apply bg-gray-400 border-l-0 rounded-tl-lg w-10 text-center flex flex-row justify-center border-b-0;
+							@apply bg-gray-400 rounded-tl-lg w-10 text-center flex flex-row justify-center border-gray-500;
 						}
 
 						&:nth-child(2) {
@@ -66,7 +66,7 @@
 						}
 
 						&:last-child {
-							@apply bg-blue-600 border-r-0 rounded-tr-lg  border-l-0 border-b-0;
+							@apply bg-blue-600 rounded-tr-lg border-blue-800;
 						}
 					}
 				}

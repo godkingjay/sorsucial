@@ -14,3 +14,20 @@ export const errorUploadModalState = atom({
 	key: "errorUploadModalState",
 	default: defaultErrorUploadModal,
 });
+
+export type AdminModalState = {
+	addUser: {
+		open: boolean;
+	};
+};
+
+const defaultAdminModalState: AdminModalState = {
+	addUser: {
+		open: false,
+	},
+};
+
+export const adminModalState = atom({
+	key: "adminModalState",
+	default: defaultAdminModalState,
+});

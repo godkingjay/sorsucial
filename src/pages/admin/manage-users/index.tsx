@@ -1,11 +1,31 @@
 import useAdmin from "@/hooks/useAdmin";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TiUserAdd } from "react-icons/ti";
 
 type AdminManageUsersPageProps = {};
 
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const { adminStateValue, adminFetchUsers } = useAdmin();
+	const [fetchingUsers, setFetchingUsers] = useState(false);
+
+	console.log(adminStateValue.manageUsers);
+
+	const handleFetchUsers = useCallback(async () => {
+		setFetchingUsers(true);
+		try {
+			await adminFetchUsers({});
+		} catch (error: any) {
+			console.log("Fetching Users Error!: ", error.message);
+			throw error;
+		}
+		setFetchingUsers(false);
+	}, [fetchingUsers, adminFetchUsers]);
+
+	useEffect(() => {
+		if (!fetchingUsers && adminStateValue.manageUsers.length === 0) {
+			handleFetchUsers();
+		}
+	}, [handleFetchUsers]);
 
 	return (
 		<div className="w-full overflow-x-auto scroll-x-style h-full">
@@ -46,17 +66,39 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 						<div className="flex flex-col p-4">
 							<div className="flex flex-col">
 								<table className="manage-users-table">
-									<thead className="manage-users-header">
+									<tbody className="manage-users-content">
 										<tr>
-											<td>#</td>
-											<td>Email</td>
-											<td>Last Name</td>
-											<td>First Name</td>
-											<td>Roles</td>
-											<td>Action</td>
+											<td className="index">#</td>
+											<td className="email">Email</td>
+											<td className="last-name">Last Name</td>
+											<td className="first-name">First Name</td>
+											<td className="roles">Roles</td>
+											<td className="actions">Actions</td>
 										</tr>
-									</thead>
-									<tbody></tbody>
+										{adminStateValue.manageUsers.map((user, index) => {
+											return (
+												<tr key={user.uid}>
+													<td className="index">{index + 1}</td>
+													<td className="email">{user.email}</td>
+													<td className="last-name">{user.lastName}</td>
+													<td className="first-name">{user.firstName}</td>
+													<td className="roles">
+														{user.roles.map((role) => {
+															return (
+																<p
+																	key={role}
+																	className={`role-${role}`}
+																>
+																	{role}
+																</p>
+															);
+														})}
+													</td>
+													<td className="actions">Actions</td>
+												</tr>
+											);
+										})}
+									</tbody>
 								</table>
 							</div>
 						</div>

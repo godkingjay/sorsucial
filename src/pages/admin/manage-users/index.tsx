@@ -85,10 +85,18 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 										{adminStateValue.manageUsers.map((user, index) => {
 											return (
 												<tr key={user.uid}>
-													<td className="index">{index + 1}</td>
-													<td className="email">{user.email}</td>
-													<td className="last-name">{user.lastName}</td>
-													<td className="first-name">{user.firstName}</td>
+													<td className="index">
+														<p>{index + 1}</p>
+													</td>
+													<td className="email">
+														<p>{user.email}</p>
+													</td>
+													<td className="last-name">
+														<p>{user.lastName}</p>
+													</td>
+													<td className="first-name">
+														<p>{user.firstName}</p>
+													</td>
 													<td className="roles">
 														{user.roles.map((role) => {
 															return (

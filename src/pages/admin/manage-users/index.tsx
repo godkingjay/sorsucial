@@ -1,5 +1,5 @@
 import useAdmin from "@/hooks/useAdmin";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TiUserAdd } from "react-icons/ti";
 
 type AdminManageUsersPageProps = {};
@@ -7,8 +7,7 @@ type AdminManageUsersPageProps = {};
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const { adminStateValue, adminFetchUsers } = useAdmin();
 	const [fetchingUsers, setFetchingUsers] = useState(false);
-
-	console.log(adminStateValue.manageUsers);
+	const fetchingUsersMounted = useRef(false);
 
 	const handleFetchUsers = useCallback(async () => {
 		setFetchingUsers(true);
@@ -19,13 +18,17 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 			throw error;
 		}
 		setFetchingUsers(false);
-	}, [fetchingUsers, adminFetchUsers]);
+	}, [adminFetchUsers]);
 
 	useEffect(() => {
-		if (!fetchingUsers && adminStateValue.manageUsers.length === 0) {
+		if (
+			!fetchingUsersMounted.current &&
+			adminStateValue.manageUsers.length === 0
+		) {
+			fetchingUsersMounted.current = true;
 			handleFetchUsers();
 		}
-	}, [handleFetchUsers]);
+	}, []);
 
 	return (
 		<div className="w-full overflow-x-auto scroll-x-style h-full">

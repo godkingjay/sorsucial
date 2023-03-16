@@ -1,11 +1,13 @@
 import { AdminModalState } from "@/atoms/modalAtom";
-import React from "react";
+import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 import AddNewUserTab from "./AddUserModalTabs/AddNewUserTab";
 import AddBulkUserTab from "./AddUserModalTabs/AddBulkUserTab";
 import AddImportUserTab from "./AddUserModalTabs/AddImportUserTab";
 import AddUserListTab from "./AddUserModalTabs/AddUserListTab";
+import { BiSend } from "react-icons/bi";
+import { FiLoader } from "react-icons/fi";
 
 type AddUserModal = {
 	adminModalStateValue: AdminModalState;
@@ -16,6 +18,18 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
 }) => {
+	const [addingUsers, setAddingUsers] = useState(false);
+
+	const handleAddUsers = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setAddingUsers(true);
+		try {
+		} catch (error: any) {
+			console.log("Adding Users Error: ", error.message);
+		}
+		setAddingUsers(false);
+	};
+
 	const handleClose = () => {
 		setAdminModalStateValue((prev) => ({
 			...prev,
@@ -115,10 +129,40 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						</li>
 					</ul>
 				</div>
-				{adminModalStateValue.addUser.tab === "single" && <AddNewUserTab />}
-				{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
-				{adminModalStateValue.addUser.tab === "import" && <AddImportUserTab />}
-				{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
+				<form className="w-full flex flex-col p-2">
+					<div className="p-2 border border-gray-400 rounded-lg">
+						{adminModalStateValue.addUser.tab === "single" && <AddNewUserTab />}
+						{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
+						{adminModalStateValue.addUser.tab === "import" && (
+							<AddImportUserTab />
+						)}
+						{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
+					</div>
+					<div className="my-2"></div>
+					<div className="ml-auto">
+						<button
+							type="submit"
+							title="Add"
+							className="page-button flex flex-row items-center p-2 gap-x-2 px-4 h-max py-2 bg-logo-100 border-logo-100 hover:bg-logo-200 hover:border-logo-200 focus:bg-logo-200 focus:border-logo-200 w-24"
+							disabled={addingUsers}
+						>
+							{!addingUsers ? (
+								<>
+									<div className="flex flex-col items-center">
+										<p className="text-sm">Add</p>
+									</div>
+									<div className="h-5 w-5">
+										<BiSend className="h-full w-full" />
+									</div>
+								</>
+							) : (
+								<div className="h-5 w-5 animate-spin">
+									<FiLoader className="h-full w-full" />
+								</div>
+							)}
+						</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	);

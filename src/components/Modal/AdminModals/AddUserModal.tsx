@@ -48,7 +48,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						<IoClose className="h-full w-full" />
 					</button>
 				</div>
-				<div className="w-full">
+				<div className="w-full flex flex-col">
 					<ul className="admin-modal-new-user-tabs">
 						<li>
 							<button
@@ -93,7 +93,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 							</button>
 						</li>
 						<li className="h-full w-max mx-auto">
-							<div className="h-10 w-[1px] bg-black bg-opacity-20"></div>
+							<div className="h-10 w-[1px] bg-black bg-opacity-10"></div>
 						</li>
 						<li>
 							<button

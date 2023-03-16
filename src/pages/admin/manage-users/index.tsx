@@ -1,11 +1,15 @@
 import useAdmin from "@/hooks/useAdmin";
+import useUser from "@/hooks/useUser";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { MdDelete } from "react-icons/md";
 import { TiUserAdd } from "react-icons/ti";
 
 type AdminManageUsersPageProps = {};
 
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const { adminStateValue, adminFetchUsers } = useAdmin();
+	const { userStateValue } = useUser();
 	const [fetchingUsers, setFetchingUsers] = useState(false);
 	const fetchingUsersMounted = useRef(false);
 
@@ -90,14 +94,35 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 															return (
 																<p
 																	key={role}
-																	className={`role-${role}`}
+																	className={`role role-${role}`}
 																>
 																	{role}
 																</p>
 															);
 														})}
 													</td>
-													<td className="actions">Actions</td>
+													<td className="actions">
+														<button
+															type="button"
+															title="Edit"
+															className="action-edit action"
+														>
+															<div className="icon-container">
+																<FiEdit className="icon" />
+															</div>
+														</button>
+														{user.uid !== userStateValue.user.uid && (
+															<button
+																type="button"
+																title="Delete"
+																className="action-delete action"
+															>
+																<div className="icon-container">
+																	<MdDelete className="icon" />
+																</div>
+															</button>
+														)}
+													</td>
 												</tr>
 											);
 										})}

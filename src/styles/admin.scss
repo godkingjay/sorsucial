@@ -49,6 +49,8 @@
 
 		.manage-users-content {
 			tr {
+				@apply h-max;
+
 				&:first-child {
 					@apply flex flex-row;
 
@@ -72,10 +74,10 @@
 				@apply flex flex-row;
 
 				td {
-					@apply border-gray-500 border-opacity-20 border-r border-l px-2 py-1 text-black h-10 flex flex-row items-center w-32 border-b overflow-x-auto scroll-x-style;
+					@apply border-gray-500 border-opacity-20 border-r border-l p-2 text-black min-h-[40px] flex flex-row items-center w-32 border-b overflow-x-auto scroll-x-style;
 
 					&:first-child {
-						@apply bg-gray-100 border-l-0 w-10 text-center flex flex-row justify-center;
+						@apply bg-gray-100 w-10 text-center flex flex-row justify-center;
 					}
 
 					&:nth-child(2) {
@@ -83,18 +85,70 @@
 					}
 
 					&:last-child {
-						@apply border-r-0 border-l-0 bg-blue-100;
+						@apply bg-blue-100;
 					}
 				}
 
 				&:last-child {
 					td {
 						&:first-child {
-							@apply rounded-bl-lg border-b-0;
+							@apply rounded-bl-lg;
 						}
 
 						&:last-child {
-							@apply rounded-br-lg border-b-0;
+							@apply rounded-br-lg;
+						}
+					}
+				}
+
+				&:not(:first-child) {
+					.roles {
+						@apply flex flex-row gap-x-2 flex-wrap items-center text-xs;
+
+						.role {
+							@apply bg-gray-300 py-1 px-2 rounded-md;
+						}
+
+						.role-user {
+							@apply bg-gray-300 text-gray-500;
+						}
+
+						.role-admin {
+							@apply bg-red-300 text-red-500;
+						}
+					}
+
+					.actions {
+						@apply flex flex-row items-center gap-x-2;
+
+						.action {
+							@apply flex flex-row items-center gap-x-2 h-8 w-8 aspect-square p-2 justify-center rounded-md;
+
+							.icon-container {
+								@apply h-full w-full text-white;
+
+								.icon {
+									@apply h-full w-full;
+								}
+							}
+						}
+
+						.action-edit {
+							@apply bg-blue-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-blue-600;
+							}
+						}
+
+						.action-delete {
+							@apply bg-red-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-red-600;
+							}
 						}
 					}
 				}

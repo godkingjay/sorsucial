@@ -2,6 +2,10 @@ import { AdminModalState } from "@/atoms/modalAtom";
 import React from "react";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
+import AddNewUserTab from "./AddUserModalTabs/AddNewUserTab";
+import AddBulkUserTab from "./AddUserModalTabs/AddBulkUserTab";
+import AddImportUserTab from "./AddUserModalTabs/AddImportUserTab";
+import AddUserListTab from "./AddUserModalTabs/AddUserListTab";
 
 type AddUserModal = {
 	adminModalStateValue: AdminModalState;
@@ -111,7 +115,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						</li>
 					</ul>
 				</div>
-				<div className="w-full p-4"></div>
+				{adminModalStateValue.addUser.tab === "single" && <AddNewUserTab />}
+				{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
+				{adminModalStateValue.addUser.tab === "import" && <AddImportUserTab />}
+				{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
 			</div>
 		</div>
 	);

@@ -25,7 +25,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 			<button
 				type="button"
 				title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
-				className="h-11 w-11 rounded-full bg-gray-100 text-gray-400"
+				className="h-11 w-11 rounded-full bg-gray-100 text-gray-300"
 				onClick={handleUserDropdown}
 			>
 				{userStateValue.user.imageURL ? (
@@ -38,7 +38,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 						className="rounded-full h-full w-full"
 					/>
 				) : (
-					<FaUserCircle className="h-full w-full" />
+					<FaUserCircle className="h-full w-full bg-white" />
 				)}
 			</button>
 			<div

@@ -155,4 +155,12 @@
 			}
 		}
 	}
+
+	.admin-modal-new-user-tabs {
+		@apply flex flex-row items-center overflow-x-auto scroll-x-style p-1 gap-x-2;
+
+		.admin-modal-new-user-tab {
+			@apply flex flex-row items-center h-10 p-2  gap-x-2 text-logo-100 border-2 border-logo-100 font-semibold text-sm rounded-md;
+		}
+	}
 }

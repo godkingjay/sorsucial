@@ -49,19 +49,64 @@ const AddUserModal: React.FC<AddUserModal> = ({
 					</button>
 				</div>
 				<div className="w-full">
-					<ul className="flex flex-row items-center overflow-x-auto scroll-x-style p-2 gap-x-2 bg-slate-700">
+					<ul className="admin-modal-new-user-tabs">
 						<li>
 							<button
 								type="button"
 								title="New User"
 								name="single"
-								className="flex flex-row items-center h-10 p-2  gap-x-2 text-white font-semibold text-sm"
+								className="admin-modal-new-user-tab !border-green-500 !text-green-500 hover:bg-green-500 hover:!text-white focus:bg-green-500 focus:!text-white data-[active=true]:bg-green-500 data-[active=true]:!text-white"
 								data-active={
 									adminModalStateValue.addUser.tab === "single" ? true : false
 								}
 								onClick={handleTabChange}
 							>
 								New User
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								title="Bulk Add"
+								name="bulk"
+								className="admin-modal-new-user-tab !border-blue-500 !text-blue-500 hover:bg-blue-500 hover:!text-white focus:bg-blue-500 focus:!text-white data-[active=true]:bg-blue-500 data-[active=true]:!text-white"
+								data-active={
+									adminModalStateValue.addUser.tab === "bulk" ? true : false
+								}
+								onClick={handleTabChange}
+							>
+								Bulk Add
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								title="Import"
+								name="import"
+								className="admin-modal-new-user-tab !border-cyan-500 !text-cyan-500 hover:bg-cyan-500 hover:!text-white focus:bg-cyan-500 focus:!text-white data-[active=true]:bg-cyan-500 data-[active=true]:!text-white"
+								data-active={
+									adminModalStateValue.addUser.tab === "import" ? true : false
+								}
+								onClick={handleTabChange}
+							>
+								Import Users
+							</button>
+						</li>
+						<li className="h-full w-max mx-auto">
+							<div className="h-10 w-[1px] bg-black bg-opacity-20"></div>
+						</li>
+						<li>
+							<button
+								type="button"
+								title="User List"
+								name="list"
+								className="admin-modal-new-user-tab !border-orange-500 !text-orange-500 hover:bg-orange-500 hover:!text-white focus:bg-orange-500 focus:!text-white data-[active=true]:bg-orange-500 data-[active=true]:!text-white"
+								data-active={
+									adminModalStateValue.addUser.tab === "list" ? true : false
+								}
+								onClick={handleTabChange}
+							>
+								User List
 							</button>
 						</li>
 					</ul>

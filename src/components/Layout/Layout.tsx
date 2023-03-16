@@ -81,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
-			{authLoading || loadingUser || !authUser || !userStateValue.user.uid ? (
+			{authLoading || loadingUser ? (
 				<LoadingScreen />
 			) : (
 				<>

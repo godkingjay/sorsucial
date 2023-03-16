@@ -383,7 +383,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 											creatingUser ||
 											!createUserForm.firstName ||
 											!createUserForm.lastName ||
-											!createUserForm.profilePhoto ||
 											!createUserForm.birthdate ||
 											!createUserForm.gender ||
 											!createUserForm.stateOrProvince ||

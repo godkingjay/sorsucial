@@ -40,7 +40,7 @@ export const defaultSiteUser: SiteUser = {
 	lastName: "",
 	email: "",
 	isFirstLogin: true,
-	role: ["user"],
+	roles: ["user"],
 	numberOfConnections: 0,
 	numberOfFollowers: 0,
 	createdAt: null,

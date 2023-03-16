@@ -6,6 +6,7 @@ import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
+import useAdmin from "@/hooks/useAdmin";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
@@ -14,7 +15,7 @@ type AdminPageLayoutProps = {
 	router: NextRouter;
 	loadingUser: boolean;
 	authLoading: boolean;
-	authUser: User;
+	authUser?: User | null;
 	userStateValue: UserState;
 };
 
@@ -28,6 +29,8 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	authUser,
 	userStateValue,
 }) => {
+	const { adminStateValue, adminFetchUsers } = useAdmin();
+
 	useEffect(() => {
 		const levelTwo = router.pathname.split("/")[2];
 		if (levelTwo) {
@@ -65,11 +68,11 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 			!loadingUser &&
 			!authLoading &&
 			authUser &&
-			!userStateValue.user.role.includes("admin")
+			!userStateValue.user.roles.includes("admin")
 		) {
 			router.push("/");
 		}
-	}, [loadingUser, authLoading, authUser, userStateValue.user.role]);
+	}, [loadingUser, authLoading, authUser, userStateValue.user.roles]);
 
 	if (loadingUser || authLoading || !authUser || !userStateValue.user.uid) {
 		return <LoadingScreen />;

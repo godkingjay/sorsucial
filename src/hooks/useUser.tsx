@@ -131,7 +131,7 @@ const useUser = () => {
 							firstName: "",
 							lastName: "",
 							isFirstLogin: true,
-							role: ["user"],
+							roles: ["user"],
 							numberOfConnections: 0,
 							numberOfFollowers: 0,
 							createdAt: serverTimestamp() as Timestamp,
@@ -185,59 +185,87 @@ const useUser = () => {
 			 * Batch write to Firestore to create user document.
 			 */
 			const batch = writeBatch(firestore);
-			/**
-			 * Create image document reference.
-			 */
-			const imageDocRef = doc(
-				collection(firestore, `users/${user?.uid}/images`)
-			);
 
 			/**
-			 * Upload profile photo to Firebase Storage.
-			 *
-			 * @param {CreateUserType["profilePhoto"]} profilePhoto - The profile photo file.
-			 * @param {string} imageDocId - The image document ID.
-			 *
-			 * @return {Promise<void>}
-			 *
-			 * @throws {Error} - If there is an error uploading the profile photo.
+			 * Create user document reference.
 			 */
-			await uploadProfilePhoto(userData.profilePhoto, imageDocRef.id).catch(
-				(error: any) => {
-					console.log("Hook: Upload Profile Photo Error: ", error.message);
-					throw error;
-				}
-			);
+			const userDocRef = doc(collection(firestore, "users"), user?.uid);
 
 			/**
-			 * Create a reference to the profile photo document.
+			 * Create new user object.
+			 * This object will be used to update the user document in Firestore.
+			 * This object will also be used to set the user state.
+			 *
+			 * @type {SiteUser}
 			 */
-			const profilePhotoDocRef = doc(
-				collection(firestore, `users/${user?.uid}/images`),
-				imageDocRef.id
-			);
+			const newUser = {
+				firstName: userData.firstName,
+				middleName: userData.middleName,
+				lastName: userData.lastName,
+				isFirstLogin: false,
+				imageURL: "",
+				birthDate: userData.birthdate as Timestamp,
+				gender: userData.gender as SiteUser["gender"],
+				stateOrProvince: userData.stateOrProvince,
+				cityOrMunicipality: userData.cityOrMunicipality,
+				barangay: userData.barangay,
+				streetAddress: userData.streetAddress,
+				lastChangeAt: serverTimestamp() as Timestamp,
+			};
 
 			/**
-			 * Get profile photo document data from Firestore.
-			 *
-			 * @return {Promise<void>}
-			 *
-			 * @throws {Error} - If there is an error getting the profile photo document.
+			 * If a profile photo exists, upload the profile photo to Firebase Storage.
 			 */
-			const profilePhotoDoc = await getDoc(profilePhotoDocRef).catch(
-				(error: any) => {
-					console.log(
-						"Hook: Getting Profile Photo Document Error: ",
-						error.message
-					);
-					throw error;
-				}
-			);
+			if (userData.profilePhoto?.url) {
+				/**
+				 * Create image document reference.
+				 */
+				const imageDocRef = doc(
+					collection(firestore, `users/${user?.uid}/images`)
+				);
 
-			/**
-			 * If profile photo document exists, create user document in Firestore with user data.
-			 */
-			if (profilePhotoDoc.exists()) {
+				/**
+				 * Upload profile photo to Firebase Storage.
+				 *
+				 * @param {CreateUserType["profilePhoto"]} profilePhoto - The profile photo file.
+				 * @param {string} imageDocId - The image document ID.
+				 *
+				 * @return {Promise<void>}
+				 *
+				 * @throws {Error} - If there is an error uploading the profile photo.
+				 */
+				await uploadProfilePhoto(userData.profilePhoto, imageDocRef.id).catch(
+					(error: any) => {
+						console.log("Hook: Upload Profile Photo Error: ", error.message);
+						throw error;
+					}
+				);
+
+				/**
+				 * Create a reference to the profile photo document.
+				 */
+				const profilePhotoDocRef = doc(
+					collection(firestore, `users/${user?.uid}/images`),
+					imageDocRef.id
+				);
+
+				/**
+				 * Get profile photo document data from Firestore.
+				 *
+				 * @return {Promise<void>}
+				 *
+				 * @throws {Error} - If there is an error getting the profile photo document.
+				 */
+				const profilePhotoDoc = await getDoc(profilePhotoDocRef).catch(
+					(error: any) => {
+						console.log(
+							"Hook: Getting Profile Photo Document Error: ",
+							error.message
+						);
+						throw error;
+					}
+				);
+
 				/**
 				 * Get profile photo document data.
 				 *
@@ -245,63 +273,36 @@ const useUser = () => {
 				 */
 				const profilePhotoDocData = profilePhotoDoc.data() as UserImage;
 
-				/**
-				 * Create user document reference.
-				 */
-				const userDocRef = doc(collection(firestore, "users"), user?.uid);
-
-				/**
-				 * Create new user object.
-				 * This object will be used to update the user document in Firestore.
-				 * This object will also be used to set the user state.
-				 *
-				 * @type {SiteUser}
-				 */
-				const newUser = {
-					firstName: userData.firstName,
-					middleName: userData.middleName,
-					lastName: userData.lastName,
-					isFirstLogin: false,
-					imageURL: profilePhotoDocData.fileURL,
-					birthDate: userData.birthdate as Timestamp,
-					gender: userData.gender as SiteUser["gender"],
-					stateOrProvince: userData.stateOrProvince,
-					cityOrMunicipality: userData.cityOrMunicipality,
-					barangay: userData.barangay,
-					streetAddress: userData.streetAddress,
-					lastChangeAt: serverTimestamp() as Timestamp,
-				};
-
-				/**
-				 * Update user document in Firestore.
-				 */
-				batch.update(userDocRef, newUser);
-
-				/**
-				 * Commit batch write to Firestore.
-				 *
-				 * @return {Promise<void>}
-				 *
-				 * @throws {Error} - If there is an error creating the user document.
-				 */
-				await batch.commit().catch((error: any) => {
-					console.log("Hook: Creating User Document Error: ", error.message);
-					throw error;
-				});
-
-				/**
-				 * Set user state with new user data.
-				 */
-				setUserStateValue((prev) => ({
-					...prev,
-					user: {
-						...userStateValue.user,
-						...newUser,
-					},
-				}));
-			} else {
-				console.log("Hook: Profile Photo Document Not Found!");
+				newUser.imageURL = profilePhotoDocData.fileURL;
 			}
+
+			/**
+			 * Update user document in Firestore.
+			 */
+			batch.update(userDocRef, newUser);
+
+			/**
+			 * Commit batch write to Firestore.
+			 *
+			 * @return {Promise<void>}
+			 *
+			 * @throws {Error} - If there is an error creating the user document.
+			 */
+			await batch.commit().catch((error: any) => {
+				console.log("Hook: Creating User Document Error: ", error.message);
+				throw error;
+			});
+
+			/**
+			 * Set user state with new user data.
+			 */
+			setUserStateValue((prev) => ({
+				...prev,
+				user: {
+					...userStateValue.user,
+					...newUser,
+				},
+			}));
 		} catch (error: any) {
 			console.log("Hook: User Creation Error!");
 			throw error;

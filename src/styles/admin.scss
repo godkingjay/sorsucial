@@ -43,4 +43,26 @@
 			}
 		}
 	}
+
+	.manage-users-table {
+		@apply border-spacing-0;
+
+		.manage-users-header {
+			tr {
+				@apply flex flex-row;
+
+				td {
+					@apply border-cyan-600 border-r border-l bg-cyan-500 font-bold px-2 py-1 text-white h-10 flex flex-row items-center w-32;
+
+					&:first-child {
+						@apply bg-red-500 border-l-0 rounded-tl-lg w-10 text-center flex flex-row justify-center;
+					}
+
+					&:last-child {
+						@apply bg-blue-600 border-r-0 rounded-tr-lg flex-1;
+					}
+				}
+			}
+		}
+	}
 }

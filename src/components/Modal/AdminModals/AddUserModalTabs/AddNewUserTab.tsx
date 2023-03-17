@@ -47,12 +47,16 @@ export const userRoles = [
 	},
 ];
 
+const newUserFormInitialState: NewUserType = {
+	email: "",
+	password: "",
+	roles: ["user"],
+};
+
 const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
-	const [newUserForm, setNewUserForm] = useState<NewUserType>({
-		email: "",
-		password: "",
-		roles: ["user"],
-	});
+	const [newUserForm, setNewUserForm] = useState<NewUserType>(
+		newUserFormInitialState
+	);
 
 	const [newUserFormError, setNewUserFormError] = useState<NewUserErrorType>({
 		email: false,
@@ -87,7 +91,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 		if (name === "firstName" || name === "lastName" || name === "middleName") {
 			setNewUserFormError((prev) => ({
 				...prev,
-				email: !NameRegex.test(value),
+				[name]: !NameRegex.test(value),
 			}));
 		}
 	};
@@ -173,11 +177,11 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 
 	const handleAddUser = (e: React.MouseEvent<HTMLButtonElement>) => {
 		addNewUser(newUserForm);
-		setNewUserForm({
-			email: "",
-			password: "",
-			roles: ["user"],
-		});
+		setNewUserForm(newUserFormInitialState);
+		setBirthdate("");
+		setProvinceOptions([]);
+		setCityOrMunicipalityOptions([]);
+		setBarangayOptions([]);
 	};
 
 	useEffect(() => {
@@ -561,6 +565,21 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 				title="Add User"
 				className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
 				onClick={handleAddUser}
+				disabled={
+					(!newUserForm.email && !newUserFormError.email) ||
+					!newUserForm.password ||
+					!newUserForm.firstName ||
+					!newUserForm.lastName ||
+					!newUserForm.roles?.length ||
+					(newUserFormError.middleName && newUserForm.middleName?.length) ||
+					!newUserForm.birthdate ||
+					!newUserForm.gender ||
+					!newUserForm.stateOrProvince ||
+					!newUserForm.cityOrMunicipality ||
+					!newUserForm.barangay
+						? true
+						: false
+				}
 			>
 				Add User
 			</button>

@@ -83,10 +83,12 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	};
 
 	const addNewUser = (newUser: NewUserType) => {
-		setNewUsersForm((prev) => ({
-			...prev,
-			users: [...prev.users, newUser],
-		}));
+		if (!newUsersForm.users.find((user) => user.email === newUser.email)) {
+			setNewUsersForm((prev) => ({
+				...prev,
+				users: [...prev.users, newUser],
+			}));
+		}
 	};
 
 	return (

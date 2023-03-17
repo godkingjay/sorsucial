@@ -601,7 +601,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 				<div className="flex flex-col items-center w-full bg-red-500 p-4 rounded-md text-center break-words text-sm text-white">
 					<p>
 						A user with the email{" "}
-						<span className="font-bold text-gray-700 underline">
+						<span className="font-bold text-blue-800 underline">
 							{newUserForm.email}
 						</span>{" "}
 						already exists!

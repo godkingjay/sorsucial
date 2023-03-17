@@ -223,12 +223,17 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 		setCheckingUserExists(false);
 	};
 
+	/**
+	 * Handles the click event of the input text div to focus the input element inside it when clicked.
+	 *
+	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
+	 */
 	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		(
 			(e.currentTarget as HTMLInputElement).querySelector(
 				"input"
 			) as HTMLInputElement
-		).select();
+		).focus();
 	};
 
 	useEffect(() => {

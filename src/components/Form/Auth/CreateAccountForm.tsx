@@ -52,6 +52,19 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 		setCreatingAccount(false);
 	};
 
+	/**
+	 * Handles the click event of the input text div to focus the input element inside it when clicked.
+	 *
+	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
+	 */
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).focus();
+	};
+
 	return (
 		<div className="w-full max-w-md flex flex-col bg-white shadow-around-sm rounded-xl">
 			<div className="p-4 bg-logo-300 text-white rounded-t-xl">
@@ -88,6 +101,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 										? "auth-input-container-filled"
 										: ""
 								}`}
+								onClick={handleInputTextClick}
 							>
 								<div className="auth-input-text required-field">
 									<label
@@ -126,6 +140,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 										? "auth-input-container-filled"
 										: ""
 								}`}
+								onClick={handleInputTextClick}
 							>
 								<div className="auth-input-text required-field">
 									<label

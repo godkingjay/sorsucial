@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { NewUserType } from "../AddUserModal";
-import { NameRegex } from "@/components/Form/Auth/CreateUser/CreateUserForm";
+import {
+	NameRegex,
+	genderOptions,
+} from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
+import { Timestamp } from "firebase/firestore";
 
 type AddNerUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
@@ -27,6 +31,10 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 		middleName: false,
 	});
 
+	const [birthdate, setBirthdate] = useState("");
+
+	console.log(newUserForm);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
 
@@ -48,6 +56,21 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 				email: !NameRegex.test(value),
 			}));
 		}
+	};
+
+	const handleBirthdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setBirthdate(e.target.value);
+		setNewUserForm((prev) => ({
+			...prev,
+			birthdate: Timestamp.fromDate(new Date(e.target.value)),
+		}));
+	};
+
+	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setNewUserForm((prev) => ({
+			...prev,
+			gender: e.target.value as NewUserType["gender"],
+		}));
 	};
 
 	return (
@@ -209,6 +232,57 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 								max={48}
 							/>
 						</div>
+					</div>
+				</div>
+			</div>
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+				<div className="p-2 px-4 bg-purple-700 rounded-lg">
+					<p className="font-bold text-lg text-white text-center break-words">
+						Gender and Birthdate
+					</p>
+				</div>
+				<div className="flex flex-col w-full gap-y-4">
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="birthdate"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Birthdate
+						</label>
+						<input
+							required
+							type="date"
+							name="birthdate"
+							id="birthdate"
+							value={birthdate}
+							onChange={handleBirthdateChange}
+							className="create-user-dropdown"
+						/>
+					</div>
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="gender"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Gender
+						</label>
+						<select
+							required
+							name="gender"
+							id="gender"
+							value={newUserForm.gender as string}
+							onChange={handleGenderChange}
+							className="create-user-dropdown"
+						>
+							{genderOptions.map((option) => (
+								<option
+									key={option.value}
+									value={option.value}
+								>
+									{option.label}
+								</option>
+							))}
+						</select>
 					</div>
 				</div>
 			</div>

@@ -175,34 +175,9 @@
 	}
 
 	.new-user-table {
-		@apply flex flex-col pb-6;
+		@apply flex flex-col pb-4;
 
 		.new-user-table-body {
-			// tr {
-			// 	@apply h-6;
-
-			// 	td {
-			// 		@apply p-2 text-sm border border-gray-300 h-full;
-
-			// 		&:not(:first-child) {
-			// 			@apply min-w-[160px];
-			// 		}
-			// 	}
-
-			// 	.index {
-			// 		@apply aspect-square px-4;
-			// 	}
-			// }
-
-			// .new-user-table-header {
-			// 	td {
-			// 		@apply font-bold;
-			// 	}
-			// }
-
-			// .new-user-table-content {
-			// }
-
 			tr {
 				@apply h-max flex flex-row;
 

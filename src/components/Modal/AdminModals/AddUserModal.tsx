@@ -151,7 +151,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 								Import Users
 							</button>
 						</li>
-						<li className="h-full w-max mx-auto">
+						<li className="h-max w-max mx-auto">
 							<div className="h-10 w-[1px] bg-black bg-opacity-10"></div>
 						</li>
 						<li>

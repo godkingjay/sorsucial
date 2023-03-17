@@ -5,13 +5,23 @@ import {
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
-import { Timestamp } from "firebase/firestore";
+import {
+	Timestamp,
+	collection,
+	getDoc,
+	getDocs,
+	query,
+	where,
+} from "firebase/firestore";
 import {
 	OptionsData,
 	getBarangay,
 	getCitiesMunicipality,
 	getProvinces,
 } from "@/lib/api/psgc";
+import { firestore } from "@/firebase/clientApp";
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import { FiLoader } from "react-icons/fi";
 
 type AddNewUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
@@ -83,6 +93,9 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 	>([]);
 	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
 
+	const [userExists, setUserExists] = useState(false);
+	const [checkingUserExists, setCheckingUserExists] = useState(false);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
 
@@ -92,6 +105,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 		}));
 
 		if (name === "email") {
+			setUserExists(false);
 			setNewUserFormError((prev) => ({
 				...prev,
 				email: !SignInRegex.email.test(value),
@@ -185,13 +199,34 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 		}));
 	};
 
-	const handleAddUser = (e: React.MouseEvent<HTMLButtonElement>) => {
-		addNewUser(newUserForm);
-		setNewUserForm(newUserFormInitialState);
-		setBirthdate("");
-		setProvinceOptions([]);
-		setCityOrMunicipalityOptions([]);
-		setBarangayOptions([]);
+	const handleAddUser = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		setCheckingUserExists(true);
+		try {
+			const userQuery = query(
+				collection(firestore, "users"),
+				where("email", "==", newUserForm.email)
+			);
+
+			const userDocs = await getDocs(userQuery).catch((err) => {
+				console.log("Error getting documents!");
+				throw err;
+			});
+
+			if (!userDocs?.docs.length) {
+				addNewUser(newUserForm);
+				setNewUserForm(newUserFormInitialState);
+				setBirthdate("");
+				setProvinceOptions([]);
+				setCityOrMunicipalityOptions([]);
+				setBarangayOptions([]);
+			} else {
+				console.log("User already exists!");
+				setUserExists(true);
+			}
+		} catch (error: any) {
+			console.log("Error adding user: ", error);
+		}
+		setCheckingUserExists(false);
 	};
 
 	useEffect(() => {
@@ -568,6 +603,17 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 					</div>
 				</div>
 			</div>
+			{userExists && (
+				<div className="flex flex-col items-center w-full bg-red-500 p-4 rounded-md text-center break-words text-sm text-white">
+					<p>
+						A user with the email{" "}
+						<span className="font-bold text-gray-700 underline">
+							{newUserForm.email}
+						</span>{" "}
+						already exists!
+					</p>
+				</div>
+			)}
 			<button
 				type="button"
 				title="Add User"
@@ -584,12 +630,19 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 					(!newUserForm.gender && newUserForm.gender !== "none") ||
 					!newUserForm.stateOrProvince ||
 					!newUserForm.cityOrMunicipality ||
-					!newUserForm.barangay
+					!newUserForm.barangay ||
+					checkingUserExists
 						? true
 						: false
 				}
 			>
-				Add User
+				{!checkingUserExists ? (
+					"Add User"
+				) : (
+					<div className="h-6 w-6 aspect-square animate-spin text-white">
+						<FiLoader className="h-full w-full" />
+					</div>
+				)}
 			</button>
 		</div>
 	);

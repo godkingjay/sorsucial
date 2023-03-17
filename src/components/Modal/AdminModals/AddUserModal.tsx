@@ -170,7 +170,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						</li>
 					</ul>
 				</div>
-				<form className="auth-form w-full flex flex-col p-2">
+				<form
+					className="auth-form w-full flex flex-col p-2"
+					onSubmit={handleAddUsersSubmit}
+				>
 					<div>
 						{adminModalStateValue.addUser.tab === "single" && (
 							<AddNewUserTab

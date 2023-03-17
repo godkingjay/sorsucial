@@ -157,10 +157,41 @@
 	}
 
 	.admin-modal-new-user-tabs {
-		@apply flex flex-row items-center overflow-x-auto scroll-x-style p-1 gap-x-2 flex-wrap gap-y-2;
+		@apply flex flex-row overflow-x-auto scroll-x-style p-1 gap-x-2 flex-wrap gap-y-1 h-max;
 
 		.admin-modal-new-user-tab {
-			@apply flex flex-row items-center h-10 p-2  gap-x-2 text-logo-100 border-2 border-logo-100 font-semibold text-sm rounded-md;
+			@apply flex flex-row items-center h-[40px] p-2  gap-x-2 text-logo-100 border-2 border-logo-100 font-semibold text-sm rounded-md;
+		}
+	}
+
+	.new-user-table {
+		@apply flex flex-col py-2;
+
+		.new-user-table-body {
+			tr {
+				@apply h-6;
+
+				td {
+					@apply p-1 text-sm border border-gray-300 h-full;
+
+					&:not(:first-child) {
+						@apply min-w-[160px];
+					}
+				}
+
+				.index {
+					@apply aspect-square px-4;
+				}
+			}
+
+			.new-user-table-header {
+				td {
+					@apply font-bold;
+				}
+			}
+
+			.new-user-table-content {
+			}
 		}
 	}
 }

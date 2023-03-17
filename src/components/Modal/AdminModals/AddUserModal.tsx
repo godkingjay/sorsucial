@@ -14,6 +14,7 @@ import { SiteUser } from "@/lib/interfaces/user";
 type AddUserModal = {
 	adminModalStateValue: AdminModalState;
 	setAdminModalStateValue: SetterOrUpdater<AdminModalState>;
+	checkUserEmailExists: (string: string) => Promise<boolean>;
 };
 
 export interface NewUserType {
@@ -30,7 +31,7 @@ export interface NewUserType {
 		type?: string;
 	} | null;
 	birthdate?: Timestamp | null;
-	gender?: "male" | "female" | "other";
+	gender?: "male" | "female" | "other" | "none";
 	streetAddress?: string;
 	barangay?: string;
 	cityOrMunicipality?: string;
@@ -44,13 +45,14 @@ export interface NewUsersFormType {
 const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
+	checkUserEmailExists,
 }) => {
 	const [newUsersForm, setNewUsersForm] = useState<NewUsersFormType>({
 		users: [],
 	});
 	const [addingUsers, setAddingUsers] = useState(false);
 
-	const handleAddUsers = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleAddUsersSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setAddingUsers(true);
 		try {
@@ -83,14 +85,16 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	};
 
 	const addNewUser = (newUser: NewUserType) => {
-		setNewUsersForm((prev) => ({
-			...prev,
-			users: [...prev.users, newUser],
-		}));
+		if (!newUsersForm.users.find((user) => user.email === newUser.email)) {
+			setNewUsersForm((prev) => ({
+				...prev,
+				users: [...prev.users, newUser],
+			}));
+		}
 	};
 
 	return (
-		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style">
+		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-lg bg-white flex flex-col rounded-xl shadow-around-sm pointer-events-auto">
 				<div className="bg-cyan-500 py-4 px-2 w-full rounded-t-xl flex flex-row justify-between items-center">
 					<p className="font-bold text-lg text-white pl-2">Add New User</p>
@@ -147,7 +151,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 								Import Users
 							</button>
 						</li>
-						<li className="h-full w-max mx-auto">
+						<li className="h-max w-max mx-auto">
 							<div className="h-10 w-[1px] bg-black bg-opacity-10"></div>
 						</li>
 						<li>
@@ -169,15 +173,20 @@ const AddUserModal: React.FC<AddUserModal> = ({
 				<form className="auth-form w-full flex flex-col p-2">
 					<div>
 						{adminModalStateValue.addUser.tab === "single" && (
-							<AddNewUserTab addNewUser={addNewUser} />
+							<AddNewUserTab
+								addNewUser={addNewUser}
+								checkUserEmailExists={checkUserEmailExists}
+							/>
 						)}
 						{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
 						{adminModalStateValue.addUser.tab === "import" && (
 							<AddImportUserTab />
 						)}
-						{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
+						{adminModalStateValue.addUser.tab === "list" && (
+							<AddUserListTab newUsersForm={newUsersForm} />
+						)}
 					</div>
-					<div className="my-2"></div>
+					<div className="my-2 h-[1px] bg-black bg-opacity-20"></div>
 					<div className="ml-auto">
 						<button
 							type="submit"

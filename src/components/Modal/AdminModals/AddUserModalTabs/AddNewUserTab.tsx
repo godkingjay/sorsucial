@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NewUserType } from "../AddUserModal";
 import {
 	NameRegex,
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
-import { Timestamp } from "firebase/firestore";
+import {
+	Timestamp,
+	collection,
+	getDoc,
+	getDocs,
+	query,
+	where,
+} from "firebase/firestore";
+import {
+	OptionsData,
+	getBarangay,
+	getCitiesMunicipality,
+	getProvinces,
+} from "@/lib/api/psgc";
+import { firestore } from "@/firebase/clientApp";
+import { FiLoader } from "react-icons/fi";
 
-type AddNerUserTabProps = {
+type AddNewUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
+	checkUserEmailExists: (string: string) => Promise<boolean>;
 };
 
 export type NewUserErrorType = {
@@ -18,11 +34,52 @@ export type NewUserErrorType = {
 	middleName: boolean;
 };
 
-const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
-	const [newUserForm, setNewUserForm] = useState<NewUserType>({
-		email: "",
-		password: "",
-	});
+export const userRoles = [
+	{
+		label: "User",
+		value: "user",
+	},
+	{
+		label: "Admin",
+		value: "admin",
+	},
+	{
+		label: "Student",
+		value: "student",
+	},
+	{
+		label: "Instructor",
+		value: "instructor",
+	},
+	{
+		label: "Staff",
+		value: "staff",
+	},
+];
+
+const newUserFormInitialState: NewUserType = {
+	email: "",
+	password: "",
+	roles: ["user"],
+	firstName: "",
+	lastName: "",
+	middleName: "",
+	profilePhoto: null,
+	birthdate: null,
+	gender: "none",
+	streetAddress: "",
+	barangay: "",
+	cityOrMunicipality: "",
+	stateOrProvince: "",
+};
+
+const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
+	addNewUser,
+	checkUserEmailExists,
+}) => {
+	const [newUserForm, setNewUserForm] = useState<NewUserType>(
+		newUserFormInitialState
+	);
 
 	const [newUserFormError, setNewUserFormError] = useState<NewUserErrorType>({
 		email: false,
@@ -33,6 +90,15 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 
 	const [birthdate, setBirthdate] = useState("");
 
+	const [provinceOptions, setProvinceOptions] = useState<OptionsData[]>([]);
+	const [cityOrMunicipalityOptions, setCityOrMunicipalityOptions] = useState<
+		OptionsData[]
+	>([]);
+	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
+
+	const [userExists, setUserExists] = useState(false);
+	const [checkingUserExists, setCheckingUserExists] = useState(false);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
 
@@ -42,6 +108,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 		}));
 
 		if (name === "email") {
+			setUserExists(false);
 			setNewUserFormError((prev) => ({
 				...prev,
 				email: !SignInRegex.email.test(value),
@@ -51,7 +118,22 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 		if (name === "firstName" || name === "lastName" || name === "middleName") {
 			setNewUserFormError((prev) => ({
 				...prev,
-				email: !NameRegex.test(value),
+				[name]: !NameRegex.test(value),
+			}));
+		}
+	};
+
+	const handleUserRolesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.currentTarget;
+		if (!newUserForm.roles?.includes(value as keyof NewUserType["roles"])) {
+			setNewUserForm((prev) => ({
+				...prev,
+				roles: [...(prev.roles ?? []), value as keyof NewUserType["roles"]],
+			}));
+		} else {
+			setNewUserForm((prev) => ({
+				...prev,
+				roles: prev.roles?.filter((role) => role !== value),
 			}));
 		}
 	};
@@ -71,6 +153,88 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 		}));
 	};
 
+	const fetchProvinces = async () => {
+		await getProvinces()
+			.then((data) => setProvinceOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchCitiesMunicipality = async (province: string) => {
+		await getCitiesMunicipality(province)
+			.then((data) => setCityOrMunicipalityOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchBarangay = async (cityOrMunicipality: string) => {
+		await getBarangay(cityOrMunicipality)
+			.then((data) => setBarangayOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const handleAddressSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		if (e.target.name === "stateOrProvince" && e.target.value) {
+			setNewUserForm((prev) => ({
+				...prev,
+				cityOrMunicipality: "",
+				barangay: "",
+			}));
+			fetchCitiesMunicipality(
+				provinceOptions.find((option) => option.name === e.target.value)
+					?.code as string
+			);
+		}
+
+		if (e.target.name === "cityOrMunicipality" && e.target.value) {
+			setNewUserForm((prev) => ({
+				...prev,
+				barangay: "",
+			}));
+			fetchBarangay(
+				cityOrMunicipalityOptions.find(
+					(option) => option.name === e.target.value
+				)?.code as string
+			);
+		}
+
+		setNewUserForm((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
+	};
+
+	const handleAddUser = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		setCheckingUserExists(true);
+		try {
+			if (!(await checkUserEmailExists(newUserForm.email))) {
+				addNewUser(newUserForm);
+				setNewUserForm(newUserFormInitialState);
+				setBirthdate("");
+				setProvinceOptions([]);
+				setCityOrMunicipalityOptions([]);
+				setBarangayOptions([]);
+				setUserExists(false);
+			} else {
+				console.log("User already exists!");
+				setUserExists(true);
+			}
+		} catch (error: any) {
+			console.log("Error adding user: ", error);
+		}
+		setCheckingUserExists(false);
+	};
+
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).select();
+	};
+
+	useEffect(() => {
+		fetchProvinces();
+	}, []);
+
 	return (
 		<div className="flex flex-col gap-y-2">
 			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
@@ -85,6 +249,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 										${newUserForm.email ? "auth-input-container-filled" : ""}
 									`}
 						data-error={newUserFormError.email && newUserForm.email !== ""}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -110,6 +275,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 						className={`auth-input-container
 										${newUserForm.password ? "auth-input-container-filled" : ""}
 									`}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -132,6 +298,35 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 						</div>
 					</div>
 				</div>
+				<div className="flex flex-col gap-y-2">
+					<div className="flex flex-row items-center">
+						<p className="font-bold text-logo-300">User Roles</p>
+					</div>
+					<ul className="flex flex-col gap-y-2">
+						{userRoles.map((role) => (
+							<li
+								className="flex flex-row items-center gap-x-2"
+								key={role.value}
+							>
+								<input
+									type="checkbox"
+									name="roles"
+									value={role.value}
+									onChange={handleUserRolesChange}
+									title="roles"
+									checked={newUserForm.roles?.includes(
+										role.value as keyof NewUserType["roles"]
+									)}
+									disabled={role.value === "user"}
+									className="w-4 h-4"
+								/>
+								<div className="label-container">
+									<p className="label font-semibold">{role.label}</p>
+								</div>
+							</li>
+						))}
+					</ul>
+				</div>
 			</div>
 			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
 				<div className="p-2 px-4 bg-cyan-500 rounded-lg">
@@ -147,6 +342,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 						data-error={
 							newUserFormError.firstName && newUserForm.firstName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -178,6 +374,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 						data-error={
 							newUserFormError.lastName && newUserForm.lastName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -209,6 +406,7 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 						data-error={
 							newUserFormError.middleName && newUserForm.middleName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text">
 							<label
@@ -218,7 +416,6 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 								Middle Name
 							</label>
 							<input
-								required
 								type="middleName"
 								name="middleName"
 								title="Name"
@@ -284,6 +481,177 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 					</div>
 				</div>
 			</div>
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+				<div className="p-2 px-4 bg-orange-500 rounded-lg">
+					<p className="font-bold text-lg text-white text-center break-words">
+						Address
+					</p>
+				</div>
+				<div className="flex flex-col w-full gap-y-4">
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="stateOrProvince"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Province
+						</label>
+						<select
+							required
+							name="stateOrProvince"
+							id="stateOrProvince"
+							value={newUserForm.stateOrProvince}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{provinceOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="cityOrMunicipality"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							City or Municipality
+						</label>
+						<select
+							required
+							name="cityOrMunicipality"
+							id="cityOrMunicipality"
+							value={newUserForm.cityOrMunicipality}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+							disabled={!newUserForm.stateOrProvince}
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{cityOrMunicipalityOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="barangay"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Barangay
+						</label>
+						<select
+							required
+							name="barangay"
+							id="barangay"
+							value={newUserForm.barangay}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+							disabled={
+								!newUserForm.stateOrProvince || !newUserForm.cityOrMunicipality
+							}
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{barangayOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-input-group z-10 relative">
+						<label
+							htmlFor="streetAddress"
+							className="create-user-field-title"
+						>
+							Street Address
+						</label>
+						<div
+							className={`create-user-container create-user-container-filled`}
+						>
+							<div className="create-user-input-text required-field">
+								<input
+									type="streetAddress"
+									name="streetAddress"
+									title="First Name"
+									className="input-field"
+									onChange={handleInputChange}
+									value={newUserForm.streetAddress}
+									placeholder="Street Address"
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{userExists && (
+				<div className="flex flex-col items-center w-full bg-red-500 p-4 rounded-md text-center break-words text-sm text-white">
+					<p>
+						A user with the email{" "}
+						<span className="font-bold text-blue-800 underline">
+							{newUserForm.email}
+						</span>{" "}
+						already exists!
+					</p>
+				</div>
+			)}
+			<button
+				type="button"
+				title="Add User"
+				className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
+				onClick={handleAddUser}
+				disabled={
+					(!newUserForm.email && !newUserFormError.email) ||
+					!newUserForm.password ||
+					!newUserForm.firstName ||
+					!newUserForm.lastName ||
+					!newUserForm.roles?.length ||
+					(newUserFormError.middleName && newUserForm.middleName?.length) ||
+					!newUserForm.birthdate ||
+					!newUserForm.gender ||
+					newUserForm.gender === "none" ||
+					!newUserForm.stateOrProvince ||
+					!newUserForm.cityOrMunicipality ||
+					!newUserForm.barangay ||
+					checkingUserExists
+						? true
+						: false
+				}
+			>
+				{!checkingUserExists ? (
+					"Add User"
+				) : (
+					<div className="h-6 w-6 aspect-square animate-spin text-white">
+						<FiLoader className="h-full w-full" />
+					</div>
+				)}
+			</button>
 		</div>
 	);
 };

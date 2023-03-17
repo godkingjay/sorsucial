@@ -24,10 +24,34 @@ export type NewUserErrorType = {
 	middleName: boolean;
 };
 
+export const userRoles = [
+	{
+		label: "User",
+		value: "user",
+	},
+	{
+		label: "Admin",
+		value: "admin",
+	},
+	{
+		label: "Student",
+		value: "student",
+	},
+	{
+		label: "Instructor",
+		value: "instructor",
+	},
+	{
+		label: "Staff",
+		value: "staff",
+	},
+];
+
 const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 	const [newUserForm, setNewUserForm] = useState<NewUserType>({
 		email: "",
 		password: "",
+		roles: ["user"],
 	});
 
 	const [newUserFormError, setNewUserFormError] = useState<NewUserErrorType>({
@@ -64,6 +88,21 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 			setNewUserFormError((prev) => ({
 				...prev,
 				email: !NameRegex.test(value),
+			}));
+		}
+	};
+
+	const handleUserRolesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.currentTarget;
+		if (!newUserForm.roles?.includes(value as keyof NewUserType["roles"])) {
+			setNewUserForm((prev) => ({
+				...prev,
+				roles: [...(prev.roles ?? []), value as keyof NewUserType["roles"]],
+			}));
+		} else {
+			setNewUserForm((prev) => ({
+				...prev,
+				roles: prev.roles?.filter((role) => role !== value),
 			}));
 		}
 	};
@@ -196,6 +235,35 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 							/>
 						</div>
 					</div>
+				</div>
+				<div className="flex flex-col gap-y-2">
+					<div className="flex flex-row items-center">
+						<p className="font-bold text-logo-300">User Roles</p>
+					</div>
+					<ul className="flex flex-col gap-y-2">
+						{userRoles.map((role) => (
+							<li
+								className="flex flex-row items-center gap-x-2"
+								key={role.value}
+							>
+								<input
+									type="checkbox"
+									name="roles"
+									value={role.value}
+									onChange={handleUserRolesChange}
+									title="roles"
+									checked={newUserForm.roles?.includes(
+										role.value as keyof NewUserType["roles"]
+									)}
+									disabled={role.value === "user"}
+									className="w-4 h-4"
+								/>
+								<div className="label-container">
+									<p className="label font-semibold">{role.label}</p>
+								</div>
+							</li>
+						))}
+					</ul>
 				</div>
 			</div>
 			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">

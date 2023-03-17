@@ -182,7 +182,9 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						{adminModalStateValue.addUser.tab === "import" && (
 							<AddImportUserTab />
 						)}
-						{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
+						{adminModalStateValue.addUser.tab === "list" && (
+							<AddUserListTab newUsersForm={newUsersForm} />
+						)}
 					</div>
 					<div className="my-2 h-[1px] bg-black bg-opacity-20"></div>
 					<div className="ml-auto">

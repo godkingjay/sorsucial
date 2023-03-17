@@ -163,4 +163,31 @@
 			@apply flex flex-row items-center h-10 p-2  gap-x-2 text-logo-100 border-2 border-logo-100 font-semibold text-sm rounded-md;
 		}
 	}
+
+	.new-user-table {
+		@apply flex flex-col py-2;
+
+		.new-user-table-body {
+			tr {
+				@apply h-6;
+
+				td {
+					@apply p-1 text-sm border border-gray-300 h-full;
+				}
+
+				.index {
+					@apply aspect-square px-4;
+				}
+			}
+
+			.new-user-table-header {
+				td {
+					@apply font-bold;
+				}
+			}
+
+			.new-user-table-content {
+			}
+		}
+	}
 }

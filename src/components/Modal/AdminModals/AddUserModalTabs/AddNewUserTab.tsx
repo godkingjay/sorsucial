@@ -33,8 +33,6 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 
 	const [birthdate, setBirthdate] = useState("");
 
-	console.log(newUserForm);
-
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
 

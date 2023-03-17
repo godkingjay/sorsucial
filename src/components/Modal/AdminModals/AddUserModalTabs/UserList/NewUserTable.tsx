@@ -6,9 +6,14 @@ import { MdDelete } from "react-icons/md";
 interface Props {
 	newUser: NewUserType;
 	index: number;
+	handleRemoveUserFromList: (email: string) => void;
 }
 
-const NewUserTable: React.FC<Props> = ({ newUser, index }) => {
+const NewUserTable: React.FC<Props> = ({
+	newUser,
+	index,
+	handleRemoveUserFromList,
+}) => {
 	0;
 	return (
 		<tr className="new-user-table-content w-max">
@@ -50,6 +55,7 @@ const NewUserTable: React.FC<Props> = ({ newUser, index }) => {
 					type="button"
 					title="Delete"
 					className="action action-delete"
+					onClick={() => handleRemoveUserFromList(newUser.email)}
 				>
 					<div className="icon-container">
 						<MdDelete className="icon" />

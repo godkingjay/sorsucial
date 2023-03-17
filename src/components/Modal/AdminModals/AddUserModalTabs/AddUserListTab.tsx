@@ -4,9 +4,13 @@ import NewUserTable from "./UserList/NewUserTable";
 
 type AddUserListTabProps = {
 	newUsersForm: NewUsersFormType;
+	handleRemoveUserFromList: (email: string) => void;
 };
 
-const AddUserListTab: React.FC<AddUserListTabProps> = ({ newUsersForm }) => {
+const AddUserListTab: React.FC<AddUserListTabProps> = ({
+	newUsersForm,
+	handleRemoveUserFromList,
+}) => {
 	return (
 		<div className="flex flex-col-gap-y-2 overflow-hidden">
 			<table className="new-user-table overflow-x-auto scroll-x-style">
@@ -32,6 +36,7 @@ const AddUserListTab: React.FC<AddUserListTabProps> = ({ newUsersForm }) => {
 							newUser={user}
 							index={index}
 							key={user.email}
+							handleRemoveUserFromList={handleRemoveUserFromList}
 						/>
 					))}
 				</tbody>

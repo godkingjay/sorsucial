@@ -84,6 +84,13 @@ const AddUserModal: React.FC<AddUserModal> = ({
 		}));
 	};
 
+	const handleRemoveUserFromList = (email: string) => {
+		setNewUsersForm((prev) => ({
+			...prev,
+			users: prev.users.filter((user) => user.email !== email),
+		}));
+	};
+
 	const addNewUser = (newUser: NewUserType) => {
 		if (!newUsersForm.users.find((user) => user.email === newUser.email)) {
 			setNewUsersForm((prev) => ({
@@ -186,7 +193,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 							<AddImportUserTab />
 						)}
 						{adminModalStateValue.addUser.tab === "list" && (
-							<AddUserListTab newUsersForm={newUsersForm} />
+							<AddUserListTab
+								newUsersForm={newUsersForm}
+								handleRemoveUserFromList={handleRemoveUserFromList}
+							/>
 						)}
 					</div>
 					<div className="my-2 h-[1px] bg-black bg-opacity-20"></div>

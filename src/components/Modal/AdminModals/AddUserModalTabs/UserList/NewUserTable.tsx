@@ -1,6 +1,7 @@
 import React from "react";
 import { NewUserType } from "../../AddUserModal";
 import moment from "moment";
+import { MdDelete } from "react-icons/md";
 
 interface Props {
 	newUser: NewUserType;
@@ -17,7 +18,18 @@ const NewUserTable: React.FC<Props> = ({ newUser, index }) => {
 			<td className="last-name">{newUser.lastName}</td>
 			<td className="first-name">{newUser.firstName}</td>
 			<td className="middle-name">{newUser.middleName}</td>
-			<td className="roles">Roles</td>
+			<td className="roles">
+				{newUser.roles?.map((role) => {
+					return (
+						<p
+							key={role}
+							className={`role role-${role}`}
+						>
+							{role}
+						</p>
+					);
+				})}
+			</td>
 			<td className="birthdate">
 				{moment(newUser.birthdate?.toDate()).format("MMMM DD, YYYY")}
 			</td>
@@ -32,6 +44,17 @@ const NewUserTable: React.FC<Props> = ({ newUser, index }) => {
 			<td className="barangay">{newUser.barangay}</td>
 			<td className="street-address">
 				{newUser.streetAddress ? newUser.streetAddress : "N/A"}
+			</td>
+			<td className="actions">
+				<button
+					type="button"
+					title="Delete"
+					className="action action-delete"
+				>
+					<div className="icon-container">
+						<MdDelete className="icon" />
+					</div>
+				</button>
 			</td>
 		</tr>
 	);

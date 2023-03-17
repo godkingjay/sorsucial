@@ -110,11 +110,23 @@
 						}
 
 						.role-user {
-							@apply bg-gray-300 text-gray-500;
+							@apply bg-gray-300 text-gray-800;
 						}
 
 						.role-admin {
-							@apply bg-red-300 text-red-500;
+							@apply bg-red-300 text-red-800;
+						}
+
+						.role-student {
+							@apply bg-blue-300 text-blue-800;
+						}
+
+						.role-instructor {
+							@apply bg-purple-300 text-purple-800;
+						}
+
+						.role-staff {
+							@apply bg-green-300 text-green-800;
 						}
 					}
 
@@ -191,6 +203,72 @@
 			}
 
 			.new-user-table-content {
+			}
+
+			tr {
+				&:not(:first-child) {
+					.roles {
+						@apply text-xs;
+
+						.role {
+							@apply bg-gray-300 py-1 px-2 rounded-md my-1;
+						}
+
+						.role-user {
+							@apply bg-gray-300 text-gray-800;
+						}
+
+						.role-admin {
+							@apply bg-red-300 text-red-800;
+						}
+
+						.role-student {
+							@apply bg-blue-300 text-blue-800;
+						}
+
+						.role-instructor {
+							@apply bg-purple-300 text-purple-800;
+						}
+
+						.role-staff {
+							@apply bg-green-300 text-green-800;
+						}
+					}
+
+					.actions {
+						@apply flex flex-row items-center gap-x-2 justify-center;
+
+						.action {
+							@apply flex flex-row items-center gap-x-2 h-8 w-8 aspect-square p-2 justify-center rounded-md;
+
+							.icon-container {
+								@apply h-full w-full text-white;
+
+								.icon {
+									@apply h-full w-full;
+								}
+							}
+						}
+
+						.action-edit {
+							@apply bg-blue-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-blue-600;
+							}
+						}
+
+						.action-delete {
+							@apply bg-red-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-red-600;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

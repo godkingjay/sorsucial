@@ -25,6 +25,7 @@ const AddUserListTab: React.FC<AddUserListTabProps> = ({ newUsersForm }) => {
 						<td className="city-municipality">City or Municipality</td>
 						<td className="barangay">Barangay</td>
 						<td className="street-address">Street Address</td>
+						<td className="actions">Actions</td>
 					</tr>
 					{newUsersForm.users.map((user, index) => (
 						<NewUserTable

@@ -93,8 +93,6 @@ const AddUserModal: React.FC<AddUserModal> = ({
 		}
 	};
 
-	console.log(newUsersForm);
-
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style">
 			<div className="w-full max-w-lg bg-white flex flex-col rounded-xl shadow-around-sm pointer-events-auto">

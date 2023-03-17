@@ -8,7 +8,8 @@ import { TiUserAdd } from "react-icons/ti";
 type AdminManageUsersPageProps = {};
 
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
-	const { adminStateValue, adminFetchUsers } = useAdmin();
+	const { adminStateValue, adminFetchUsers, setAdminModalStateValue } =
+		useAdmin();
 	const { userStateValue } = useUser();
 	const [fetchingUsers, setFetchingUsers] = useState(false);
 	const fetchingUsersMounted = useRef(false);
@@ -23,6 +24,16 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 		}
 		setFetchingUsers(false);
 	}, [adminFetchUsers]);
+
+	const handleAddNewUser = () => {
+		setAdminModalStateValue((prev) => ({
+			...prev,
+			addUser: {
+				...prev.addUser,
+				open: true,
+			},
+		}));
+	};
 
 	useEffect(() => {
 		if (
@@ -56,6 +67,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 										type="button"
 										title="Add New User"
 										className="flex flex-row items-center h-10 p-2 bg-green-500 rounded-md gap-x-2 hover:bg-green-600"
+										onClick={handleAddNewUser}
 									>
 										<div className="h-6 w-6 aspect-square text-white">
 											<TiUserAdd className="h-full w-full" />
@@ -85,10 +97,18 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 										{adminStateValue.manageUsers.map((user, index) => {
 											return (
 												<tr key={user.uid}>
-													<td className="index">{index + 1}</td>
-													<td className="email">{user.email}</td>
-													<td className="last-name">{user.lastName}</td>
-													<td className="first-name">{user.firstName}</td>
+													<td className="index">
+														<p>{index + 1}</p>
+													</td>
+													<td className="email">
+														<p>{user.email}</p>
+													</td>
+													<td className="last-name">
+														<p>{user.lastName}</p>
+													</td>
+													<td className="first-name">
+														<p>{user.firstName}</p>
+													</td>
 													<td className="roles">
 														{user.roles.map((role) => {
 															return (

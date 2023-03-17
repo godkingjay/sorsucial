@@ -30,7 +30,7 @@ type SignInFormProps = {
  *
  * The SignInRegex object is used to determine if the user is allowed to sign in.
  */
-const SignInRegex = {
+export const SignInRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };
 

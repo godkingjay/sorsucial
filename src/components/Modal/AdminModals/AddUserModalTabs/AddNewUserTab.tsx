@@ -13,7 +13,7 @@ import {
 	getProvinces,
 } from "@/lib/api/psgc";
 
-type AddNerUserTabProps = {
+type AddNewUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
 };
 
@@ -47,7 +47,7 @@ export const userRoles = [
 	},
 ];
 
-const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
+const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 	const [newUserForm, setNewUserForm] = useState<NewUserType>({
 		email: "",
 		password: "",
@@ -169,6 +169,15 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
+	};
+
+	const handleAddUser = (e: React.MouseEvent<HTMLButtonElement>) => {
+		addNewUser(newUserForm);
+		setNewUserForm({
+			email: "",
+			password: "",
+			roles: ["user"],
+		});
 	};
 
 	useEffect(() => {
@@ -547,6 +556,14 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 					</div>
 				</div>
 			</div>
+			<button
+				type="button"
+				title="Add User"
+				className="page-button bg-green-500 border-green-500 hover:bg-green-600 hover:border-green-600 focus:bg-green-600 focus:border-green-600"
+				onClick={handleAddUser}
+			>
+				Add User
+			</button>
 		</div>
 	);
 };

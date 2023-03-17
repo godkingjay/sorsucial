@@ -177,7 +177,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						)}
 						{adminModalStateValue.addUser.tab === "list" && <AddUserListTab />}
 					</div>
-					<div className="my-2"></div>
+					<div className="my-2 h-[1px] bg-black bg-opacity-20"></div>
 					<div className="ml-auto">
 						<button
 							type="submit"

@@ -1,9 +1,141 @@
-import React from "react";
+import React, { useState } from "react";
+import { NewUserType } from "../AddUserModal";
+import {
+	CreateUserErrorType,
+	NameRegex,
+} from "@/components/Form/Auth/CreateUser/CreateUserForm";
 
-type AddNerUserTabProps = {};
+type AddNerUserTabProps = {
+	addNewUser: (newUser: NewUserType) => void;
+};
 
-const AddNewUserTab: React.FC<AddNerUserTabProps> = () => {
-	return <div className="flex flex-col gap-y-2"></div>;
+const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
+	const [newUserForm, setNewUserForm] = useState<NewUserType>({
+		email: "",
+		password: "",
+	});
+
+	const [newUserFormError, setNewUserFormError] = useState<CreateUserErrorType>(
+		{
+			firstName: false,
+			lastName: false,
+			middleName: false,
+		}
+	);
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.currentTarget;
+
+		setNewUserForm((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+
+		setNewUserFormError((prev) => ({
+			...prev,
+			[name]: value.match(NameRegex) ? false : true,
+		}));
+	};
+
+	return (
+		<div className="flex flex-col gap-y-2">
+			<div className="user-form w-full flex flex-col gap-y-4">
+				<div className="w-full flex flex-col relative z-10 gap-y-2">
+					<div
+						className={`auth-input-container
+										${newUserForm.firstName ? "auth-input-container-filled" : ""}
+									`}
+						data-error={
+							newUserFormError.firstName && newUserForm.firstName !== ""
+						}
+					>
+						<div className="auth-input-text required-field">
+							<label
+								htmlFor="firstName"
+								className="label"
+							>
+								First Name
+							</label>
+							<input
+								required
+								type="firstName"
+								name="firstName"
+								title="First Name"
+								className="input-field"
+								onChange={handleInputChange}
+								value={newUserForm.firstName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="w-full flex flex-col relative z-10 gap-y-2">
+					<div
+						className={`auth-input-container
+										${newUserForm.lastName ? "auth-input-container-filled" : ""}
+									`}
+						data-error={
+							newUserFormError.lastName && newUserForm.lastName !== ""
+						}
+					>
+						<div className="auth-input-text required-field">
+							<label
+								htmlFor="lastName"
+								className="label"
+							>
+								Last Name
+							</label>
+							<input
+								required
+								type="lastName"
+								name="lastName"
+								title="Last Name"
+								className="input-field"
+								onChange={handleInputChange}
+								value={newUserForm.lastName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="w-full flex flex-col relative z-10 gap-y-2">
+					<div
+						className={`auth-input-container
+										${newUserForm.middleName ? "auth-input-container-filled" : ""}
+									`}
+						data-error={
+							newUserFormError.middleName && newUserForm.middleName !== ""
+						}
+					>
+						<div className="auth-input-text">
+							<label
+								htmlFor="middleName"
+								className="label"
+							>
+								Middle Name
+							</label>
+							<input
+								required
+								type="middleName"
+								name="middleName"
+								title="Name"
+								className="input-field"
+								onChange={handleInputChange}
+								value={newUserForm.middleName}
+								min={1}
+								pattern={NameRegex.source}
+								max={48}
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default AddNewUserTab;

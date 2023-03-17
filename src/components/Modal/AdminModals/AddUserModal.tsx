@@ -8,16 +8,46 @@ import AddImportUserTab from "./AddUserModalTabs/AddImportUserTab";
 import AddUserListTab from "./AddUserModalTabs/AddUserListTab";
 import { BiSend } from "react-icons/bi";
 import { FiLoader } from "react-icons/fi";
+import { Timestamp } from "firebase/firestore";
+import { SiteUser } from "@/lib/interfaces/user";
 
 type AddUserModal = {
 	adminModalStateValue: AdminModalState;
 	setAdminModalStateValue: SetterOrUpdater<AdminModalState>;
 };
 
+export interface NewUserType {
+	email: string;
+	password: string;
+	firstName?: string;
+	lastName?: string;
+	middleName?: string;
+	roles?: SiteUser["roles"];
+	profilePhoto?: {
+		name?: string;
+		url?: string;
+		size?: number;
+		type?: string;
+	} | null;
+	birthdate?: Timestamp | null;
+	gender?: "male" | "female" | "other";
+	streetAddress?: string;
+	barangay?: string;
+	cityOrMunicipality?: string;
+	stateOrProvince?: string;
+}
+
+export interface NewUsersFormType {
+	users: NewUserType[];
+}
+
 const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
 }) => {
+	const [newUsersForm, setNewUsersForm] = useState<NewUsersFormType>({
+		users: [],
+	});
 	const [addingUsers, setAddingUsers] = useState(false);
 
 	const handleAddUsers = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,6 +79,13 @@ const AddUserModal: React.FC<AddUserModal> = ({
 				...prev.addUser,
 				tab: name,
 			},
+		}));
+	};
+
+	const addNewUser = (newUser: NewUserType) => {
+		setNewUsersForm((prev) => ({
+			...prev,
+			users: [...prev.users, newUser],
 		}));
 	};
 
@@ -129,9 +166,11 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						</li>
 					</ul>
 				</div>
-				<form className="w-full flex flex-col p-2">
+				<form className="auth-form w-full flex flex-col p-2">
 					<div className="p-2 border border-gray-400 rounded-lg">
-						{adminModalStateValue.addUser.tab === "single" && <AddNewUserTab />}
+						{adminModalStateValue.addUser.tab === "single" && (
+							<AddNewUserTab addNewUser={addNewUser} />
+						)}
 						{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
 						{adminModalStateValue.addUser.tab === "import" && (
 							<AddImportUserTab />

@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { NewUserType } from "../AddUserModal";
-import {
-	CreateUserErrorType,
-	NameRegex,
-} from "@/components/Form/Auth/CreateUser/CreateUserForm";
+import { NameRegex } from "@/components/Form/Auth/CreateUser/CreateUserForm";
+import { SignInRegex } from "@/components/Form/Auth/SignInForm";
 
 type AddNerUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
+};
+
+export type NewUserErrorType = {
+	email: boolean;
+	firstName: boolean;
+	lastName: boolean;
+	middleName: boolean;
 };
 
 const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
@@ -15,13 +20,12 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 		password: "",
 	});
 
-	const [newUserFormError, setNewUserFormError] = useState<CreateUserErrorType>(
-		{
-			firstName: false,
-			lastName: false,
-			middleName: false,
-		}
-	);
+	const [newUserFormError, setNewUserFormError] = useState<NewUserErrorType>({
+		email: false,
+		firstName: false,
+		lastName: false,
+		middleName: false,
+	});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
@@ -31,15 +35,89 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 			[name]: value,
 		}));
 
-		setNewUserFormError((prev) => ({
-			...prev,
-			[name]: value.match(NameRegex) ? false : true,
-		}));
+		if (name === "email") {
+			setNewUserFormError((prev) => ({
+				...prev,
+				email: !SignInRegex.email.test(value),
+			}));
+		}
+
+		if (name === "firstName" || name === "lastName" || name === "middleName") {
+			setNewUserFormError((prev) => ({
+				...prev,
+				email: !NameRegex.test(value),
+			}));
+		}
 	};
 
 	return (
 		<div className="flex flex-col gap-y-2">
-			<div className="user-form w-full flex flex-col gap-y-4">
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+				<div className="p-2 px-4 bg-logo-300 rounded-lg">
+					<p className="font-bold text-lg text-white text-center break-words">
+						Authentication
+					</p>
+				</div>
+				<div className="user-form w-full flex flex-col gap-y-4">
+					<div
+						className={`auth-input-container
+										${newUserForm.email ? "auth-input-container-filled" : ""}
+									`}
+						data-error={newUserFormError.email && newUserForm.email !== ""}
+					>
+						<div className="auth-input-text required-field">
+							<label
+								htmlFor="email"
+								className="label"
+							>
+								Email
+							</label>
+							<input
+								required
+								type="email"
+								name="email"
+								title="Email"
+								className="input-field"
+								onChange={handleInputChange}
+								value={newUserForm.email}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="w-full flex flex-col relative z-10 gap-y-2">
+					<div
+						className={`auth-input-container
+										${newUserForm.password ? "auth-input-container-filled" : ""}
+									`}
+					>
+						<div className="auth-input-text required-field">
+							<label
+								htmlFor="password"
+								className="label"
+							>
+								Password
+							</label>
+							<input
+								required
+								type="password"
+								name="password"
+								title="Password"
+								className="input-field"
+								onChange={handleInputChange}
+								value={newUserForm.password}
+								min={8}
+								max={256}
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+				<div className="p-2 px-4 bg-cyan-500 rounded-lg">
+					<p className="font-bold text-lg text-white text-center break-words">
+						Name
+					</p>
+				</div>
 				<div className="w-full flex flex-col relative z-10 gap-y-2">
 					<div
 						className={`auth-input-container

@@ -51,6 +51,16 @@ const newUserFormInitialState: NewUserType = {
 	email: "",
 	password: "",
 	roles: ["user"],
+	firstName: "",
+	lastName: "",
+	middleName: "",
+	profilePhoto: null,
+	birthdate: null,
+	gender: "none",
+	streetAddress: "",
+	barangay: "",
+	cityOrMunicipality: "",
+	stateOrProvince: "",
 };
 
 const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
@@ -364,7 +374,6 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 								Middle Name
 							</label>
 							<input
-								required
 								type="middleName"
 								name="middleName"
 								title="Name"
@@ -546,7 +555,6 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 						>
 							<div className="create-user-input-text required-field">
 								<input
-									required
 									type="streetAddress"
 									name="streetAddress"
 									title="First Name"
@@ -573,7 +581,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 					!newUserForm.roles?.length ||
 					(newUserFormError.middleName && newUserForm.middleName?.length) ||
 					!newUserForm.birthdate ||
-					!newUserForm.gender ||
+					(!newUserForm.gender && newUserForm.gender !== "none") ||
 					!newUserForm.stateOrProvince ||
 					!newUserForm.cityOrMunicipality ||
 					!newUserForm.barangay

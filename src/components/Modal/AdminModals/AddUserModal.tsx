@@ -30,7 +30,7 @@ export interface NewUserType {
 		type?: string;
 	} | null;
 	birthdate?: Timestamp | null;
-	gender?: "male" | "female" | "other";
+	gender?: "male" | "female" | "other" | "none";
 	streetAddress?: string;
 	barangay?: string;
 	cityOrMunicipality?: string;
@@ -50,7 +50,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	});
 	const [addingUsers, setAddingUsers] = useState(false);
 
-	const handleAddUsers = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleAddUsersSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setAddingUsers(true);
 		try {
@@ -90,6 +90,8 @@ const AddUserModal: React.FC<AddUserModal> = ({
 			}));
 		}
 	};
+
+	console.log(newUsersForm);
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style">

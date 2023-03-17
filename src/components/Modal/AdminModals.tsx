@@ -5,7 +5,11 @@ import AddUserModal from "./AdminModals/AddUserModal";
 type AdminModalsProps = {};
 
 const AdminModals: React.FC<AdminModalsProps> = () => {
-	const { adminModalStateValue, setAdminModalStateValue } = useAdmin();
+	const {
+		adminModalStateValue,
+		setAdminModalStateValue,
+		checkUserEmailExists,
+	} = useAdmin();
 
 	return (
 		<>
@@ -13,6 +17,7 @@ const AdminModals: React.FC<AdminModalsProps> = () => {
 				<AddUserModal
 					adminModalStateValue={adminModalStateValue}
 					setAdminModalStateValue={setAdminModalStateValue}
+					checkUserEmailExists={checkUserEmailExists}
 				/>
 			)}
 		</>

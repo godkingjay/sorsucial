@@ -14,6 +14,7 @@ import { SiteUser } from "@/lib/interfaces/user";
 type AddUserModal = {
 	adminModalStateValue: AdminModalState;
 	setAdminModalStateValue: SetterOrUpdater<AdminModalState>;
+	checkUserEmailExists: (string: string) => Promise<boolean>;
 };
 
 export interface NewUserType {
@@ -44,6 +45,7 @@ export interface NewUsersFormType {
 const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
+	checkUserEmailExists,
 }) => {
 	const [newUsersForm, setNewUsersForm] = useState<NewUsersFormType>({
 		users: [],
@@ -173,7 +175,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 				<form className="auth-form w-full flex flex-col p-2">
 					<div>
 						{adminModalStateValue.addUser.tab === "single" && (
-							<AddNewUserTab addNewUser={addNewUser} />
+							<AddNewUserTab
+								addNewUser={addNewUser}
+								checkUserEmailExists={checkUserEmailExists}
+							/>
 						)}
 						{adminModalStateValue.addUser.tab === "bulk" && <AddBulkUserTab />}
 						{adminModalStateValue.addUser.tab === "import" && (

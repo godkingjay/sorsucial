@@ -20,11 +20,11 @@ import {
 	getProvinces,
 } from "@/lib/api/psgc";
 import { firestore } from "@/firebase/clientApp";
-import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import { FiLoader } from "react-icons/fi";
 
 type AddNewUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
+	checkUserEmailExists: (string: string) => Promise<boolean>;
 };
 
 export type NewUserErrorType = {
@@ -73,7 +73,10 @@ const newUserFormInitialState: NewUserType = {
 	stateOrProvince: "",
 };
 
-const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
+const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
+	addNewUser,
+	checkUserEmailExists,
+}) => {
 	const [newUserForm, setNewUserForm] = useState<NewUserType>(
 		newUserFormInitialState
 	);
@@ -202,23 +205,14 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 	const handleAddUser = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		setCheckingUserExists(true);
 		try {
-			const userQuery = query(
-				collection(firestore, "users"),
-				where("email", "==", newUserForm.email)
-			);
-
-			const userDocs = await getDocs(userQuery).catch((err) => {
-				console.log("Error getting documents!");
-				throw err;
-			});
-
-			if (!userDocs?.docs.length) {
+			if (!(await checkUserEmailExists(newUserForm.email))) {
 				addNewUser(newUserForm);
 				setNewUserForm(newUserFormInitialState);
 				setBirthdate("");
 				setProvinceOptions([]);
 				setCityOrMunicipalityOptions([]);
 				setBarangayOptions([]);
+				setUserExists(false);
 			} else {
 				console.log("User already exists!");
 				setUserExists(true);
@@ -627,7 +621,8 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({ addNewUser }) => {
 					!newUserForm.roles?.length ||
 					(newUserFormError.middleName && newUserForm.middleName?.length) ||
 					!newUserForm.birthdate ||
-					(!newUserForm.gender && newUserForm.gender !== "none") ||
+					!newUserForm.gender ||
+					newUserForm.gender === "none" ||
 					!newUserForm.stateOrProvince ||
 					!newUserForm.cityOrMunicipality ||
 					!newUserForm.barangay ||

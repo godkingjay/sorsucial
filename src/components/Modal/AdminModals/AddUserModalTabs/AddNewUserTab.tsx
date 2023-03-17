@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NewUserType } from "../AddUserModal";
 import {
 	NameRegex,
@@ -6,6 +6,12 @@ import {
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
 import { Timestamp } from "firebase/firestore";
+import {
+	OptionsData,
+	getBarangay,
+	getCitiesMunicipality,
+	getProvinces,
+} from "@/lib/api/psgc";
 
 type AddNerUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
@@ -32,6 +38,12 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 	});
 
 	const [birthdate, setBirthdate] = useState("");
+
+	const [provinceOptions, setProvinceOptions] = useState<OptionsData[]>([]);
+	const [cityOrMunicipalityOptions, setCityOrMunicipalityOptions] = useState<
+		OptionsData[]
+	>([]);
+	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
@@ -70,6 +82,59 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 			gender: e.target.value as NewUserType["gender"],
 		}));
 	};
+
+	const fetchProvinces = async () => {
+		await getProvinces()
+			.then((data) => setProvinceOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchCitiesMunicipality = async (province: string) => {
+		await getCitiesMunicipality(province)
+			.then((data) => setCityOrMunicipalityOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const fetchBarangay = async (cityOrMunicipality: string) => {
+		await getBarangay(cityOrMunicipality)
+			.then((data) => setBarangayOptions(data))
+			.catch((error) => console.log(error));
+	};
+
+	const handleAddressSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		if (e.target.name === "stateOrProvince" && e.target.value) {
+			setNewUserForm((prev) => ({
+				...prev,
+				cityOrMunicipality: "",
+				barangay: "",
+			}));
+			fetchCitiesMunicipality(
+				provinceOptions.find((option) => option.name === e.target.value)
+					?.code as string
+			);
+		}
+
+		if (e.target.name === "cityOrMunicipality" && e.target.value) {
+			setNewUserForm((prev) => ({
+				...prev,
+				barangay: "",
+			}));
+			fetchBarangay(
+				cityOrMunicipalityOptions.find(
+					(option) => option.name === e.target.value
+				)?.code as string
+			);
+		}
+
+		setNewUserForm((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
+	};
+
+	useEffect(() => {
+		fetchProvinces();
+	}, []);
 
 	return (
 		<div className="flex flex-col gap-y-2">
@@ -281,6 +346,136 @@ const AddNewUserTab: React.FC<AddNerUserTabProps> = ({ addNewUser }) => {
 								</option>
 							))}
 						</select>
+					</div>
+				</div>
+			</div>
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+				<div className="p-2 px-4 bg-orange-500 rounded-lg">
+					<p className="font-bold text-lg text-white text-center break-words">
+						Address
+					</p>
+				</div>
+				<div className="flex flex-col w-full gap-y-4">
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="stateOrProvince"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Province
+						</label>
+						<select
+							required
+							name="stateOrProvince"
+							id="stateOrProvince"
+							value={newUserForm.stateOrProvince}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{provinceOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="cityOrMunicipality"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							City or Municipality
+						</label>
+						<select
+							required
+							name="cityOrMunicipality"
+							id="cityOrMunicipality"
+							value={newUserForm.cityOrMunicipality}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+							disabled={!newUserForm.stateOrProvince}
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{cityOrMunicipalityOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-dropdown-group">
+						<label
+							htmlFor="barangay"
+							className="create-user-field-title create-user-field-title-required"
+						>
+							Barangay
+						</label>
+						<select
+							required
+							name="barangay"
+							id="barangay"
+							value={newUserForm.barangay}
+							onChange={(e) => handleAddressSelect(e)}
+							className="create-user-dropdown"
+							disabled={
+								!newUserForm.stateOrProvince || !newUserForm.cityOrMunicipality
+							}
+						>
+							<option
+								key={""}
+								value={""}
+							>
+								-- Select --
+							</option>
+							{barangayOptions.map((option) => (
+								<option
+									key={option.code}
+									value={option.name}
+								>
+									{option.name}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="create-user-input-group z-10 relative">
+						<label
+							htmlFor="streetAddress"
+							className="create-user-field-title"
+						>
+							Street Address
+						</label>
+						<div
+							className={`create-user-container create-user-container-filled`}
+						>
+							<div className="create-user-input-text required-field">
+								<input
+									required
+									type="streetAddress"
+									name="streetAddress"
+									title="First Name"
+									className="input-field"
+									onChange={handleInputChange}
+									value={newUserForm.streetAddress}
+									placeholder="Street Address"
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

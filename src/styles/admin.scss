@@ -173,6 +173,10 @@
 
 				td {
 					@apply p-1 text-sm border border-gray-300 h-full;
+
+					&:not(:first-child) {
+						@apply min-w-[160px];
+					}
 				}
 
 				.index {

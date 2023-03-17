@@ -223,6 +223,14 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 		setCheckingUserExists(false);
 	};
 
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).select();
+	};
+
 	useEffect(() => {
 		fetchProvinces();
 	}, []);
@@ -241,6 +249,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 										${newUserForm.email ? "auth-input-container-filled" : ""}
 									`}
 						data-error={newUserFormError.email && newUserForm.email !== ""}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -266,6 +275,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						className={`auth-input-container
 										${newUserForm.password ? "auth-input-container-filled" : ""}
 									`}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -332,6 +342,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						data-error={
 							newUserFormError.firstName && newUserForm.firstName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -363,6 +374,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						data-error={
 							newUserFormError.lastName && newUserForm.lastName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -394,6 +406,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						data-error={
 							newUserFormError.middleName && newUserForm.middleName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text">
 							<label

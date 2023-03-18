@@ -1,3 +1,5 @@
+import { adminState } from "@/atoms/adminAtom";
+import { adminModalState } from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
@@ -25,6 +27,8 @@ const useUser = () => {
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const resetUserStateValue = useResetRecoilState(userState);
 	const resetNavigationBarStateValue = useResetRecoilState(navigationBarState);
+	const resetAdminStateValue = useResetRecoilState(adminState);
+	const resetAdminModalStateValue = useResetRecoilState(adminModalState);
 	const router = useRouter();
 
 	/**
@@ -469,6 +473,14 @@ const useUser = () => {
 			 * Reset the navigation bar state value.
 			 */
 			resetNavigationBarStateValue();
+			/**
+			 * Reset the admin state value.
+			 */
+			resetAdminStateValue();
+			/**
+			 * Reset the admin modal state value.
+			 */
+			resetAdminModalStateValue();
 		} catch (error: any) {
 			console.log("Hook: Reset User Data Error!");
 			throw error;
@@ -487,7 +499,13 @@ const useUser = () => {
 	 * @return {void}
 	 */
 	useEffect(() => {
-		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
+		if (
+			!user &&
+			!loading &&
+			!loadingUser &&
+			!userStateValue.user.uid &&
+			!router.pathname.match(/\/auth\//)
+		) {
 			router.push("/auth/signin");
 		} else if (user && !loading) {
 			setCurrentUserState();

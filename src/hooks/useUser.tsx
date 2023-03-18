@@ -531,7 +531,13 @@ const useUser = () => {
 		) {
 			router.push("/user/create-user");
 		}
-	}, [user, userStateValue.user]);
+	}, [
+		user,
+		userStateValue.user.uid,
+		userStateValue.user.isFirstLogin,
+		loading,
+		loadingUser,
+	]);
 
 	return {
 		authUser: userMemo,

@@ -79,12 +79,12 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	}
 
 	return (
-		<div className="flex flex-col flex-1">
+		<div className="flex-1">
 			<AdminNavigation
 				navigationBarStateValue={navigationBarStateValue}
 				setNavigationBarStateValue={setNavigationBarStateValue}
 			/>
-			<div className="flex-1 w-full">{children}</div>
+			<div className="w-full overflow-x-auto scroll-x-style">{children}</div>
 		</div>
 	);
 };

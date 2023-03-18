@@ -1,16 +1,22 @@
-import { credential, initializeApp } from "firebase-admin";
+import admin, { credential, initializeApp } from "firebase-admin";
 
-const adminApp = initializeApp({
+const firebaseAdminConfig = {
 	credential: credential.cert({
 		projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
 		clientEmail: process.env.NEXT_PUBLIC_ADMIN_CLIENT_EMAIL,
-		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY,
+		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+			/\\n/g,
+			"\n"
+		),
 	}),
 	projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
 	databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
 	storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
-});
+};
 
+const adminApp = admin.apps.length
+	? admin.app()
+	: admin.initializeApp(firebaseAdminConfig);
 const authAdmin = adminApp.auth();
 const firestoreAdmin = adminApp.firestore();
 const storageAdmin = adminApp.storage();

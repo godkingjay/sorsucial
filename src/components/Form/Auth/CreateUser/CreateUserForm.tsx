@@ -295,6 +295,19 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		setCreateUserFormPage((prev) => prev + page);
 	};
 
+	/**
+	 * Handles the click event of the input text div to focus the input element inside it when clicked.
+	 *
+	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
+	 */
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).focus();
+	};
+
 	useEffect(() => {
 		fetchProvinces();
 	}, []);
@@ -321,6 +334,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								profilePhotoRef={profilePhotoRef}
 								handleFileChange={handleFileChange}
 								handleInputChange={handleInputChange}
+								handleInputTextClick={handleInputTextClick}
 							/>
 						)}
 						{createUserFormPage === 2 && (

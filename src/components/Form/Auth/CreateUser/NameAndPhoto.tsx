@@ -15,6 +15,7 @@ type NameAndPhotoProps = {
 	profilePhotoRef: React.RefObject<HTMLInputElement>;
 	handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	handleInputTextClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
@@ -23,6 +24,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 	profilePhotoRef,
 	handleFileChange,
 	handleInputChange,
+	handleInputTextClick,
 }) => {
 	return (
 		<div className="flex w-full flex-col gap-y-8 items-center">
@@ -76,6 +78,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						data-error={
 							createUserFormError.firstName && createUserForm.firstName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -107,6 +110,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						data-error={
 							createUserFormError.lastName && createUserForm.lastName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
 							<label
@@ -138,6 +142,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 						data-error={
 							createUserFormError.middleName && createUserForm.middleName !== ""
 						}
+						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text">
 							<label

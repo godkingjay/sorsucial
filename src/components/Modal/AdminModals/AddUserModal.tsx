@@ -15,6 +15,7 @@ type AddUserModal = {
 	adminModalStateValue: AdminModalState;
 	setAdminModalStateValue: SetterOrUpdater<AdminModalState>;
 	checkUserEmailExists: (string: string) => Promise<boolean>;
+	createNewUsers: (newUsers: NewUserType[]) => Promise<void>;
 };
 
 export interface NewUserType {
@@ -46,6 +47,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
 	checkUserEmailExists,
+	createNewUsers,
 }) => {
 	const [newUsersForm, setNewUsersForm] = useState<NewUsersFormType>({
 		users: [],
@@ -56,6 +58,19 @@ const AddUserModal: React.FC<AddUserModal> = ({
 		e.preventDefault();
 		setAddingUsers(true);
 		try {
+			if (newUsersForm.users.length > 0) {
+				await createNewUsers(newUsersForm.users)
+					.then(() => {
+						setNewUsersForm({
+							users: [],
+						});
+					})
+					.catch((error: any) => {
+						console.log("Hook: Create New Users Error: ", error.message);
+					});
+			} else {
+				alert("No users to add!");
+			}
 		} catch (error: any) {
 			console.log("Adding Users Error: ", error.message);
 		}

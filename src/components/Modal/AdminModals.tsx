@@ -9,6 +9,7 @@ const AdminModals: React.FC<AdminModalsProps> = () => {
 		adminModalStateValue,
 		setAdminModalStateValue,
 		checkUserEmailExists,
+		createNewUsers,
 	} = useAdmin();
 
 	return (
@@ -18,6 +19,7 @@ const AdminModals: React.FC<AdminModalsProps> = () => {
 					adminModalStateValue={adminModalStateValue}
 					setAdminModalStateValue={setAdminModalStateValue}
 					checkUserEmailExists={checkUserEmailExists}
+					createNewUsers={createNewUsers}
 				/>
 			)}
 		</>

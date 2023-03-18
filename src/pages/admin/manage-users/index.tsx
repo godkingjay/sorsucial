@@ -46,7 +46,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	}, []);
 
 	return (
-		<div className="w-full overflow-x-auto scroll-x-style h-full">
+		<div className="flex flex-col">
 			<div className="w-max min-w-full flex flex-col gap-y-6 py-4">
 				<div className="flex flex-col px-4">
 					<div className="flex flex-col shadow-around-sm bg-white rounded-md">
@@ -82,7 +82,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 							</div>
 						</div>
 						<div className="w-full h-[1px] bg-gray-500 bg-opacity-10"></div>
-						<div className="flex flex-col p-4">
+						<div className="flex flex-col p-4 flex-1">
 							<div className="flex flex-col">
 								<table className="manage-users-table">
 									<tbody className="manage-users-content">

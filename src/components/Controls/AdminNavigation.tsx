@@ -20,7 +20,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = ({
 	setNavigationBarStateValue,
 }) => {
 	return (
-		<div className="sticky top-14">
+		<div className="sticky top-14 z-[500]">
 			<div className="admin-nav-wrapper">
 				<ul className="admin-nav-container">
 					<li>

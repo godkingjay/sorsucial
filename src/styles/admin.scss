@@ -49,7 +49,7 @@
 
 		.manage-users-content {
 			tr {
-				@apply h-max flex flex-row;
+				@apply h-max flex flex-row relative overflow-hidden z-[100];
 
 				td {
 					@apply border-gray-500 border-opacity-20 border-r border-l p-2 text-black w-32 flex flex-row items-center border-b overflow-x-auto scroll-x-style;
@@ -147,6 +147,10 @@
 								@apply bg-red-600;
 							}
 						}
+
+						.action:disabled {
+							@apply bg-gray-300 text-gray-500 cursor-not-allowed;
+						}
 					}
 				}
 
@@ -158,6 +162,18 @@
 					.actions {
 						@apply rounded-br-lg;
 					}
+				}
+			}
+
+			.deleting-user {
+				@apply bg-red-100 pointer-events-none cursor-not-allowed;
+
+				* {
+					@apply text-opacity-50 opacity-75;
+				}
+
+				td {
+					@apply bg-red-200;
 				}
 			}
 		}

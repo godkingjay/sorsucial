@@ -17,6 +17,7 @@ type AdminPageLayoutProps = {
 	authLoading: boolean;
 	authUser?: User | null;
 	userStateValue: UserState;
+	userMounted: boolean;
 };
 
 const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
@@ -28,10 +29,14 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	authLoading,
 	authUser,
 	userStateValue,
+	userMounted,
 }) => {
 	const { adminStateValue, adminFetchUsers } = useAdmin();
 
 	useEffect(() => {
+		if (!authUser) {
+			return;
+		}
 		const levelTwo = router.pathname.split("/")[2];
 		if (levelTwo) {
 			const isPathOfAdmin = [
@@ -61,20 +66,21 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 				},
 			}));
 		}
-	}, [router.pathname]);
+	}, [router.pathname, loadingUser, authUser]);
 
 	useEffect(() => {
 		if (
 			!loadingUser &&
 			!authLoading &&
 			authUser &&
-			!userStateValue.user.roles.includes("admin")
+			!userStateValue.user.roles.includes("admin") &&
+			userMounted
 		) {
 			router.push("/");
 		}
 	}, [loadingUser, authLoading, authUser, userStateValue.user.roles]);
 
-	if (loadingUser || authLoading || !authUser || !userStateValue.user.uid) {
+	if (loadingUser || authLoading || !userMounted) {
 		return <LoadingScreen />;
 	}
 

@@ -18,15 +18,12 @@ import {
 	where,
 	writeBatch,
 } from "firebase/firestore";
-import React from "react";
-import { useRecoilState, useResetRecoilState } from "recoil";
-import useUser from "./useUser";
+import { useRecoilState } from "recoil";
 
 const useAdmin = () => {
 	const [adminStateValue, setAdminStateValue] = useRecoilState(adminState);
 	const [adminModalStateValue, setAdminModalStateValue] =
 		useRecoilState(adminModalState);
-	const resetAdminStateValue = useResetRecoilState(adminState);
 
 	const createNewUsers = async (newUsers: NewUserType[]) => {
 		try {

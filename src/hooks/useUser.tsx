@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
 
@@ -30,6 +30,7 @@ const useUser = () => {
 	const resetAdminStateValue = useResetRecoilState(adminState);
 	const resetAdminModalStateValue = useResetRecoilState(adminModalState);
 	const router = useRouter();
+	const currentUserMounted = useRef(false);
 
 	/**
 	 * useMemo Hook to create a memoized version of the current user object.
@@ -501,12 +502,13 @@ const useUser = () => {
 			!user &&
 			!loading &&
 			!loadingUser &&
-			!userStateValue.user.uid &&
 			!router.pathname.match(/\/auth\//)
 		) {
 			router.push("/auth/signin");
-		} else if (user && !loading) {
-			setCurrentUserState();
+		} else if (user && !loading && !currentUserMounted.current) {
+			setCurrentUserState().then(() => {
+				currentUserMounted.current = true;
+			});
 		}
 	}, [user, loading]);
 
@@ -541,6 +543,7 @@ const useUser = () => {
 		userStateValue,
 		createUser,
 		logOutUser,
+		userMounted: currentUserMounted.current,
 	};
 };
 

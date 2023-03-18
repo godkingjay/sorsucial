@@ -15,6 +15,7 @@ type AddUserModal = {
 	adminModalStateValue: AdminModalState;
 	setAdminModalStateValue: SetterOrUpdater<AdminModalState>;
 	checkUserEmailExists: (string: string) => Promise<boolean>;
+	createNewUsers: (newUsers: NewUserType[]) => Promise<void>;
 };
 
 export interface NewUserType {
@@ -46,6 +47,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 	adminModalStateValue,
 	setAdminModalStateValue,
 	checkUserEmailExists,
+	createNewUsers,
 }) => {
 	const [newUsersForm, setNewUsersForm] = useState<NewUsersFormType>({
 		users: [],
@@ -56,6 +58,19 @@ const AddUserModal: React.FC<AddUserModal> = ({
 		e.preventDefault();
 		setAddingUsers(true);
 		try {
+			if (newUsersForm.users.length > 0) {
+				await createNewUsers(newUsersForm.users)
+					.then(() => {
+						setNewUsersForm({
+							users: [],
+						});
+					})
+					.catch((error: any) => {
+						console.log("Hook: Create New Users Error: ", error.message);
+					});
+			} else {
+				alert("No users to add!");
+			}
 		} catch (error: any) {
 			console.log("Adding Users Error: ", error.message);
 		}
@@ -81,6 +96,13 @@ const AddUserModal: React.FC<AddUserModal> = ({
 				...prev.addUser,
 				tab: name,
 			},
+		}));
+	};
+
+	const handleRemoveUserFromList = (email: string) => {
+		setNewUsersForm((prev) => ({
+			...prev,
+			users: prev.users.filter((user) => user.email !== email),
 		}));
 	};
 
@@ -170,7 +192,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 						</li>
 					</ul>
 				</div>
-				<form className="auth-form w-full flex flex-col p-2">
+				<form
+					className="auth-form w-full flex flex-col p-2"
+					onSubmit={handleAddUsersSubmit}
+				>
 					<div>
 						{adminModalStateValue.addUser.tab === "single" && (
 							<AddNewUserTab
@@ -183,7 +208,10 @@ const AddUserModal: React.FC<AddUserModal> = ({
 							<AddImportUserTab />
 						)}
 						{adminModalStateValue.addUser.tab === "list" && (
-							<AddUserListTab newUsersForm={newUsersForm} />
+							<AddUserListTab
+								newUsersForm={newUsersForm}
+								handleRemoveUserFromList={handleRemoveUserFromList}
+							/>
 						)}
 					</div>
 					<div className="my-2 h-[1px] bg-black bg-opacity-20"></div>

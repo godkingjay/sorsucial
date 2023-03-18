@@ -268,6 +268,19 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 		}
 	};
 
+	/**
+	 * Handles the click event of the input text div to focus the input element inside it when clicked.
+	 *
+	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
+	 */
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).focus();
+	};
+
 	return (
 		<form
 			className="auth-form"
@@ -290,6 +303,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 										: " !border-red-500 text-red-500"
 								}
 								`}
+								onClick={handleInputTextClick}
 							>
 								<div className="auth-input-text required-field">
 									<label
@@ -321,6 +335,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 								className={`auth-input-container ${
 									signInForm.password ? "auth-input-container-filled" : ""
 								}`}
+								onClick={handleInputTextClick}
 							>
 								<div className="auth-input-text required-field">
 									<label

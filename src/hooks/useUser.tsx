@@ -1,3 +1,5 @@
+import { adminState } from "@/atoms/adminAtom";
+import { adminModalState } from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
@@ -15,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
 
@@ -25,7 +27,10 @@ const useUser = () => {
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const resetUserStateValue = useResetRecoilState(userState);
 	const resetNavigationBarStateValue = useResetRecoilState(navigationBarState);
+	const resetAdminStateValue = useResetRecoilState(adminState);
+	const resetAdminModalStateValue = useResetRecoilState(adminModalState);
 	const router = useRouter();
+	const currentUserMounted = useRef(false);
 
 	/**
 	 * useMemo Hook to create a memoized version of the current user object.
@@ -441,8 +446,6 @@ const useUser = () => {
 			});
 
 			await resetUserData();
-
-			router.push("/auth/signin");
 		} catch (error: any) {
 			console.log("Hook: Sign Out Error!");
 			throw error;
@@ -469,6 +472,14 @@ const useUser = () => {
 			 * Reset the navigation bar state value.
 			 */
 			resetNavigationBarStateValue();
+			/**
+			 * Reset the admin state value.
+			 */
+			resetAdminStateValue();
+			/**
+			 * Reset the admin modal state value.
+			 */
+			resetAdminModalStateValue();
 		} catch (error: any) {
 			console.log("Hook: Reset User Data Error!");
 			throw error;
@@ -487,10 +498,17 @@ const useUser = () => {
 	 * @return {void}
 	 */
 	useEffect(() => {
-		if (!user && !loading && !router.pathname.match(/\/auth\//)) {
+		if (
+			!user &&
+			!loading &&
+			!loadingUser &&
+			!router.pathname.match(/\/auth\//)
+		) {
 			router.push("/auth/signin");
-		} else if (user && !loading) {
-			setCurrentUserState();
+		} else if (user && !loading && !currentUserMounted.current) {
+			setCurrentUserState().then(() => {
+				currentUserMounted.current = true;
+			});
 		}
 	}, [user, loading]);
 
@@ -513,7 +531,13 @@ const useUser = () => {
 		) {
 			router.push("/user/create-user");
 		}
-	}, [user, userStateValue.user]);
+	}, [
+		user,
+		userStateValue.user.uid,
+		userStateValue.user.isFirstLogin,
+		loading,
+		loadingUser,
+	]);
 
 	return {
 		authUser: userMemo,
@@ -525,6 +549,7 @@ const useUser = () => {
 		userStateValue,
 		createUser,
 		logOutUser,
+		userMounted: currentUserMounted.current,
 	};
 };
 

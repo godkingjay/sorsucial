@@ -199,7 +199,7 @@
 	}
 
 	.page-left-sidebar-wrapper {
-		height: calc(100vh - 56px);
+		max-height: calc(100vh - 56px);
 
 		.page-left-sidebar {
 			@apply bg-slate-800 w-14 h-full flex flex-col gap-y-4 duration-100 p-1 py-2 overflow-y-auto scroll-y-style;

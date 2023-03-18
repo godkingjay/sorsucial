@@ -29,6 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		setLoadingUser,
 		userStateValue,
 		logOutUser,
+		userMounted,
 	} = useUser();
 	const [navigationBarStateValue, setNavigationBarStateValue] =
 		useRecoilState(navigationBarState);
@@ -82,8 +83,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
-			{authLoading || loadingUser ? (
-				<LoadingScreen />
+			{(authLoading && !authUser) ||
+			(loadingUser && !userStateValue.user.uid) ? (
+				<>
+					<LoadingScreen />
+				</>
 			) : (
 				<>
 					{authUser && !userStateValue.user.isFirstLogin && (
@@ -112,6 +116,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 								authLoading={authLoading}
 								authUser={authUser}
 								userStateValue={userStateValue}
+								userMounted={userMounted}
 							>
 								{children}
 							</AdminPageLayout>

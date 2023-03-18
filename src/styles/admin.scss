@@ -49,77 +49,74 @@
 
 		.manage-users-content {
 			tr {
-				@apply h-max;
-
-				&:first-child {
-					@apply flex flex-row;
-
-					td {
-						@apply border-cyan-600 border bg-cyan-500 font-bold px-2 py-1 text-white h-10 flex flex-row items-center w-32;
-
-						&:first-child {
-							@apply bg-gray-400 rounded-tl-lg w-10 text-center flex flex-row justify-center border-gray-500;
-						}
-
-						&:nth-child(2) {
-							@apply flex-1;
-						}
-
-						&:last-child {
-							@apply bg-blue-600 rounded-tr-lg border-blue-800;
-						}
-					}
-				}
-
-				@apply flex flex-row;
+				@apply h-max flex flex-row;
 
 				td {
-					@apply border-gray-500 border-opacity-20 border-r border-l p-2 text-black min-h-[40px] flex flex-row items-center w-32 border-b overflow-x-auto scroll-x-style;
-
-					&:first-child {
-						@apply bg-gray-100 w-10 text-center flex flex-row justify-center;
-					}
-
-					&:nth-child(2) {
-						@apply flex-1;
-					}
-
-					&:last-child {
-						@apply bg-blue-100;
-					}
+					@apply border-gray-500 border-opacity-20 border-r border-l p-2 text-black w-32 flex flex-row items-center border-b overflow-x-auto scroll-x-style;
 				}
 
-				&:last-child {
-					td {
-						&:first-child {
-							@apply rounded-bl-lg;
-						}
+				.index {
+					@apply bg-gray-100 w-10 text-center flex flex-row justify-center;
+				}
 
-						&:last-child {
-							@apply rounded-br-lg;
-						}
+				.email,
+				.password {
+					@apply w-64 flex-1;
+				}
+
+				.roles {
+					@apply w-48;
+				}
+
+				.actions {
+					@apply bg-blue-100;
+				}
+
+				&:first-child {
+					td {
+						@apply border-cyan-600 border bg-cyan-500 font-bold text-white h-full;
+					}
+
+					.index {
+						@apply bg-gray-400 rounded-tl-lg border-gray-500;
+					}
+
+					.actions {
+						@apply bg-blue-600 rounded-tr-lg border-blue-800;
 					}
 				}
 
 				&:not(:first-child) {
 					.roles {
-						@apply flex flex-row gap-x-2 flex-wrap items-center text-xs;
+						@apply text-xs flex flex-row items-center flex-wrap gap-x-1;
 
 						.role {
-							@apply bg-gray-300 py-1 px-2 rounded-md;
+							@apply bg-gray-300 py-1 px-2 rounded-md my-1;
 						}
 
 						.role-user {
-							@apply bg-gray-300 text-gray-500;
+							@apply bg-gray-300 text-gray-800;
 						}
 
 						.role-admin {
-							@apply bg-red-300 text-red-500;
+							@apply bg-red-300 text-red-800;
+						}
+
+						.role-student {
+							@apply bg-blue-300 text-blue-800;
+						}
+
+						.role-instructor {
+							@apply bg-purple-300 text-purple-800;
+						}
+
+						.role-staff {
+							@apply bg-green-300 text-green-800;
 						}
 					}
 
 					.actions {
-						@apply flex flex-row items-center gap-x-2;
+						@apply flex flex-row items-center gap-x-2 justify-center;
 
 						.action {
 							@apply flex flex-row items-center gap-x-2 h-8 w-8 aspect-square p-2 justify-center rounded-md;
@@ -165,32 +162,110 @@
 	}
 
 	.new-user-table {
-		@apply flex flex-col py-2;
+		@apply flex flex-col pb-4;
 
 		.new-user-table-body {
 			tr {
-				@apply h-6;
+				@apply h-max flex flex-row;
 
 				td {
-					@apply p-1 text-sm border border-gray-300 h-full;
-
-					&:not(:first-child) {
-						@apply min-w-[160px];
-					}
+					@apply border-gray-500 border-opacity-20 border-r border-l p-2 text-black w-48 flex flex-row items-center border-b overflow-x-auto scroll-x-style;
 				}
 
 				.index {
-					@apply aspect-square px-4;
+					@apply bg-gray-100 w-10 text-center flex flex-row justify-center;
 				}
-			}
 
-			.new-user-table-header {
-				td {
-					@apply font-bold;
+				.email,
+				.password {
+					@apply w-64;
 				}
-			}
 
-			.new-user-table-content {
+				.roles {
+					@apply w-80;
+				}
+
+				.actions {
+					@apply bg-blue-100;
+				}
+
+				&:first-child {
+					td {
+						@apply border-cyan-600 border bg-cyan-500 font-bold text-white h-full;
+					}
+
+					.index {
+						@apply bg-gray-400 rounded-tl-lg border-gray-500;
+					}
+
+					.actions {
+						@apply bg-blue-600 rounded-tr-lg border-blue-800;
+					}
+				}
+
+				&:not(:first-child) {
+					.roles {
+						@apply text-xs flex flex-row items-center flex-wrap gap-x-1;
+
+						.role {
+							@apply bg-gray-300 py-1 px-2 rounded-md my-1;
+						}
+
+						.role-user {
+							@apply bg-gray-300 text-gray-800;
+						}
+
+						.role-admin {
+							@apply bg-red-300 text-red-800;
+						}
+
+						.role-student {
+							@apply bg-blue-300 text-blue-800;
+						}
+
+						.role-instructor {
+							@apply bg-purple-300 text-purple-800;
+						}
+
+						.role-staff {
+							@apply bg-green-300 text-green-800;
+						}
+					}
+
+					.actions {
+						@apply flex flex-row items-center gap-x-2 justify-center;
+
+						.action {
+							@apply flex flex-row items-center gap-x-2 h-8 w-8 aspect-square p-2 justify-center rounded-md;
+
+							.icon-container {
+								@apply h-full w-full text-white;
+
+								.icon {
+									@apply h-full w-full;
+								}
+							}
+						}
+
+						.action-edit {
+							@apply bg-blue-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-blue-600;
+							}
+						}
+
+						.action-delete {
+							@apply bg-red-500;
+
+							&:hover,
+							&:focus {
+								@apply bg-red-600;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

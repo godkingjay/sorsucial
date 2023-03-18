@@ -137,6 +137,19 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 		}
 	};
 
+	/**
+	 * Handles the click event of the input text div to focus the input element inside it when clicked.
+	 *
+	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
+	 */
+	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		(
+			(e.currentTarget as HTMLInputElement).querySelector(
+				"input"
+			) as HTMLInputElement
+		).focus();
+	};
+
 	return (
 		<form
 			className="auth-form"
@@ -168,6 +181,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 										className={`auth-input-container ${
 											signUpForm.email ? "auth-input-container-filled" : ""
 										}`}
+										onClick={handleInputTextClick}
 									>
 										<div className="auth-input-text required-field">
 											<label

@@ -1,4 +1,5 @@
 import CreateUserForm from "@/components/Form/Auth/CreateUser/CreateUserForm";
+import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -7,7 +8,8 @@ import React, { useEffect } from "react";
 type CreateUserPageProps = {};
 
 const CreateUserPage: React.FC<CreateUserPageProps> = () => {
-	const { authUser, loadingUser, authLoading, userStateValue } = useUser();
+	const { authUser, loadingUser, authLoading, userStateValue, userMounted } =
+		useUser();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -20,6 +22,16 @@ const CreateUserPage: React.FC<CreateUserPageProps> = () => {
 			router.push("/");
 		}
 	}, []);
+
+	if (
+		loadingUser ||
+		authLoading ||
+		!authUser ||
+		!userStateValue.user.isFirstLogin ||
+		!userMounted
+	) {
+		return <LoadingScreen />;
+	}
 
 	return (
 		<>

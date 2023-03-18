@@ -9,7 +9,7 @@ import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 type SignInPageProps = {};
 
 const SignInPage: React.FC<SignInPageProps> = () => {
-	const { authUser, authLoading } = useUser();
+	const { authUser, authLoading, loadingUser } = useUser();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -18,7 +18,7 @@ const SignInPage: React.FC<SignInPageProps> = () => {
 		}
 	}, [authUser, authLoading]);
 
-	if (authLoading) {
+	if (authLoading || authUser || loadingUser) {
 		return <LoadingScreen />;
 	}
 

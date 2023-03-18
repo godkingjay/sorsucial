@@ -16,8 +16,6 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} id - The unique identifier of the request.
  * @property {string} userId - The unique identifier of the user.
  * @property {string} instructorId - The unique identifier of the instructor.
- * @property {string} firstName - The first name of the user.
- * @property {string} lastName - The last name of the user.
  * @property {boolean} isAccepted - The status of the request.
  * @property {boolean} isRejected - The status of the request.
  * @property {Timestamp} [createdAt] - The date and time the request was created.
@@ -30,8 +28,37 @@ export interface InstructorRequest {
 	id: string;
 	userId: string;
 	instructorId: string;
-	firstName: string;
-	lastName: string;
+	isAccepted: boolean;
+	isRejected: boolean;
+	createdAt?: Timestamp;
+}
+
+/**
+ * This interface is used to define the structure of a staff request object.
+ * This is the object that is stored in the database.
+ *
+ * @export
+ * @interface StaffRequest
+ * @category Interfaces
+ * @subcategory Request
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {string} id - The unique identifier of the request.
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} staffId - The unique identifier of the staff.
+ * @property {boolean} isAccepted - The status of the request.
+ * @property {boolean} isRejected - The status of the request.
+ * @property {Timestamp} [createdAt] - The date and time the request was created.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface StaffRequest {
+	id: string;
+	userId: string;
+	staffId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
 	createdAt?: Timestamp;

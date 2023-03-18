@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
+import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 
 type SignInPageProps = {};
 
@@ -18,7 +19,7 @@ const SignInPage: React.FC<SignInPageProps> = () => {
 	}, [authUser, authLoading]);
 
 	if (authLoading) {
-		return <div>Loading</div>;
+		return <LoadingScreen />;
 	}
 
 	return (

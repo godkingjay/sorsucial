@@ -5,8 +5,14 @@ import { firestore } from "@/firebase/clientApp";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
+	CollectionReference,
+	DocumentData,
+	DocumentSnapshot,
+	QueryDocumentSnapshot,
+	QuerySnapshot,
 	Timestamp,
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
@@ -103,6 +109,126 @@ const useAdmin = () => {
 			throw error;
 		}
 	};
+	const deleteDocumentAndSubcollections = async (
+		docId: string,
+		collectionName: string,
+		path?: string
+	) => {
+		try {
+			if (docId && collectionName && !path) {
+				await axios
+					.post("/api/admin/delete-document", {
+						docId,
+						collectionName,
+						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+							/\\n/g,
+							"\n"
+						),
+					})
+					.catch((error: any) => {
+						console.log({
+							message: "API: Delete Document Error: " + error.message,
+							docId,
+							collectionName,
+						});
+						throw error;
+					});
+			}
+		} catch (error: any) {
+			console.error("Hook: Error deleting document and subcollections!");
+			throw error;
+		}
+	};
+
+	const deleteUser = async (userId: string) => {
+		try {
+			// await axios
+			// 	.post("/api/admin/delete-user", {
+			// 		uid: userId,
+			// 		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+			// 			/\\n/g,
+			// 			"\n"
+			// 		),
+			// 	})
+			// 	.then(async (res) => {
+			// 		const { isDeleted } = res.data;
+			// 		if (isDeleted) {
+			// await axios
+			// 	.post("/api/admin/delete-document", {
+			// 		docId: userId,
+			// 		collectionName: "users",
+			// 		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+			// 			/\\n/g,
+			// 			"\n"
+			// 		),
+			// 	})
+			// 	.then(async (res) => {
+			// 		const { isDeleted } = res.data;
+			// 		if (isDeleted) {
+			// 			setAdminStateValue((prev) => ({
+			// 				...prev,
+			// 				manageUsers: prev.manageUsers.filter(
+			// 					(user) => user.uid !== userId
+			// 				),
+			// 			}));
+			// 		} else {
+			// 			throw new Error("User document was not deleted");
+			// 		}
+			// 	})
+			// 	.catch((error: any) => {
+			// 		console.log(
+			// 			"API: Deleting User Document Error: ",
+			// 			error.message
+			// 		);
+			// 		throw error;
+			// 	});
+
+			if (userId) {
+				await deleteDocumentAndSubcollections(userId, "users")
+					.then(async () => {
+						await axios
+							.post("/api/admin/delete-user", {
+								uid: userId,
+								privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+									/\\n/g,
+									"\n"
+								),
+							})
+							.then((res) => {
+								const { isDeleted } = res.data;
+								if (isDeleted) {
+									setAdminStateValue((prev) => ({
+										...prev,
+										manageUsers: prev.manageUsers.filter(
+											(user) => user.uid !== userId
+										),
+									}));
+								} else {
+									throw new Error("User Authentication was not deleted");
+								}
+							})
+							.catch((error: any) => {
+								console.log(
+									"API: Deleting User Authentication Error: ",
+									error.message
+								);
+								throw error;
+							});
+					})
+					.catch((error: any) => {
+						console.log("Hook: Deleting User Document Error: ", error.message);
+						throw error;
+					});
+			} else {
+				throw new Error(
+					"There is no user id to delete the user from the database and auth system of firebase."
+				);
+			}
+		} catch (error: any) {
+			console.log("Hook: Deleting User Error: ", error.message);
+			throw error;
+		}
+	};
 
 	const adminFetchUsers = async ({
 		userLimit = 25,
@@ -168,11 +294,13 @@ const useAdmin = () => {
 
 	return {
 		adminStateValue,
+		setAdminStateValue,
 		adminFetchUsers,
 		adminModalStateValue,
 		setAdminModalStateValue,
 		checkUserEmailExists,
 		createNewUsers,
+		deleteUser,
 	};
 };
 

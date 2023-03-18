@@ -1,5 +1,7 @@
+import { firestore } from "@/firebase/clientApp";
 import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
+import { doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
@@ -8,10 +10,16 @@ import { TiUserAdd } from "react-icons/ti";
 type AdminManageUsersPageProps = {};
 
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
-	const { adminStateValue, adminFetchUsers, setAdminModalStateValue } =
-		useAdmin();
+	const {
+		adminStateValue,
+		setAdminStateValue,
+		adminFetchUsers,
+		setAdminModalStateValue,
+		deleteUser,
+	} = useAdmin();
 	const { userStateValue } = useUser();
 	const [fetchingUsers, setFetchingUsers] = useState(false);
+	const [deletingUser, setDeletingUser] = useState("");
 	const fetchingUsersMounted = useRef(false);
 
 	const handleFetchUsers = useCallback(async () => {
@@ -34,6 +42,18 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 			},
 		}));
 	};
+
+	const handleDeleteUser = useCallback(async (userId: string) => {
+		setDeletingUser(userId);
+		try {
+			// await deleteUser(userId).catch((error: any) => {
+			// 	console.log("Hook: Delete User Error: ", error.message);
+			// });
+		} catch (error: any) {
+			console.log("Deleting User Error: ", error.message);
+		}
+		setDeletingUser("");
+	}, []);
 
 	useEffect(() => {
 		if (
@@ -96,7 +116,12 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 										</tr>
 										{adminStateValue.manageUsers.map((user, index) => {
 											return (
-												<tr key={user.uid}>
+												<tr
+													key={user.uid}
+													className={
+														user.uid === deletingUser ? "deleting-user" : ""
+													}
+												>
 													<td className="index">
 														<p>{index + 1}</p>
 													</td>
@@ -126,6 +151,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 															type="button"
 															title="Edit"
 															className="action-edit action"
+															disabled={user.uid === deletingUser}
 														>
 															<div className="icon-container">
 																<FiEdit className="icon" />
@@ -136,6 +162,8 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 																type="button"
 																title="Delete"
 																className="action-delete action"
+																onClick={() => handleDeleteUser(user.uid)}
+																disabled={user.uid === deletingUser}
 															>
 																<div className="icon-container">
 																	<MdDelete className="icon" />

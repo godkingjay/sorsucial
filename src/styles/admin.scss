@@ -149,6 +149,16 @@
 						}
 					}
 				}
+
+				&:last-child {
+					.index {
+						@apply rounded-bl-lg;
+					}
+
+					.actions {
+						@apply rounded-br-lg;
+					}
+				}
 			}
 		}
 	}
@@ -264,6 +274,16 @@
 								@apply bg-red-600;
 							}
 						}
+					}
+				}
+
+				&:last-child {
+					.index {
+						@apply rounded-bl-lg;
+					}
+
+					.actions {
+						@apply rounded-br-lg;
 					}
 				}
 			}

@@ -5,14 +5,7 @@ import {
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
-import {
-	Timestamp,
-	collection,
-	getDoc,
-	getDocs,
-	query,
-	where,
-} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import {
 	OptionsData,
 	getBarangay,
@@ -326,10 +319,17 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 							!newUserFormError.password ? "h-0 py-0" : "h-max py-4"
 						} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
 					>
-						<p>
-							Password should only contain A-Z, a-z, 0-9, or special
-							characters(@, $, !, %, *, ?, &), and no spaces.
-						</p>
+						<ul className="flex flex-col gap-y-1">
+							<li>
+								<p>1. Password must be at least 8 characters long.</p>
+							</li>
+							<li>
+								<p>
+									2. Password should only contain A-Z, a-z, 0-9, or special
+									characters(@, $, !, %, *, ?, &), and no spaces.
+								</p>
+							</li>
+						</ul>
 					</div>
 				</div>
 				<div className="flex flex-col gap-y-2">

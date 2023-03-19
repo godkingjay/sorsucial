@@ -65,16 +65,16 @@ const RightNav: React.FC<RightNavProps> = ({
 	return (
 		<div className="h-full p-2 px-4">
 			<div className="flex flex-row items-center h-full gap-x-2">
+				<MenuDropdown
+					userStateValue={userStateValue}
+					navigationBarStateValue={navigationBarStateValue}
+					handleMenuDropdown={handleMenuDropdown}
+				/>
 				<UserDropdown
 					userStateValue={userStateValue}
 					navigationBarStateValue={navigationBarStateValue}
 					handleUserDropdown={handleUserDropdown}
 					handleLogOutUser={handleLogOutUser}
-				/>
-				<MenuDropdown
-					userStateValue={userStateValue}
-					navigationBarStateValue={navigationBarStateValue}
-					handleMenuDropdown={handleMenuDropdown}
 				/>
 			</div>
 		</div>

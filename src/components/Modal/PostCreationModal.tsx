@@ -105,6 +105,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		link: null,
 		poll: null,
 	});
+	const [creatingPost, setCreatingPost] = useState(false);
+
+	const handleCreatePostSubmit = async (
+		event: React.FormEvent<HTMLFormElement>
+	) => {
+		event.preventDefault();
+	};
 
 	const handleSelectPrivacy = (value: string) => {
 		setCreatePostForm((prev) => ({
@@ -119,6 +126,16 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			open: false,
 			postType: "feed",
 			tab: "post",
+		}));
+	};
+
+	const handleTextChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = event.target;
+		setCreatePostForm((prev) => ({
+			...prev,
+			[name]: value,
 		}));
 	};
 
@@ -149,6 +166,85 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
 					/>
+					<div className="flex flex-col w-full gap-y-2 mb-4 z-40">
+						<div className="relative flex flex-row py-2 px-2 rounded-md border border-transparent hover:bg-gray-100 focus-within:!bg-transparent focus-within:border-blue-500 gap-x-2">
+							<textarea
+								required
+								name="postTitle"
+								title="Post Title"
+								placeholder="Title"
+								className="flex-1 min-w-0 outline-none bg-transparent font-semibold break-words resize-none"
+								minLength={1}
+								maxLength={300}
+								onChange={(e) => {
+									handleTextChange(e);
+									e.currentTarget.style.height = "0px";
+									e.currentTarget.style.height =
+										e.currentTarget.scrollHeight + "px";
+								}}
+								rows={1}
+								value={createPostForm.postTitle}
+								disabled={creatingPost}
+							/>
+							<p
+								className={`mt-auto text-2xs font-semibold
+									${
+										300 - createPostForm.postTitle.length === 0
+											? "text-red-500"
+											: "text-gray-400"
+									}
+								`}
+							>
+								{300 - createPostForm.postTitle.length}/300
+							</p>
+						</div>
+						<div className="flex flex-row gap-x-2 gap-y-2">
+							<div className="relative h-max flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg hover:bg-gray-100 focus-within:!bg-transparent focus-within:border-blue-500">
+								<textarea
+									name="postBody"
+									placeholder="Text(optional)"
+									title="Body"
+									onChange={(e) => {
+										handleTextChange(e);
+										e.currentTarget.style.height = "0px";
+										e.currentTarget.style.height =
+											e.currentTarget.scrollHeight + "px";
+									}}
+									className={`
+										min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none
+									`}
+									rows={1}
+									minLength={0}
+									maxLength={40000}
+									value={createPostForm.postBody}
+									disabled={creatingPost}
+								/>
+							</div>
+							<div className="sticky -top-14 h-max">
+								<div className="rounded-md border border-gray-300 shadow-around-sm h-max w-14 bg-white"></div>
+							</div>
+						</div>
+					</div>
+					<div>
+						<button
+							type="submit"
+							title={`${
+								postCreationModalStateValue.postType === "announcement"
+									? "Create an announcement"
+									: postCreationModalStateValue.postType === "group"
+									? "Create a group post"
+									: "Create a post"
+							}`}
+							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={!createPostForm.postTitle}
+						>
+							{postCreationModalStateValue.postType === "announcement" &&
+								"Create Announcement"}
+							{postCreationModalStateValue.postType === "feed" && "Create Post"}
+							{postCreationModalStateValue.postType === "group" &&
+								"Create Group Post"}
+						</button>
+					</div>
 				</form>
 			</div>
 		</div>

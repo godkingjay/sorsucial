@@ -389,4 +389,41 @@
 			}
 		}
 	}
+
+	.post-creation-modal-form {
+		@apply p-4 flex flex-col;
+
+		.post-creation-modal-form-head {
+			@apply flex flex-row items-center h-16 gap-x-4;
+
+			.image-icon-container {
+				@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300 mb-auto;
+
+				.image {
+					@apply rounded-full h-full w-full;
+				}
+
+				.icon {
+					@apply h-full w-full bg-white;
+				}
+			}
+
+			.head-right {
+				@apply flex-1 h-full flex flex-col;
+
+				.user-name {
+					@apply w-full truncate;
+
+					.user-name-link {
+						@apply truncate font-semibold;
+
+						&:hover,
+						&:focus {
+							@apply underline;
+						}
+					}
+				}
+			}
+		}
+	}
 }

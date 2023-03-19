@@ -4,12 +4,15 @@ import { PollItem, SitePost } from "@/lib/interfaces/post";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaEye, FaLock, FaUserCircle } from "react-icons/fa";
+import { FaEye, FaLock, FaPollH, FaUserCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 import CustomDropdown, { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
+import { HiDocumentText } from "react-icons/hi";
+import { BsFillFileEarmarkPlusFill, BsImages } from "react-icons/bs";
+import { RiLinkM, RiLinkUnlinkM } from "react-icons/ri";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -129,6 +132,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleFormTabChange = (tab: PostCreationModalState["tab"]) => {
+		setPostCreationModalStateValue((prev) => ({
+			...prev,
+			tab,
+		}));
+	};
+
 	const handleTextChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
@@ -166,14 +176,14 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
 					/>
-					<div className="flex flex-col w-full gap-y-2 mb-4 z-40">
-						<div className="relative flex flex-row py-2 px-2 rounded-md border border-transparent hover:bg-gray-100 focus-within:!bg-transparent focus-within:border-blue-500 gap-x-2">
+					<div className="post-creation-modal-form-content">
+						<div className="post-creation-form-title-container">
 							<textarea
 								required
 								name="postTitle"
 								title="Post Title"
 								placeholder="Title"
-								className="flex-1 min-w-0 outline-none bg-transparent font-semibold break-words resize-none"
+								className="post-creation-form-title-input-field"
 								minLength={1}
 								maxLength={300}
 								onChange={(e) => {
@@ -198,8 +208,8 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								{300 - createPostForm.postTitle.length}/300
 							</p>
 						</div>
-						<div className="flex flex-row gap-x-2 gap-y-2">
-							<div className="relative h-max flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg hover:bg-gray-100 focus-within:!bg-transparent focus-within:border-blue-500">
+						<div className="post-creation-form-pages">
+							<div className="post-creation-form-body-container">
 								<textarea
 									name="postBody"
 									placeholder="Text(optional)"
@@ -211,7 +221,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											e.currentTarget.scrollHeight + "px";
 									}}
 									className={`
-										min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none
+										post-creation-form-body-input-field
 									`}
 									rows={1}
 									minLength={0}
@@ -221,7 +231,55 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								/>
 							</div>
 							<div className="sticky -top-14 h-max">
-								<div className="rounded-md border border-gray-300 shadow-around-sm h-max w-14 bg-white"></div>
+								<div className="post-creation-form-tabs-container">
+									<button
+										type="button"
+										title="Add Post Body"
+										className="post-creation-form-tab-button text-blue-500 data-[active=true]:!bg-blue-100"
+										onClick={() => handleFormTabChange("post")}
+										data-active={postCreationModalStateValue.tab === "post"}
+									>
+										<HiDocumentText className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add Image Or Video"
+										className="post-creation-form-tab-button text-green-500 data-[active=true]:!bg-green-100"
+										onClick={() => handleFormTabChange("image/video")}
+										data-active={
+											postCreationModalStateValue.tab === "image/video"
+										}
+									>
+										<BsImages className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add File"
+										className="post-creation-form-tab-button text-purple-500 data-[active=true]:!bg-purple-100"
+										onClick={() => handleFormTabChange("file")}
+										data-active={postCreationModalStateValue.tab === "file"}
+									>
+										<BsFillFileEarmarkPlusFill className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add Link"
+										className="post-creation-form-tab-button text-cyan-500 data-[active=true]:!bg-cyan-100"
+										onClick={() => handleFormTabChange("link")}
+										data-active={postCreationModalStateValue.tab === "link"}
+									>
+										<RiLinkM className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Create Poll"
+										className="post-creation-form-tab-button text-yellow-500 data-[active=true]:!bg-yellow-100"
+										onClick={() => handleFormTabChange("poll")}
+										data-active={postCreationModalStateValue.tab === "poll"}
+									>
+										<FaPollH className="icon" />
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>

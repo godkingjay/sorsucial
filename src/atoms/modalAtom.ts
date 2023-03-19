@@ -40,11 +40,13 @@ export const adminModalState = atom<AdminModalState>({
 export type PostCreationModalState = {
 	open: boolean;
 	postType: SitePost["postType"];
+	tab: "post" | "image&video" | "poll" | "link" | "file";
 };
 
 export const defaultPostCreationModalState: PostCreationModalState = {
 	open: false,
 	postType: "feed",
+	tab: "post",
 };
 
 export const postCreationModalState = atom<PostCreationModalState>({

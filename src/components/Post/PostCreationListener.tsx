@@ -8,7 +8,7 @@ import { BsFileEarmarkPlusFill, BsImages } from "react-icons/bs";
 import Link from "next/link";
 import { MdPostAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
 	PostCreationModalState,
 	postCreationModalState,
@@ -24,8 +24,9 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 	useStateValue: userStateValue,
 	postType,
 }) => {
-	const [postCreationModalStateValue, setPostCreationModalStateValue] =
-		useRecoilState(postCreationModalState);
+	const setPostCreationModalStateValue = useSetRecoilState(
+		postCreationModalState
+	);
 
 	const handlePostCreationModal = (tab: PostCreationModalState["tab"]) => {
 		setPostCreationModalStateValue((prev) => ({

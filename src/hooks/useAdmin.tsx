@@ -109,17 +109,25 @@ const useAdmin = () => {
 			throw error;
 		}
 	};
-	const deleteDocumentAndSubcollections = async (
-		docId: string,
-		collectionName: string,
-		path?: string
-	) => {
+
+	type DeleteDocumentAndSubcollections = {
+		docId: string;
+		collectionName: string;
+		path?: string;
+	};
+
+	const deleteDocumentAndSubcollections = async ({
+		docId,
+		collectionName,
+		path,
+	}: DeleteDocumentAndSubcollections) => {
 		try {
 			if (docId && collectionName && !path) {
 				await axios
 					.post("/api/admin/delete-document", {
 						docId,
 						collectionName,
+						path,
 						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
 							/\\n/g,
 							"\n"
@@ -142,49 +150,11 @@ const useAdmin = () => {
 
 	const deleteUser = async (userId: string) => {
 		try {
-			// await axios
-			// 	.post("/api/admin/delete-user", {
-			// 		uid: userId,
-			// 		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-			// 			/\\n/g,
-			// 			"\n"
-			// 		),
-			// 	})
-			// 	.then(async (res) => {
-			// 		const { isDeleted } = res.data;
-			// 		if (isDeleted) {
-			// await axios
-			// 	.post("/api/admin/delete-document", {
-			// 		docId: userId,
-			// 		collectionName: "users",
-			// 		privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-			// 			/\\n/g,
-			// 			"\n"
-			// 		),
-			// 	})
-			// 	.then(async (res) => {
-			// 		const { isDeleted } = res.data;
-			// 		if (isDeleted) {
-			// 			setAdminStateValue((prev) => ({
-			// 				...prev,
-			// 				manageUsers: prev.manageUsers.filter(
-			// 					(user) => user.uid !== userId
-			// 				),
-			// 			}));
-			// 		} else {
-			// 			throw new Error("User document was not deleted");
-			// 		}
-			// 	})
-			// 	.catch((error: any) => {
-			// 		console.log(
-			// 			"API: Deleting User Document Error: ",
-			// 			error.message
-			// 		);
-			// 		throw error;
-			// 	});
-
 			if (userId) {
-				await deleteDocumentAndSubcollections(userId, "users")
+				await deleteDocumentAndSubcollections({
+					docId: userId,
+					collectionName: "users",
+				})
 					.then(async () => {
 						await axios
 							.post("/api/admin/delete-user", {

@@ -34,7 +34,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 			<div>
 				<button
 					type="button"
-					className="flex flex-row items-center w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+					className="flex flex-row items-center w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
 					onClick={() => setIsOpen(!isOpen)}
 				>
 					<div className="h-4 w-4 aspect-square">{selectedOption?.icon}</div>
@@ -52,7 +52,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 				</button>
 			</div>
 			{isOpen && (
-				<div className="origin-top-right absolute left-0 top-[120%] rounded-md w-full shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+				<div className="origin-top-right absolute left-0 top-[110%] rounded-md w-full shadow-around-sm bg-white ring-1 ring-black ring-opacity-5">
 					<div
 						className="py-1"
 						role="menu"
@@ -64,7 +64,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 								key={option.value}
 								type="button"
 								title={option.label}
-								className="flex flex-row items-center w-full gap-x-4 h-full p-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+								className="flex flex-row items-center w-full gap-x-4 h-full p-2 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 								role="menuitem"
 								onClick={() => handleOptionSelect(option)}
 							>

@@ -1,7 +1,6 @@
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { UserState } from "@/atoms/userAtom";
 import React from "react";
-import { FiMenu } from "react-icons/fi";
 import { CgMenuGridO } from "react-icons/cg";
 
 type MenuDropdownProps = {

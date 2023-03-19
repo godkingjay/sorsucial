@@ -32,6 +32,7 @@ type SignInFormProps = {
  */
 export const SignInRegex = {
 	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
+	password: /^(?=.*[A-Za-z\d@$!%*?&])[A-Za-z\d@$!%*?&]{8,256}$/,
 };
 
 /**
@@ -110,6 +111,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	 */
 	const [validEmail, setValidEmail] = useState(true);
 
+	const [validPassword, setValidPassword] = useState(true);
+
 	/**
 	 * The router state value is used to navigate to the home page.
 	 *
@@ -139,6 +142,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 		 */
 		setSignInError("");
 
+		const { name, value } = e.target;
+
 		/**
 		 * Checks if the input field is the email input field.
 		 *
@@ -148,9 +153,22 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 		 *
 		 * The validEmail state value is used to determine if the user is allowed to sign in.
 		 */
-		if (e.target.name === "email") {
+		if (name === "email") {
 			setValidEmail(() =>
 				e.target.value.match(SignInRegex.email) ? true : false
+			);
+		}
+
+		/**
+		 * Checks if the input field is the password input field.
+		 *
+		 * If the input field is the password input field, then the validPassword state value is updated.
+		 *
+		 * The validPassword state value is used to determine if the user is allowed to sign in.
+		 */
+		if (name === "password") {
+			setValidPassword(() =>
+				value.match(SignInRegex.password) ? true : false
 			);
 		}
 
@@ -161,7 +179,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 		 */
 		setSignInForm((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value,
+			[name]: value,
 		}));
 	};
 
@@ -296,12 +314,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 						<div className="w-full flex flex-col relative z-10 gap-y-2">
 							<div
 								className={`auth-input-container
-								${signInForm.email ? "auth-input-container-filled" : ""}
-								${
-									validEmail && signInForm.email
-										? " !border-green-500"
-										: " !border-red-500 text-red-500"
-								}
+									${signInForm.email ? "auth-input-container-filled" : ""}
+									${!validEmail && signInForm.email && " !border-red-500 text-red-500"}
 								`}
 								onClick={handleInputTextClick}
 							>
@@ -324,17 +338,18 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 							</div>
 							<div
 								className={`${
-									validEmail ? "h-0 py-0" : "h-max py-4"
+									validEmail || !signInForm.email ? "h-0 py-0" : "h-max py-4"
 								} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
 							>
 								<p>Please input a school provided email address.</p>
 							</div>
 						</div>
-						<div className="w-full -z-10">
+						<div className="w-full z-[9] flex flex-col gap-y-2">
 							<div
-								className={`auth-input-container ${
-									signInForm.password ? "auth-input-container-filled" : ""
-								}`}
+								className={`auth-input-container
+									${signInForm.password ? "auth-input-container-filled" : ""}
+									${!validPassword && signInForm.password && " !border-red-500 text-red-500"}
+								`}
 								onClick={handleInputTextClick}
 							>
 								<div className="auth-input-text required-field">

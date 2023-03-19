@@ -1,11 +1,11 @@
 import { atom } from "recoil";
 
-export type ErrorUploadModal = {
+export type ErrorUploadModalState = {
 	open: boolean;
 	message: string;
 };
 
-const defaultErrorUploadModal: ErrorUploadModal = {
+const defaultErrorUploadModal: ErrorUploadModalState = {
 	open: false,
 	message: "",
 };

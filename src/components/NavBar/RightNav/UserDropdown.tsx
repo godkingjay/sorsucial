@@ -54,7 +54,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 				<div className="user-dropdown !max-h-[384px]">
 					<div className="flex flex-col gap-y-2">
 						<Link
-							href={"/"}
+							href={`/user/${userStateValue.user.uid}`}
 							className="user-dropdown-group"
 							title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
 						>

@@ -6,7 +6,8 @@ import { FaPollH, FaUserCircle } from "react-icons/fa";
 import { CiBullhorn } from "react-icons/ci";
 import { BsImages } from "react-icons/bs";
 import Link from "next/link";
-import { MdPoll } from "react-icons/md";
+import { MdPoll, MdPostAdd } from "react-icons/md";
+import { FiEdit } from "react-icons/fi";
 
 type PostCreationListenerProps = {
 	useStateValue: UserState;
@@ -51,6 +52,12 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 					>
 						<div className="icon-container">
 							{postType === "announcement" && <CiBullhorn className="icon" />}
+							{postType === "feed" && (
+								<div className="h-full w-full p-[1px]">
+									<FiEdit className="icon stroke-1" />
+								</div>
+							)}
+							{postType === "group" && <MdPostAdd className="icon" />}
 						</div>
 						<div className="label-container">
 							<p className="label">

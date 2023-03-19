@@ -18,6 +18,7 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} postTitle - The title of the post.
  * @property {string} [postBody] - The body of the post.
  * @property {string[]} [postTags] - The tags of the post.
+ * @property {"announcement" | "feed" | "group"} postType - The type of the post.
  * @property {Timestamp} createdAt - The date and time when the post was created.
  * @property {boolean} hasImageOrVideo - Whether the post has an image or video.
  * @property {boolean} hasFile - Whether the post has a file.
@@ -41,6 +42,7 @@ export interface SitePost {
 	postTitle: string;
 	postBody?: string;
 	postTags?: string[];
+	postType: "announcement" | "feed" | "group";
 	createdAt: Timestamp;
 	hasImageOrVideo: boolean;
 	hasFile: boolean;

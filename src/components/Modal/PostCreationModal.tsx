@@ -23,9 +23,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
-			<div className="w-full max-w-lg bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
-				<div className="p-4 w-full rounded-t-xl flex flex-row justify-center items-center relative">
-					<p className="font-bold text-lg text-black">Create a Post</p>
+			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
+				<div className="p-4 px-16 w-full rounded-t-xl flex flex-row justify-center items-center relative">
+					<p className="font-bold text-lg text-black truncate">Create a Post</p>
 					<button
 						type="button"
 						title="Close"

@@ -28,7 +28,7 @@ import { SiteDiscussion } from "@/lib/interfaces/discussion";
  */
 export interface UserState {
 	user: SiteUser;
-	userConnections?: SiteUser[];
+	userConnections: SiteUser[];
 	userGroups: SiteGroup[];
 	userPosts: SitePost[];
 	userDiscussions: SiteDiscussion[];
@@ -59,9 +59,9 @@ export interface UserState {
 export interface UserPageState {
 	user: SiteUser;
 	userConnections?: SiteUser[];
-	userGroups: SiteGroup[];
-	userPosts: SitePost[];
-	userDiscussions: SiteDiscussion[];
+	userGroups?: SiteGroup[];
+	userPosts?: SitePost[];
+	userDiscussions?: SiteDiscussion[];
 }
 
 /**

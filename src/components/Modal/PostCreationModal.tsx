@@ -9,6 +9,7 @@ import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 import CustomDropdown, { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
+import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -143,41 +144,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				</div>
 				<div className="h-[1px] bg-black bg-opacity-10"></div>
 				<form className="post-creation-modal-form">
-					<div className="post-creation-modal-form-head">
-						<Link
-							href={`/user/${userStateValue.user.uid}`}
-							className="image-icon-container"
-							onClick={handleClose}
-						>
-							{userStateValue.user.imageURL ? (
-								<Image
-									src={userStateValue.user.imageURL}
-									alt="User Profile Picture"
-									width={128}
-									height={128}
-									loading="lazy"
-									className="image"
-								/>
-							) : (
-								<FaUserCircle className="icon" />
-							)}
-						</Link>
-						<div className="head-right">
-							<div className="user-name">
-								<Link
-									href={`users/${userStateValue.user.uid}`}
-									className="user-name-link"
-								>{`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}</Link>
-							</div>
-							<div className="privacy-type-wrapper">
-								<CustomDropdown
-									options={postPrivacyOptions}
-									onSelect={handleSelectPrivacy}
-									defaultValue={postPrivacyOptions[0]}
-								/>
-							</div>
-						</div>
-					</div>
+					<PostCreationModalFormHead
+						userStateValue={userStateValue}
+						handleClose={handleClose}
+						handleSelectPrivacy={handleSelectPrivacy}
+					/>
 				</form>
 			</div>
 		</div>

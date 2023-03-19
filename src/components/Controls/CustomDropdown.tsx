@@ -30,15 +30,15 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 	};
 
 	return (
-		<div className="relative flex flex-col w-36 h-8 justify-center">
+		<div className="relative flex flex-col w-full max-w-[128px] h-8 justify-center">
 			<div>
 				<button
 					type="button"
-					className="flex flex-row items-center w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
+					className="flex flex-row items-center gap-x-2 w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
 					onClick={() => setIsOpen(!isOpen)}
 				>
 					<div className="h-4 w-4 aspect-square">{selectedOption?.icon}</div>
-					<div className="flex-1 flex-row flex items-center mx-2">
+					<div className="flex-1 flex-row flex items-center truncate">
 						{selectedOption?.label || "Select an option"}
 					</div>
 					<div
@@ -69,7 +69,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 								onClick={() => handleOptionSelect(option)}
 							>
 								<div className="h-5 w-5 aspect-square">{option.icon}</div>
-								<div className="flex-1 flex-row flex items-center">
+								<div className="flex-1 flex-row flex items-center truncate">
 									{option.label || "Select an option"}
 								</div>
 							</button>

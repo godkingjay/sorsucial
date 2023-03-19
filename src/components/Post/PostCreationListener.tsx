@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { FaPollH, FaUserCircle } from "react-icons/fa";
 import { CiBullhorn } from "react-icons/ci";
-import { BsImages } from "react-icons/bs";
+import { BsFileEarmarkPlus, BsImages } from "react-icons/bs";
 import Link from "next/link";
 import { MdPoll, MdPostAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
@@ -13,6 +13,7 @@ import {
 	PostCreationModalState,
 	postCreationModalState,
 } from "@/atoms/modalAtom";
+import { RiLinkUnlinkM } from "react-icons/ri";
 
 type PostCreationListenerProps = {
 	useStateValue: UserState;
@@ -101,6 +102,32 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						</div>
 						<div className="label-container">
 							<p className="label">Add Photo/Video</p>
+						</div>
+					</button>
+					<button
+						type="button"
+						title="Add File"
+						className="button !hidden md:!flex"
+						onClick={() => handlePostCreationModal("file")}
+					>
+						<div className="icon-container text-purple-500">
+							<BsFileEarmarkPlus className="icon" />
+						</div>
+						<div className="label-container">
+							<p className="label">Add File</p>
+						</div>
+					</button>
+					<button
+						type="button"
+						title="Add Link"
+						className="button !hidden xs:!flex"
+						onClick={() => handlePostCreationModal("link")}
+					>
+						<div className="icon-container text-blue-500">
+							<RiLinkUnlinkM className="icon" />
+						</div>
+						<div className="label-container">
+							<p className="label">Add Link</p>
 						</div>
 					</button>
 					<button

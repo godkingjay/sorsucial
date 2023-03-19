@@ -43,7 +43,6 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				</div>
 				<div className="h-[1px] bg-black bg-opacity-10"></div>
 				<div className="p-4 flex flex-col">
-					{/* <div className="w-full flex flex-col flex-1 items-center h-14 overflow-x-auto scroll-x-style"></div> */}
 					<div className="bg-white p-4 shadow-around-sm border border-gray-200 rounded-lg"></div>
 				</div>
 			</div>

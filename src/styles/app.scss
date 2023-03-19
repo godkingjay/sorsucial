@@ -374,7 +374,7 @@
 					}
 
 					.label-container {
-						@apply flex flex-row h-full items-center text-gray-500;
+						@apply hidden min-[400px]:flex flex-row h-full items-center text-gray-500 text-sm;
 
 						.label {
 							@apply flex-1 font-semibold;

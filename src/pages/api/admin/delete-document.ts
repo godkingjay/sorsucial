@@ -1,25 +1,6 @@
 import { firestoreAdmin } from "@/firebase/adminApp";
 import { NextApiRequest, NextApiResponse } from "next";
 
-async function deleteCollection(
-	collectionRef: FirebaseFirestore.CollectionReference
-) {
-	const querySnapshot = await collectionRef.get();
-	const batch = firestoreAdmin.batch();
-
-	querySnapshot.forEach(async (doc) => {
-		const nestedCollections = await doc.ref.listCollections();
-
-		nestedCollections.forEach(async (nestedCollection) => {
-			await deleteCollection(nestedCollection);
-		});
-
-		batch.delete(doc.ref);
-	});
-
-	await batch.commit();
-}
-
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
@@ -29,7 +10,7 @@ export default async function handler(
 		return;
 	}
 
-	const { docId, collectionName, privateKey } = req.body;
+	const { docId, collectionName, privateKey, path } = req.body;
 
 	if (!docId) {
 		res.status(400).json({ message: "Document ID is required" });
@@ -41,7 +22,9 @@ export default async function handler(
 		return;
 	}
 
-	const docRef = firestoreAdmin.collection(collectionName).doc(docId);
+	const docRef = firestoreAdmin
+		.collection(path ? `${path}/${collectionName}` : collectionName)
+		.doc(docId);
 
 	if (!docRef) {
 		res.status(400).json({ message: "Document not found" });
@@ -59,16 +42,46 @@ export default async function handler(
 
 	if (req.method === "POST") {
 		try {
-			const nestedCollections = await docRef.listCollections();
+			const deleteDocument = async (
+				documentRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+			) => {
+				const nestedCollections = Array.from(
+					await documentRef.listCollections()
+				);
 
-			nestedCollections.forEach(async (nestedCollection) => {
-				await deleteCollection(nestedCollection);
-			});
+				nestedCollections.forEach(async (nestedCollection) => {
+					await deleteCollection(nestedCollection);
+				});
 
-			await docRef.delete();
-			res
-				.status(200)
-				.json({ message: "Document deleted successfully", isDeleted: true });
+				await documentRef.delete();
+			};
+
+			const deleteCollection = async (
+				collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>
+			) => {
+				const collectionDocuments = Array.from(
+					await collectionRef.listDocuments()
+				);
+
+				collectionDocuments.forEach(async (collectionDocument) => {
+					await deleteDocument(collectionDocument);
+				});
+			};
+
+			await deleteDocument(docRef)
+				.then(() => {
+					res.status(200).json({
+						message: "Document and nested collections deleted",
+						isDeleted: true,
+					});
+				})
+				.catch((error) => {
+					console.error(error);
+					res
+						.status(500)
+						.json({ message: "Error deleting document", isDeleted: false });
+				});
+			return;
 		} catch (error) {
 			console.error(error);
 			res

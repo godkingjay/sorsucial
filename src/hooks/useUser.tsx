@@ -84,11 +84,12 @@ const useUser = () => {
 					/**
 					 * Set user state
 					 */
-					setUserStateValue({
+					setUserStateValue((prev) => ({
+						...prev,
 						user: {
 							...userDocData,
 						},
-					});
+					}));
 				}
 			} catch (error: any) {
 				console.log("Hook(setUser): Setting Current User State Error !");
@@ -147,11 +148,12 @@ const useUser = () => {
 						 */
 						await setDoc(userDocRef, newUser)
 							.then(() => {
-								setUserStateValue({
+								setUserStateValue((prev) => ({
+									...prev,
 									user: {
 										...newUser,
 									},
-								});
+								}));
 							})
 							.catch((error: any) => {
 								console.log(
@@ -547,6 +549,7 @@ const useUser = () => {
 		setLoadingUser,
 		createAccount,
 		userStateValue,
+		setUserStateValue,
 		createUser,
 		logOutUser,
 		userMounted: currentUserMounted.current,

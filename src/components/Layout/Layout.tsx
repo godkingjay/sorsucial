@@ -126,7 +126,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 					</div>
 				</>
 			)}
-			<Modals />
+			<Modals userStateValue={userStateValue} />
 			{userStateValue.user.roles.includes("admin") && <AdminModals />}
 		</main>
 	);

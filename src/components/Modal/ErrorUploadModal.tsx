@@ -1,33 +1,35 @@
-import { ErrorUploadModal } from "@/atoms/modalAtom";
+import { ErrorModalState } from "@/atoms/modalAtom";
 import React, { useEffect } from "react";
 import { AiFillFileExclamation } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 
 type ErrorUploadProps = {
-	errorUploadModal: ErrorUploadModal;
-	setErrorUploadModal: SetterOrUpdater<ErrorUploadModal>;
+	errorModalStateValue: ErrorModalState;
+	setErrorModalStateValue: SetterOrUpdater<ErrorModalState>;
 };
 
 const ErrorUpload: React.FC<ErrorUploadProps> = ({
-	errorUploadModal,
-	setErrorUploadModal,
+	errorModalStateValue,
+	setErrorModalStateValue,
 }) => {
 	const handleClose = () => {
-		setErrorUploadModal({
+		setErrorModalStateValue((prev) => ({
+			...prev,
 			open: false,
+			view: "none",
 			message: "",
-		});
+		}));
 	};
 
 	useEffect(() => {
-		if (errorUploadModal.open) {
+		if (errorModalStateValue.open) {
 			const timeout = setTimeout(() => {
 				handleClose();
 			}, 5000);
 			return () => clearTimeout(timeout);
 		}
-	}, [errorUploadModal]);
+	}, [errorModalStateValue]);
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] grid place-items-center px-8 py-16 overflow-y-auto scroll-y-style">
@@ -48,7 +50,7 @@ const ErrorUpload: React.FC<ErrorUploadProps> = ({
 						<div className="w-16 h-16 text-red-500">
 							<AiFillFileExclamation className="h-full w-full" />
 						</div>
-						<p className="text-red-500 mt-4">{errorUploadModal.message}</p>
+						<p className="text-red-500 mt-4">{errorModalStateValue.message}</p>
 					</div>
 				</div>
 			</div>

@@ -3,7 +3,7 @@ import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
 import { collection, doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiLoader } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { TiUserAdd } from "react-icons/ti";
 
@@ -114,67 +114,88 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 											<td className="roles">Roles</td>
 											<td className="actions">Actions</td>
 										</tr>
-										{adminStateValue.manageUsers.map((user, index) => {
-											return (
-												<tr
-													key={user.uid}
-													className={
-														user.uid === deletingUser ? "deleting-user" : ""
-													}
-												>
-													<td className="index">
-														<p>{index + 1}</p>
-													</td>
-													<td className="email">
-														<p>{user.email}</p>
-													</td>
-													<td className="last-name">
-														<p>{user.lastName}</p>
-													</td>
-													<td className="first-name">
-														<p>{user.firstName}</p>
-													</td>
-													<td className="roles">
-														{user.roles.map((role) => {
-															return (
-																<p
-																	key={role}
-																	className={`role role-${role}`}
-																>
-																	{role}
-																</p>
-															);
-														})}
-													</td>
-													<td className="actions">
-														<button
-															type="button"
-															title="Edit"
-															className="action-edit action"
-															disabled={user.uid === deletingUser}
+										{!fetchingUsers ? (
+											<>
+												{adminStateValue.manageUsers.map((user, index) => {
+													return (
+														<tr
+															key={user.uid}
+															className={
+																user.uid === deletingUser ? "deleting-user" : ""
+															}
 														>
-															<div className="icon-container">
-																<FiEdit className="icon" />
-															</div>
-														</button>
-														{user.uid !== userStateValue.user.uid &&
-															!user.roles.includes("admin") && (
+															<td className="index">
+																<p>{index + 1}</p>
+															</td>
+															<td className="email">
+																<p>{user.email}</p>
+															</td>
+															<td className="last-name">
+																<p>{user.lastName}</p>
+															</td>
+															<td className="first-name">
+																<p>{user.firstName}</p>
+															</td>
+															<td className="roles">
+																{user.roles.map((role) => {
+																	return (
+																		<p
+																			key={role}
+																			className={`role role-${role}`}
+																		>
+																			{role}
+																		</p>
+																	);
+																})}
+															</td>
+															<td className="actions">
 																<button
 																	type="button"
-																	title="Delete"
-																	className="action-delete action"
-																	onClick={() => handleDeleteUser(user.uid)}
+																	title="Edit"
+																	className="action-edit action"
 																	disabled={user.uid === deletingUser}
 																>
 																	<div className="icon-container">
-																		<MdDelete className="icon" />
+																		<FiEdit className="icon" />
 																	</div>
 																</button>
-															)}
-													</td>
-												</tr>
-											);
-										})}
+																{user.uid !== userStateValue.user.uid &&
+																	!user.roles.includes("admin") && (
+																		<button
+																			type="button"
+																			title="Delete"
+																			className="action-delete action"
+																			onClick={() => handleDeleteUser(user.uid)}
+																			disabled={user.uid === deletingUser}
+																		>
+																			<div className="icon-container">
+																				<MdDelete className="icon" />
+																			</div>
+																		</button>
+																	)}
+															</td>
+														</tr>
+													);
+												})}
+											</>
+										) : (
+											<tr>
+												<td className="col-span-full flex-1 rounded-b-lg bg-gray-100">
+													<div className="h-full flex flex-1 p-2 items-center justify-center">
+														<div className="flex flex-row gap-x-4 text-gray-500 animate-pulse">
+															<div className="h-6 w-6 aspect-square text-logo-300 animate-spin">
+																<FiLoader className="h-full w-full" />
+															</div>
+															<div className="flex flex-row items-center">
+																<p className="text-sm font-semibold">
+																	Loading Users...
+																</p>
+															</div>
+														</div>
+													</div>
+												</td>
+											</tr>
+										)}
 									</tbody>
 								</table>
 							</div>

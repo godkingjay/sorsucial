@@ -7,7 +7,7 @@ import { Timestamp } from "firebase/firestore";
  * ----------------------------------------------------------------
  *
  * @export
- * @interface Discussion
+ * @interface SiteDiscussion
  * @category Interfaces
  *
  * ----------------------------------------------------------------
@@ -18,6 +18,7 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} discussionTitle - The title of the discussion.
  * @property {string} [discussionBody] - The body of the discussion.
  * @property {string[]} discussionTags - The tags of the discussion.
+ * @property {"discussion" | "group"} discussionType - The type of the discussion.
  * @property {boolean} isHidden - The status of the discussion.
  * @property {boolean} isOpen - The status of the discussion.
  * @property {"public" | "restricted" | "private"} privacyType - The privacy type of the discussion.
@@ -32,13 +33,14 @@ import { Timestamp } from "firebase/firestore";
  *
  * @author Jarrian Vince Gojar
  */
-export interface Discussion {
+export interface SiteDiscussion {
 	id: string;
 	groupId?: string;
 	creatorId: string;
 	discussionTitle: string;
 	discussionBody?: string;
 	discussionTags: string[];
+	discussionType: "discussion" | "group";
 	isHidden: boolean;
 	isOpen: boolean;
 	privacyType: "public" | "restricted" | "private";

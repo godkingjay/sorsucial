@@ -1,7 +1,7 @@
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { UserState } from "@/atoms/userAtom";
 import React from "react";
-import { FiMenu } from "react-icons/fi";
+import { CgMenuGridO } from "react-icons/cg";
 
 type MenuDropdownProps = {
 	userStateValue: UserState;
@@ -19,10 +19,10 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 			<button
 				type="button"
 				title="Menu"
-				className="h-11 w-11 rounded-full bg-gray-200 text-gray-800 p-3 hover:bg-gray-300 focus:bg-gray-300"
+				className="h-11 w-11 rounded-full bg-gray-200 text-gray-600 p-2 hover:bg-gray-300 focus:bg-gray-300"
 				onClick={handleMenuDropdown}
 			>
-				<FiMenu className="h-full w-full" />
+				<CgMenuGridO className="h-full w-full" />
 			</button>
 			<div
 				className={`

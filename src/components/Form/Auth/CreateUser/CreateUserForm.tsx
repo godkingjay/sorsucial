@@ -14,7 +14,7 @@ import ReviewProfile from "./ReviewProfile";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
-import { errorUploadModalState } from "@/atoms/modalAtom";
+import { errorModalState } from "@/atoms/modalAtom";
 
 type CreateUserFormProps = {};
 
@@ -96,7 +96,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 	const [barangayOptions, setBarangayOptions] = useState<OptionsData[]>([]);
 	const { createUser } = useUser();
 	const router = useRouter();
-	const setUploadErrorModal = useSetRecoilState(errorUploadModalState);
+	const setErrorModalStateValue = useSetRecoilState(errorModalState);
 
 	const checkIfFormIsValid = () => {
 		setCreateUserFormError((prev) => ({
@@ -128,17 +128,19 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 
 	const validateImage = (profilePhoto: File) => {
 		if (profilePhoto.size > 1024 * 1024 * 2) {
-			setUploadErrorModal((prev) => ({
+			setErrorModalStateValue((prev) => ({
 				...prev,
 				open: true,
+				view: "upload",
 				message: "Image size is too large. Maximum size is 2MB.",
 			}));
 			return false;
 		}
 		if (!validImageTypes.includes(profilePhoto.type)) {
-			setUploadErrorModal((prev) => ({
+			setErrorModalStateValue((prev) => ({
 				...prev,
 				open: true,
+				view: "upload",
 				message: "Invalid image type. Only PNG and JPEG/JPG are allowed.",
 			}));
 			return false;

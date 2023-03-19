@@ -307,4 +307,123 @@
 			}
 		}
 	}
+
+	.post-creation-listener {
+		@apply bg-white px-4 py-2 gap-y-2 shadow-page-box-1 rounded-lg flex flex-col;
+
+		.post-creation-listener-head {
+			@apply flex flex-row h-12 gap-x-4;
+
+			.image-icon-container {
+				@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300;
+
+				.image {
+					@apply rounded-full h-full w-full;
+				}
+
+				.icon {
+					@apply h-full w-full bg-white;
+				}
+			}
+
+			.input-box-wrapper {
+				@apply flex-1 h-full flex flex-row;
+
+				.input-box-container {
+					@apply h-full flex-1 flex flex-row gap-x-2 items-center border border-transparent bg-gray-100 rounded-full p-2 cursor-pointer text-gray-500;
+
+					.icon-container {
+						@apply h-8 w-8 rounded-full grid place-items-center p-1;
+
+						.icon {
+							@apply h-full w-full;
+						}
+					}
+
+					.label-container {
+						@apply flex flex-row h-full items-center;
+
+						.label {
+							@apply flex-1 truncate text-left;
+						}
+					}
+
+					&:hover,
+					&:focus {
+						@apply bg-gray-200;
+					}
+				}
+			}
+		}
+
+		.post-creation-listener-buttons-wrapper {
+			@apply flex flex-row items-center h-12;
+
+			.post-creation-listener-buttons-container {
+				@apply flex-1 flex flex-row items-center h-full;
+
+				.button {
+					@apply py-2 px-4 flex-1 h-full flex flex-row items-center rounded-lg justify-center gap-x-2;
+
+					.icon-container {
+						@apply h-6 w-6 aspect-square;
+
+						.icon {
+							@apply h-full w-full;
+						}
+					}
+
+					.label-container {
+						@apply hidden min-[400px]:flex flex-row h-full items-center text-gray-500 text-sm;
+
+						.label {
+							@apply flex-1 font-semibold;
+						}
+					}
+
+					&:hover,
+					&:focus {
+						@apply bg-gray-100;
+					}
+				}
+			}
+		}
+	}
+
+	.post-creation-modal-form {
+		@apply p-4 flex flex-col;
+
+		.post-creation-modal-form-head {
+			@apply flex flex-row items-center h-16 gap-x-4;
+
+			.image-icon-container {
+				@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300 mb-auto;
+
+				.image {
+					@apply rounded-full h-full w-full;
+				}
+
+				.icon {
+					@apply h-full w-full bg-white;
+				}
+			}
+
+			.head-right {
+				@apply flex-1 h-full flex flex-col;
+
+				.user-name {
+					@apply w-full truncate;
+
+					.user-name-link {
+						@apply truncate font-semibold;
+
+						&:hover,
+						&:focus {
+							@apply underline;
+						}
+					}
+				}
+			}
+		}
+	}
 }

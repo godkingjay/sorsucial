@@ -34,7 +34,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 			<div>
 				<button
 					type="button"
-					className="flex flex-row items-center gap-x-2 w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
+					className="flex flex-row items-center gap-x-2 w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-gray-50 text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
 					onClick={() => setIsOpen(!isOpen)}
 				>
 					<div className="h-4 w-4 aspect-square">{selectedOption?.icon}</div>

@@ -95,7 +95,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						type="button"
 						title="Add Photo/Video"
 						className="button"
-						onClick={() => handlePostCreationModal("image&video")}
+						onClick={() => handlePostCreationModal("image/video")}
 					>
 						<div className="icon-container text-green-500">
 							<BsImages className="icon" />

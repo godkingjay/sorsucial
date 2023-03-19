@@ -1,13 +1,16 @@
 import React from "react";
 import ErrorUpload from "./ErrorUploadModal";
 import { useRecoilState } from "recoil";
-import { errorModalState } from "@/atoms/modalAtom";
+import { errorModalState, postCreationModalState } from "@/atoms/modalAtom";
+import PostCreationModal from "./PostCreationModal";
 
 type ModalsProps = {};
 
 const Modals: React.FC<ModalsProps> = () => {
 	const [errorModalStateValue, setErrorModalStateValue] =
 		useRecoilState(errorModalState);
+	const [postCreationModalStateValue, setPostCreationModalStateValue] =
+		useRecoilState(postCreationModalState);
 
 	return (
 		<>
@@ -15,6 +18,12 @@ const Modals: React.FC<ModalsProps> = () => {
 				<ErrorUpload
 					errorModalStateValue={errorModalStateValue}
 					setErrorModalStateValue={setErrorModalStateValue}
+				/>
+			)}
+			{postCreationModalStateValue.open && (
+				<PostCreationModal
+					postCreationModalStateValue={postCreationModalStateValue}
+					setPostCreationModalStateValue={setPostCreationModalStateValue}
 				/>
 			)}
 		</>

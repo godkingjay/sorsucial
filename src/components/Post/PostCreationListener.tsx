@@ -8,6 +8,11 @@ import { BsImages } from "react-icons/bs";
 import Link from "next/link";
 import { MdPoll, MdPostAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
+import { useRecoilState } from "recoil";
+import {
+	PostCreationModalState,
+	postCreationModalState,
+} from "@/atoms/modalAtom";
 
 type PostCreationListenerProps = {
 	useStateValue: UserState;
@@ -18,6 +23,18 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 	useStateValue: userStateValue,
 	postType,
 }) => {
+	const [postCreationModalStateValue, setPostCreationModalStateValue] =
+		useRecoilState(postCreationModalState);
+
+	const handlePostCreationModal = (tab: PostCreationModalState["tab"]) => {
+		setPostCreationModalStateValue((prev) => ({
+			...prev,
+			open: true,
+			postType,
+			tab,
+		}));
+	};
+
 	return (
 		<div className="post-creation-listener">
 			<div className="post-creation-listener-head">
@@ -49,6 +66,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 								: "Create a post"
 						}`}
 						className="input-box-container"
+						onClick={() => handlePostCreationModal("post")}
 					>
 						<div className="icon-container">
 							{postType === "announcement" && <CiBullhorn className="icon" />}
@@ -76,6 +94,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						type="button"
 						title="Add Photo/Video"
 						className="button"
+						onClick={() => handlePostCreationModal("image&video")}
 					>
 						<div className="icon-container text-green-500">
 							<BsImages className="icon" />
@@ -88,6 +107,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						type="button"
 						title="Create a Poll"
 						className="button"
+						onClick={() => handlePostCreationModal("poll")}
 					>
 						<div className="icon-container text-yellow-500">
 							<FaPollH className="icon" />

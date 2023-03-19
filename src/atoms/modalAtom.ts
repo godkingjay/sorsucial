@@ -1,18 +1,20 @@
 import { atom } from "recoil";
 
-export type ErrorUploadModalState = {
+export type ErrorModalState = {
 	open: boolean;
+	view: "upload" | "none";
 	message: string;
 };
 
-const defaultErrorUploadModal: ErrorUploadModalState = {
+const defaultErrorModal: ErrorModalState = {
 	open: false,
+	view: "none",
 	message: "",
 };
 
-export const errorUploadModalState = atom({
+export const errorModalState = atom({
 	key: "errorUploadModalState",
-	default: defaultErrorUploadModal,
+	default: defaultErrorModal,
 });
 
 export type AdminModalState = {

@@ -1,21 +1,20 @@
 import React from "react";
 import ErrorUpload from "./ErrorUploadModal";
 import { useRecoilState } from "recoil";
-import { errorUploadModalState } from "@/atoms/modalAtom";
+import { errorModalState } from "@/atoms/modalAtom";
 
 type ModalsProps = {};
 
 const Modals: React.FC<ModalsProps> = () => {
-	const [errorUploadModal, setErrorUploadModal] = useRecoilState(
-		errorUploadModalState
-	);
+	const [errorModalStateValue, setErrorModalStateValue] =
+		useRecoilState(errorModalState);
 
 	return (
 		<>
-			{errorUploadModal.open && (
+			{errorModalStateValue.open && errorModalStateValue.view === "upload" && (
 				<ErrorUpload
-					errorUploadModal={errorUploadModal}
-					setErrorUploadModal={setErrorUploadModal}
+					errorModalStateValue={errorModalStateValue}
+					setErrorModalStateValue={setErrorModalStateValue}
 				/>
 			)}
 		</>

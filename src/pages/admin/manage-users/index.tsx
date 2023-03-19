@@ -1,7 +1,7 @@
 import { firestore } from "@/firebase/clientApp";
 import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
@@ -46,9 +46,9 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const handleDeleteUser = useCallback(async (userId: string) => {
 		setDeletingUser(userId);
 		try {
-			// await deleteUser(userId).catch((error: any) => {
-			// 	console.log("Hook: Delete User Error: ", error.message);
-			// });
+			await deleteUser(userId).catch((error: any) => {
+				console.log("Hook: Delete User Error: ", error.message);
+			});
 		} catch (error: any) {
 			console.log("Deleting User Error: ", error.message);
 		}
@@ -157,19 +157,20 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 																<FiEdit className="icon" />
 															</div>
 														</button>
-														{user.uid !== userStateValue.user.uid && (
-															<button
-																type="button"
-																title="Delete"
-																className="action-delete action"
-																onClick={() => handleDeleteUser(user.uid)}
-																disabled={user.uid === deletingUser}
-															>
-																<div className="icon-container">
-																	<MdDelete className="icon" />
-																</div>
-															</button>
-														)}
+														{user.uid !== userStateValue.user.uid &&
+															!user.roles.includes("admin") && (
+																<button
+																	type="button"
+																	title="Delete"
+																	className="action-delete action"
+																	onClick={() => handleDeleteUser(user.uid)}
+																	disabled={user.uid === deletingUser}
+																>
+																	<div className="icon-container">
+																		<MdDelete className="icon" />
+																	</div>
+																</button>
+															)}
 													</td>
 												</tr>
 											);

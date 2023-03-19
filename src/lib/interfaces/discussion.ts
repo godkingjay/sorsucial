@@ -7,7 +7,7 @@ import { Timestamp } from "firebase/firestore";
  * ----------------------------------------------------------------
  *
  * @export
- * @interface Discussion
+ * @interface SiteDiscussion
  * @category Interfaces
  *
  * ----------------------------------------------------------------
@@ -32,7 +32,7 @@ import { Timestamp } from "firebase/firestore";
  *
  * @author Jarrian Vince Gojar
  */
-export interface Discussion {
+export interface SiteDiscussion {
 	id: string;
 	groupId?: string;
 	creatorId: string;

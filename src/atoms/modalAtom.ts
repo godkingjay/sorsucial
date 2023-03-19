@@ -1,3 +1,4 @@
+import { SitePost } from "./../lib/interfaces/post";
 import { atom } from "recoil";
 
 export type ErrorModalState = {
@@ -12,7 +13,7 @@ const defaultErrorModal: ErrorModalState = {
 	message: "",
 };
 
-export const errorModalState = atom({
+export const errorModalState = atom<ErrorModalState>({
 	key: "errorUploadModalState",
 	default: defaultErrorModal,
 });
@@ -31,7 +32,22 @@ const defaultAdminModalState: AdminModalState = {
 	},
 };
 
-export const adminModalState = atom({
+export const adminModalState = atom<AdminModalState>({
 	key: "adminModalState",
 	default: defaultAdminModalState,
+});
+
+export type PostCreationModalState = {
+	open: boolean;
+	postType: SitePost["postType"];
+};
+
+export const defaultPostCreationModalState: PostCreationModalState = {
+	open: false,
+	postType: "feed",
+};
+
+export const postCreationModalState = atom<PostCreationModalState>({
+	key: "postCreationModalState",
+	default: defaultPostCreationModalState,
 });

@@ -1,18 +1,16 @@
 import { PostCreationModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
-import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
-import { FaEye, FaLock, FaPollH, FaUserCircle } from "react-icons/fa";
+import { FaEye, FaLock, FaPollH } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
-import CustomDropdown, { DropdownOption } from "../Controls/CustomDropdown";
+import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
 import { HiDocumentText } from "react-icons/hi";
 import { BsFillFileEarmarkPlusFill, BsImages } from "react-icons/bs";
-import { RiLinkM, RiLinkUnlinkM } from "react-icons/ri";
+import { RiLinkM } from "react-icons/ri";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;

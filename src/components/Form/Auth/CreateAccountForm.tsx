@@ -5,6 +5,7 @@ import React, { SetStateAction, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
+import { SignInRegex } from "./SignInForm";
 
 type CreateAccountFormProps = {
 	createAccountForm: CreateAccountType;
@@ -21,24 +22,52 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	const [showRepeatPassword, setRepeatShowPassword] = useState(false);
 	const [createAccountError, setCreateAccountError] = useState("");
 	const [creatingAccount, setCreatingAccount] = useState(false);
+	const [createAccountFormError, setCreateAccountFormError] = useState({
+		password: false,
+		repeatPassword: false,
+	});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCreateAccountError("");
+
+		const { name, value } = e.target;
+
 		setCreateAccountForm((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value,
+			[name]: value,
 		}));
+
+		if (name === "password") {
+			setCreateAccountFormError((prev) => ({
+				...prev,
+				password: !SignInRegex.password.test(value),
+			}));
+		}
+
+		if (name === "repeatPassword" || createAccountForm.repeatPassword) {
+			if (name === "repeatPassword") {
+				setCreateAccountFormError((prev) => ({
+					...prev,
+					repeatPassword: value !== createAccountForm.password ? true : false,
+				}));
+			} else if (name === "password") {
+				setCreateAccountFormError((prev) => ({
+					...prev,
+					repeatPassword:
+						value !== createAccountForm.repeatPassword ? true : false,
+				}));
+			}
+		}
 	};
 
 	const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (createAccountError) {
-			return;
-		}
-
-		if (createAccountForm.password !== createAccountForm.repeatPassword) {
-			setCreateAccountError("Passwords do not match.");
+		if (
+			createAccountError ||
+			createAccountFormError.password ||
+			createAccountFormError.repeatPassword
+		) {
 			return;
 		}
 
@@ -95,89 +124,116 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						onSubmit={handleFormSubmit}
 					>
 						<div className="w-full flex flex-col relative z-10 gap-y-4">
-							<div
-								className={`auth-input-container ${
-									createAccountForm.password
-										? "auth-input-container-filled"
-										: ""
-								}`}
-								onClick={handleInputTextClick}
-							>
-								<div className="auth-input-text required-field">
-									<label
-										htmlFor="password"
-										className="label"
-									>
-										Password
-									</label>
-									<input
-										required
-										type={showPassword ? "text" : "password"}
-										name="password"
-										title="Password"
-										className="input-field"
-										onChange={handleInputChange}
-										minLength={8}
-										maxLength={256}
-									/>
-								</div>
-								<button
-									type="button"
-									title={showPassword ? "Hide Password" : "Show Password"}
-									className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
-									onClick={() => setShowPassword((prev) => !prev)}
+							<div className="w-full flex flex-col gap-y-2">
+								<div
+									className={`auth-input-container
+										${createAccountForm.password && " auth-input-container-filled"}
+										${createAccountFormError.password && " !border-red-500 text-red-500"}
+									`}
+									onClick={handleInputTextClick}
 								>
-									{showPassword ? (
-										<AiFillEye className="h-full w-full" />
-									) : (
-										<AiFillEyeInvisible className="h-full w-full" />
-									)}
-								</button>
-							</div>
-							<div
-								className={`auth-input-container ${
-									createAccountForm.repeatPassword
-										? "auth-input-container-filled"
-										: ""
-								}`}
-								onClick={handleInputTextClick}
-							>
-								<div className="auth-input-text required-field">
-									<label
-										htmlFor="repeatPassword"
-										className="label"
+									<div className="auth-input-text required-field">
+										<label
+											htmlFor="password"
+											className="label"
+										>
+											Password
+										</label>
+										<input
+											required
+											type={showPassword ? "text" : "password"}
+											name="password"
+											title="Password"
+											className="input-field"
+											onChange={handleInputChange}
+											minLength={8}
+											maxLength={256}
+										/>
+									</div>
+									<button
+										type="button"
+										title={showPassword ? "Hide Password" : "Show Password"}
+										className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
+										onClick={() => setShowPassword((prev) => !prev)}
 									>
-										Repeat Password
-									</label>
-									<input
-										required
-										type={showRepeatPassword ? "text" : "password"}
-										name="repeatPassword"
-										title="Repeat Password"
-										className="input-field"
-										onChange={handleInputChange}
-										minLength={8}
-										maxLength={256}
-									/>
+										{showPassword ? (
+											<AiFillEye className="h-full w-full" />
+										) : (
+											<AiFillEyeInvisible className="h-full w-full" />
+										)}
+									</button>
 								</div>
-								<button
-									type="button"
-									title={showRepeatPassword ? "Hide Password" : "Show Password"}
-									className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
-									onClick={() => setRepeatShowPassword((prev) => !prev)}
+								<div
+									className={`${
+										!createAccountFormError.password ? "h-0 py-0" : "h-max py-4"
+									} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
 								>
-									{showRepeatPassword ? (
-										<AiFillEye className="h-full w-full" />
-									) : (
-										<AiFillEyeInvisible className="h-full w-full" />
-									)}
-								</button>
-							</div>
-							{createAccountError && (
-								<div className="h-max w-full">
-									<ErrorBannerTextSm message="Password does not match" />
+									<ul className="flex flex-col gap-y-1">
+										<li>
+											<p>1. Password must be at least 8 characters long.</p>
+										</li>
+										<li>
+											<p>
+												2. Password should only contain A-Z, a-z, 0-9, or
+												special characters(@, $, !, %, *, ?, &), and no spaces.
+											</p>
+										</li>
+									</ul>
 								</div>
-							)}
+							</div>
+							<div className="w-full flex flex-col gap-y-2">
+								<div
+									className={`auth-input-container ${
+										createAccountForm.repeatPassword
+											? "auth-input-container-filled"
+											: ""
+									}`}
+									onClick={handleInputTextClick}
+								>
+									<div className="auth-input-text required-field">
+										<label
+											htmlFor="repeatPassword"
+											className="label"
+										>
+											Repeat Password
+										</label>
+										<input
+											required
+											type={showRepeatPassword ? "text" : "password"}
+											name="repeatPassword"
+											title="Repeat Password"
+											className="input-field"
+											onChange={handleInputChange}
+											minLength={8}
+											maxLength={256}
+										/>
+									</div>
+									<button
+										type="button"
+										title={
+											showRepeatPassword ? "Hide Password" : "Show Password"
+										}
+										className="aspect-square h-5 w-5 text-gray-500 text-opacity-50 hover:text-logo-300 focus:text-logo-300"
+										onClick={() => setRepeatShowPassword((prev) => !prev)}
+									>
+										{showRepeatPassword ? (
+											<AiFillEye className="h-full w-full" />
+										) : (
+											<AiFillEyeInvisible className="h-full w-full" />
+										)}
+									</button>
+								</div>
+								<div
+									className={`${
+										!createAccountFormError.repeatPassword ||
+										!createAccountForm.repeatPassword
+											? "h-0 py-0"
+											: "h-max py-4"
+									} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
+								>
+									<p>Password does not match.</p>
+								</div>
+							</div>
 						</div>
 						<div>
 							<button

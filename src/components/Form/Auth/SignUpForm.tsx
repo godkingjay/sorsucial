@@ -12,18 +12,10 @@ import {
 	sendSignInLinkToEmail,
 } from "firebase/auth";
 import Link from "next/link";
+import { SignInRegex } from "./SignInForm";
 
 type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
-};
-
-/**
- * This object contains the regex for the email field.
- * The email field must be a valid Sorsu email address.
- * The regex also checks if the email address contains only letters, numbers, underscores, and dashes.
- */
-const SignUpRegex = {
-	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
 };
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
@@ -43,13 +35,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 	 * @param {React.ChangeEvent<HTMLInputElement>} e - The change event for the email and password fields
 	 */
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		/**
+		 * Set the state of the error message to an empty string.
+		 */
 		setSignUpError("");
+
+		/**
+		 * This deconstructs the name and value attributes of the input field.
+		 */
+		const { name, value } = e.target;
 
 		/**
 		 * Checks if the input field is the email field and sets the state of the validEmail variable to true.
 		 * This will hide the error message for the email field.
 		 */
-		if (e.target.name === "email") {
+		if (name === "email") {
 			setValidEmail(true);
 		}
 
@@ -60,7 +60,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 		 */
 		setLoginForm((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value,
+			[name]: value,
 		}));
 	};
 
@@ -77,9 +77,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 		/**
 		 * Checks if the email address is valid using a regular expression (SignUpRegex.email.test(signUpForm.email)).
 		 *
-		 * @see {@link SignUpRegex}
+		 * @see {@link SignInRegex}
 		 */
-		if (SignUpRegex.email.test(signUpForm.email)) {
+		if (SignInRegex.email.test(signUpForm.email)) {
 			setValidEmail(true);
 		} else {
 			setValidEmail(false);

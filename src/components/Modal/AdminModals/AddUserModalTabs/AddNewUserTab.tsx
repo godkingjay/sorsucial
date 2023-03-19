@@ -5,14 +5,7 @@ import {
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
-import {
-	Timestamp,
-	collection,
-	getDoc,
-	getDocs,
-	query,
-	where,
-} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import {
 	OptionsData,
 	getBarangay,
@@ -29,6 +22,7 @@ type AddNewUserTabProps = {
 
 export type NewUserErrorType = {
 	email: boolean;
+	password: boolean;
 	firstName: boolean;
 	lastName: boolean;
 	middleName: boolean;
@@ -83,6 +77,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 
 	const [newUserFormError, setNewUserFormError] = useState<NewUserErrorType>({
 		email: false,
+		password: false,
 		firstName: false,
 		lastName: false,
 		middleName: false,
@@ -112,6 +107,13 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 			setNewUserFormError((prev) => ({
 				...prev,
 				email: !SignInRegex.email.test(value),
+			}));
+		}
+
+		if (name === "password") {
+			setNewUserFormError((prev) => ({
+				...prev,
+				password: !SignInRegex.password.test(value),
 			}));
 		}
 
@@ -242,13 +244,13 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 
 	return (
 		<div className="flex flex-col gap-y-2">
-			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-4">
 				<div className="p-2 px-4 bg-logo-300 rounded-lg">
 					<p className="font-bold text-lg text-white text-center break-words">
 						Authentication
 					</p>
 				</div>
-				<div className="user-form w-full flex flex-col gap-y-4">
+				<div className="user-form w-full flex flex-col gap-y-2">
 					<div
 						className={`auth-input-container
 										${newUserForm.email ? "auth-input-container-filled" : ""}
@@ -274,12 +276,22 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 							/>
 						</div>
 					</div>
+					<div
+						className={`${
+							!newUserFormError.email ? "h-0 py-0" : "h-max py-4"
+						} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
+					>
+						<p>Please input a school provided email address.</p>
+					</div>
 				</div>
 				<div className="w-full flex flex-col relative z-10 gap-y-2">
 					<div
 						className={`auth-input-container
 										${newUserForm.password ? "auth-input-container-filled" : ""}
 									`}
+						data-error={
+							newUserFormError.password && newUserForm.password !== ""
+						}
 						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
@@ -301,6 +313,23 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 								max={256}
 							/>
 						</div>
+					</div>
+					<div
+						className={`${
+							!newUserFormError.password ? "h-0 py-0" : "h-max py-4"
+						} px-4 duration-100 text-xs text-white rounded-md bg-red-500 w-full flex flex-col justify-center overflow-hidden origin-top`}
+					>
+						<ul className="flex flex-col gap-y-1">
+							<li>
+								<p>1. Password must be at least 8 characters long.</p>
+							</li>
+							<li>
+								<p>
+									2. Password should only contain A-Z, a-z, 0-9, or special
+									characters(@, $, !, %, *, ?, &), and no spaces.
+								</p>
+							</li>
+						</ul>
 					</div>
 				</div>
 				<div className="flex flex-col gap-y-2">
@@ -333,7 +362,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 					</ul>
 				</div>
 			</div>
-			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-2">
+			<div className="p-2 border-2 border-gray-500 rounded-lg flex flex-col gap-y-4">
 				<div className="p-2 px-4 bg-cyan-500 rounded-lg">
 					<p className="font-bold text-lg text-white text-center break-words">
 						Name
@@ -634,6 +663,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 				disabled={
 					(!newUserForm.email && !newUserFormError.email) ||
 					!newUserForm.password ||
+					newUserForm.password.length < 8 ||
 					!newUserForm.firstName ||
 					!newUserForm.lastName ||
 					!newUserForm.roles?.length ||

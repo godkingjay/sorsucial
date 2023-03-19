@@ -13,6 +13,11 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
+	if (!req.body) {
+		res.status(400).json({ message: "Bad request" });
+		return;
+	}
+
 	/**
 	 * @type {string} email - The email address of the user.
 	 * @type {string} password - The password of the user.

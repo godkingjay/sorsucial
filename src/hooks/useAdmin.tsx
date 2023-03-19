@@ -158,7 +158,7 @@ const useAdmin = () => {
 									"\n"
 								),
 							})
-							.then((res) => {
+							.then(async (res) => {
 								const { isDeleted } = res.data;
 								if (isDeleted) {
 									setAdminStateValue((prev) => ({
@@ -170,6 +170,23 @@ const useAdmin = () => {
 								} else {
 									throw new Error("User Authentication was not deleted");
 								}
+
+								await axios
+									.post("/api/admin/delete-files", {
+										path: `users/${userId}/images`,
+										privateKey:
+											process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+												/\\n/g,
+												"\n"
+											),
+									})
+									.catch((error: any) => {
+										console.log({
+											message: "API: Delete Files Error: " + error.message,
+											userId,
+										});
+										throw error;
+									});
 							})
 							.catch((error: any) => {
 								console.log(

@@ -52,7 +52,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 				</button>
 			</div>
 			{isOpen && (
-				<div className="origin-top-right absolute left-0 top-[110%] rounded-md w-full shadow-around-sm bg-white ring-1 ring-black ring-opacity-5">
+				<div className="origin-top-right absolute left-0 top-[110%] rounded-md w-full shadow-md bg-white ring-1 ring-black ring-opacity-5">
 					<div
 						className="py-1"
 						role="menu"

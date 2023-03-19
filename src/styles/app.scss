@@ -394,7 +394,7 @@
 		@apply p-4 flex flex-col;
 
 		.post-creation-modal-form-head {
-			@apply flex flex-row items-center h-16 gap-x-4;
+			@apply flex flex-row items-center h-16 gap-x-4 z-50;
 
 			.image-icon-container {
 				@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300 mb-auto;

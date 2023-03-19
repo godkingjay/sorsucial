@@ -5,14 +5,8 @@ import { firestore } from "@/firebase/clientApp";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
-	CollectionReference,
-	DocumentData,
-	DocumentSnapshot,
-	QueryDocumentSnapshot,
-	QuerySnapshot,
 	Timestamp,
 	collection,
-	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,

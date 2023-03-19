@@ -81,9 +81,9 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						</div>
 						<div className="label-container">
 							<p className="label">
-								{postType === "announcement" && "Create an announcement..."}
-								{postType === "feed" && "Create a post..."}
-								{postType === "group" && "Create a group post..."}
+								{postType === "announcement" && "What's happening?"}
+								{postType === "feed" && "What's on your mind?"}
+								{postType === "group" && "Want to share something?"}
 							</p>
 						</div>
 					</button>

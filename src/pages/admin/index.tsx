@@ -1,4 +1,3 @@
-import AdminPageLayout from "@/components/Layout/AdminPageLayout";
 import React from "react";
 
 type AdminPageProps = {};

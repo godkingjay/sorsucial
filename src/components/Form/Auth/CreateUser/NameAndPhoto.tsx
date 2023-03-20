@@ -7,7 +7,6 @@ import {
 } from "./CreateUserForm";
 import Image from "next/image";
 import { HiOutlineUpload } from "react-icons/hi";
-import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 
 type NameAndPhotoProps = {
 	createUserForm: CreateUserType;

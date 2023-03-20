@@ -2,8 +2,7 @@ import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm
 import { auth } from "@/firebase/clientApp";
 import { authError } from "@/firebase/error";
 import React, { useState } from "react";
-import { FiLoader, FiMail } from "react-icons/fi";
-import { RiMailSendLine } from "react-icons/ri";
+import { FiLoader } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { authForm } from "../AuthForm";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";

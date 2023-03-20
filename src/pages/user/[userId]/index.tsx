@@ -1,14 +1,8 @@
-import { UserPageState, UserState } from "@/atoms/userAtom";
+import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import { db } from "@/firebase/clientApp";
 import useUser from "@/hooks/useUser";
-import {
-	DocumentData,
-	DocumentSnapshot,
-	collection,
-	doc,
-	getDoc,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
 import React, { useEffect } from "react";
 import safeJsonStringify from "safe-json-stringify";

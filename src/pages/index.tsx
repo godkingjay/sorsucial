@@ -1,7 +1,5 @@
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import useUser from "@/hooks/useUser";
-import Image from "next/image";
-import { FaUserCircle } from "react-icons/fa";
 
 export default function Home() {
 	const { userStateValue } = useUser();

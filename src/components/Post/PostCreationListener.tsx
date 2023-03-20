@@ -8,7 +8,7 @@ import { BsFileEarmarkPlusFill, BsImages } from "react-icons/bs";
 import Link from "next/link";
 import { MdPostAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import {
 	PostCreationModalState,
 	postCreationModalState,

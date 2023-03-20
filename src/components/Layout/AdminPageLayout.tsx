@@ -6,7 +6,6 @@ import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
-import useAdmin from "@/hooks/useAdmin";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
@@ -31,8 +30,6 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	userStateValue,
 	userMounted,
 }) => {
-	const { adminStateValue, adminFetchUsers } = useAdmin();
-
 	useEffect(() => {
 		if (!authUser) {
 			return;
@@ -86,10 +83,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 
 	return (
 		<div className="flex-1">
-			<AdminNavigation
-				navigationBarStateValue={navigationBarStateValue}
-				setNavigationBarStateValue={setNavigationBarStateValue}
-			/>
+			<AdminNavigation navigationBarStateValue={navigationBarStateValue} />
 			<div className="w-full overflow-x-auto scroll-x-style">{children}</div>
 		</div>
 	);

@@ -1,5 +1,3 @@
-import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
-import useUser from "@/hooks/useUser";
 import { CreateAccountType } from "@/pages/auth/create-account";
 import React, { SetStateAction, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";

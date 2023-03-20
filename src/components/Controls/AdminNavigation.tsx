@@ -1,23 +1,17 @@
-import {
-	NavigationBarState,
-	navigationBarState,
-} from "@/atoms/navigationBarAtom";
+import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import Link from "next/link";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { GoRequestChanges } from "react-icons/go";
 import { HiUserGroup } from "react-icons/hi";
 import { MdSpaceDashboard } from "react-icons/md";
-import { SetterOrUpdater } from "recoil";
 
 type AdminNavigationProps = {
 	navigationBarStateValue: NavigationBarState;
-	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 };
 
 const AdminNavigation: React.FC<AdminNavigationProps> = ({
 	navigationBarStateValue,
-	setNavigationBarStateValue,
 }) => {
 	return (
 		<div className="sticky top-14 z-[500]">

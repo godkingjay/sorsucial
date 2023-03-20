@@ -1,6 +1,5 @@
 import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
-import { collection, doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiEdit, FiLoader } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
@@ -11,7 +10,6 @@ type AdminManageUsersPageProps = {};
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const {
 		adminStateValue,
-		setAdminStateValue,
 		adminFetchUsers,
 		setAdminModalStateValue,
 		deleteUser,

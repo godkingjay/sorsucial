@@ -5,17 +5,20 @@ import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { postPrivacyOptions } from "../PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
+import { SitePost } from "@/lib/interfaces/post";
 
 type PostCreationModalFormHeadProps = {
 	userStateValue: UserState;
 	handleClose: () => void;
 	handleSelectPrivacy: (value: string) => void;
+	postType: SitePost["postType"];
 };
 
 const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 	userStateValue,
 	handleClose,
 	handleSelectPrivacy,
+	postType,
 }) => {
 	return (
 		<div className="post-creation-modal-form-head">
@@ -46,7 +49,11 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 				</div>
 				<div className="privacy-type-wrapper">
 					<CustomDropdown
-						options={postPrivacyOptions}
+						options={
+							postType === "announcement"
+								? postPrivacyOptions.slice(0, 1)
+								: postPrivacyOptions
+						}
 						onSelect={handleSelectPrivacy}
 						defaultValue={postPrivacyOptions[0]}
 					/>

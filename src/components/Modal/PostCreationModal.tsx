@@ -180,6 +180,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						userStateValue={userStateValue}
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
+						postType={postCreationModalStateValue.postType}
 					/>
 					<div className="post-creation-modal-form-content">
 						<div className="post-creation-form-title-container">

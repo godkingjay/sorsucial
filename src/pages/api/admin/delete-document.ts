@@ -1,4 +1,4 @@
-import { firestoreAdmin } from "@/firebase/adminApp";
+import { adminDb } from "@/firebase/adminApp";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -22,7 +22,7 @@ export default async function handler(
 		return;
 	}
 
-	const docRef = firestoreAdmin
+	const docRef = adminDb
 		.collection(path ? `${path}/${collectionName}` : collectionName)
 		.doc(docId);
 

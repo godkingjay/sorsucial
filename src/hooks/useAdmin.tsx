@@ -145,60 +145,55 @@ const useAdmin = () => {
 	const deleteUser = async (userId: string) => {
 		try {
 			if (userId) {
-				await deleteDocumentAndSubcollections({
-					docId: userId,
-					collectionName: "users",
-				})
-					.then(async () => {
-						await axios
-							.post("/api/admin/delete-user", {
-								uid: userId,
-								privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-									/\\n/g,
-									"\n"
-								),
+				await axios
+					.post("/api/admin/delete-user", {
+						uid: userId,
+						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+							/\\n/g,
+							"\n"
+						),
+					})
+					.then(async (res) => {
+						const { isDeleted } = res.data;
+						if (isDeleted) {
+							deleteDocumentAndSubcollections({
+								docId: userId,
+								collectionName: "users",
 							})
-							.then(async (res) => {
-								const { isDeleted } = res.data;
-								if (isDeleted) {
+								.then(async () => {
 									setAdminStateValue((prev) => ({
 										...prev,
 										manageUsers: prev.manageUsers.filter(
 											(user) => user.uid !== userId
 										),
 									}));
-								} else {
-									throw new Error("User Authentication was not deleted");
-								}
 
-								await axios
-									.post("/api/admin/delete-files", {
-										path: `users/${userId}/images`,
-										privateKey:
-											process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-												/\\n/g,
-												"\n"
-											),
-									})
-									.catch((error: any) => {
-										console.log({
-											message: "API: Delete Files Error: " + error.message,
-											userId,
+									axios
+										.post("/api/admin/delete-files", {
+											path: `users/${userId}/images`,
+											privateKey:
+												process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+													/\\n/g,
+													"\n"
+												),
+										})
+										.catch((error: any) => {
+											console.log(
+												"API: Delete User Images Error: " + error.message
+											);
 										});
-										throw error;
-									});
-							})
-							.catch((error: any) => {
-								console.log(
-									"API: Deleting User Authentication Error: ",
-									error.message
-								);
-								throw error;
-							});
+								})
+								.catch((error: any) => {
+									console.log("API: Delete User Data Error: " + error.message);
+								});
+						} else {
+							throw new Error("User not deleted!");
+						}
 					})
 					.catch((error: any) => {
-						console.log("Hook: Deleting User Document Error: ", error.message);
-						throw error;
+						console.log(
+							"API: Delete User Authentication Error: " + error.message
+						);
 					});
 			} else {
 				throw new Error(
@@ -207,7 +202,6 @@ const useAdmin = () => {
 			}
 		} catch (error: any) {
 			console.log("Hook: Deleting User Error: ", error.message);
-			throw error;
 		}
 	};
 

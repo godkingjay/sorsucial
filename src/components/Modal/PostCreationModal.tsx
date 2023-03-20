@@ -1,7 +1,7 @@
 import { PostCreationModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FaEye, FaLock, FaPollH } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
@@ -110,6 +110,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		poll: null,
 	});
 	const [creatingPost, setCreatingPost] = useState(false);
+	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
@@ -171,7 +172,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 					</button>
 				</div>
 				<div className="h-[1px] bg-black bg-opacity-10"></div>
-				<form className="post-creation-modal-form">
+				<form
+					className="post-creation-modal-form"
+					onSubmit={handleCreatePostSubmit}
+				>
 					<PostCreationModalFormHead
 						userStateValue={userStateValue}
 						handleClose={handleClose}
@@ -211,13 +215,55 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						</div>
 						<div className="post-creation-form-pages">
 							<div className="post-creation-form-body-container">
-								{postCreationModalStateValue.tab === "post" && (
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "post" ? "flex" : "hidden"}
+								`}
+								>
 									<PostTab
 										handleTextChange={handleTextChange}
 										createPostForm={createPostForm}
 										creatingPost={creatingPost}
 									/>
-								)}
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "image/video" ? "flex" : "hidden"}
+								`}
+								>
+									<div className="post-creation-form-image-or-video-tab">
+										<div className="image-or-video-tab-input-container">
+											<div className="text-blue-500">
+												<p>Drag and drop images or videos</p>
+											</div>
+											<div className="text-xs text-gray-500">
+												<p>or</p>
+											</div>
+											<div>
+												<button
+													type="button"
+													title="Upload Image or Video"
+													className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
+													onClick={() => uploadImageOrVideoRef.current?.click()}
+												>
+													Upload
+												</button>
+											</div>
+										</div>
+										<div className="image-or-video-tab-output-container"></div>
+										<input
+											type="file"
+											title="Upload Image or Video"
+											accept="image/jpeg, image/png, image/jpg"
+											ref={uploadImageOrVideoRef}
+											max={20}
+											hidden
+											multiple
+										/>
+									</div>
+								</div>
 							</div>
 							<PostCreationTabs
 								handleFormTabChange={handleFormTabChange}

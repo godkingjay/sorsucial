@@ -466,6 +466,23 @@
 							@apply bg-transparent border-blue-500;
 						}
 					}
+
+					.post-creation-form-image-or-video-tab {
+						@apply flex flex-col flex-1 gap-y-2;
+
+						.image-or-video-tab-input-container {
+							@apply rounded-lg px-4 py-2 border-2 border-gray-200 border-dashed min-h-[128px] flex flex-col items-center justify-center text-sm gap-y-2 text-center;
+
+							&:hover,
+							&:focus-within {
+								@apply border-blue-500;
+							}
+						}
+
+						.image-or-video-tab-output-container {
+							@apply w-full rounded-lg flex-1 p-2 border border-gray-200 flex flex-col text-sm gap-y-2;
+						}
+					}
 				}
 
 				.post-creation-form-tabs-container {

@@ -430,7 +430,7 @@
 			@apply flex flex-col w-full gap-y-2 mb-4 z-40;
 
 			.post-creation-form-title-container {
-				@apply relative flex flex-row py-2 px-2 rounded-lg border border-transparent gap-x-2;
+				@apply relative flex flex-row py-2 px-2 rounded-lg border border-transparent gap-x-2 border-gray-200;
 
 				.post-creation-form-title-input-field {
 					@apply flex-1 min-w-0 outline-none bg-transparent font-semibold break-words resize-none;
@@ -452,7 +452,7 @@
 					@apply relative h-full flex-1 flex flex-col;
 
 					.post-creation-form-post-tab {
-						@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg;
+						@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg border-gray-200;
 
 						.post-creation-form-body-input-field {
 							@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;

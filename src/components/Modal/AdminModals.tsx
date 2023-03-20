@@ -1,16 +1,15 @@
 import useAdmin from "@/hooks/useAdmin";
 import React from "react";
 import AddUserModal from "./AdminModals/AddUserModal";
+import useCheck from "@/hooks/useCheck";
 
 type AdminModalsProps = {};
 
 const AdminModals: React.FC<AdminModalsProps> = () => {
-	const {
-		adminModalStateValue,
-		setAdminModalStateValue,
-		checkUserEmailExists,
-		createNewUsers,
-	} = useAdmin();
+	const { adminModalStateValue, setAdminModalStateValue, createNewUsers } =
+		useAdmin();
+
+	const { checkUserEmailExists } = useCheck();
 
 	return (
 		<>

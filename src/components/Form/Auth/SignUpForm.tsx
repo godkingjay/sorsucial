@@ -2,8 +2,7 @@ import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm
 import { auth } from "@/firebase/clientApp";
 import { authError } from "@/firebase/error";
 import React, { useState } from "react";
-import { FiLoader, FiMail } from "react-icons/fi";
-import { RiMailSendLine } from "react-icons/ri";
+import { FiLoader } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { authForm } from "../AuthForm";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
@@ -101,7 +100,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 					signUpForm.email
 				);
 				if (signInMethods.length > 0) {
-					throw new Error(authError.emailAlreadyInUse);
+					throw new Error(
+						authError["Firebase: Error (auth/email-already-in-use)."]
+					);
 				} else {
 					/**
 					 * The sendSignInLinkToEmail function from Firebase Authentication sends a sign-in link to the email address.
@@ -130,7 +131,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 					setEmailSent(true);
 				}
 			} catch (error: any) {
-				console.log("Sign Up Error!");
+				console.log("Sign Up Error!", error.message);
 				setSignUpError(error.message);
 			}
 			setSigningUp(false);
@@ -160,7 +161,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 			</h2>
 			<div className="divider"></div>
 			<div className="w-full flex flex-col p-4 gap-y-6 h-full overflow-y-auto scroll-y-style">
-				<div className="flex flex-col flex-1 gap-y-6">
+				<div className="flex flex-col flex-1 gap-y-4">
 					<div className="flex flex-col gap-y-4 text-center items-center">
 						<div className="h-20 w-20">
 							<SorSUcialLogo className="h-full w-full aspect-square [&_path]:fill-logo-300" />
@@ -175,7 +176,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 					</div>
 					{!emailSent ? (
 						<>
-							<div className="w-full flex flex-col gap-y-4 justify-center z-10 py-4">
+							<div className="w-full flex flex-col gap-y-2 justify-center z-10 py-4">
 								<div className="w-full flex flex-col relative z-10 gap-y-2">
 									<div
 										className={`auth-input-container ${
@@ -217,13 +218,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 									</div>
 								)}
 							</div>
-							<div className="w-full">
+							<div className="w-full mt-auto">
 								<button
 									type="submit"
 									name="signup"
 									title="Sign Up"
 									className="page-button bg-logo-300 hover:bg-logo-400 hover:border-logo-400 focus:bg-logo-400 focus:border-logo-400"
-									disabled={signingUp}
+									disabled={signingUp || signUpError ? true : false}
 								>
 									{!signingUp ? (
 										"Sign Up"

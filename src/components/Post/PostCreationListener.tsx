@@ -4,16 +4,16 @@ import Image from "next/image";
 import React from "react";
 import { FaPollH, FaUserCircle } from "react-icons/fa";
 import { CiBullhorn } from "react-icons/ci";
-import { BsFileEarmarkPlus, BsImages } from "react-icons/bs";
+import { BsFileEarmarkPlusFill, BsImages } from "react-icons/bs";
 import Link from "next/link";
-import { MdPoll, MdPostAdd } from "react-icons/md";
+import { MdPostAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import {
 	PostCreationModalState,
 	postCreationModalState,
 } from "@/atoms/modalAtom";
-import { RiLinkUnlinkM } from "react-icons/ri";
+import { RiLinkM } from "react-icons/ri";
 
 type PostCreationListenerProps = {
 	useStateValue: UserState;
@@ -24,8 +24,9 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 	useStateValue: userStateValue,
 	postType,
 }) => {
-	const [postCreationModalStateValue, setPostCreationModalStateValue] =
-		useRecoilState(postCreationModalState);
+	const setPostCreationModalStateValue = useSetRecoilState(
+		postCreationModalState
+	);
 
 	const handlePostCreationModal = (tab: PostCreationModalState["tab"]) => {
 		setPostCreationModalStateValue((prev) => ({
@@ -80,9 +81,9 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						</div>
 						<div className="label-container">
 							<p className="label">
-								{postType === "announcement" && "Create an announcement..."}
-								{postType === "feed" && "Create a post..."}
-								{postType === "group" && "Create a group post..."}
+								{postType === "announcement" && "What's happening?"}
+								{postType === "feed" && "What's on your mind?"}
+								{postType === "group" && "Want to share something?"}
 							</p>
 						</div>
 					</button>
@@ -95,7 +96,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						type="button"
 						title="Add Photo/Video"
 						className="button"
-						onClick={() => handlePostCreationModal("image&video")}
+						onClick={() => handlePostCreationModal("image/video")}
 					>
 						<div className="icon-container text-green-500">
 							<BsImages className="icon" />
@@ -111,7 +112,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						onClick={() => handlePostCreationModal("file")}
 					>
 						<div className="icon-container text-purple-500">
-							<BsFileEarmarkPlus className="icon" />
+							<BsFileEarmarkPlusFill className="icon" />
 						</div>
 						<div className="label-container">
 							<p className="label">Add File</p>
@@ -123,8 +124,8 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						className="button !hidden xs:!flex"
 						onClick={() => handlePostCreationModal("link")}
 					>
-						<div className="icon-container text-blue-500">
-							<RiLinkUnlinkM className="icon" />
+						<div className="icon-container text-cyan-500">
+							<RiLinkM className="icon" />
 						</div>
 						<div className="label-container">
 							<p className="label">Add Link</p>

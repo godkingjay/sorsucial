@@ -1,7 +1,7 @@
 import { adminState } from "@/atoms/adminAtom";
 import { adminModalState } from "@/atoms/modalAtom";
 import { NewUserType } from "@/components/Modal/AdminModals/AddUserModal";
-import { firestore } from "@/firebase/clientApp";
+import { db } from "@/firebase/clientApp";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
@@ -27,7 +27,7 @@ const useAdmin = () => {
 
 	const createNewUsers = async (newUsers: NewUserType[]) => {
 		try {
-			const batch = writeBatch(firestore);
+			const batch = writeBatch(db);
 
 			const newAdminStateUsers: SiteUser[] = [];
 
@@ -50,7 +50,7 @@ const useAdmin = () => {
 								.then(async (res) => {
 									const { uid: userId } = res.data;
 
-									const userDocRef = doc(firestore, "users", userId);
+									const userDocRef = doc(db, "users", userId);
 									const userDoc = await getDoc(userDocRef);
 
 									if (!userDoc.exists()) {
@@ -145,60 +145,48 @@ const useAdmin = () => {
 	const deleteUser = async (userId: string) => {
 		try {
 			if (userId) {
-				await deleteDocumentAndSubcollections({
-					docId: userId,
-					collectionName: "users",
-				})
-					.then(async () => {
-						await axios
-							.post("/api/admin/delete-user", {
-								uid: userId,
-								privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-									/\\n/g,
-									"\n"
-								),
+				await axios
+					.post("/api/admin/delete-user", {
+						uid: userId,
+						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+							/\\n/g,
+							"\n"
+						),
+					})
+					.then(async (res) => {
+						const { isDeleted } = res.data;
+						if (isDeleted) {
+							deleteDocumentAndSubcollections({
+								docId: userId,
+								collectionName: "users",
 							})
-							.then(async (res) => {
-								const { isDeleted } = res.data;
-								if (isDeleted) {
-									setAdminStateValue((prev) => ({
-										...prev,
-										manageUsers: prev.manageUsers.filter(
-											(user) => user.uid !== userId
-										),
-									}));
-								} else {
-									throw new Error("User Authentication was not deleted");
-								}
-
-								await axios
-									.post("/api/admin/delete-files", {
-										path: `users/${userId}/images`,
-										privateKey:
-											process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-												/\\n/g,
-												"\n"
-											),
-									})
-									.catch((error: any) => {
-										console.log({
-											message: "API: Delete Files Error: " + error.message,
-											userId,
+								.then(async () => {
+									axios
+										.post("/api/admin/delete-files", {
+											path: `users/${userId}/images`,
+											privateKey:
+												process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
+													/\\n/g,
+													"\n"
+												),
+										})
+										.catch((error: any) => {
+											console.log(
+												"API: Delete User Images Error: " + error.message
+											);
 										});
-										throw error;
-									});
-							})
-							.catch((error: any) => {
-								console.log(
-									"API: Deleting User Authentication Error: ",
-									error.message
-								);
-								throw error;
-							});
+								})
+								.catch((error: any) => {
+									console.log("API: Delete User Data Error: " + error.message);
+								});
+						} else {
+							throw new Error("User not deleted!");
+						}
 					})
 					.catch((error: any) => {
-						console.log("Hook: Deleting User Document Error: ", error.message);
-						throw error;
+						console.log(
+							"API: Delete User Authentication Error: " + error.message
+						);
 					});
 			} else {
 				throw new Error(
@@ -207,7 +195,6 @@ const useAdmin = () => {
 			}
 		} catch (error: any) {
 			console.log("Hook: Deleting User Error: ", error.message);
-			throw error;
 		}
 	};
 
@@ -220,7 +207,7 @@ const useAdmin = () => {
 			const usersQuery =
 				adminStateValue.manageUsers.length > 0
 					? query(
-							collection(firestore, "users"),
+							collection(db, "users"),
 							orderBy("createdAt", "desc"),
 							startAfter(
 								adminStateValue.manageUsers[
@@ -230,7 +217,7 @@ const useAdmin = () => {
 							limit(userLimit)
 					  )
 					: query(
-							collection(firestore, "users"),
+							collection(db, "users"),
 							orderBy("createdAt", "desc"),
 							limit(userLimit)
 					  );
@@ -252,34 +239,12 @@ const useAdmin = () => {
 		}
 	};
 
-	const checkUserEmailExists = async (userEmail: string): Promise<boolean> => {
-		try {
-			const usersQuery = query(
-				collection(firestore, "users"),
-				where("email", "==", userEmail),
-				limit(1)
-			);
-
-			const usersSnapshot = await getDocs(usersQuery);
-
-			if (usersSnapshot.docs.length > 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (error: any) {
-			console.log("Fetching Users Error!: ", error.message);
-			throw error;
-		}
-	};
-
 	return {
 		adminStateValue,
 		setAdminStateValue,
 		adminFetchUsers,
 		adminModalStateValue,
 		setAdminModalStateValue,
-		checkUserEmailExists,
 		createNewUsers,
 		deleteUser,
 	};

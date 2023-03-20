@@ -394,7 +394,7 @@
 		@apply p-4 flex flex-col;
 
 		.post-creation-modal-form-head {
-			@apply flex flex-row items-center h-16 gap-x-4;
+			@apply flex flex-row items-center h-16 gap-x-4 z-50;
 
 			.image-icon-container {
 				@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300 mb-auto;
@@ -420,6 +420,71 @@
 						&:hover,
 						&:focus {
 							@apply underline;
+						}
+					}
+				}
+			}
+		}
+
+		.post-creation-modal-form-content {
+			@apply flex flex-col w-full gap-y-2 mb-4 z-40;
+
+			.post-creation-form-title-container {
+				@apply relative flex flex-row py-2 px-2 rounded-lg border border-transparent gap-x-2;
+
+				.post-creation-form-title-input-field {
+					@apply flex-1 min-w-0 outline-none bg-transparent font-semibold break-words resize-none;
+				}
+
+				&:hover {
+					@apply bg-gray-100;
+				}
+
+				&:focus-within {
+					@apply bg-transparent border-blue-500;
+				}
+			}
+
+			.post-creation-form-pages {
+				@apply flex flex-row gap-x-2 gap-y-2;
+
+				.post-creation-form-body-container {
+					@apply relative h-max flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg;
+
+					.post-creation-form-body-input-field {
+						@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
+					}
+
+					&:hover {
+						@apply bg-gray-100;
+					}
+
+					&:focus-within {
+						@apply bg-transparent border-blue-500;
+					}
+				}
+
+				.post-creation-form-tabs-container {
+					@apply rounded-md border border-gray-300 shadow-around-sm h-max w-max bg-white p-2 flex flex-col items-center gap-y-1;
+
+					.post-creation-form-tab-button {
+						@apply h-12 w-12 aspect-square p-2.5 grid place-items-center rounded-md duration-200;
+
+						.icon {
+							@apply h-full w-full;
+						}
+
+						&:hover,
+						&:focus {
+							@apply bg-gray-100;
+						}
+
+						&:hover {
+							@apply rounded-[24px];
+						}
+
+						&[data-active="true"] {
+							@apply p-2 rounded-md;
 						}
 					}
 				}

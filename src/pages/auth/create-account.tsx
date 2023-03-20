@@ -1,6 +1,8 @@
 import CreateAccountForm from "@/components/Form/Auth/CreateAccountForm";
 import CreateAccountSkeleton from "@/components/Skeleton/Auth/CreateAccountSkeleton";
+import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import { auth } from "@/firebase/clientApp";
+import useCheck from "@/hooks/useCheck";
 import useUser from "@/hooks/useUser";
 import { isSignInWithEmailLink } from "firebase/auth";
 import Head from "next/head";
@@ -32,14 +34,30 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 	 * @property {boolean} authLoading - The loading state of the auth state.
 	 * @property {Function} createAccount - The function to create an account.
 	 */
-	const { authUser, authLoading, createAccount } = useUser();
+	const { authUser, authLoading, loadingUser, createAccount, userStateValue } =
+		useUser();
+
+	/**
+	 * Hooks for the create account page.
+	 * The hooks are used to check if the user is already logged in.
+	 * If the user is already logged in, the user is redirected to the sign in page.
+	 */
+	const { checkUserEmailExists } = useCheck();
+
+	/**
+	 * State for the create account page.
+	 * This is used to check if the user email is already taken.
+	 * If the user email is already taken, the user is redirected to the sign in page.
+	 * The state is initialized with true.
+	 */
+	const [checkingUserEmail, setCheckingUserEmail] = useState(true);
 
 	/**
 	 * State for the create account page.
 	 *
 	 * @property {boolean} loadingCreateAccount - The loading state of the create account page.
 	 */
-	const [loadingCreateAccount, setLoadingCreateAccount] = useState(false);
+	const [loadingCreateAccount, setLoadingCreateAccount] = useState(true);
 
 	/**
 	 * State for the create account form.
@@ -68,32 +86,53 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 	/**
 	 * This function initializes the create account form.
 	 */
-	const initializeCreateAccount = async () => {
+	const initializeCreateAccount = async (email: string) => {
 		setCreateAccountForm((prev) => ({
 			...prev,
-			email: localStorage.getItem("emailForSignIn") as string,
+			email: email,
 		}));
 	};
 
 	/**
-	 * This effect initializes the create account form.
-	 * Changes the state of the create account page to loading.
+	 * This function checks if the user email is already taken.
+	 * If the user email is already taken, the user is redirected to the sign in page.
 	 *
-	 * @see {@link initializeCreateAccount} for the function that initializes the create account form.
-	 * @listens {Object} router - The router object.
+	 * @return {*}
+	 */
+	const loadPage = async () => {
+		setLoadingCreateAccount(false);
+		setCheckingUserEmail(true);
+
+		const params = new URLSearchParams(window.location.search);
+		const email =
+			(localStorage.getItem("emailForSignIn") as string) || params.get("email");
+
+		if (isSignInWithEmailLink(auth, window.location.href) && email) {
+			const emailExists = await checkUserEmailExists(email);
+
+			if (!emailExists) {
+				await initializeCreateAccount(email);
+				setLoadingCreateAccount(false);
+				setCheckingUserEmail(false);
+			}
+
+			return !emailExists;
+		} else {
+			return false;
+		}
+	};
+
+	/**
+	 * This effect redirects the user to the sign in page if the user does not have email in store or email provided is already taken.
+	 * The effect is only called once when the page is loaded.
 	 */
 	useEffect(() => {
-		setLoadingCreateAccount(false);
-		if (
-			isSignInWithEmailLink(auth, window.location.href) &&
-			(localStorage.getItem("emailForSignIn") as string)
-		) {
-			initializeCreateAccount();
-			setLoadingCreateAccount(false);
-		} else {
-			router.push("/auth/signin");
-		}
-	}, [router]);
+		loadPage().then((initializationStatus) => {
+			if (!initializationStatus) {
+				router.push("/auth/signin");
+			}
+		});
+	}, []);
 
 	/**
 	 * This effect redirects the user to the home page if the user is already logged in.
@@ -102,7 +141,12 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 	 * @see {@link authLoading} for the loading state of the auth state.
 	 */
 	useEffect(() => {
-		if (authUser && !authLoading) {
+		if (
+			authUser &&
+			!authLoading &&
+			!userStateValue.user.isFirstLogin &&
+			!loadingUser
+		) {
 			router.push("/");
 		}
 	}, [authUser, authLoading]);
@@ -116,17 +160,21 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 					content="SorSUcial is the unofficial social media for the University of Sorsogon State University."
 				/>
 			</Head>
-			<div className="grid place-items-center h-full relative px-8 py-16">
-				{!loadingCreateAccount ? (
-					<CreateAccountForm
-						createAccountForm={createAccountForm}
-						setCreateAccountForm={setCreateAccountForm}
-						createAccount={createAccount}
-					/>
-				) : (
-					<CreateAccountSkeleton />
-				)}
-			</div>
+			{!loadingCreateAccount ? (
+				<div className="grid place-items-center h-full relative px-8 py-16">
+					{!checkingUserEmail ? (
+						<CreateAccountForm
+							createAccountForm={createAccountForm}
+							setCreateAccountForm={setCreateAccountForm}
+							createAccount={createAccount}
+						/>
+					) : (
+						<CreateAccountSkeleton />
+					)}
+				</div>
+			) : (
+				<LoadingScreen />
+			)}
 		</>
 	);
 };

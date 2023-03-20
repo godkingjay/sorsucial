@@ -1,14 +1,8 @@
-import { UserPageState, UserState } from "@/atoms/userAtom";
+import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
-import { firestore } from "@/firebase/clientApp";
+import { db } from "@/firebase/clientApp";
 import useUser from "@/hooks/useUser";
-import {
-	DocumentData,
-	DocumentSnapshot,
-	collection,
-	doc,
-	getDoc,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
 import React, { useEffect } from "react";
 import safeJsonStringify from "safe-json-stringify";
@@ -54,7 +48,7 @@ export const getServerSideProps = async (
 	try {
 		const { userId } = context.query;
 
-		const userDoc = await getDoc(doc(firestore, "users", userId as string));
+		const userDoc = await getDoc(doc(db, "users", userId as string));
 
 		const userPageData = userDoc.exists()
 			? {

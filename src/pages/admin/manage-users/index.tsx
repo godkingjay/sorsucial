@@ -1,7 +1,5 @@
-import { firestore } from "@/firebase/clientApp";
 import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
-import { collection, doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiEdit, FiLoader } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
@@ -12,9 +10,9 @@ type AdminManageUsersPageProps = {};
 const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const {
 		adminStateValue,
-		setAdminStateValue,
 		adminFetchUsers,
 		setAdminModalStateValue,
+		setAdminStateValue,
 		deleteUser,
 	} = useAdmin();
 	const { userStateValue } = useUser();
@@ -46,9 +44,16 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const handleDeleteUser = useCallback(async (userId: string) => {
 		setDeletingUser(userId);
 		try {
-			await deleteUser(userId).catch((error: any) => {
-				console.log("Hook: Delete User Error: ", error.message);
-			});
+			await deleteUser(userId)
+				.then(() => {
+					setAdminStateValue((prev) => ({
+						...prev,
+						manageUsers: prev.manageUsers.filter((user) => user.uid !== userId),
+					}));
+				})
+				.catch((error: any) => {
+					console.log("Hook: Delete User Error: ", error.message);
+				});
 		} catch (error: any) {
 			console.log("Deleting User Error: ", error.message);
 		}

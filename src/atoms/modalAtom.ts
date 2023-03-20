@@ -40,7 +40,7 @@ export const adminModalState = atom<AdminModalState>({
 export type PostCreationModalState = {
 	open: boolean;
 	postType: SitePost["postType"];
-	tab: "post" | "image&video" | "poll" | "link" | "file";
+	tab: "post" | "image/video" | "poll" | "link" | "file";
 };
 
 export const defaultPostCreationModalState: PostCreationModalState = {

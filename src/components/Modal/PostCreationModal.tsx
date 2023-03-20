@@ -1,15 +1,16 @@
 import { PostCreationModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
-import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
-import { FaEye, FaLock, FaUserCircle } from "react-icons/fa";
+import { FaEye, FaLock, FaPollH } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
-import CustomDropdown, { DropdownOption } from "../Controls/CustomDropdown";
+import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
+import { HiDocumentText } from "react-icons/hi";
+import { BsFillFileEarmarkPlusFill, BsImages } from "react-icons/bs";
+import { RiLinkM } from "react-icons/ri";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -105,6 +106,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		link: null,
 		poll: null,
 	});
+	const [creatingPost, setCreatingPost] = useState(false);
+
+	const handleCreatePostSubmit = async (
+		event: React.FormEvent<HTMLFormElement>
+	) => {
+		event.preventDefault();
+	};
 
 	const handleSelectPrivacy = (value: string) => {
 		setCreatePostForm((prev) => ({
@@ -119,6 +127,23 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			open: false,
 			postType: "feed",
 			tab: "post",
+		}));
+	};
+
+	const handleFormTabChange = (tab: PostCreationModalState["tab"]) => {
+		setPostCreationModalStateValue((prev) => ({
+			...prev,
+			tab,
+		}));
+	};
+
+	const handleTextChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = event.target;
+		setCreatePostForm((prev) => ({
+			...prev,
+			[name]: value,
 		}));
 	};
 
@@ -149,6 +174,133 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
 					/>
+					<div className="post-creation-modal-form-content">
+						<div className="post-creation-form-title-container">
+							<textarea
+								required
+								name="postTitle"
+								title="Post Title"
+								placeholder="Title"
+								className="post-creation-form-title-input-field"
+								minLength={1}
+								maxLength={300}
+								onChange={(e) => {
+									handleTextChange(e);
+									e.currentTarget.style.height = "0px";
+									e.currentTarget.style.height =
+										e.currentTarget.scrollHeight + "px";
+								}}
+								rows={1}
+								value={createPostForm.postTitle}
+								disabled={creatingPost}
+							/>
+							<p
+								className={`mt-auto text-2xs font-semibold
+									${
+										300 - createPostForm.postTitle.length === 0
+											? "text-red-500"
+											: "text-gray-400"
+									}
+								`}
+							>
+								{300 - createPostForm.postTitle.length}/300
+							</p>
+						</div>
+						<div className="post-creation-form-pages">
+							<div className="post-creation-form-body-container">
+								<textarea
+									name="postBody"
+									placeholder="Text(optional)"
+									title="Body"
+									onChange={(e) => {
+										handleTextChange(e);
+										e.currentTarget.style.height = "0px";
+										e.currentTarget.style.height =
+											e.currentTarget.scrollHeight + "px";
+									}}
+									className={`
+										post-creation-form-body-input-field
+									`}
+									rows={1}
+									minLength={0}
+									maxLength={40000}
+									value={createPostForm.postBody}
+									disabled={creatingPost}
+								/>
+							</div>
+							<div className="sticky -top-14 h-max">
+								<div className="post-creation-form-tabs-container">
+									<button
+										type="button"
+										title="Add Post Body"
+										className="post-creation-form-tab-button text-blue-500 data-[active=true]:!bg-blue-100"
+										onClick={() => handleFormTabChange("post")}
+										data-active={postCreationModalStateValue.tab === "post"}
+									>
+										<HiDocumentText className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add Image Or Video"
+										className="post-creation-form-tab-button text-green-500 data-[active=true]:!bg-green-100"
+										onClick={() => handleFormTabChange("image/video")}
+										data-active={
+											postCreationModalStateValue.tab === "image/video"
+										}
+									>
+										<BsImages className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add File"
+										className="post-creation-form-tab-button text-purple-500 data-[active=true]:!bg-purple-100"
+										onClick={() => handleFormTabChange("file")}
+										data-active={postCreationModalStateValue.tab === "file"}
+									>
+										<BsFillFileEarmarkPlusFill className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Add Link"
+										className="post-creation-form-tab-button text-cyan-500 data-[active=true]:!bg-cyan-100"
+										onClick={() => handleFormTabChange("link")}
+										data-active={postCreationModalStateValue.tab === "link"}
+									>
+										<RiLinkM className="icon" />
+									</button>
+									<button
+										type="button"
+										title="Create Poll"
+										className="post-creation-form-tab-button text-yellow-500 data-[active=true]:!bg-yellow-100"
+										onClick={() => handleFormTabChange("poll")}
+										data-active={postCreationModalStateValue.tab === "poll"}
+									>
+										<FaPollH className="icon" />
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div>
+						<button
+							type="submit"
+							title={`${
+								postCreationModalStateValue.postType === "announcement"
+									? "Create an announcement"
+									: postCreationModalStateValue.postType === "group"
+									? "Create a group post"
+									: "Create a post"
+							}`}
+							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={!createPostForm.postTitle}
+						>
+							{postCreationModalStateValue.postType === "announcement" &&
+								"Create Announcement"}
+							{postCreationModalStateValue.postType === "feed" && "Create Post"}
+							{postCreationModalStateValue.postType === "group" &&
+								"Create Group Post"}
+						</button>
+					</div>
 				</form>
 			</div>
 		</div>

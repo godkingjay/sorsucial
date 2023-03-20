@@ -12,6 +12,7 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 		adminStateValue,
 		adminFetchUsers,
 		setAdminModalStateValue,
+		setAdminStateValue,
 		deleteUser,
 	} = useAdmin();
 	const { userStateValue } = useUser();
@@ -43,9 +44,16 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	const handleDeleteUser = useCallback(async (userId: string) => {
 		setDeletingUser(userId);
 		try {
-			await deleteUser(userId).catch((error: any) => {
-				console.log("Hook: Delete User Error: ", error.message);
-			});
+			await deleteUser(userId)
+				.then(() => {
+					setAdminStateValue((prev) => ({
+						...prev,
+						manageUsers: prev.manageUsers.filter((user) => user.uid !== userId),
+					}));
+				})
+				.catch((error: any) => {
+					console.log("Hook: Delete User Error: ", error.message);
+				});
 		} catch (error: any) {
 			console.log("Deleting User Error: ", error.message);
 		}

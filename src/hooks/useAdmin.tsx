@@ -161,13 +161,6 @@ const useAdmin = () => {
 								collectionName: "users",
 							})
 								.then(async () => {
-									setAdminStateValue((prev) => ({
-										...prev,
-										manageUsers: prev.manageUsers.filter(
-											(user) => user.uid !== userId
-										),
-									}));
-
 									axios
 										.post("/api/admin/delete-files", {
 											path: `users/${userId}/images`,

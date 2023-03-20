@@ -449,18 +449,22 @@
 				@apply flex flex-row gap-x-2 gap-y-2;
 
 				.post-creation-form-body-container {
-					@apply relative h-max flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg;
+					@apply relative h-full flex-1 flex flex-col;
 
-					.post-creation-form-body-input-field {
-						@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
-					}
+					.post-creation-form-post-tab {
+						@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg;
 
-					&:hover {
-						@apply bg-gray-100;
-					}
+						.post-creation-form-body-input-field {
+							@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
+						}
 
-					&:focus-within {
-						@apply bg-transparent border-blue-500;
+						&:hover {
+							@apply bg-gray-100;
+						}
+
+						&:focus-within {
+							@apply bg-transparent border-blue-500;
+						}
 					}
 				}
 

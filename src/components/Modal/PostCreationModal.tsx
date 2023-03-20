@@ -11,6 +11,9 @@ import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalForm
 import { HiDocumentText } from "react-icons/hi";
 import { BsFillFileEarmarkPlusFill, BsImages } from "react-icons/bs";
 import { RiLinkM } from "react-icons/ri";
+import PostTab from "./PostCreationModal/PostCreationTabs/PostTab";
+import PostTabs from "./PostCreationModal/PostCreationTabs";
+import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -208,77 +211,18 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						</div>
 						<div className="post-creation-form-pages">
 							<div className="post-creation-form-body-container">
-								<textarea
-									name="postBody"
-									placeholder="Text(optional)"
-									title="Body"
-									onChange={(e) => {
-										handleTextChange(e);
-										e.currentTarget.style.height = "0px";
-										e.currentTarget.style.height =
-											e.currentTarget.scrollHeight + "px";
-									}}
-									className={`
-										post-creation-form-body-input-field
-									`}
-									rows={1}
-									minLength={0}
-									maxLength={40000}
-									value={createPostForm.postBody}
-									disabled={creatingPost}
-								/>
+								{postCreationModalStateValue.tab === "post" && (
+									<PostTab
+										handleTextChange={handleTextChange}
+										createPostForm={createPostForm}
+										creatingPost={creatingPost}
+									/>
+								)}
 							</div>
-							<div className="sticky -top-14 h-max">
-								<div className="post-creation-form-tabs-container">
-									<button
-										type="button"
-										title="Add Post Body"
-										className="post-creation-form-tab-button text-blue-500 data-[active=true]:!bg-blue-100"
-										onClick={() => handleFormTabChange("post")}
-										data-active={postCreationModalStateValue.tab === "post"}
-									>
-										<HiDocumentText className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add Image Or Video"
-										className="post-creation-form-tab-button text-green-500 data-[active=true]:!bg-green-100"
-										onClick={() => handleFormTabChange("image/video")}
-										data-active={
-											postCreationModalStateValue.tab === "image/video"
-										}
-									>
-										<BsImages className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add File"
-										className="post-creation-form-tab-button text-purple-500 data-[active=true]:!bg-purple-100"
-										onClick={() => handleFormTabChange("file")}
-										data-active={postCreationModalStateValue.tab === "file"}
-									>
-										<BsFillFileEarmarkPlusFill className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add Link"
-										className="post-creation-form-tab-button text-cyan-500 data-[active=true]:!bg-cyan-100"
-										onClick={() => handleFormTabChange("link")}
-										data-active={postCreationModalStateValue.tab === "link"}
-									>
-										<RiLinkM className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Create Poll"
-										className="post-creation-form-tab-button text-yellow-500 data-[active=true]:!bg-yellow-100"
-										onClick={() => handleFormTabChange("poll")}
-										data-active={postCreationModalStateValue.tab === "poll"}
-									>
-										<FaPollH className="icon" />
-									</button>
-								</div>
-							</div>
+							<PostCreationTabs
+								handleFormTabChange={handleFormTabChange}
+								postCreationModalStateValue={postCreationModalStateValue}
+							/>
 						</div>
 					</div>
 					<div>

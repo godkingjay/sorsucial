@@ -3,6 +3,7 @@ import React from "react";
 import { BsImages, BsFillFileEarmarkPlusFill } from "react-icons/bs";
 import { FaPollH } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
+import { IoSettingsSharp } from "react-icons/io5";
 import { RiLinkM } from "react-icons/ri";
 
 type PostTabsProps = {
@@ -61,6 +62,15 @@ const PostCreationTabs: React.FC<PostTabsProps> = ({
 					data-active={postCreationModalStateValue.tab === "poll"}
 				>
 					<FaPollH className="icon" />
+				</button>
+				<button
+					type="button"
+					title="Post Settings"
+					className="post-creation-form-tab-button text-gray-500 data-[active=true]:!bg-gray-100"
+					onClick={() => handleFormTabChange("settings")}
+					data-active={postCreationModalStateValue.tab === "settings"}
+				>
+					<IoSettingsSharp className="icon" />
 				</button>
 			</div>
 		</div>

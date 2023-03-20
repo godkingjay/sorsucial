@@ -484,7 +484,11 @@
 						}
 
 						&[data-active="true"] {
-							@apply p-2 rounded-md;
+							@apply rounded-md;
+						}
+
+						@media screen and (max-width: 480px) {
+							@apply h-10 w-10;
 						}
 					}
 				}

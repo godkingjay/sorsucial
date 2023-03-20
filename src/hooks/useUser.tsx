@@ -3,7 +3,7 @@ import { adminModalState } from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
-import { auth, firestore, storage } from "@/firebase/clientApp";
+import { auth, db, storage } from "@/firebase/clientApp";
 import { SiteUser, UserImage } from "@/lib/interfaces/user";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import {
@@ -63,7 +63,7 @@ const useUser = () => {
 				/**
 				 * Create user document reference
 				 */
-				const userDocRef = doc(firestore, "users", user.uid);
+				const userDocRef = doc(db, "users", user.uid);
 
 				/**
 				 * Get user document data from Firestore
@@ -126,7 +126,7 @@ const useUser = () => {
 						/**
 						 * Create user document reference
 						 */
-						const userDocRef = doc(firestore, "users", userCredential.uid);
+						const userDocRef = doc(db, "users", userCredential.uid);
 
 						/**
 						 * Create new user object
@@ -191,12 +191,12 @@ const useUser = () => {
 			/**
 			 * Batch write to Firestore to create user document.
 			 */
-			const batch = writeBatch(firestore);
+			const batch = writeBatch(db);
 
 			/**
 			 * Create user document reference.
 			 */
-			const userDocRef = doc(collection(firestore, "users"), user?.uid);
+			const userDocRef = doc(collection(db, "users"), user?.uid);
 
 			/**
 			 * Create new user object.
@@ -227,9 +227,7 @@ const useUser = () => {
 				/**
 				 * Create image document reference.
 				 */
-				const imageDocRef = doc(
-					collection(firestore, `users/${user?.uid}/images`)
-				);
+				const imageDocRef = doc(collection(db, `users/${user?.uid}/images`));
 
 				/**
 				 * Upload profile photo to Firebase Storage.
@@ -252,7 +250,7 @@ const useUser = () => {
 				 * Create a reference to the profile photo document.
 				 */
 				const profilePhotoDocRef = doc(
-					collection(firestore, `users/${user?.uid}/images`),
+					collection(db, `users/${user?.uid}/images`),
 					imageDocRef.id
 				);
 
@@ -382,11 +380,7 @@ const useUser = () => {
 			/**
 			 * Upload the profile photo to Firebase Storage.
 			 */
-			const profilePhotoDocRef = doc(
-				firestore,
-				`users/${user?.uid}/images`,
-				imageId
-			);
+			const profilePhotoDocRef = doc(db, `users/${user?.uid}/images`, imageId);
 
 			/**
 			 * Create an object to hold the profile photo from Firebase Storage.

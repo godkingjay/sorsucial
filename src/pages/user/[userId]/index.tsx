@@ -1,6 +1,6 @@
 import { UserPageState, UserState } from "@/atoms/userAtom";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
-import { firestore } from "@/firebase/clientApp";
+import { db } from "@/firebase/clientApp";
 import useUser from "@/hooks/useUser";
 import {
 	DocumentData,
@@ -54,7 +54,7 @@ export const getServerSideProps = async (
 	try {
 		const { userId } = context.query;
 
-		const userDoc = await getDoc(doc(firestore, "users", userId as string));
+		const userDoc = await getDoc(doc(db, "users", userId as string));
 
 		const userPageData = userDoc.exists()
 			? {

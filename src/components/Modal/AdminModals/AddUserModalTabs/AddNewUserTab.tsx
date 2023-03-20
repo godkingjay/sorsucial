@@ -12,7 +12,6 @@ import {
 	getCitiesMunicipality,
 	getProvinces,
 } from "@/lib/api/psgc";
-import { firestore } from "@/firebase/clientApp";
 import { FiLoader } from "react-icons/fi";
 
 type AddNewUserTabProps = {

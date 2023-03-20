@@ -1,7 +1,7 @@
 import { adminState } from "@/atoms/adminAtom";
 import { adminModalState } from "@/atoms/modalAtom";
 import { NewUserType } from "@/components/Modal/AdminModals/AddUserModal";
-import { firestore } from "@/firebase/clientApp";
+import { db } from "@/firebase/clientApp";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
@@ -27,7 +27,7 @@ const useAdmin = () => {
 
 	const createNewUsers = async (newUsers: NewUserType[]) => {
 		try {
-			const batch = writeBatch(firestore);
+			const batch = writeBatch(db);
 
 			const newAdminStateUsers: SiteUser[] = [];
 
@@ -50,7 +50,7 @@ const useAdmin = () => {
 								.then(async (res) => {
 									const { uid: userId } = res.data;
 
-									const userDocRef = doc(firestore, "users", userId);
+									const userDocRef = doc(db, "users", userId);
 									const userDoc = await getDoc(userDocRef);
 
 									if (!userDoc.exists()) {
@@ -220,7 +220,7 @@ const useAdmin = () => {
 			const usersQuery =
 				adminStateValue.manageUsers.length > 0
 					? query(
-							collection(firestore, "users"),
+							collection(db, "users"),
 							orderBy("createdAt", "desc"),
 							startAfter(
 								adminStateValue.manageUsers[
@@ -230,7 +230,7 @@ const useAdmin = () => {
 							limit(userLimit)
 					  )
 					: query(
-							collection(firestore, "users"),
+							collection(db, "users"),
 							orderBy("createdAt", "desc"),
 							limit(userLimit)
 					  );
@@ -255,7 +255,7 @@ const useAdmin = () => {
 	const checkUserEmailExists = async (userEmail: string): Promise<boolean> => {
 		try {
 			const usersQuery = query(
-				collection(firestore, "users"),
+				collection(db, "users"),
 				where("email", "==", userEmail),
 				limit(1)
 			);

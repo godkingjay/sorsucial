@@ -1,4 +1,3 @@
-import { firestore } from "@/firebase/clientApp";
 import useAdmin from "@/hooks/useAdmin";
 import useUser from "@/hooks/useUser";
 import { collection, doc, getDoc } from "firebase/firestore";

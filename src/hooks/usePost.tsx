@@ -25,7 +25,7 @@ const usePost = () => {
 
 			const newPost: SitePost = {
 				id: postRef.id,
-				creatorId: postForm.creatorId!,
+				creatorId: creator.uid,
 				privacy: postForm.privacy,
 				postTitle: postForm.postTitle,
 				postBody: postForm.postBody,
@@ -69,7 +69,12 @@ const usePost = () => {
 					...prev,
 					posts: [
 						{
-							post: newPost,
+							post: {
+								...newPost,
+								createdAt: {
+									seconds: new Date().getTime() / 1000,
+								} as Timestamp,
+							},
 							creator,
 						},
 						...prev.posts,

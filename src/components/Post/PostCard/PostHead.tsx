@@ -47,10 +47,12 @@ const PostHead: React.FC<PostHeadProps> = ({
 					{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
 				</p>
 			</div>
-			<PostMenuDropdown
-				postMenuOpen={postMenuOpen}
-				handlePostMenuOpen={handlePostMenuOpen}
-			/>
+			{postData.post.creatorId === userStateValue.user.uid && (
+				<PostMenuDropdown
+					postMenuOpen={postMenuOpen}
+					handlePostMenuOpen={handlePostMenuOpen}
+				/>
+			)}
 		</div>
 	);
 };

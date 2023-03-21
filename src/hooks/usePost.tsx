@@ -2,14 +2,19 @@ import { postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db } from "@/firebase/clientApp";
 import { SitePost } from "@/lib/interfaces/post";
+import axios from "axios";
 import {
 	Timestamp,
 	collection,
 	doc,
+	getDocs,
+	limit,
+	orderBy,
+	query,
 	serverTimestamp,
+	where,
 	writeBatch,
 } from "firebase/firestore";
-import React from "react";
 import { useRecoilState } from "recoil";
 
 const usePost = () => {
@@ -73,10 +78,41 @@ const usePost = () => {
 		}
 	};
 
+	const fetchPosts = async (postType: SitePost["postType"]) => {
+		try {
+			await axios
+				.post("/api/post/get-posts", {
+					postType,
+				})
+				.then((res) => {
+					if (res.data.success) {
+						const { posts } = res.data;
+
+						if (posts.length > 0) {
+							setPostStateValue((prev) => ({
+								...prev,
+								posts: [...prev.posts, ...posts],
+							}));
+						} else {
+							console.log("No posts found");
+						}
+					} else {
+						console.log("API: get-posts error: ", res.data.message);
+					}
+				})
+				.catch((err) => {
+					console.log("API: get-posts error: ", err.message);
+				});
+		} catch (error: any) {
+			console.log("Firestore: Fetching Announcements Error", error.message);
+		}
+	};
+
 	return {
 		postStateValue,
 		setPostStateValue,
 		createPost,
+		fetchPosts,
 	};
 };
 

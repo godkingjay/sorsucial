@@ -7,6 +7,7 @@ import React from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 import { MdDelete, MdDeleteOutline } from "react-icons/md";
+import PostMenuDropdown from "./PostHead/PostMenuDropdown";
 
 type PostHeadProps = {
 	userStateValue: UserState;
@@ -46,43 +47,10 @@ const PostHead: React.FC<PostHeadProps> = ({
 					{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
 				</p>
 			</div>
-			<button
-				type="button"
-				title="Post Menu"
-				className="absolute rounded-full h-8 w-8 p-2 right-2 top-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:text-gray-700 focus:bg-gray-100"
-				onClick={handlePostMenuOpen}
-			>
-				<BsThreeDots className="h-full w-full" />
-			</button>
-			<div
-				className={`
-          post-dropdown-menu-wrapper
-          ${
-						postMenuOpen
-							? " "
-							: " translate-y-[-8px] opacity-0 [&_*]:pointer-events-none"
-					}
-        `}
-			>
-				<div className="post-dropdown-menu !max-h-[384px]">
-					<ul className="post-dropdown-list">
-						<li>
-							<button
-								type="button"
-								title="Delete Post"
-								className="post-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
-							>
-								<div className="icon-container">
-									<MdDeleteOutline className="icon" />
-								</div>
-								<div className="label-container">
-									<p className="label">Delete Post</p>
-								</div>
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
+			<PostMenuDropdown
+				postMenuOpen={postMenuOpen}
+				handlePostMenuOpen={handlePostMenuOpen}
+			/>
 		</div>
 	);
 };

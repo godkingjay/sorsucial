@@ -115,10 +115,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		event.preventDefault();
 		setCreatingPost(true);
 		try {
-			await createPost({
-				...createPostForm,
-				creatorId: userStateValue.user.uid,
-			}).catch((error) => {
+			await createPost(createPostForm, userStateValue.user).catch((error) => {
 				console.log("Hook: Post Creation Error", error.message);
 			});
 		} catch (error: any) {

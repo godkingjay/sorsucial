@@ -7,12 +7,7 @@ import {
 	Timestamp,
 	collection,
 	doc,
-	getDocs,
-	limit,
-	orderBy,
-	query,
 	serverTimestamp,
-	where,
 	writeBatch,
 } from "firebase/firestore";
 import { useRecoilState } from "recoil";
@@ -85,19 +80,15 @@ const usePost = () => {
 					postType,
 				})
 				.then((res) => {
-					if (res.data.success) {
-						const { posts } = res.data;
+					const { posts } = res.data;
 
-						if (posts.length > 0) {
-							setPostStateValue((prev) => ({
-								...prev,
-								posts: [...prev.posts, ...posts],
-							}));
-						} else {
-							console.log("No posts found");
-						}
+					if (posts.length > 0) {
+						setPostStateValue((prev) => ({
+							...prev,
+							posts: [...prev.posts, ...posts],
+						}));
 					} else {
-						console.log("API: get-posts error: ", res.data.message);
+						console.log("No posts found");
 					}
 				})
 				.catch((err) => {

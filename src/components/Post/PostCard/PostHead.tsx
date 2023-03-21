@@ -70,7 +70,7 @@ const PostHead: React.FC<PostHeadProps> = ({
 							<button
 								type="button"
 								title="Delete Post"
-								className="post-dropdown-item"
+								className="post-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
 							>
 								<div className="icon-container">
 									<MdDeleteOutline className="icon" />

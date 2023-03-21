@@ -65,7 +65,15 @@ const usePost = () => {
 			await batch.commit().then(() => {
 				setPostStateValue((prev) => ({
 					...prev,
-					posts: [newPost, ...prev.posts],
+					posts: [
+						{
+							...newPost,
+							createdAt: {
+								seconds: new Date().getTime() / 1000,
+							} as Timestamp,
+						},
+						...prev.posts,
+					],
 				}));
 			});
 		} catch (error: any) {

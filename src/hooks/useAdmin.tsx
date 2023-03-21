@@ -39,7 +39,7 @@ const useAdmin = () => {
 
 						try {
 							await axios
-								.post("/api/admin/create-user", {
+								.post(apiConfig.apiEndpoint + "admin/create-user", {
 									email,
 									password,
 									privateKey: apiConfig.privateKey,
@@ -115,7 +115,7 @@ const useAdmin = () => {
 		try {
 			if (docId && collectionName && !path) {
 				await axios
-					.post("/api/admin/delete-document", {
+					.post(apiConfig.apiEndpoint + "admin/delete-document", {
 						docId,
 						collectionName,
 						path,
@@ -140,7 +140,7 @@ const useAdmin = () => {
 		try {
 			if (userId) {
 				await axios
-					.post("/api/admin/delete-user", {
+					.post(apiConfig.apiEndpoint + "admin/delete-user", {
 						uid: userId,
 						privateKey: apiConfig.privateKey,
 					})
@@ -153,7 +153,7 @@ const useAdmin = () => {
 							})
 								.then(async () => {
 									axios
-										.post("/api/admin/delete-files", {
+										.post(apiConfig.apiEndpoint + "admin/delete-files", {
 											path: `users/${userId}/images`,
 											privateKey:
 												process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(

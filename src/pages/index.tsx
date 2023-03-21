@@ -6,7 +6,7 @@ import useUser from "@/hooks/useUser";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
 	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 	const anouncementsMounted = useRef(false);
 
-	const fetchAnnouncements = async () => {
+	const fetchAnnouncements = useCallback(async () => {
 		setLoadingAnnouncements(true);
 		try {
 			await fetchPosts("announcement");
@@ -23,14 +23,14 @@ export default function Home() {
 			console.log("Hook: fetching announcement Error: ", error.message);
 		}
 		setLoadingAnnouncements(false);
-	};
+	}, []);
 
 	useEffect(() => {
 		if (!anouncementsMounted.current && postStateValue.posts.length === 0) {
 			anouncementsMounted.current = true;
 			fetchAnnouncements();
 		}
-	}, []);
+	}, [anouncementsMounted, fetchAnnouncements, postStateValue.posts]);
 
 	return (
 		<>

@@ -1,7 +1,9 @@
 import { postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db } from "@/firebase/clientApp";
+import { apiConfig } from "@/lib/api/apiConfig";
 import { SitePost } from "@/lib/interfaces/post";
+import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
 	Timestamp,
@@ -15,7 +17,7 @@ import { useRecoilState } from "recoil";
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
 
-	const createPost = async (postForm: CreatePostType) => {
+	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
 		try {
 			const batch = writeBatch(db);
 
@@ -65,7 +67,13 @@ const usePost = () => {
 			await batch.commit().then(() => {
 				setPostStateValue((prev) => ({
 					...prev,
-					posts: [newPost, ...prev.posts],
+					posts: [
+						{
+							post: newPost,
+							creator,
+						},
+						...prev.posts,
+					],
 				}));
 			});
 		} catch (error: any) {
@@ -76,7 +84,7 @@ const usePost = () => {
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
 			await axios
-				.post("/api/post/get-posts", {
+				.post(apiConfig.apiEndpoint + "post/get-posts", {
 					postType,
 				})
 				.then((res) => {

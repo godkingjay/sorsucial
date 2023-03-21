@@ -42,10 +42,10 @@ export default function Home() {
 						/>
 					)}
 					{postStateValue.posts
-						.filter((post) => post.postType === "announcement")
+						.filter((post) => post.post.postType === "announcement")
 						.map((post) => (
 							<div
-								key={post.id}
+								key={post.post.id}
 								className="break-words flex flex-col shadow-page-box-1 bg-white rounded-lg"
 							>
 								<div className="p-2 flex flex-row h-14 items-center gap-x-4">
@@ -67,10 +67,10 @@ export default function Home() {
 										)}
 									</Link>
 									<div className="flex-1 flex flex-col h-full">
-										<p className="text-sm font-bold">{`${post.creatorId}`}</p>
+										<p className="text-sm font-semibold">{`${post.creator?.firstName} ${post.creator?.lastName}`}</p>
 										<p className="text-2xs text-gray-500">
 											{moment(
-												new Date(post.createdAt.seconds * 1000)
+												new Date(post.post.createdAt.seconds * 1000)
 											).fromNow()}
 										</p>
 									</div>

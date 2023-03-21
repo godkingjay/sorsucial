@@ -1,4 +1,9 @@
+import { PostData } from "@/atoms/postAtom";
 import { db } from "@/firebase/clientApp";
+import { apiConfig } from "@/lib/api/apiConfig";
+import { SitePost } from "@/lib/interfaces/post";
+import { SiteUser } from "@/lib/interfaces/user";
+import axios from "axios";
 import {
 	query,
 	collection,
@@ -30,16 +35,26 @@ export default async function handler(
 
 		const postDocs = await getDocs(postQuery);
 
-		const posts = postDocs.docs.map((doc) => {
-			return {
-				...doc.data(),
-			};
-		});
+		const posts = await Promise.all(
+			postDocs.docs.map(async (postDoc) => {
+				const post = postDoc.data() as SitePost;
+				const creator: SiteUser = await axios
+					.post(apiConfig.apiEndpoint + "user/get-user", {
+						userId: post.creatorId,
+					})
+					.then((response) => response.data.user);
 
-		if (postDocs.docs.length > 0) {
+				return {
+					post,
+					creator,
+				};
+			})
+		);
+
+		if (posts.length > 0) {
 			res.status(200).json({ posts });
 		} else {
-			res.status(200).json({ posts });
+			res.status(200).json({ posts: [] });
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

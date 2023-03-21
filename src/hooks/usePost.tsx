@@ -83,9 +83,16 @@ const usePost = () => {
 
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
+			const lastPost =
+				postStateValue.posts.length > 0
+					? postStateValue.posts
+							.filter((post) => post.post.postType === postType)
+							.pop()
+					: null;
 			await axios
 				.post(apiConfig.apiEndpoint + "post/get-posts", {
 					postType,
+					lastPost,
 				})
 				.then((res) => {
 					const { posts } = res.data;

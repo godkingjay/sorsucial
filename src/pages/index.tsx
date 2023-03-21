@@ -1,4 +1,5 @@
 import { userState } from "@/atoms/userAtom";
+import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
@@ -44,39 +45,11 @@ export default function Home() {
 					{postStateValue.posts
 						.filter((post) => post.post.postType === "announcement")
 						.map((post) => (
-							<div
+							<PostCard
 								key={post.post.id}
-								className="break-words flex flex-col shadow-page-box-1 bg-white rounded-lg"
-							>
-								<div className="p-2 flex flex-row h-14 items-center gap-x-4">
-									<Link
-										href={`/user/${userStateValue.user.uid}`}
-										className="h-10 w-10 aspect-square rounded-full border border-transparent text-gray-300"
-									>
-										{userStateValue.user.imageURL ? (
-											<Image
-												src={userStateValue.user.imageURL}
-												alt="User Profile Picture"
-												width={96}
-												height={96}
-												loading="lazy"
-												className="h-full w-full"
-											/>
-										) : (
-											<FaUserCircle className="h-full w-full bg-white" />
-										)}
-									</Link>
-									<div className="flex-1 flex flex-col h-full">
-										<p className="text-sm font-semibold">{`${post.creator?.firstName} ${post.creator?.lastName}`}</p>
-										<p className="text-2xs text-gray-500">
-											{moment(
-												new Date(post.post.createdAt.seconds * 1000)
-											).fromNow()}
-										</p>
-									</div>
-								</div>
-								<p>{JSON.stringify(post)}</p>
-							</div>
+								userStateValue={userStateValue}
+								postData={post}
+							/>
 						))}
 				</section>
 			</main>

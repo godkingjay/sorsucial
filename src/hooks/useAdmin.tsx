@@ -2,6 +2,7 @@ import { adminState } from "@/atoms/adminAtom";
 import { adminModalState } from "@/atoms/modalAtom";
 import { NewUserType } from "@/components/Modal/AdminModals/AddUserModal";
 import { db } from "@/firebase/clientApp";
+import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
@@ -41,11 +42,7 @@ const useAdmin = () => {
 								.post("/api/admin/create-user", {
 									email,
 									password,
-									privateKey:
-										process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-											/\\n/g,
-											"\n"
-										),
+									privateKey: apiConfig.privateKey,
 								})
 								.then(async (res) => {
 									const { uid: userId } = res.data;
@@ -122,10 +119,7 @@ const useAdmin = () => {
 						docId,
 						collectionName,
 						path,
-						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-							/\\n/g,
-							"\n"
-						),
+						privateKey: apiConfig.privateKey,
 					})
 					.catch((error: any) => {
 						console.log({
@@ -148,10 +142,7 @@ const useAdmin = () => {
 				await axios
 					.post("/api/admin/delete-user", {
 						uid: userId,
-						privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-							/\\n/g,
-							"\n"
-						),
+						privateKey: apiConfig.privateKey,
 					})
 					.then(async (res) => {
 						const { isDeleted } = res.data;

@@ -1,3 +1,4 @@
+import { apiConfig } from "./../../../lib/api/apiConfig";
 import { authAdmin } from "@/firebase/adminApp";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -43,11 +44,7 @@ export default async function handler(
 	 *
 	 * @see https://nextjs.org/docs/basic-features/environment-variables
 	 */
-	if (
-		!privateKey ||
-		privateKey !==
-			process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n")
-	) {
+	if (!privateKey || privateKey !== apiConfig.privateKey) {
 		res.status(401).json({ message: "Unauthorized" });
 		return;
 	}

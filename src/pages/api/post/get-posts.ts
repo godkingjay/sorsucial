@@ -11,6 +11,7 @@ import {
 	orderBy,
 	limit,
 	getDocs,
+	startAfter,
 } from "firebase/firestore";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
@@ -19,19 +20,27 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const { postType } = req.body;
+		const { postType, lastPost } = req.body;
 
 		if (!postType) {
 			res.status(400).json({ error: "Missing postType" });
 			return;
 		}
 
-		const postQuery = query(
-			collection(db, "posts"),
-			where("postType", "==", postType),
-			orderBy("createdAt", "desc"),
-			limit(10)
-		);
+		const postQuery = lastPost
+			? query(
+					collection(db, "posts"),
+					where("postType", "==", postType),
+					orderBy("createdAt", "desc"),
+					startAfter(lastPost.createdAt),
+					limit(10)
+			  )
+			: query(
+					collection(db, "posts"),
+					where("postType", "==", postType),
+					orderBy("createdAt", "desc"),
+					limit(10)
+			  );
 
 		const postDocs = await getDocs(postQuery);
 

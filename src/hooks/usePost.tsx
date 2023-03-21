@@ -25,10 +25,10 @@ const usePost = () => {
 
 			const newPost: SitePost = {
 				id: postRef.id,
-				creatorId: postForm.creatorId!,
+				creatorId: creator.uid,
 				privacy: postForm.privacy,
-				postTitle: postForm.postTitle,
-				postBody: postForm.postBody,
+				postTitle: postForm.postTitle.trim(),
+				postBody: postForm.postBody?.trim(),
 				postType: postForm.postType,
 				postTags: postForm.postTags,
 				hasImageOrVideo: postForm.imageOrVideo ? true : false,
@@ -69,7 +69,12 @@ const usePost = () => {
 					...prev,
 					posts: [
 						{
-							post: newPost,
+							post: {
+								...newPost,
+								createdAt: {
+									seconds: new Date().getTime() / 1000,
+								} as Timestamp,
+							},
 							creator,
 						},
 						...prev.posts,
@@ -83,9 +88,16 @@ const usePost = () => {
 
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
+			const lastPost =
+				postStateValue.posts.length > 0
+					? postStateValue.posts
+							.filter((post) => post.post.postType === postType)
+							.pop()
+					: null;
 			await axios
 				.post(apiConfig.apiEndpoint + "post/get-posts", {
 					postType,
+					lastPost,
 				})
 				.then((res) => {
 					const { posts } = res.data;

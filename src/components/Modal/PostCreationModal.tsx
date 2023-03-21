@@ -93,8 +93,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	setPostCreationModalStateValue,
 	userStateValue,
 }) => {
-	const { createPost } = usePost();
-	const [createPostForm, setCreatePostForm] = useState<CreatePostType>({
+	const defaultCreatePostForm: CreatePostType = {
 		postTitle: "",
 		postBody: "",
 		postTags: [],
@@ -105,7 +104,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		file: null,
 		link: null,
 		poll: null,
-	});
+	};
+	const { createPost } = usePost();
+	const [createPostForm, setCreatePostForm] = useState<CreatePostType>(
+		defaultCreatePostForm
+	);
 	const [creatingPost, setCreatingPost] = useState(false);
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 
@@ -115,9 +118,19 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		event.preventDefault();
 		setCreatingPost(true);
 		try {
-			await createPost(createPostForm, userStateValue.user).catch((error) => {
-				console.log("Hook: Post Creation Error", error.message);
-			});
+			await createPost(createPostForm, userStateValue.user)
+				.then(() => {
+					setCreatePostForm(defaultCreatePostForm);
+					setPostCreationModalStateValue((prev) => ({
+						...prev,
+						open: false,
+						postType: "feed",
+						tab: "post",
+					}));
+				})
+				.catch((error) => {
+					console.log("Hook: Post Creation Error", error.message);
+				});
 		} catch (error: any) {
 			console.log("Post Creation Error", error.message);
 		}
@@ -289,7 +302,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									: "Create a post"
 							}`}
 							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={!createPostForm.postTitle || creatingPost}
+							disabled={!createPostForm.postTitle.trim() || creatingPost}
 						>
 							{!creatingPost ? (
 								<>

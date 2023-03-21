@@ -22,6 +22,7 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
+	const [postMenuOpen, setPostMenuOpen] = useState(false);
 
 	const handleSeeMore = () => {
 		if (seeMore) {
@@ -32,11 +33,17 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 		setSeeMore(!seeMore);
 	};
 
+	const handlePostMenuOpen = () => {
+		setPostMenuOpen((prev) => !prev);
+	};
+
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
+				postMenuOpen={postMenuOpen}
+				handlePostMenuOpen={handlePostMenuOpen}
 			/>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">
 				<PostTextContent

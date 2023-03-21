@@ -1,8 +1,14 @@
 import { SitePost } from "@/lib/interfaces/post";
+import { SiteUser } from "@/lib/interfaces/user";
 import { atom } from "recoil";
 
+export interface PostData {
+	post: SitePost;
+	creator: SiteUser | null;
+}
+
 export interface PostState {
-	posts: SitePost[];
+	posts: PostData[];
 	currentPost: SitePost | null;
 }
 

@@ -3,7 +3,7 @@ import { UserState } from "@/atoms/userAtom";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
 type PostCardProps = {
@@ -12,9 +12,27 @@ type PostCardProps = {
 };
 
 const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
+	const [seeMore, setSeeMore] = useState(false);
+	const [postBody, setPostBody] = useState(
+		postData.post.postBody
+			? postData.post.postBody?.length < 256
+				? postData.post.postBody
+				: postData.post.postBody?.slice(0, 256) + "..."
+			: ""
+	);
+
+	const handleSeeMore = () => {
+		if (seeMore) {
+			setPostBody(postData.post.postBody?.slice(0, 256) + "...");
+		} else {
+			setPostBody(postData.post.postBody || "");
+		}
+		setSeeMore(!seeMore);
+	};
+
 	return (
 		<div className="break-words flex flex-col shadow-page-box-1 bg-white rounded-lg">
-			<div className="p-4 flex flex-row h-14 items-center gap-x-4">
+			<div className="p-4 flex flex-row h-18 items-center gap-x-4">
 				<Link
 					href={`/user/${userStateValue.user.uid}`}
 					className="h-10 w-10 aspect-square rounded-full border border-transparent text-gray-300"
@@ -40,11 +58,30 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 				</div>
 			</div>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">
-				<h1 className="text-md font-bold">{postData.post.postTitle}</h1>
-				<div className="h-[1px] bg-black bg-opacity-20"></div>
-				<div className="flex flex-col">
-					<p></p>
-				</div>
+				<h1 className="text-lg font-bold">{postData.post.postTitle}</h1>
+				{postData.post.postBody && (
+					<>
+						<div className="h-[1px] bg-black bg-opacity-10"></div>
+						<div className="flex flex-col items-start">
+							<p className="text-sm text-justify">
+								{postBody}
+								{postData.post.postBody.length > 256 && (
+									<>
+										{"     "}
+										<button
+											type="button"
+											title={seeMore ? "See Less" : "See More"}
+											onClick={handleSeeMore}
+											className="inline-block text-gray-400"
+										>
+											{seeMore ? "...See Less" : "See More..."}
+										</button>
+									</>
+								)}
+							</p>
+						</div>
+					</>
+				)}
 			</div>
 		</div>
 	);

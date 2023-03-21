@@ -538,10 +538,10 @@
 					}
 
 					.label-container {
-						@apply flex flex-row items-center h-full;
+						@apply flex flex-row flex-1 items-center text-left h-full;
 
 						.label {
-							@apply flex-1 flex flex-row items-center;
+							@apply truncate;
 						}
 					}
 

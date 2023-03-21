@@ -430,7 +430,7 @@
 			@apply flex flex-col w-full gap-y-2 mb-4 z-40;
 
 			.post-creation-form-title-container {
-				@apply relative flex flex-row py-2 px-2 rounded-lg border border-transparent gap-x-2;
+				@apply relative flex flex-row py-2 px-2 rounded-lg border border-transparent gap-x-2 border-gray-200;
 
 				.post-creation-form-title-input-field {
 					@apply flex-1 min-w-0 outline-none bg-transparent font-semibold break-words resize-none;
@@ -449,18 +449,39 @@
 				@apply flex flex-row gap-x-2 gap-y-2;
 
 				.post-creation-form-body-container {
-					@apply relative h-max flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg;
+					@apply relative h-full flex-1 flex flex-col;
 
-					.post-creation-form-body-input-field {
-						@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
+					.post-creation-form-post-tab {
+						@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg border-gray-200;
+
+						.post-creation-form-body-input-field {
+							@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
+						}
+
+						&:hover {
+							@apply bg-gray-100;
+						}
+
+						&:focus-within {
+							@apply bg-transparent border-blue-500;
+						}
 					}
 
-					&:hover {
-						@apply bg-gray-100;
-					}
+					.post-creation-form-image-or-video-tab {
+						@apply flex flex-col flex-1 gap-y-2;
 
-					&:focus-within {
-						@apply bg-transparent border-blue-500;
+						.image-or-video-tab-input-container {
+							@apply rounded-lg px-4 py-2 border-2 border-gray-200 border-dashed min-h-[128px] flex flex-col items-center justify-center text-sm gap-y-2 text-center;
+
+							&:hover,
+							&:focus-within {
+								@apply border-blue-500;
+							}
+						}
+
+						.image-or-video-tab-output-container {
+							@apply w-full rounded-lg flex-1 p-2 border border-gray-200 flex flex-col text-sm gap-y-2;
+						}
 					}
 				}
 
@@ -484,7 +505,11 @@
 						}
 
 						&[data-active="true"] {
-							@apply p-2 rounded-md;
+							@apply rounded-md;
+						}
+
+						@media screen and (max-width: 480px) {
+							@apply h-10 w-10;
 						}
 					}
 				}

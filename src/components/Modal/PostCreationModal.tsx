@@ -1,7 +1,7 @@
 import { PostCreationModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FaEye, FaLock, FaPollH } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
@@ -11,6 +11,11 @@ import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalForm
 import { HiDocumentText } from "react-icons/hi";
 import { BsFillFileEarmarkPlusFill, BsImages } from "react-icons/bs";
 import { RiLinkM } from "react-icons/ri";
+import PostTab from "./PostCreationModal/PostCreationTabs/PostTab";
+import PostTabs from "./PostCreationModal/PostCreationTabs";
+import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
+import usePost from "@/hooks/usePost";
+import { FiLoader } from "react-icons/fi";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -31,14 +36,12 @@ export type PostPollItemType = {
 };
 
 export type CreatePostType = {
+	groupId?: SitePost["groupId"];
+	creatorId?: SitePost["creatorId"];
 	postTitle: SitePost["postTitle"];
 	postBody: SitePost["postBody"];
 	postTags: SitePost["postTags"];
 	postType: SitePost["postType"];
-	hasImageOrVideo: SitePost["hasImageOrVideo"];
-	hasFile: SitePost["hasFile"];
-	hasLink: SitePost["hasLink"];
-	hasPoll: SitePost["hasPoll"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
 	imageOrVideo: {
@@ -90,15 +93,12 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	setPostCreationModalStateValue,
 	userStateValue,
 }) => {
+	const { createPost } = usePost();
 	const [createPostForm, setCreatePostForm] = useState<CreatePostType>({
 		postTitle: "",
 		postBody: "",
 		postTags: [],
 		postType: postCreationModalStateValue.postType,
-		hasImageOrVideo: false,
-		hasFile: false,
-		hasLink: false,
-		hasPoll: false,
 		isCommentable: true,
 		privacy: "public",
 		imageOrVideo: null,
@@ -107,11 +107,24 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		poll: null,
 	});
 	const [creatingPost, setCreatingPost] = useState(false);
+	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
+		setCreatingPost(true);
+		try {
+			await createPost({
+				...createPostForm,
+				creatorId: userStateValue.user.uid,
+			}).catch((error) => {
+				console.log("Hook: Post Creation Error", error.message);
+			});
+		} catch (error: any) {
+			console.log("Post Creation Error", error.message);
+		}
+		setCreatingPost(false);
 	};
 
 	const handleSelectPrivacy = (value: string) => {
@@ -168,11 +181,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 					</button>
 				</div>
 				<div className="h-[1px] bg-black bg-opacity-10"></div>
-				<form className="post-creation-modal-form">
+				<form
+					className="post-creation-modal-form"
+					onSubmit={handleCreatePostSubmit}
+				>
 					<PostCreationModalFormHead
 						userStateValue={userStateValue}
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
+						postType={postCreationModalStateValue.postType}
 					/>
 					<div className="post-creation-modal-form-content">
 						<div className="post-creation-form-title-container">
@@ -208,77 +225,60 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						</div>
 						<div className="post-creation-form-pages">
 							<div className="post-creation-form-body-container">
-								<textarea
-									name="postBody"
-									placeholder="Text(optional)"
-									title="Body"
-									onChange={(e) => {
-										handleTextChange(e);
-										e.currentTarget.style.height = "0px";
-										e.currentTarget.style.height =
-											e.currentTarget.scrollHeight + "px";
-									}}
+								<div
 									className={`
-										post-creation-form-body-input-field
-									`}
-									rows={1}
-									minLength={0}
-									maxLength={40000}
-									value={createPostForm.postBody}
-									disabled={creatingPost}
-								/>
-							</div>
-							<div className="sticky -top-14 h-max">
-								<div className="post-creation-form-tabs-container">
-									<button
-										type="button"
-										title="Add Post Body"
-										className="post-creation-form-tab-button text-blue-500 data-[active=true]:!bg-blue-100"
-										onClick={() => handleFormTabChange("post")}
-										data-active={postCreationModalStateValue.tab === "post"}
-									>
-										<HiDocumentText className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add Image Or Video"
-										className="post-creation-form-tab-button text-green-500 data-[active=true]:!bg-green-100"
-										onClick={() => handleFormTabChange("image/video")}
-										data-active={
-											postCreationModalStateValue.tab === "image/video"
-										}
-									>
-										<BsImages className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add File"
-										className="post-creation-form-tab-button text-purple-500 data-[active=true]:!bg-purple-100"
-										onClick={() => handleFormTabChange("file")}
-										data-active={postCreationModalStateValue.tab === "file"}
-									>
-										<BsFillFileEarmarkPlusFill className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Add Link"
-										className="post-creation-form-tab-button text-cyan-500 data-[active=true]:!bg-cyan-100"
-										onClick={() => handleFormTabChange("link")}
-										data-active={postCreationModalStateValue.tab === "link"}
-									>
-										<RiLinkM className="icon" />
-									</button>
-									<button
-										type="button"
-										title="Create Poll"
-										className="post-creation-form-tab-button text-yellow-500 data-[active=true]:!bg-yellow-100"
-										onClick={() => handleFormTabChange("poll")}
-										data-active={postCreationModalStateValue.tab === "poll"}
-									>
-										<FaPollH className="icon" />
-									</button>
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "post" ? "flex" : "hidden"}
+								`}
+								>
+									<PostTab
+										handleTextChange={handleTextChange}
+										createPostForm={createPostForm}
+										creatingPost={creatingPost}
+									/>
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "image/video" ? "flex" : "hidden"}
+								`}
+								>
+									<div className="post-creation-form-image-or-video-tab">
+										<div className="image-or-video-tab-input-container">
+											<div className="text-blue-500">
+												<p>Drag and drop images or videos</p>
+											</div>
+											<div className="text-xs text-gray-500">
+												<p>or</p>
+											</div>
+											<div>
+												<button
+													type="button"
+													title="Upload Image or Video"
+													className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
+													onClick={() => uploadImageOrVideoRef.current?.click()}
+												>
+													Upload
+												</button>
+											</div>
+										</div>
+										<div className="image-or-video-tab-output-container"></div>
+										<input
+											type="file"
+											title="Upload Image or Video"
+											accept="image/jpeg, image/png, image/jpg"
+											ref={uploadImageOrVideoRef}
+											max={20}
+											hidden
+											multiple
+										/>
+									</div>
 								</div>
 							</div>
+							<PostCreationTabs
+								handleFormTabChange={handleFormTabChange}
+								postCreationModalStateValue={postCreationModalStateValue}
+							/>
 						</div>
 					</div>
 					<div>
@@ -292,13 +292,20 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									: "Create a post"
 							}`}
 							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={!createPostForm.postTitle}
+							disabled={!createPostForm.postTitle || creatingPost}
 						>
-							{postCreationModalStateValue.postType === "announcement" &&
-								"Create Announcement"}
-							{postCreationModalStateValue.postType === "feed" && "Create Post"}
-							{postCreationModalStateValue.postType === "group" &&
-								"Create Group Post"}
+							{!creatingPost ? (
+								<>
+									{postCreationModalStateValue.postType === "announcement" &&
+										"Create Announcement"}
+									{postCreationModalStateValue.postType === "feed" &&
+										"Create Post"}
+									{postCreationModalStateValue.postType === "group" &&
+										"Create Group Post"}
+								</>
+							) : (
+								<FiLoader className="h-5 w-5 text-white animate-spin" />
+							)}
 						</button>
 					</div>
 				</form>

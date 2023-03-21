@@ -14,6 +14,8 @@ import { RiLinkM } from "react-icons/ri";
 import PostTab from "./PostCreationModal/PostCreationTabs/PostTab";
 import PostTabs from "./PostCreationModal/PostCreationTabs";
 import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
+import usePost from "@/hooks/usePost";
+import { FiLoader } from "react-icons/fi";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -34,14 +36,12 @@ export type PostPollItemType = {
 };
 
 export type CreatePostType = {
+	groupId?: SitePost["groupId"];
+	creatorId?: SitePost["creatorId"];
 	postTitle: SitePost["postTitle"];
 	postBody: SitePost["postBody"];
 	postTags: SitePost["postTags"];
 	postType: SitePost["postType"];
-	hasImageOrVideo: SitePost["hasImageOrVideo"];
-	hasFile: SitePost["hasFile"];
-	hasLink: SitePost["hasLink"];
-	hasPoll: SitePost["hasPoll"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
 	imageOrVideo: {
@@ -93,15 +93,12 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	setPostCreationModalStateValue,
 	userStateValue,
 }) => {
+	const { createPost } = usePost();
 	const [createPostForm, setCreatePostForm] = useState<CreatePostType>({
 		postTitle: "",
 		postBody: "",
 		postTags: [],
 		postType: postCreationModalStateValue.postType,
-		hasImageOrVideo: false,
-		hasFile: false,
-		hasLink: false,
-		hasPoll: false,
 		isCommentable: true,
 		privacy: "public",
 		imageOrVideo: null,
@@ -116,6 +113,18 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
+		setCreatingPost(true);
+		try {
+			await createPost({
+				...createPostForm,
+				creatorId: userStateValue.user.uid,
+			}).catch((error) => {
+				console.log("Hook: Post Creation Error", error.message);
+			});
+		} catch (error: any) {
+			console.log("Post Creation Error", error.message);
+		}
+		setCreatingPost(false);
 	};
 
 	const handleSelectPrivacy = (value: string) => {
@@ -283,13 +292,20 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									: "Create a post"
 							}`}
 							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={!createPostForm.postTitle}
+							disabled={!createPostForm.postTitle || creatingPost}
 						>
-							{postCreationModalStateValue.postType === "announcement" &&
-								"Create Announcement"}
-							{postCreationModalStateValue.postType === "feed" && "Create Post"}
-							{postCreationModalStateValue.postType === "group" &&
-								"Create Group Post"}
+							{!creatingPost ? (
+								<>
+									{postCreationModalStateValue.postType === "announcement" &&
+										"Create Announcement"}
+									{postCreationModalStateValue.postType === "feed" &&
+										"Create Post"}
+									{postCreationModalStateValue.postType === "group" &&
+										"Create Group Post"}
+								</>
+							) : (
+								<FiLoader className="h-5 w-5 text-white animate-spin" />
+							)}
 						</button>
 					</div>
 				</form>

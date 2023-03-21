@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import PostTextContent from "./PostCard/PostTextContent";
+import PostHead from "./PostCard/PostHead";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -33,31 +34,10 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg">
-			<div className="p-4 flex flex-row h-18 items-center gap-x-4">
-				<Link
-					href={`/user/${userStateValue.user.uid}`}
-					className="h-10 w-10 aspect-square rounded-full border border-transparent text-gray-300"
-				>
-					{userStateValue.user.imageURL ? (
-						<Image
-							src={userStateValue.user.imageURL}
-							alt="User Profile Picture"
-							width={96}
-							height={96}
-							loading="lazy"
-							className="h-full w-full"
-						/>
-					) : (
-						<FaUserCircle className="h-full w-full bg-white" />
-					)}
-				</Link>
-				<div className="flex-1 flex flex-col h-full">
-					<p className="text-sm font-semibold">{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</p>
-					<p className="text-2xs text-gray-500">
-						{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
-					</p>
-				</div>
-			</div>
+			<PostHead
+				userStateValue={userStateValue}
+				postData={postData}
+			/>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">
 				<PostTextContent
 					postData={postData}

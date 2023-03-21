@@ -69,12 +69,13 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 								{postBody}
 								{postData.post.postBody.length > 256 && (
 									<>
-										{"\n"}
 										<button
 											type="button"
 											title={seeMore ? "See Less" : "See More"}
 											onClick={handleSeeMore}
-											className="text-gray-400 text-xs hover:text-gray-500"
+											className={`${
+												seeMore && "block"
+											} text-gray-400 text-xs hover:text-gray-500`}
 										>
 											{seeMore ? "...See Less" : "See More..."}
 										</button>

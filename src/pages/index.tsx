@@ -1,13 +1,8 @@
-import { userState } from "@/atoms/userAtom";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
-import moment from "moment";
-import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FaUserCircle } from "react-icons/fa";
 
 export default function Home() {
 	const { userStateValue } = useUser();

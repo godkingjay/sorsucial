@@ -42,7 +42,10 @@ const PostHead: React.FC<PostHeadProps> = ({
 				)}
 			</Link>
 			<div className="flex-1 flex flex-col h-full">
-				<p className="text-sm font-semibold">{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</p>
+				<Link
+					href={`/user/${userStateValue.user.uid}`}
+					className="text-sm font-semibold hover:underline focus:underline"
+				>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
 				<p className="text-2xs text-gray-500">
 					{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
 				</p>

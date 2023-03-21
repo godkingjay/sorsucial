@@ -289,7 +289,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									: "Create a post"
 							}`}
 							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={!createPostForm.postTitle || creatingPost}
+							disabled={!createPostForm.postTitle.trim() || creatingPost}
 						>
 							{!creatingPost ? (
 								<>

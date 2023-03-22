@@ -1,6 +1,6 @@
-import { postState } from "@/atoms/postAtom";
+import { PostData, postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
-import { db } from "@/firebase/clientApp";
+import { db, storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
@@ -13,9 +13,12 @@ import {
 	writeBatch,
 } from "firebase/firestore";
 import { useRecoilState } from "recoil";
+import useUser from "./useUser";
+import { deleteObject, ref } from "firebase/storage";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
+	const { authUser } = useUser();
 
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
 		try {
@@ -37,6 +40,7 @@ const usePost = () => {
 				hasPoll: postForm.poll ? true : false,
 				numberOfComments: 0,
 				numberOfLikes: 0,
+
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
 				createdAt: serverTimestamp() as Timestamp,
@@ -86,6 +90,132 @@ const usePost = () => {
 		}
 	};
 
+	const deletePost = async (postData: PostData) => {
+		try {
+			if (authUser?.uid !== postData.post.creatorId) {
+				throw new Error("You are not authorized to delete this post");
+			}
+
+			const batch = writeBatch(db);
+
+			const postRef = doc(collection(db, "posts"), postData.post.id);
+
+			if (postData.postImagesOrVideos?.length) {
+				postData.postImagesOrVideos.forEach((imageOrVideo) => {
+					const imageOrVideoRef = doc(
+						collection(db, `posts/${postData.post.id}/imagesOrVideos`),
+						imageOrVideo.id
+					);
+
+					const imageOrVideoStorageRef = ref(storage, imageOrVideo.filePath);
+
+					deleteObject(imageOrVideoStorageRef).catch(() => {
+						console.log(
+							"Storage: Image or Video Deletion Error: ",
+							imageOrVideo.id
+						);
+					});
+
+					batch.delete(imageOrVideoRef);
+				});
+			}
+
+			if (postData.postFiles?.length) {
+				postData.postFiles.forEach((file) => {
+					const fileRef = doc(
+						collection(db, `posts/${postData.post.id}/files`),
+						file.id
+					);
+
+					const fileStorageRef = ref(storage, file.filePath);
+
+					deleteObject(fileStorageRef).catch(() => {
+						console.log("Storage: File Deletion Error: ", file.id);
+					});
+
+					batch.delete(fileRef);
+				});
+			}
+
+			if (postData.postLinks?.length) {
+				postData.postLinks.forEach((link) => {
+					const linkRef = doc(
+						collection(db, `posts/${postData.post.id}/links`),
+						link.id
+					);
+
+					batch.delete(linkRef);
+				});
+			}
+
+			if (postData.postPoll) {
+				const pollRef = doc(
+					collection(db, `posts/${postData.post.id}/poll`),
+					postData.postPoll.poll.id
+				);
+
+				postData.postPoll.pollItems.forEach((pollItem) => {
+					const pollItemRef = doc(
+						collection(
+							db,
+							`posts/${postData.post.id}/poll/${postData.postPoll?.poll.id}/pollItems`
+						),
+						pollItem.pollItem.id
+					);
+
+					if (pollItem.pollItemLogo) {
+						const pollItemLogoRef = doc(
+							collection(
+								db,
+								`posts/${postData.post.id}/poll/${postData.postPoll?.poll.id}/pollItems/${pollItem.pollItem.id}/logo`
+							),
+							pollItem.pollItemLogo.id
+						);
+
+						const pollItemLogoStorageRef = ref(
+							storage,
+							pollItem.pollItemLogo.filePath
+						);
+
+						deleteObject(pollItemLogoStorageRef).catch(() => {
+							console.log(
+								"Storage: Poll Item Logo Deletion Error: ",
+								pollItem.pollItem.id
+							);
+						});
+
+						batch.delete(pollItemLogoRef);
+					}
+
+					batch.delete(pollItemRef);
+				});
+
+				batch.delete(pollRef);
+			}
+
+			batch.delete(postRef);
+
+			await batch
+				.commit()
+				.then(() => {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.filter(
+							(post) => post.post.id !== postData.post.id
+						),
+					}));
+				})
+				.catch((err) => {
+					console.log(
+						"Firestore (BatchWrite): Post Deletion Error",
+						err.message
+					);
+				});
+		} catch (error: any) {
+			console.log("Firestore: Post Deletion Error", error.message);
+		}
+	};
+
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
 			const lastPost =
@@ -123,6 +253,7 @@ const usePost = () => {
 		postStateValue,
 		setPostStateValue,
 		createPost,
+		deletePost,
 		fetchPosts,
 	};
 };

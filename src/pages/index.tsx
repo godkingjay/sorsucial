@@ -6,7 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
 	const { userStateValue, authUser, authLoading, loadingUser } = useUser();
-	const { postStateValue, setPostStateValue, fetchPosts } = usePost();
+	const { postStateValue, setPostStateValue, deletePost, fetchPosts } =
+		usePost();
 	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 	const anouncementsMounted = useRef(false);
 
@@ -57,6 +58,7 @@ export default function Home() {
 								key={post.post.id}
 								userStateValue={userStateValue}
 								postData={post}
+								deletePost={deletePost}
 							/>
 						))}
 				</section>

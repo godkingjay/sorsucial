@@ -4,9 +4,7 @@ import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { BsThreeDots } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
-import { MdDelete, MdDeleteOutline } from "react-icons/md";
 import PostMenuDropdown from "./PostHead/PostMenuDropdown";
 
 type PostHeadProps = {
@@ -14,6 +12,7 @@ type PostHeadProps = {
 	postData: PostData;
 	postMenuOpen: boolean;
 	handlePostMenuOpen: () => void;
+	handleDeletePost: () => Promise<void>;
 };
 
 const PostHead: React.FC<PostHeadProps> = ({
@@ -21,6 +20,7 @@ const PostHead: React.FC<PostHeadProps> = ({
 	postData,
 	postMenuOpen,
 	handlePostMenuOpen,
+	handleDeletePost,
 }) => {
 	return (
 		<div className="p-4 flex flex-row h-18 items-center gap-x-4 relative">
@@ -54,6 +54,7 @@ const PostHead: React.FC<PostHeadProps> = ({
 				<PostMenuDropdown
 					postMenuOpen={postMenuOpen}
 					handlePostMenuOpen={handlePostMenuOpen}
+					handlePostDelete={handleDeletePost}
 				/>
 			)}
 		</div>

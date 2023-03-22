@@ -1,19 +1,20 @@
 import { PostData } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
-import moment from "moment";
-import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
-import { FaUserCircle } from "react-icons/fa";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 
 type PostCardProps = {
 	userStateValue: UserState;
 	postData: PostData;
+	deletePost: (postData: PostData) => Promise<void>;
 };
 
-const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
+const PostCard: React.FC<PostCardProps> = ({
+	userStateValue,
+	postData,
+	deletePost,
+}) => {
 	const [seeMore, setSeeMore] = useState(false);
 	const [postBody, setPostBody] = useState(
 		postData.post.postBody
@@ -37,6 +38,18 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 		setPostMenuOpen((prev) => !prev);
 	};
 
+	const handleDeletePost = async () => {
+		try {
+			if (userStateValue.user.uid !== postData.post.creatorId) {
+				throw new Error("You are not authorized to delete this post.");
+			}
+
+			await deletePost(postData);
+		} catch (error: any) {
+			console.log("Hook: Post Deletion Erro: ", error.message);
+		}
+	};
+
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg">
 			<PostHead
@@ -44,6 +57,7 @@ const PostCard: React.FC<PostCardProps> = ({ userStateValue, postData }) => {
 				postData={postData}
 				postMenuOpen={postMenuOpen}
 				handlePostMenuOpen={handlePostMenuOpen}
+				handleDeletePost={handleDeletePost}
 			/>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">
 				<PostTextContent

@@ -41,14 +41,18 @@ const PostHead: React.FC<PostHeadProps> = ({
 					<FaUserCircle className="h-full w-full bg-white" />
 				)}
 			</Link>
-			<div className="flex-1 flex flex-col h-full">
-				<Link
-					href={`/user/${postData.creator?.uid}`}
-					className="text-sm font-semibold hover:underline focus:underline"
-				>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
-				<p className="text-2xs text-gray-500">
-					{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
-				</p>
+			<div className="flex-1 flex flex-col h-full pr-6">
+				<div>
+					<Link
+						href={`/user/${postData.creator?.uid}`}
+						className="text-sm w- truncate font-semibold hover:underline focus:underline"
+					>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
+				</div>
+				<div>
+					<p className="text-2xs text-gray-500">
+						{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
+					</p>
+				</div>
 			</div>
 			{postData.post.creatorId === userStateValue.user.uid && (
 				<PostMenuDropdown

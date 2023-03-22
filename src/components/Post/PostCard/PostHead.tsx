@@ -42,13 +42,13 @@ const PostHead: React.FC<PostHeadProps> = ({
 				)}
 			</Link>
 			<div className="flex-1 flex flex-col h-full pr-6">
-				<div>
+				<div className="w-full truncate">
 					<Link
 						href={`/user/${postData.creator?.uid}`}
 						className="truncate font-semibold hover:underline focus:underline"
 					>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
 				</div>
-				<div className="flex flex-row items-center">
+				<div className="flex flex-row items-center truncate">
 					<p className="text-2xs text-gray-500 truncate">
 						{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
 					</p>

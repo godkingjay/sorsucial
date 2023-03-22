@@ -17,10 +17,6 @@ export interface NavigationBarState {
 	adminPageNavBar: {
 		current: "" | "manage-users" | "manage-groups" | "manage-requests" | "none";
 	};
-	postMenu: {
-		menu: string;
-		share: string;
-	};
 }
 
 export const defaultNavigationBarState: NavigationBarState = {
@@ -39,10 +35,6 @@ export const defaultNavigationBarState: NavigationBarState = {
 	},
 	adminPageNavBar: {
 		current: "",
-	},
-	postMenu: {
-		menu: "",
-		share: "",
 	},
 };
 

@@ -1,4 +1,4 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
 import React, { useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
@@ -6,15 +6,20 @@ import PostHead from "./PostCard/PostHead";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
+import { SetterOrUpdater } from "recoil";
 
 type PostCardProps = {
 	userStateValue: UserState;
+	postOptionsStateValue: PostOptionsState;
+	setPostOptionsStateValue: SetterOrUpdater<PostOptionsState>;
 	postData: PostData;
 	deletePost: (postData: PostData) => Promise<void>;
 };
 
 const PostCard: React.FC<PostCardProps> = ({
 	userStateValue,
+	postOptionsStateValue,
+	setPostOptionsStateValue,
 	postData,
 	deletePost,
 }) => {
@@ -26,7 +31,20 @@ const PostCard: React.FC<PostCardProps> = ({
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
-	const [postMenuOpen, setPostMenuOpen] = useState(false);
+
+	const handlePostOptions = (name: keyof PostOptionsState) => {
+		if (postOptionsStateValue[name] === postData.post.id) {
+			setPostOptionsStateValue({
+				...postOptionsStateValue,
+				[name]: "",
+			});
+		} else {
+			setPostOptionsStateValue({
+				...postOptionsStateValue,
+				[name]: postData.post.id,
+			});
+		}
+	};
 
 	const handleSeeMore = () => {
 		if (seeMore) {
@@ -35,10 +53,6 @@ const PostCard: React.FC<PostCardProps> = ({
 			setPostBody(postData.post.postBody || "");
 		}
 		setSeeMore(!seeMore);
-	};
-
-	const handlePostMenuOpen = () => {
-		setPostMenuOpen((prev) => !prev);
 	};
 
 	const handleDeletePost = async () => {
@@ -58,8 +72,8 @@ const PostCard: React.FC<PostCardProps> = ({
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
-				postMenuOpen={postMenuOpen}
-				handlePostMenuOpen={handlePostMenuOpen}
+				postOptionsStateValue={postOptionsStateValue}
+				handlePostOptions={handlePostOptions}
 				handleDeletePost={handleDeletePost}
 			/>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">

@@ -1,4 +1,4 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
 import moment from "moment";
 import Image from "next/image";
@@ -10,16 +10,16 @@ import PostMenuDropdown from "./PostHead/PostMenuDropdown";
 type PostHeadProps = {
 	userStateValue: UserState;
 	postData: PostData;
-	postMenuOpen: boolean;
-	handlePostMenuOpen: () => void;
+	postOptionsStateValue: PostOptionsState;
+	handlePostOptions: (name: keyof PostOptionsState) => void;
 	handleDeletePost: () => Promise<void>;
 };
 
 const PostHead: React.FC<PostHeadProps> = ({
 	userStateValue,
 	postData,
-	postMenuOpen,
-	handlePostMenuOpen,
+	postOptionsStateValue,
+	handlePostOptions,
 	handleDeletePost,
 }) => {
 	return (
@@ -56,9 +56,10 @@ const PostHead: React.FC<PostHeadProps> = ({
 			</div>
 			{postData.post.creatorId === userStateValue.user.uid && (
 				<PostMenuDropdown
-					postMenuOpen={postMenuOpen}
-					handlePostMenuOpen={handlePostMenuOpen}
-					handlePostDelete={handleDeletePost}
+					postData={postData}
+					postOptionsStateValue={postOptionsStateValue}
+					handlePostOptions={handlePostOptions}
+					handleDeletePost={handleDeletePost}
 				/>
 			)}
 		</div>

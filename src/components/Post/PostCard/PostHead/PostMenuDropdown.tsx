@@ -1,18 +1,20 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdDeleteOutline } from "react-icons/md";
 
 type PostMenuDropdownProps = {
-	postMenuOpen: boolean;
-	handlePostMenuOpen: () => void;
-	handlePostDelete: () => Promise<void>;
+	postData: PostData;
+	postOptionsStateValue: PostOptionsState;
+	handlePostOptions: (name: keyof PostOptionsState) => void;
+	handleDeletePost: () => Promise<void>;
 };
 
 const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
-	postMenuOpen,
-	handlePostMenuOpen,
-	handlePostDelete,
+	postData,
+	postOptionsStateValue,
+	handlePostOptions,
+	handleDeletePost,
 }) => {
 	return (
 		<>
@@ -20,7 +22,7 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 				type="button"
 				title="Post Menu"
 				className="absolute rounded-full h-8 w-8 p-2 right-2 top-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:text-gray-700 focus:bg-gray-100"
-				onClick={handlePostMenuOpen}
+				onClick={() => handlePostOptions("menu")}
 			>
 				<BsThreeDots className="h-full w-full" />
 			</button>
@@ -28,7 +30,7 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 				className={`
           post-dropdown-menu-wrapper
           ${
-						postMenuOpen
+						postOptionsStateValue.menu === postData.post.id
 							? " "
 							: " translate-y-[-8px] opacity-0 [&_*]:pointer-events-none"
 					}
@@ -41,7 +43,7 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 								type="button"
 								title="Delete Post"
 								className="post-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
-								onClick={handlePostDelete}
+								onClick={handleDeletePost}
 							>
 								<div className="icon-container">
 									<MdDeleteOutline className="icon" />

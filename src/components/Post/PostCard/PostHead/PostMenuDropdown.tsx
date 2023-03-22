@@ -1,3 +1,4 @@
+import { PostData } from "@/atoms/postAtom";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdDeleteOutline } from "react-icons/md";
@@ -5,11 +6,13 @@ import { MdDeleteOutline } from "react-icons/md";
 type PostMenuDropdownProps = {
 	postMenuOpen: boolean;
 	handlePostMenuOpen: () => void;
+	handlePostDelete: () => Promise<void>;
 };
 
 const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 	postMenuOpen,
 	handlePostMenuOpen,
+	handlePostDelete,
 }) => {
 	return (
 		<>
@@ -38,6 +41,7 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 								type="button"
 								title="Delete Post"
 								className="post-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
+								onClick={handlePostDelete}
 							>
 								<div className="icon-container">
 									<MdDeleteOutline className="icon" />

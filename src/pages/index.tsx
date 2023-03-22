@@ -5,8 +5,9 @@ import useUser from "@/hooks/useUser";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
-	const { userStateValue } = useUser();
-	const { postStateValue, setPostStateValue, fetchPosts } = usePost();
+	const { userStateValue, authUser, authLoading, loadingUser } = useUser();
+	const { postStateValue, setPostStateValue, deletePost, fetchPosts } =
+		usePost();
 	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 	const anouncementsMounted = useRef(false);
 
@@ -18,14 +19,27 @@ export default function Home() {
 			console.log("Hook: fetching announcement Error: ", error.message);
 		}
 		setLoadingAnnouncements(false);
-	}, []);
+	}, [fetchPosts]);
 
 	useEffect(() => {
-		if (!anouncementsMounted.current && postStateValue.posts.length === 0) {
+		if (
+			!anouncementsMounted.current &&
+			postStateValue.posts.length === 0 &&
+			userStateValue.user &&
+			authUser &&
+			!loadingUser &&
+			!authLoading
+		) {
 			anouncementsMounted.current = true;
 			fetchAnnouncements();
 		}
-	}, [anouncementsMounted, fetchAnnouncements, postStateValue.posts]);
+	}, [
+		anouncementsMounted,
+		fetchAnnouncements,
+		postStateValue.posts,
+		authUser,
+		userStateValue.user,
+	]);
 
 	return (
 		<>
@@ -44,6 +58,7 @@ export default function Home() {
 								key={post.post.id}
 								userStateValue={userStateValue}
 								postData={post}
+								deletePost={deletePost}
 							/>
 						))}
 				</section>

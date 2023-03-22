@@ -25,12 +25,12 @@ const PostHead: React.FC<PostHeadProps> = ({
 	return (
 		<div className="p-4 flex flex-row h-18 items-center gap-x-4 relative">
 			<Link
-				href={`/user/${userStateValue.user.uid}`}
-				className="h-10 w-10 aspect-square rounded-full border border-transparent text-gray-300"
+				href={`/user/${postData.creator?.uid}`}
+				className="h-10 w-10 aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
 			>
-				{userStateValue.user.imageURL ? (
+				{postData.creator?.imageURL ? (
 					<Image
-						src={userStateValue.user.imageURL}
+						src={postData.creator?.imageURL}
 						alt="User Profile Picture"
 						width={96}
 						height={96}
@@ -43,7 +43,7 @@ const PostHead: React.FC<PostHeadProps> = ({
 			</Link>
 			<div className="flex-1 flex flex-col h-full">
 				<Link
-					href={`/user/${userStateValue.user.uid}`}
+					href={`/user/${postData.creator?.uid}`}
 					className="text-sm font-semibold hover:underline focus:underline"
 				>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
 				<p className="text-2xs text-gray-500">

@@ -10,6 +10,21 @@ import {
 import { SiteUser } from "@/lib/interfaces/user";
 import { atom } from "recoil";
 
+export interface PostOptionsState {
+	menu: string;
+	share: string;
+}
+
+export const defaultPostOptionsState: PostOptionsState = {
+	menu: "",
+	share: "",
+};
+
+export const postOptionsState = atom<PostOptionsState>({
+	key: "postOptionsState",
+	default: defaultPostOptionsState,
+});
+
 /**
  * This is the data that is needed to display a poll item in the UI.
  *

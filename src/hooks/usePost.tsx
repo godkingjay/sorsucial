@@ -1,4 +1,4 @@
-import { PostData, postState } from "@/atoms/postAtom";
+import { PostData, postOptionsState, postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db, storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -18,6 +18,8 @@ import { deleteObject, ref } from "firebase/storage";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
+	const [postOptionsStateValue, setPostOptionsStateValue] =
+		useRecoilState(postOptionsState);
 	const { authUser } = useUser();
 
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
@@ -251,6 +253,8 @@ const usePost = () => {
 	return {
 		postStateValue,
 		setPostStateValue,
+		postOptionsStateValue,
+		setPostOptionsStateValue,
 		createPost,
 		deletePost,
 		fetchPosts,

@@ -3,6 +3,9 @@ import { UserState } from "@/atoms/userAtom";
 import React, { useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
+import { AiOutlineLike } from "react-icons/ai";
+import { BiComment } from "react-icons/bi";
+import { RiShareForwardLine } from "react-icons/ri";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -51,7 +54,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg">
+		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
@@ -66,6 +69,49 @@ const PostCard: React.FC<PostCardProps> = ({
 					seeMore={seeMore}
 					handleSeeMore={handleSeeMore}
 				/>
+			</div>
+			<div className="h-[1px] bg-gray-200"></div>
+			<div className="flex flex-col">
+				<div className="post-footer-wrapper">
+					<div className="post-footer-container">
+						<button
+							type="button"
+							title="Like"
+							className="post-footer-button"
+						>
+							<div className="icon-container">
+								<AiOutlineLike className="icon" />
+							</div>
+							<div className="label-container">
+								<p className="label">Like</p>
+							</div>
+						</button>
+						<button
+							type="button"
+							title="Comment"
+							className="post-footer-button"
+						>
+							<div className="icon-container">
+								<BiComment className="icon" />
+							</div>
+							<div className="label-container">
+								<p className="label">Comment</p>
+							</div>
+						</button>
+						<button
+							type="button"
+							title="Share"
+							className="post-footer-button"
+						>
+							<div className="icon-container">
+								<RiShareForwardLine className="icon" />
+							</div>
+							<div className="label-container">
+								<p className="label">Share</p>
+							</div>
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

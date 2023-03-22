@@ -243,26 +243,6 @@ const usePost = () => {
 			} else {
 				console.log("No posts found");
 			}
-			// await axios
-			// 	.post(apiConfig.apiEndpoint + "post/get-posts", {
-			// 		postType,
-			// 		lastPost,
-			// 	})
-			// 	.then(async (res) => {
-			// 		const { posts } = res.data;
-
-			// 		if (posts.length > 0) {
-			// 			setPostStateValue((prev) => ({
-			// 				...prev,
-			// 				posts: [...prev.posts, ...posts],
-			// 			}));
-			// 		} else {
-			// 			console.log("No posts found");
-			// 		}
-			// 	})
-			// 	.catch((err) => {
-			// 		console.log("API: get-posts error: ", err.message);
-			// 	});
 		} catch (error: any) {
 			console.log("Firestore: Fetching Announcements Error", error.message);
 		}

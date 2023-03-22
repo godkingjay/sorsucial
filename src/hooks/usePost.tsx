@@ -224,26 +224,45 @@ const usePost = () => {
 							.filter((post) => post.post.postType === postType)
 							.pop()
 					: null;
-			await axios
+
+			const posts = await axios
 				.post(apiConfig.apiEndpoint + "post/get-posts", {
 					postType,
 					lastPost,
 				})
-				.then((res) => {
-					const { posts } = res.data;
-
-					if (posts.length > 0) {
-						setPostStateValue((prev) => ({
-							...prev,
-							posts: [...prev.posts, ...posts],
-						}));
-					} else {
-						console.log("No posts found");
-					}
-				})
+				.then((res) => res.data.posts)
 				.catch((err) => {
 					console.log("API: get-posts error: ", err.message);
 				});
+
+			if (posts.length > 0) {
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: [...prev.posts, ...posts],
+				}));
+			} else {
+				console.log("No posts found");
+			}
+			// await axios
+			// 	.post(apiConfig.apiEndpoint + "post/get-posts", {
+			// 		postType,
+			// 		lastPost,
+			// 	})
+			// 	.then(async (res) => {
+			// 		const { posts } = res.data;
+
+			// 		if (posts.length > 0) {
+			// 			setPostStateValue((prev) => ({
+			// 				...prev,
+			// 				posts: [...prev.posts, ...posts],
+			// 			}));
+			// 		} else {
+			// 			console.log("No posts found");
+			// 		}
+			// 	})
+			// 	.catch((err) => {
+			// 		console.log("API: get-posts error: ", err.message);
+			// 	});
 		} catch (error: any) {
 			console.log("Firestore: Fetching Announcements Error", error.message);
 		}

@@ -53,6 +53,22 @@ export default async function handler(
 					})
 					.then((response) => response.data.user);
 
+				// Check if post has image or video attached to it.
+				if (post.hasImageOrVideo) {
+				}
+
+				// Check if post has file attached to it.
+				if (post.hasFile) {
+				}
+
+				// Check if post has link attached to it.
+				if (post.hasLink) {
+				}
+
+				// Check if post has poll attached to it.
+				if (post.hasPoll) {
+				}
+
 				return {
 					post,
 					creator,

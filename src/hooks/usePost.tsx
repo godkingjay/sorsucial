@@ -32,6 +32,8 @@ const usePost = () => {
 
 			const postRef = doc(collection(db, "posts"));
 
+			const postDate = serverTimestamp() as Timestamp;
+
 			const newPost: SitePost = {
 				id: postRef.id,
 				creatorId: creator.uid,
@@ -40,15 +42,16 @@ const usePost = () => {
 				postBody: postForm.postBody?.trim(),
 				postType: postForm.postType,
 				postTags: postForm.postTags,
-				hasImageOrVideo: postForm.imageOrVideo ? true : false,
-				hasFile: postForm.file ? true : false,
-				hasLink: postForm.link ? true : false,
-				hasPoll: postForm.poll ? true : false,
+				postImagesOrVideos: [],
+				postFiles: [],
+				postLinks: [],
+				postPoll: null,
 				numberOfLikes: 0,
 				numberOfComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
-				createdAt: serverTimestamp() as Timestamp,
+				updatedAt: postDate,
+				createdAt: postDate,
 			};
 
 			if (postForm.groupId) {
@@ -86,6 +89,7 @@ const usePost = () => {
 							},
 							creator,
 							userLike: null,
+							userVote: null,
 						},
 						...prev.posts,
 					],
@@ -106,97 +110,45 @@ const usePost = () => {
 
 			const postRef = doc(collection(db, "posts"), postData.post.id);
 
-			if (postData.postImagesOrVideos?.length) {
-				postData.postImagesOrVideos.forEach((imageOrVideo) => {
-					const imageOrVideoRef = doc(
-						collection(db, `posts/${postData.post.id}/imagesOrVideos`),
-						imageOrVideo.id
-					);
-
+			if (postData.post.postImagesOrVideos.length) {
+				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
 					const imageOrVideoStorageRef = ref(storage, imageOrVideo.filePath);
 
 					deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
-							"Storage: Image or Video Deletion Error: ",
+							"Storage: Image Or Video Deletion Error: ",
 							imageOrVideo.id
 						);
 					});
-
-					batch.delete(imageOrVideoRef);
 				});
 			}
 
-			if (postData.postFiles?.length) {
-				postData.postFiles.forEach((file) => {
-					const fileRef = doc(
-						collection(db, `posts/${postData.post.id}/files`),
-						file.id
-					);
-
+			if (postData.post.postFiles.length) {
+				postData.post.postFiles.forEach((file) => {
 					const fileStorageRef = ref(storage, file.filePath);
 
 					deleteObject(fileStorageRef).catch(() => {
 						console.log("Storage: File Deletion Error: ", file.id);
 					});
-
-					batch.delete(fileRef);
 				});
 			}
 
-			if (postData.postLinks?.length) {
-				postData.postLinks.forEach((link) => {
-					const linkRef = doc(
-						collection(db, `posts/${postData.post.id}/links`),
-						link.id
+			if (postData.post.postPoll) {
+				const { postPoll } = postData.post;
+
+				postPoll.pollItems.forEach((pollItem) => {
+					const pollItemStorageRef = ref(
+						storage,
+						pollItem.pollItemLogo?.filePath
 					);
 
-					batch.delete(linkRef);
-				});
-			}
-
-			if (postData.postPoll) {
-				const pollRef = doc(
-					collection(db, `posts/${postData.post.id}/poll`),
-					postData.postPoll.poll.id
-				);
-
-				postData.postPoll.pollItems.forEach((pollItem) => {
-					const pollItemRef = doc(
-						collection(
-							db,
-							`posts/${postData.post.id}/poll/${postData.postPoll?.poll.id}/pollItems`
-						),
-						pollItem.pollItem.id
-					);
-
-					if (pollItem.pollItemLogo) {
-						const pollItemLogoRef = doc(
-							collection(
-								db,
-								`posts/${postData.post.id}/poll/${postData.postPoll?.poll.id}/pollItems/${pollItem.pollItem.id}/logo`
-							),
-							pollItem.pollItemLogo.id
+					deleteObject(pollItemStorageRef).catch(() => {
+						console.log(
+							"Storage: Poll Item Logo Deletion Error: ",
+							pollItem.id
 						);
-
-						const pollItemLogoStorageRef = ref(
-							storage,
-							pollItem.pollItemLogo.filePath
-						);
-
-						deleteObject(pollItemLogoStorageRef).catch(() => {
-							console.log(
-								"Storage: Poll Item Logo Deletion Error: ",
-								pollItem.pollItem.id
-							);
-						});
-
-						batch.delete(pollItemLogoRef);
-					}
-
-					batch.delete(pollItemRef);
+					});
 				});
-
-				batch.delete(pollRef);
 			}
 
 			if (postData.post.numberOfLikes > 0) {
@@ -249,6 +201,7 @@ const usePost = () => {
 					batch.delete(postLikeRef);
 					batch.update(postRef, {
 						numberOfLikes: increment(-1),
+						updatedAt: serverTimestamp() as Timestamp,
 					});
 
 					setPostStateValue((prev) => ({
@@ -260,6 +213,9 @@ const usePost = () => {
 									post: {
 										...post.post,
 										numberOfLikes: post.post.numberOfLikes - 1,
+										updatedAt: {
+											seconds: new Date().getTime() / 1000,
+										} as Timestamp,
 									},
 									userLike: null,
 								};

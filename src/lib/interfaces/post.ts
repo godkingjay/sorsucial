@@ -43,17 +43,17 @@ export interface SitePost {
 	postBody?: string;
 	postTags?: string[];
 	postType: "announcement" | "feed" | "group";
-	createdAt: Timestamp;
-	hasImageOrVideo: boolean;
-	hasFile: boolean;
-	hasLink: boolean;
-	hasPoll: boolean;
+	postImagesOrVideos: PostImageOrVideo[];
+	postFiles: PostFile[];
+	postLinks: PostLink[];
+	postPoll: PostPoll | null;
 	isHidden: boolean;
 	isCommentable: boolean;
 	privacy: "public" | "restricted" | "private";
 	numberOfLikes: number;
 	numberOfComments: number;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Timestamp;
+	createdAt: Timestamp;
 }
 
 /**
@@ -210,6 +210,7 @@ export interface PostPoll {
 	numberOfVotes: number;
 	maxVotes?: number;
 	isActive: boolean;
+	pollItems: PollItem[];
 }
 
 /**
@@ -246,6 +247,7 @@ export interface PollItem {
 	voteStatus: number;
 	logoType?: "emoji" | "image";
 	emoji?: string;
+	pollItemLogo?: PollItemLogo;
 }
 
 /**

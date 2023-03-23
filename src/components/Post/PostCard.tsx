@@ -12,6 +12,7 @@ type PostCardProps = {
 	setPostOptionsStateValue: SetterOrUpdater<PostOptionsState>;
 	postData: PostData;
 	deletePost: (postData: PostData) => Promise<void>;
+	onPostLike: (postData: PostData) => void;
 };
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -20,6 +21,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	setPostOptionsStateValue,
 	postData,
 	deletePost,
+	onPostLike,
 }) => {
 	const [seeMore, setSeeMore] = useState(false);
 	const [postBody, setPostBody] = useState(
@@ -65,6 +67,18 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	const handlePostLike = async () => {
+		try {
+			if (!userStateValue.user.uid) {
+				throw new Error("You have to be logged in to like a post.");
+			}
+
+			onPostLike(postData);
+		} catch (error: any) {
+			console.log("Hook: Post Like Error: ", error.message);
+		}
+	};
+
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
 			<PostHead
@@ -84,7 +98,10 @@ const PostCard: React.FC<PostCardProps> = ({
 			</div>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="flex flex-col">
-				<PostFooter />
+				<PostFooter
+					postData={postData}
+					handlePostLike={handlePostLike}
+				/>
 			</div>
 		</div>
 	);

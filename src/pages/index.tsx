@@ -13,6 +13,7 @@ export default function Home() {
 		setPostOptionsStateValue,
 		deletePost,
 		fetchPosts,
+		onPostLike,
 	} = usePost();
 	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 	const announcementsMounted = useRef(false);
@@ -69,6 +70,7 @@ export default function Home() {
 								deletePost={deletePost}
 								postOptionsStateValue={postOptionsStateValue}
 								setPostOptionsStateValue={setPostOptionsStateValue}
+								onPostLike={onPostLike}
 							/>
 						))}
 				</section>

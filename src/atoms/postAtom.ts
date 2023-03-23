@@ -100,7 +100,7 @@ export interface PostData {
 	postFiles?: PostFile[];
 	postLinks?: PostLink[];
 	postPoll?: PostPollData;
-	userLike?: PostLike;
+	userLike?: PostLike | null;
 }
 
 /**

@@ -2,13 +2,14 @@ import { PostData, postOptionsState, postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db, storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { SitePost } from "@/lib/interfaces/post";
+import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
 	Timestamp,
 	collection,
 	doc,
+	increment,
 	serverTimestamp,
 	writeBatch,
 } from "firebase/firestore";
@@ -217,6 +218,85 @@ const usePost = () => {
 		}
 	};
 
+	const onPostLike = (postData: PostData) => {
+		try {
+			if (authUser) {
+				const batch = writeBatch(db);
+
+				const postRef = doc(collection(db, "posts"), postData.post.id);
+				const postLikeRef = doc(
+					collection(db, `posts/${postData.post.id}/likes`),
+					authUser.uid
+				);
+
+				if (postData.userLike) {
+					batch.delete(postLikeRef);
+					batch.update(postRef, {
+						numberOfLikes: increment(-1),
+					});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((post) => {
+							if (post.post.id === postData.post.id) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfLikes: post.post.numberOfLikes - 1,
+									},
+									userLike: null,
+								};
+							}
+
+							return post;
+						}),
+					}));
+				} else {
+					const newPostLike: PostLike = {
+						userId: authUser.uid,
+						postId: postData.post.id,
+					};
+
+					if (postData.post.groupId) {
+						newPostLike.groupId = postData.post.groupId;
+					}
+
+					batch.set(postLikeRef, newPostLike);
+					batch.update(postRef, {
+						numberOfLikes: increment(1),
+					});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((post) => {
+							if (post.post.id === postData.post.id) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										likes: post.post.numberOfLikes + 1,
+									},
+									userLike: newPostLike,
+								};
+							}
+
+							return post;
+						}),
+					}));
+				}
+
+				batch.commit().catch((err) => {
+					console.log("Firestore (BatchWrite): Post Like Error", err.message);
+				});
+			} else {
+				throw new Error("You must be logged in to like a post");
+			}
+		} catch (error: any) {
+			console.log("Firestore: Post Like Error", error.message);
+		}
+	};
+
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
 			const lastPost =
@@ -257,6 +337,7 @@ const usePost = () => {
 		createPost,
 		deletePost,
 		fetchPosts,
+		onPostLike,
 	};
 };
 

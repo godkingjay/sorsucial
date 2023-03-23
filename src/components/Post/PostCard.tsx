@@ -79,6 +79,8 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	console.log(postData);
+
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
 			<PostHead

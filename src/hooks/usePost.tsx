@@ -9,6 +9,7 @@ import {
 	Timestamp,
 	collection,
 	doc,
+	getDoc,
 	increment,
 	serverTimestamp,
 	writeBatch,
@@ -82,6 +83,7 @@ const usePost = () => {
 								} as Timestamp,
 							},
 							creator,
+							userLike: null,
 						},
 						...prev.posts,
 					],
@@ -321,11 +323,50 @@ const usePost = () => {
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
+
+				posts.forEach((post: PostData) => {
+					fetchUserLike(post.post);
+				});
 			} else {
 				console.log("No posts found");
 			}
 		} catch (error: any) {
 			console.log("Firestore: Fetching Announcements Error", error.message);
+		}
+	};
+
+	const fetchUserLike = async (post: SitePost) => {
+		try {
+			if (authUser) {
+				const userLikeRef = doc(
+					collection(db, `posts/${post.id}/likes`),
+					authUser.uid
+				);
+
+				const userLike = await getDoc(userLikeRef).then((doc) => {
+					if (doc.exists()) {
+						return doc.data() as PostLike;
+					} else {
+						return null;
+					}
+				});
+
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: prev.posts.map((prevPost) => {
+						if (prevPost.post.id === post.id) {
+							return {
+								...prevPost,
+								userLike,
+							};
+						}
+
+						return prevPost;
+					}),
+				}));
+			}
+		} catch (error: any) {
+			console.log("Firestore: Fetching Post Vote Error", error.message);
 		}
 	};
 

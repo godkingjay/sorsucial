@@ -52,7 +52,6 @@ export interface SitePost {
 	isCommentable: boolean;
 	privacy: "public" | "restricted" | "private";
 	numberOfLikes: number;
-	postLikes: string[];
 	numberOfComments: number;
 	lastChangeAt?: Timestamp;
 }

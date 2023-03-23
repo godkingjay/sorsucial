@@ -41,7 +41,6 @@ const usePost = () => {
 				hasLink: postForm.link ? true : false,
 				hasPoll: postForm.poll ? true : false,
 				numberOfLikes: 0,
-				postLikes: [],
 				numberOfComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,

@@ -12,6 +12,7 @@ import {
 	limit,
 	getDocs,
 	startAfter,
+	doc,
 } from "firebase/firestore";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";

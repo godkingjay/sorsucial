@@ -2,13 +2,17 @@ import { PostData, postOptionsState, postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db, storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { SitePost } from "@/lib/interfaces/post";
+import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import {
 	Timestamp,
 	collection,
 	doc,
+	getDoc,
+	getDocs,
+	increment,
+	query,
 	serverTimestamp,
 	writeBatch,
 } from "firebase/firestore";
@@ -81,6 +85,7 @@ const usePost = () => {
 								} as Timestamp,
 							},
 							creator,
+							userLike: null,
 						},
 						...prev.posts,
 					],
@@ -194,6 +199,18 @@ const usePost = () => {
 				batch.delete(pollRef);
 			}
 
+			if (postData.post.numberOfLikes > 0) {
+				const likesRef = collection(db, `posts/${postData.post.id}/likes`);
+
+				const likesQuery = query(likesRef);
+
+				const likesSnapshot = await getDocs(likesQuery);
+
+				likesSnapshot.forEach((like) => {
+					batch.delete(like.ref);
+				});
+			}
+
 			batch.delete(postRef);
 
 			await batch
@@ -214,6 +231,85 @@ const usePost = () => {
 				});
 		} catch (error: any) {
 			console.log("Firestore: Post Deletion Error", error.message);
+		}
+	};
+
+	const onPostLike = (postData: PostData) => {
+		try {
+			if (authUser) {
+				const batch = writeBatch(db);
+
+				const postRef = doc(collection(db, "posts"), postData.post.id);
+				const postLikeRef = doc(
+					collection(db, `posts/${postData.post.id}/likes`),
+					authUser.uid
+				);
+
+				if (postData.userLike) {
+					batch.delete(postLikeRef);
+					batch.update(postRef, {
+						numberOfLikes: increment(-1),
+					});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((post) => {
+							if (post.post.id === postData.post.id) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfLikes: post.post.numberOfLikes - 1,
+									},
+									userLike: null,
+								};
+							}
+
+							return post;
+						}),
+					}));
+				} else {
+					const newPostLike: PostLike = {
+						userId: authUser.uid,
+						postId: postData.post.id,
+					};
+
+					if (postData.post.groupId) {
+						newPostLike.groupId = postData.post.groupId;
+					}
+
+					batch.set(postLikeRef, newPostLike);
+					batch.update(postRef, {
+						numberOfLikes: increment(1),
+					});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((post) => {
+							if (post.post.id === postData.post.id) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfLikes: post.post.numberOfLikes + 1,
+									},
+									userLike: newPostLike,
+								};
+							}
+
+							return post;
+						}),
+					}));
+				}
+
+				batch.commit().catch((err) => {
+					console.log("Firestore (BatchWrite): Post Like Error", err.message);
+				});
+			} else {
+				throw new Error("You must be logged in to like a post");
+			}
+		} catch (error: any) {
+			console.log("Firestore: Post Like Error", error.message);
 		}
 	};
 
@@ -241,11 +337,50 @@ const usePost = () => {
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
+
+				posts.forEach((post: PostData) => {
+					fetchUserLike(post.post);
+				});
 			} else {
 				console.log("No posts found");
 			}
 		} catch (error: any) {
 			console.log("Firestore: Fetching Announcements Error", error.message);
+		}
+	};
+
+	const fetchUserLike = async (post: SitePost) => {
+		try {
+			if (authUser) {
+				const userLikeRef = doc(
+					collection(db, `posts/${post.id}/likes`),
+					authUser.uid
+				);
+
+				const userLike = await getDoc(userLikeRef).then((doc) => {
+					if (doc.exists()) {
+						return doc.data() as PostLike;
+					} else {
+						return null;
+					}
+				});
+
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: prev.posts.map((prevPost) => {
+						if (prevPost.post.id === post.id) {
+							return {
+								...prevPost,
+								userLike,
+							};
+						}
+
+						return prevPost;
+					}),
+				}));
+			}
+		} catch (error: any) {
+			console.log("Firestore: Fetching Post Vote Error", error.message);
 		}
 	};
 
@@ -257,6 +392,7 @@ const usePost = () => {
 		createPost,
 		deletePost,
 		fetchPosts,
+		onPostLike,
 	};
 };
 

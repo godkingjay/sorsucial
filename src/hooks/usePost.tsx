@@ -277,7 +277,7 @@ const usePost = () => {
 									...post,
 									post: {
 										...post.post,
-										likes: post.post.numberOfLikes + 1,
+										numberOfLikes: post.post.numberOfLikes + 1,
 									},
 									userLike: newPostLike,
 								};

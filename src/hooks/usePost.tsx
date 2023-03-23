@@ -20,12 +20,56 @@ import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { deleteObject, ref } from "firebase/storage";
 
+/**
+ * usePost hook to handle all post related operations like create, delete, update, etc.
+ */
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
 	const { authUser } = useUser();
 
+	/**
+	 * Create a new post in firestore database and storage
+	 * if post has image or video then upload it to storage
+	 * and save the url in firestore database and update
+	 * the post state in recoil atom to show the new post.
+	 *
+	 * If post has file then upload it to storage and save
+	 * the url in firestore database and update the post state
+	 * in recoil atom to show the new post.
+	 *
+	 * If post has link then save the link in firestore database
+	 * and update the post state in recoil atom to show the new post.
+	 *
+	 * If post has poll then save the poll in firestore database and
+	 * update the post state in recoil atom to show the new post. If
+	 * poll item has image then upload it to storage and save the url
+	 * in firestore database.
+	 *
+	 * If post has group then save the group id in firestore database
+	 * and update the post state in recoil atom to show the new post.
+	 *
+	 * @param {CreatePostType} postForm - this is the post form
+	 * data that user has entered in the post creation modal.
+	 * @param {SiteUser} creator - this is the user who is creating the post.
+	 *
+	 * @returns {Promise<void>}
+	 *
+	 * @example
+	 * const { createPost } = usePost();
+	 * const { userStateValue } = useUser();
+	 *
+	 * const handlePostCreation = async (postForm: CreatePostType) => {
+	 * 	try {
+	 * 		await createPost(postForm, userStateValue.user);
+	 * 	} catch (error) {
+	 * 		console.log(error);
+	 * 	}
+	 * };
+	 *
+	 * @see {@link createPost}
+	 */
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
 		try {
 			const batch = writeBatch(db);

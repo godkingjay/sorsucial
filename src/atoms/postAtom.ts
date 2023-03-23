@@ -1,8 +1,10 @@
 import {
 	PollItem,
 	PollItemLogo,
+	PollVote,
 	PostFile,
 	PostImageOrVideo,
+	PostLike,
 	PostLink,
 	PostPoll,
 	SitePost,
@@ -67,6 +69,7 @@ export interface PollItemData {
 export interface PostPollData {
 	poll: PostPoll;
 	pollItems: PollItemData[];
+	userVote: PollVote | null;
 }
 
 /**
@@ -97,6 +100,7 @@ export interface PostData {
 	postFiles?: PostFile[];
 	postLinks?: PostLink[];
 	postPoll?: PostPollData;
+	userLike?: PostLike;
 }
 
 /**

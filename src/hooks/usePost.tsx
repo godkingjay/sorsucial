@@ -10,7 +10,9 @@ import {
 	collection,
 	doc,
 	getDoc,
+	getDocs,
 	increment,
+	query,
 	serverTimestamp,
 	writeBatch,
 } from "firebase/firestore";
@@ -195,6 +197,18 @@ const usePost = () => {
 				});
 
 				batch.delete(pollRef);
+			}
+
+			if (postData.post.numberOfLikes > 0) {
+				const likesRef = collection(db, `posts/${postData.post.id}/likes`);
+
+				const likesQuery = query(likesRef);
+
+				const likesSnapshot = await getDocs(likesQuery);
+
+				likesSnapshot.forEach((like) => {
+					batch.delete(like.ref);
+				});
 			}
 
 			batch.delete(postRef);

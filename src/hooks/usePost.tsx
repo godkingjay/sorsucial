@@ -71,13 +71,35 @@ const usePost = () => {
 	 * @see {@link createPost}
 	 */
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
+		/**
+		 * Create a new post in firestore database.
+		 */
 		try {
+			/**
+			 * Create a batch to update multiple documents in
+			 * firestore database.
+			 *
+			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
+			 */
 			const batch = writeBatch(db);
 
+			/**
+			 * Get the post reference to create a new post.
+			 */
 			const postRef = doc(collection(db, "posts"));
 
+			/**
+			 * Get the current date and time.
+			 *
+			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#server_timestamp}
+			 */
 			const postDate = serverTimestamp() as Timestamp;
 
+			/**
+			 * Create a new post object.
+			 *
+			 * @see {@link SitePost}
+			 */
 			const newPost: SitePost = {
 				id: postRef.id,
 				creatorId: creator.uid,
@@ -98,48 +120,157 @@ const usePost = () => {
 				createdAt: postDate,
 			};
 
+			/**
+			 * Check if post has group.
+			 *
+			 * If post has group then add the group id
+			 * to the new post object.
+			 */
 			if (postForm.groupId) {
 				newPost.groupId = postForm.groupId;
 			}
 
-			// check if post has image or video
+			/**
+			 * Check if post has image or video.
+			 *
+			 * If post has image or video then upload it to
+			 * storage and save the url in firestore database.
+			 *
+			 * If post has image or video then add the url to
+			 * the new post object.
+			 *
+			 * If post has image or video then update the post
+			 * state in recoil atom to show the new post.
+			 *
+			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
+			 */
 			if (postForm.imageOrVideo) {
 			}
 
-			// check if post has file
+			/**
+			 * Check if post has file.
+			 *
+			 * If post has file then upload it to storage and
+			 * save the url in firestore database.
+			 *
+			 * If post has file then add the url to the new
+			 * post object.
+			 *
+			 * If post has file then update the post state in
+			 * recoil atom to show the new post.
+			 *
+			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
+			 */
 			if (postForm.file) {
 			}
 
-			// check if post has link
+			/**
+			 * Check if post has link.
+			 *
+			 * If post has link then add the link to the new
+			 * post object.
+			 *
+			 * If post has link then update the post state in
+			 * recoil atom to show the new post.
+			 */
 			if (postForm.link) {
 			}
 
-			// check if post has poll
+			/**
+			 * Check if post has poll.
+			 *
+			 * If post has poll then add the poll to the new
+			 * post object.
+			 *
+			 * If post has poll then update the post state in
+			 * recoil atom to show the new post.
+			 *
+			 * If poll item has image then upload it to storage
+			 * and save the url in firestore database.
+			 *
+			 * If poll item has image then add the url to the
+			 * new post object.
+			 *
+			 * If poll item has image then update the post state
+			 * in recoil atom to show the new post.
+			 *
+			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
+			 */
 			if (postForm.poll) {
 			}
 
+			/**
+			 * Update the post state in recoil atom to show the new post.
+			 *
+			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document}
+			 */
 			batch.set(postRef, newPost);
 
-			await batch.commit().then(() => {
-				setPostStateValue((prev) => ({
-					...prev,
-					posts: [
-						{
-							post: {
-								...newPost,
-								createdAt: {
-									seconds: new Date().getTime() / 1000,
-								} as Timestamp,
+			/**
+			 * Commit the batch to update multiple documents in
+			 * firestore database.
+			 *
+			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
+			 */
+			await batch
+				.commit()
+				.then(() => {
+					/**
+					 * Update the post state in recoil atom to show the new post.
+					 *
+					 * @see {@link https://recoiljs.org/docs/api-reference/utils/useRecoilState}
+					 */
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: [
+							{
+								post: {
+									...newPost,
+									/**
+									 * Create a new date object. This date is a copy
+									 * of the date object created in the server.
+									 *
+									 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date}
+									 */
+									createdAt: {
+										seconds: new Date().getTime() / 1000,
+									} as Timestamp,
+								},
+								creator,
+
+								/**
+								 * Set the user like and vote to null.
+								 */
+								userLike: null,
+
+								/**
+								 * Set the user like and vote to null.
+								 */
+								userVote: null,
 							},
-							creator,
-							userLike: null,
-							userVote: null,
-						},
-						...prev.posts,
-					],
-				}));
-			});
+							...prev.posts,
+						],
+					}));
+				})
+				.catch((error) => {
+					/**
+					 * Log the error message if there is an error
+					 * while committing the batch.
+					 *
+					 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
+					 */
+					console.log(
+						"Firestore (BatchWrite): Post Creation Error",
+						error.message
+					);
+				});
 		} catch (error: any) {
+			/**
+			 * Log the error message if there is an error
+			 * while creating the post.
+			 *
+			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document}
+			 */
 			console.log("Firestore: Post Creation Error", error.message);
 		}
 	};

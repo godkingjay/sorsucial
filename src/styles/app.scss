@@ -580,6 +580,15 @@
 					@apply bg-gray-100;
 				}
 			}
+
+			.post-like-button[data-liked="true"] {
+				@apply text-blue-500;
+
+				&:hover,
+				&:focus {
+					@apply text-blue-600;
+				}
+			}
 		}
 	}
 }

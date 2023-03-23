@@ -1,7 +1,7 @@
 import { PostData } from "@/atoms/postAtom";
 import usePost from "@/hooks/usePost";
 import React from "react";
-import { AiOutlineLike } from "react-icons/ai";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 
@@ -20,15 +20,29 @@ const PostFooter: React.FC<PostFooterProps> = ({
 				<button
 					type="button"
 					title="Like"
-					className="post-footer-button"
+					className="post-footer-button post-like-button"
 					onClick={handlePostLike}
+					data-liked={postData.userLike ? true : false}
 				>
-					<div className="icon-container">
-						<AiOutlineLike className="icon" />
-					</div>
-					<div className="label-container">
-						<p className="label">Like</p>
-					</div>
+					{postData.userLike ? (
+						<>
+							<div className="icon-container">
+								<AiFillLike className="icon" />
+							</div>
+							<div className="label-container">
+								<p className="label">Liked</p>
+							</div>
+						</>
+					) : (
+						<>
+							<div className="icon-container">
+								<AiOutlineLike className="icon" />
+							</div>
+							<div className="label-container">
+								<p className="label">Like</p>
+							</div>
+						</>
+					)}
 				</button>
 				<button
 					type="button"

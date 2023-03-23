@@ -40,9 +40,9 @@ const usePost = () => {
 				hasFile: postForm.file ? true : false,
 				hasLink: postForm.link ? true : false,
 				hasPoll: postForm.poll ? true : false,
-				numberOfComments: 0,
 				numberOfLikes: 0,
-
+				postLikes: [],
+				numberOfComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
 				createdAt: serverTimestamp() as Timestamp,

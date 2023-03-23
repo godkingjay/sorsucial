@@ -52,6 +52,7 @@ export interface SitePost {
 	isCommentable: boolean;
 	privacy: "public" | "restricted" | "private";
 	numberOfLikes: number;
+	postLikes: string[];
 	numberOfComments: number;
 	lastChangeAt?: Timestamp;
 }
@@ -318,33 +319,33 @@ export interface PollVote {
 	pollItemId: string;
 }
 
-/**
- * This interface is used to define the structure of a post like object.
- * This is the object that is stored in the database.
- *
- * ----------------------------------------------------------------
- *
- * @export
- * @interface PostLike
- * @category Interfaces
- * @subcategory SitePost
- * @see {@link SitePost}
- *
- * ----------------------------------------------------------------
- *
- * @property {string} userId - The unique identifier of the user.
- * @property {string} postId - The unique identifier of the post.
- * @property {string} [groupId] - The unique identifier of the group.
- *
- * ----------------------------------------------------------------
- *
- * @author Jarrian Vince Gojar
- */
-export interface PostLike {
-	userId: string;
-	postId: string;
-	groupId?: string;
-}
+// /**
+//  * This interface is used to define the structure of a post like object.
+//  * This is the object that is stored in the database.
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @export
+//  * @interface PostLike
+//  * @category Interfaces
+//  * @subcategory SitePost
+//  * @see {@link SitePost}
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @property {string} userId - The unique identifier of the user.
+//  * @property {string} postId - The unique identifier of the post.
+//  * @property {string} [groupId] - The unique identifier of the group.
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @author Jarrian Vince Gojar
+//  */
+// export interface PostLike {
+// 	userId: string;
+// 	postId: string;
+// 	groupId?: string;
+// }
 
 /**
  * This interface is used to define the structure of a post comment object.

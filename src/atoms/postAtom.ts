@@ -68,8 +68,6 @@ export interface PollItemData {
  */
 export interface PostPollData {
 	poll: PostPoll;
-	pollItems: PollItemData[];
-	userVote: PollVote | null;
 }
 
 /**
@@ -96,11 +94,8 @@ export interface PostPollData {
 export interface PostData {
 	post: SitePost;
 	creator: SiteUser | null;
-	postImagesOrVideos?: PostImageOrVideo[];
-	postFiles?: PostFile[];
-	postLinks?: PostLink[];
-	postPoll?: PostPollData;
 	userLike: PostLike | null;
+	userVote: PollVote | null;
 }
 
 /**

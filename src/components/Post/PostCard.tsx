@@ -5,6 +5,7 @@ import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
+import { AiFillLike } from "react-icons/ai";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -95,6 +96,21 @@ const PostCard: React.FC<PostCardProps> = ({
 					seeMore={seeMore}
 					handleSeeMore={handleSeeMore}
 				/>
+			</div>
+			<div className="px-4 pb-2">
+				<div className="text-sm flex flex-row items-center gap-x-1">
+					<div
+						className={`
+						h-5 w-5 aspect-square
+						${postData.post.numberOfLikes > 0 ? "text-blue-500" : "text-gray-500"}
+					`}
+					>
+						<AiFillLike className="h-full w-full" />
+					</div>
+					<p className="text-gray-500">
+						{postData.post.numberOfLikes} <span>liked this post.</span>
+					</p>
+				</div>
 			</div>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="flex flex-col">

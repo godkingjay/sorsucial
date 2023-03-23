@@ -19,17 +19,17 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} [postBody] - The body of the post.
  * @property {string[]} [postTags] - The tags of the post.
  * @property {"announcement" | "feed" | "group"} postType - The type of the post.
- * @property {Timestamp} createdAt - The date and time when the post was created.
- * @property {boolean} hasImageOrVideo - Whether the post has an image or video.
- * @property {boolean} hasFile - Whether the post has a file.
- * @property {boolean} hasLink - Whether the post has a link.
- * @property {boolean} hasPoll - Whether the post has a poll.
+ * @property {PostImageOrVideo[]} postImagesOrVideos - The images or videos of the post.
+ * @property {PostFile[]} postFiles - The files of the post.
+ * @property {PostLink[]} postLinks - The links of the post.
+ * @property {PostPoll | null} postPoll - The poll of the post.
  * @property {boolean} isHidden - Whether the post is hidden.
  * @property {boolean} isCommentable - Whether the post is commentable.
  * @property {"public" | "restricted" | "private"} privacy - The privacy of the post.
  * @property {number} numberOfLikes - The number of likes of the post.
  * @property {number} numberOfComments - The number of comments of the post.
- * @property {Timestamp} [lastChangeAt] - The date and time when the post was last changed.
+ * @property {Timestamp} [updatedAt] - The date and time when the post was last updated.
+ * @property {Timestamp} createdAt - The date and time when the post was created.
  *
  * ----------------------------------------------------------------
  *
@@ -197,6 +197,7 @@ export interface PostLink {
  * @property {number} numberOfVotes - The number of votes of the poll.
  * @property {number} [maxVotes] - The maximum number of votes of the poll.
  * @property {boolean} isActive - Whether the poll is active.
+ * @property {PollItem[]} pollItems - The poll items of the poll.
  *
  * ----------------------------------------------------------------
  *
@@ -231,9 +232,10 @@ export interface PostPoll {
  * @property {string} postId - The unique identifier of the post.
  * @property {string} pollId - The unique identifier of the poll.
  * @property {string} [pollItemTitle] - The title of the poll item.
- * @property {number} voteStatus - The vote status of the poll item.
+ * @property {number} numberOfVotes - The number of votes of the poll item.
  * @property {string} [logoType] - The logo type of the poll item.
  * @property {string} [emoji] - The emoji of the poll item.
+ * @property {PollItemLogo} [pollItemLogo] - The logo of the poll item.
  *
  * ----------------------------------------------------------------
  *
@@ -244,7 +246,7 @@ export interface PollItem {
 	postId: string;
 	pollId: string;
 	pollItemTitle?: string;
-	voteStatus: number;
+	numberOfVotes: number;
 	logoType?: "emoji" | "image";
 	emoji?: string;
 	pollItemLogo?: PollItemLogo;

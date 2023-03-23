@@ -1,4 +1,4 @@
-import { PostData, postState } from "@/atoms/postAtom";
+import { PostData, postOptionsState, postState } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
 import { db, storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -18,6 +18,8 @@ import { deleteObject, ref } from "firebase/storage";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
+	const [postOptionsStateValue, setPostOptionsStateValue] =
+		useRecoilState(postOptionsState);
 	const { authUser } = useUser();
 
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
@@ -38,9 +40,8 @@ const usePost = () => {
 				hasFile: postForm.file ? true : false,
 				hasLink: postForm.link ? true : false,
 				hasPoll: postForm.poll ? true : false,
-				numberOfComments: 0,
 				numberOfLikes: 0,
-
+				numberOfComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
 				createdAt: serverTimestamp() as Timestamp,
@@ -224,26 +225,25 @@ const usePost = () => {
 							.filter((post) => post.post.postType === postType)
 							.pop()
 					: null;
-			await axios
+
+			const posts = await axios
 				.post(apiConfig.apiEndpoint + "post/get-posts", {
 					postType,
 					lastPost,
 				})
-				.then((res) => {
-					const { posts } = res.data;
-
-					if (posts.length > 0) {
-						setPostStateValue((prev) => ({
-							...prev,
-							posts: [...prev.posts, ...posts],
-						}));
-					} else {
-						console.log("No posts found");
-					}
-				})
+				.then((res) => res.data.posts)
 				.catch((err) => {
 					console.log("API: get-posts error: ", err.message);
 				});
+
+			if (posts.length > 0) {
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: [...prev.posts, ...posts],
+				}));
+			} else {
+				console.log("No posts found");
+			}
 		} catch (error: any) {
 			console.log("Firestore: Fetching Announcements Error", error.message);
 		}
@@ -252,6 +252,8 @@ const usePost = () => {
 	return {
 		postStateValue,
 		setPostStateValue,
+		postOptionsStateValue,
+		setPostOptionsStateValue,
 		createPost,
 		deletePost,
 		fetchPosts,

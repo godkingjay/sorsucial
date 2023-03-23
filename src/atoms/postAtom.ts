@@ -1,14 +1,31 @@
 import {
 	PollItem,
 	PollItemLogo,
+	PollVote,
 	PostFile,
 	PostImageOrVideo,
+	PostLike,
 	PostLink,
 	PostPoll,
 	SitePost,
 } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import { atom } from "recoil";
+
+export interface PostOptionsState {
+	menu: string;
+	share: string;
+}
+
+export const defaultPostOptionsState: PostOptionsState = {
+	menu: "",
+	share: "",
+};
+
+export const postOptionsState = atom<PostOptionsState>({
+	key: "postOptionsState",
+	default: defaultPostOptionsState,
+});
 
 /**
  * This is the data that is needed to display a poll item in the UI.
@@ -52,6 +69,7 @@ export interface PollItemData {
 export interface PostPollData {
 	poll: PostPoll;
 	pollItems: PollItemData[];
+	userVote: PollVote | null;
 }
 
 /**
@@ -82,6 +100,7 @@ export interface PostData {
 	postFiles?: PostFile[];
 	postLinks?: PostLink[];
 	postPoll?: PostPollData;
+	userLike?: PostLike;
 }
 
 /**

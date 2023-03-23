@@ -1,4 +1,4 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
 import moment from "moment";
 import Image from "next/image";
@@ -10,16 +10,16 @@ import PostMenuDropdown from "./PostHead/PostMenuDropdown";
 type PostHeadProps = {
 	userStateValue: UserState;
 	postData: PostData;
-	postMenuOpen: boolean;
-	handlePostMenuOpen: () => void;
+	postOptionsStateValue: PostOptionsState;
+	handlePostOptions: (name: keyof PostOptionsState) => void;
 	handleDeletePost: () => Promise<void>;
 };
 
 const PostHead: React.FC<PostHeadProps> = ({
 	userStateValue,
 	postData,
-	postMenuOpen,
-	handlePostMenuOpen,
+	postOptionsStateValue,
+	handlePostOptions,
 	handleDeletePost,
 }) => {
 	return (
@@ -41,20 +41,25 @@ const PostHead: React.FC<PostHeadProps> = ({
 					<FaUserCircle className="h-full w-full bg-white" />
 				)}
 			</Link>
-			<div className="flex-1 flex flex-col h-full">
-				<Link
-					href={`/user/${postData.creator?.uid}`}
-					className="text-sm font-semibold hover:underline focus:underline"
-				>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
-				<p className="text-2xs text-gray-500">
-					{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
-				</p>
+			<div className="flex-1 flex flex-col h-full pr-6">
+				<div className="w-full truncate">
+					<Link
+						href={`/user/${postData.creator?.uid}`}
+						className="truncate font-semibold hover:underline focus:underline"
+					>{`${postData.creator?.firstName} ${postData.creator?.lastName}`}</Link>
+				</div>
+				<div className="flex flex-row items-center truncate">
+					<p className="text-2xs text-gray-500 truncate">
+						{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
+					</p>
+				</div>
 			</div>
 			{postData.post.creatorId === userStateValue.user.uid && (
 				<PostMenuDropdown
-					postMenuOpen={postMenuOpen}
-					handlePostMenuOpen={handlePostMenuOpen}
-					handlePostDelete={handleDeletePost}
+					postData={postData}
+					postOptionsStateValue={postOptionsStateValue}
+					handlePostOptions={handlePostOptions}
+					handleDeletePost={handleDeletePost}
 				/>
 			)}
 		</div>

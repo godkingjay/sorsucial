@@ -6,10 +6,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
 	const { userStateValue, authUser, authLoading, loadingUser } = useUser();
-	const { postStateValue, setPostStateValue, deletePost, fetchPosts } =
-		usePost();
+	const {
+		postStateValue,
+		setPostStateValue,
+		postOptionsStateValue,
+		setPostOptionsStateValue,
+		deletePost,
+		fetchPosts,
+	} = usePost();
 	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
-	const anouncementsMounted = useRef(false);
+	const announcementsMounted = useRef(false);
 
 	const fetchAnnouncements = useCallback(async () => {
 		setLoadingAnnouncements(true);
@@ -23,22 +29,24 @@ export default function Home() {
 
 	useEffect(() => {
 		if (
-			!anouncementsMounted.current &&
+			!announcementsMounted.current &&
 			postStateValue.posts.length === 0 &&
 			userStateValue.user &&
 			authUser &&
 			!loadingUser &&
 			!authLoading
 		) {
-			anouncementsMounted.current = true;
+			announcementsMounted.current = true;
 			fetchAnnouncements();
 		}
 	}, [
-		anouncementsMounted,
+		announcementsMounted,
 		fetchAnnouncements,
 		postStateValue.posts,
 		authUser,
 		userStateValue.user,
+		loadingUser,
+		authLoading,
 	]);
 
 	return (
@@ -59,6 +67,8 @@ export default function Home() {
 								userStateValue={userStateValue}
 								postData={post}
 								deletePost={deletePost}
+								postOptionsStateValue={postOptionsStateValue}
+								setPostOptionsStateValue={setPostOptionsStateValue}
 							/>
 						))}
 				</section>

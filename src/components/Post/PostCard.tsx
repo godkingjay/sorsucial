@@ -1,17 +1,23 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
 import React, { useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
+import { SetterOrUpdater } from "recoil";
+import PostFooter from "./PostCard/PostFooter";
 
 type PostCardProps = {
 	userStateValue: UserState;
+	postOptionsStateValue: PostOptionsState;
+	setPostOptionsStateValue: SetterOrUpdater<PostOptionsState>;
 	postData: PostData;
 	deletePost: (postData: PostData) => Promise<void>;
 };
 
 const PostCard: React.FC<PostCardProps> = ({
 	userStateValue,
+	postOptionsStateValue,
+	setPostOptionsStateValue,
 	postData,
 	deletePost,
 }) => {
@@ -23,7 +29,20 @@ const PostCard: React.FC<PostCardProps> = ({
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
-	const [postMenuOpen, setPostMenuOpen] = useState(false);
+
+	const handlePostOptions = (name: keyof PostOptionsState) => {
+		if (postOptionsStateValue[name] === postData.post.id) {
+			setPostOptionsStateValue({
+				...postOptionsStateValue,
+				[name]: "",
+			});
+		} else {
+			setPostOptionsStateValue({
+				...postOptionsStateValue,
+				[name]: postData.post.id,
+			});
+		}
+	};
 
 	const handleSeeMore = () => {
 		if (seeMore) {
@@ -32,10 +51,6 @@ const PostCard: React.FC<PostCardProps> = ({
 			setPostBody(postData.post.postBody || "");
 		}
 		setSeeMore(!seeMore);
-	};
-
-	const handlePostMenuOpen = () => {
-		setPostMenuOpen((prev) => !prev);
 	};
 
 	const handleDeletePost = async () => {
@@ -51,12 +66,12 @@ const PostCard: React.FC<PostCardProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg">
+		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
-				postMenuOpen={postMenuOpen}
-				handlePostMenuOpen={handlePostMenuOpen}
+				postOptionsStateValue={postOptionsStateValue}
+				handlePostOptions={handlePostOptions}
 				handleDeletePost={handleDeletePost}
 			/>
 			<div className="flex flex-col px-4 pb-4 gap-y-2">
@@ -66,6 +81,10 @@ const PostCard: React.FC<PostCardProps> = ({
 					seeMore={seeMore}
 					handleSeeMore={handleSeeMore}
 				/>
+			</div>
+			<div className="h-[1px] bg-gray-200"></div>
+			<div className="flex flex-col">
+				<PostFooter />
 			</div>
 		</div>
 	);

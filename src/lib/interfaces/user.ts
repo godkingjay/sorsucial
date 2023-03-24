@@ -53,7 +53,7 @@ export interface SiteUser {
 	isFirstLogin: boolean;
 	roles: ("admin" | "staff" | "student" | "instructor" | "user")[];
 	imageURL?: string;
-	birthDate?: Timestamp;
+	birthDate?: Date;
 	gender?: "male" | "female" | "other";
 	currentStatusText?: string;
 	currentStatusEmoji?: string;
@@ -65,10 +65,10 @@ export interface SiteUser {
 	cityOrMunicipality?: string;
 	barangay?: string;
 	streetAddress?: string;
-	createdAt: Timestamp | null;
-	previousNameChangeAt?: Timestamp;
-	lastLoginAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	previousNameChangeAt?: Date;
+	lastLoginAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 /**
@@ -282,5 +282,5 @@ export interface UserImage {
 	fileType: string;
 	fileURL: string;
 	fileExtension: string;
-	createdAt: Timestamp;
+	createdAt: Date;
 }

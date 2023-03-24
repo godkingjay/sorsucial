@@ -1,5 +1,4 @@
-import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
-import { auth } from "@/firebase/clientApp";
+import { clientAuth } from "@/firebase/clientApp";
 import { authError } from "@/firebase/error";
 import React, { useState } from "react";
 import { FiLoader } from "react-icons/fi";
@@ -12,6 +11,7 @@ import {
 } from "firebase/auth";
 import Link from "next/link";
 import { SignInRegex } from "./SignInForm";
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 
 type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
@@ -26,58 +26,24 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 	const [validEmail, setValidEmail] = useState(true);
 	const [emailSent, setEmailSent] = useState(false);
 
-	/**
-	 * This function is used to handle the input change event for the email and password fields.
-	 * It sets the state of the email and password fields to the value of the input field.
-	 * It also sets the state of the error message to an empty string.
-	 *
-	 * @param {React.ChangeEvent<HTMLInputElement>} e - The change event for the email and password fields
-	 */
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		/**
-		 * Set the state of the error message to an empty string.
-		 */
 		setSignUpError("");
 
-		/**
-		 * This deconstructs the name and value attributes of the input field.
-		 */
 		const { name, value } = e.target;
 
-		/**
-		 * Checks if the input field is the email field and sets the state of the validEmail variable to true.
-		 * This will hide the error message for the email field.
-		 */
 		if (name === "email") {
 			setValidEmail(true);
 		}
 
-		/**
-		 * Sets the state of the email and password fields to the value of the input field.
-		 * The name attribute of the input field is used as the key for the state object.
-		 * The value attribute of the input field is used as the value for the state object.
-		 */
 		setLoginForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
 
-	/**
-	 * This is a TypeScript code snippet for a React component that handles the form submission for creating a new user account.
-	 * It uses Firebase Authentication to check if the user's email address is already in use and sends a sign-in link to the email address if it is not.
-	 *
-	 * @param {React.FormEvent<HTMLFormElement>} e
-	 * @return {*}
-	 */
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		/**
-		 * Checks if the email address is valid using a regular expression (SignUpRegex.email.test(signUpForm.email)).
-		 *
-		 * @see {@link SignInRegex}
-		 */
 		if (SignInRegex.email.test(signUpForm.email)) {
 			setValidEmail(true);
 		} else {
@@ -88,15 +54,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 		if (validEmail && !signUpError) {
 			setSigningUp(true);
 			try {
-				/**
-				 * The fetchSignInMethodsForEmail function from Firebase Authentication checks if the email address is already associated with an existing account.
-				 * If there are sign-in methods associated with the email address, it throws an error indicating that the email address is already in use.
-				 * Else if there's none, then it will send a sign-in link to the email address.
-				 *
-				 * @see {@link signUpForm}
-				 */
 				const signInMethods = await fetchSignInMethodsForEmail(
-					auth,
+					clientAuth,
 					signUpForm.email
 				);
 				if (signInMethods.length > 0) {
@@ -104,13 +63,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 						authError["Firebase: Error (auth/email-already-in-use)."]
 					);
 				} else {
-					/**
-					 * The sendSignInLinkToEmail function from Firebase Authentication sends a sign-in link to the email address.
-					 * The url parameter is the link that the user will be redirected to after clicking the sign-in link.
-					 * The handleCodeInApp parameter is set to true to indicate that the sign-in link will be handled by the app.
-					 * The catch block handles any errors thrown by the sendSignInLinkToEmail function.
-					 */
-					await sendSignInLinkToEmail(auth, signUpForm.email, {
+					await sendSignInLinkToEmail(clientAuth, signUpForm.email, {
 						url:
 							(process.env.NEXT_PUBLIC_HOST as string) +
 							`/auth/create-account?email=${signUpForm.email}`,
@@ -119,15 +72,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 						throw error;
 					});
 
-					/**
-					 * The localStorage.setItem function stores the email address in the browser's local storage.
-					 * The email address is stored in the emailForSignIn key.
-					 */
 					localStorage.setItem("emailForSignIn", signUpForm.email);
 
-					/**
-					 * The setEmailSent function sets the emailSent state to true to indicate that the sign-in link has been sent to the email address.
-					 */
 					setEmailSent(true);
 				}
 			} catch (error: any) {
@@ -138,11 +84,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 		}
 	};
 
-	/**
-	 * Handles the click event of the input text div to focus the input element inside it when clicked.
-	 *
-	 * @param {React.MouseEvent<HTMLDivElement>} e - The click event.
-	 */
 	const handleInputTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		(
 			(e.currentTarget as HTMLInputElement).querySelector(
@@ -209,7 +150,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 										<p>Please input a school provided email address.</p>
 									</div>
 								</div>
-
 								{signUpError && (
 									<div>
 										<ErrorBannerTextSm

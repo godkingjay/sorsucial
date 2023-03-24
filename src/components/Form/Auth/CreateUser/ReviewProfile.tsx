@@ -65,7 +65,7 @@ const ReviewProfile: React.FC<ReviewProfileProps> = ({ createUserForm }) => {
 							<p>Birthdate:</p>
 							<p className="text-logo-300 break-words">
 								{createUserForm.birthdate
-									? moment(createUserForm.birthdate?.toDate()).format(
+									? moment(createUserForm.birthdate.getTime()).format(
 											"MMMM DD, YYYY"
 									  )
 									: "[BIRTHDATE!]"}

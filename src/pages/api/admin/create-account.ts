@@ -1,4 +1,4 @@
-import { apiConfig } from "./../../../lib/api/apiConfig";
+import { apiConfig } from "../../../lib/api/apiConfig";
 import { authAdmin } from "@/firebase/adminApp";
 import type { NextApiRequest, NextApiResponse } from "next";
 

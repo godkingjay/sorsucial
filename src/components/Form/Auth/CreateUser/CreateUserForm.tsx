@@ -15,6 +15,7 @@ import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { errorModalState } from "@/atoms/modalAtom";
+import moment from "moment";
 
 type CreateUserFormProps = {};
 
@@ -28,7 +29,7 @@ export type CreateUserType = {
 		size: number;
 		type: string;
 	} | null;
-	birthdate: Timestamp | null;
+	birthdate: Date;
 	gender: "male" | "female" | "other" | "none";
 	streetAddress: string;
 	barangay: string;
@@ -73,7 +74,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		lastName: "",
 		middleName: "",
 		profilePhoto: null,
-		birthdate: null,
+		birthdate: new Date(),
 		gender: "none",
 		streetAddress: "",
 		barangay: "",
@@ -233,7 +234,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		setBirthdate(e.target.value);
 		setCreateUserForm((prev) => ({
 			...prev,
-			birthdate: Timestamp.fromDate(new Date(e.target.value)),
+			birthdate: new Date(e.target.value),
 		}));
 	};
 

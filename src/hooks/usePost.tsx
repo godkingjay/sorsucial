@@ -1,6 +1,11 @@
-import { PostData, postOptionsState, postState } from "@/atoms/postAtom";
+import {
+	PostData,
+	PostState,
+	postOptionsState,
+	postState,
+} from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
-import { db, storage } from "@/firebase/clientApp";
+import { clientDb as db, clientStorage as storage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
@@ -20,88 +25,18 @@ import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { deleteObject, ref } from "firebase/storage";
 
-/**
- * usePost hook to handle all post related operations like create, delete, update, etc.
- */
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
 	const { authUser } = useUser();
 
-	/**
-	 * Create a new post in firestore database and storage
-	 * if post has image or video then upload it to storage
-	 * and save the url in firestore database and update
-	 * the post state in recoil atom to show the new post.
-	 *
-	 * If post has file then upload it to storage and save
-	 * the url in firestore database and update the post state
-	 * in recoil atom to show the new post.
-	 *
-	 * If post has link then save the link in firestore database
-	 * and update the post state in recoil atom to show the new post.
-	 *
-	 * If post has poll then save the poll in firestore database and
-	 * update the post state in recoil atom to show the new post. If
-	 * poll item has image then upload it to storage and save the url
-	 * in firestore database.
-	 *
-	 * If post has group then save the group id in firestore database
-	 * and update the post state in recoil atom to show the new post.
-	 *
-	 * @param {CreatePostType} postForm - this is the post form
-	 * data that user has entered in the post creation modal.
-	 * @param {SiteUser} creator - this is the user who is creating the post.
-	 *
-	 * @returns {Promise<void>}
-	 *
-	 * @example
-	 * const { createPost } = usePost();
-	 * const { userStateValue } = useUser();
-	 *
-	 * const handlePostCreation = async (postForm: CreatePostType) => {
-	 * 	try {
-	 * 		await createPost(postForm, userStateValue.user);
-	 * 	} catch (error) {
-	 * 		console.log(error);
-	 * 	}
-	 * };
-	 *
-	 * @see {@link createPost}
-	 */
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
-		/**
-		 * Create a new post in firestore database.
-		 */
 		try {
-			/**
-			 * Create a batch to update multiple documents in
-			 * firestore database.
-			 *
-			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
-			 */
-			const batch = writeBatch(db);
+			const postDate = new Date();
 
-			/**
-			 * Get the post reference to create a new post.
-			 */
-			const postRef = doc(collection(db, "posts"));
-
-			/**
-			 * Get the current date and time.
-			 *
-			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#server_timestamp}
-			 */
-			const postDate = serverTimestamp() as Timestamp;
-
-			/**
-			 * Create a new post object.
-			 *
-			 * @see {@link SitePost}
-			 */
 			const newPost: SitePost = {
-				id: postRef.id,
+				id: "",
 				creatorId: creator.uid,
 				privacy: postForm.privacy,
 				postTitle: postForm.postTitle.trim(),
@@ -120,158 +55,50 @@ const usePost = () => {
 				createdAt: postDate,
 			};
 
-			/**
-			 * Check if post has group.
-			 *
-			 * If post has group then add the group id
-			 * to the new post object.
-			 */
 			if (postForm.groupId) {
 				newPost.groupId = postForm.groupId;
 			}
 
-			/**
-			 * Check if post has image or video.
-			 *
-			 * If post has image or video then upload it to
-			 * storage and save the url in firestore database.
-			 *
-			 * If post has image or video then add the url to
-			 * the new post object.
-			 *
-			 * If post has image or video then update the post
-			 * state in recoil atom to show the new post.
-			 *
-			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
-			 */
 			if (postForm.imageOrVideo) {
 			}
 
-			/**
-			 * Check if post has file.
-			 *
-			 * If post has file then upload it to storage and
-			 * save the url in firestore database.
-			 *
-			 * If post has file then add the url to the new
-			 * post object.
-			 *
-			 * If post has file then update the post state in
-			 * recoil atom to show the new post.
-			 *
-			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
-			 */
 			if (postForm.file) {
 			}
 
-			/**
-			 * Check if post has link.
-			 *
-			 * If post has link then add the link to the new
-			 * post object.
-			 *
-			 * If post has link then update the post state in
-			 * recoil atom to show the new post.
-			 */
 			if (postForm.link) {
 			}
 
-			/**
-			 * Check if post has poll.
-			 *
-			 * If post has poll then add the poll to the new
-			 * post object.
-			 *
-			 * If post has poll then update the post state in
-			 * recoil atom to show the new post.
-			 *
-			 * If poll item has image then upload it to storage
-			 * and save the url in firestore database.
-			 *
-			 * If poll item has image then add the url to the
-			 * new post object.
-			 *
-			 * If poll item has image then update the post state
-			 * in recoil atom to show the new post.
-			 *
-			 * @see {@link https://firebase.google.com/docs/storage/web/upload-files}
-			 */
 			if (postForm.poll) {
 			}
 
-			/**
-			 * Update the post state in recoil atom to show the new post.
-			 *
-			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document}
-			 */
-			batch.set(postRef, newPost);
-
-			/**
-			 * Commit the batch to update multiple documents in
-			 * firestore database.
-			 *
-			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
-			 */
-			await batch
-				.commit()
-				.then(() => {
-					/**
-					 * Update the post state in recoil atom to show the new post.
-					 *
-					 * @see {@link https://recoiljs.org/docs/api-reference/utils/useRecoilState}
-					 */
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: [
-							{
-								post: {
-									...newPost,
-									/**
-									 * Create a new date object. This date is a copy
-									 * of the date object created in the server.
-									 *
-									 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date}
-									 */
-									createdAt: {
-										seconds: new Date().getTime() / 1000,
-									} as Timestamp,
-								},
-								creator,
-
-								/**
-								 * Set the user like and vote to null.
-								 */
-								userLike: null,
-
-								/**
-								 * Set the user like and vote to null.
-								 */
-								userVote: null,
-							},
-							...prev.posts,
-						],
-					}));
+			const newPostData: SitePost = await axios
+				.post(apiConfig.apiEndpoint + "post/create-post", {
+					newPost,
+					creator,
 				})
+				.then((res) => res.data.newPost)
 				.catch((error) => {
-					/**
-					 * Log the error message if there is an error
-					 * while committing the batch.
-					 *
-					 * @see {@link https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes}
-					 */
-					console.log(
-						"Firestore (BatchWrite): Post Creation Error",
-						error.message
-					);
+					console.log("API: Post Creation Error: ", error.message);
+					throw error;
 				});
+
+			if (newPostData) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: [
+								{
+									post: newPostData,
+									creator,
+								},
+								...prev.posts,
+							],
+						} as PostState)
+				);
+			}
 		} catch (error: any) {
-			/**
-			 * Log the error message if there is an error
-			 * while creating the post.
-			 *
-			 * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document}
-			 */
-			console.log("Firestore: Post Creation Error", error.message);
+			console.log("MONGO: Post Creation Error", error.message);
 		}
 	};
 
@@ -280,10 +107,6 @@ const usePost = () => {
 			if (authUser?.uid !== postData.post.creatorId) {
 				throw new Error("You are not authorized to delete this post");
 			}
-
-			const batch = writeBatch(db);
-
-			const postRef = doc(collection(db, "posts"), postData.post.id);
 
 			if (postData.post.postImagesOrVideos.length) {
 				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
@@ -326,36 +149,21 @@ const usePost = () => {
 				});
 			}
 
-			if (postData.post.numberOfLikes > 0) {
-				const likesRef = collection(db, `posts/${postData.post.id}/likes`);
+			await axios.delete(apiConfig.apiEndpoint + "post/post", {
+				data: {
+					deletedPost: postData.post,
+				},
+			});
 
-				const likesQuery = query(likesRef);
-
-				const likesSnapshot = await getDocs(likesQuery);
-
-				likesSnapshot.forEach((like) => {
-					batch.delete(like.ref);
-				});
-			}
-
-			batch.delete(postRef);
-
-			await batch
-				.commit()
-				.then(() => {
-					setPostStateValue((prev) => ({
+			setPostStateValue(
+				(prev) =>
+					({
 						...prev,
 						posts: prev.posts.filter(
 							(post) => post.post.id !== postData.post.id
 						),
-					}));
-				})
-				.catch((err) => {
-					console.log(
-						"Firestore (BatchWrite): Post Deletion Error",
-						err.message
-					);
-				});
+					} as PostState)
+			);
 		} catch (error: any) {
 			console.log("Firestore: Post Deletion Error", error.message);
 		}
@@ -364,78 +172,79 @@ const usePost = () => {
 	const onPostLike = (postData: PostData) => {
 		try {
 			if (authUser) {
-				const batch = writeBatch(db);
-
-				const postRef = doc(collection(db, "posts"), postData.post.id);
-				const postLikeRef = doc(
-					collection(db, `posts/${postData.post.id}/likes`),
-					authUser.uid
-				);
-
+				/**
+				 * If the user has already liked the post, unlike it.
+				 * Else, like the post.
+				 */
 				if (postData.userLike) {
-					batch.delete(postLikeRef);
-					batch.update(postRef, {
-						numberOfLikes: increment(-1),
-						updatedAt: serverTimestamp() as Timestamp,
-					});
+					axios
+						.delete(apiConfig.apiEndpoint + "post/like/like", {
+							data: {
+								post: postData.post,
+								userLike: postData.userLike,
+							},
+						})
+						.catch((error) => {
+							console.log("API: Post Like Error: ", error.message);
+						});
 
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts.map((post) => {
-							if (post.post.id === postData.post.id) {
-								return {
-									...post,
-									post: {
-										...post.post,
-										numberOfLikes: post.post.numberOfLikes - 1,
-										updatedAt: {
-											seconds: new Date().getTime() / 1000,
-										} as Timestamp,
-									},
-									userLike: null,
-								};
-							}
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: post.post.numberOfLikes - 1,
+											},
+											userLike: null,
+										};
+									}
 
-							return post;
-						}),
-					}));
+									return post;
+								}),
+							} as PostState)
+					);
 				} else {
-					const newPostLike: PostLike = {
+					const userLike: PostLike = {
 						userId: authUser.uid,
 						postId: postData.post.id,
+						createdAt: new Date(),
 					};
 
 					if (postData.post.groupId) {
-						newPostLike.groupId = postData.post.groupId;
+						userLike.groupId = postData.post.groupId;
 					}
 
-					batch.set(postLikeRef, newPostLike);
-					batch.update(postRef, {
-						numberOfLikes: increment(1),
+					axios.post(apiConfig.apiEndpoint + "post/like/like", {
+						post: postData.post,
+						userLike,
 					});
 
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts.map((post) => {
-							if (post.post.id === postData.post.id) {
-								return {
-									...post,
-									post: {
-										...post.post,
-										numberOfLikes: post.post.numberOfLikes + 1,
-									},
-									userLike: newPostLike,
-								};
-							}
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: post.post.numberOfLikes + 1,
+											},
+											userLike,
+										};
+									}
 
-							return post;
-						}),
-					}));
+									return post;
+								}),
+							} as PostState)
+					);
 				}
-
-				batch.commit().catch((err) => {
-					console.log("Firestore (BatchWrite): Post Like Error", err.message);
-				});
 			} else {
 				throw new Error("You must be logged in to like a post");
 			}
@@ -468,7 +277,6 @@ const usePost = () => {
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
-
 				posts.forEach((post: PostData) => {
 					fetchUserLike(post.post);
 				});
@@ -483,32 +291,47 @@ const usePost = () => {
 	const fetchUserLike = async (post: SitePost) => {
 		try {
 			if (authUser) {
-				const userLikeRef = doc(
-					collection(db, `posts/${post.id}/likes`),
-					authUser.uid
-				);
+				const userLikeData = await axios
+					.get(apiConfig.apiEndpoint + "post/like/like", {
+						params: {
+							postId: post.id,
+							userId: authUser.uid,
+						},
+					})
+					.then((res) => res.data.userLike)
+					.catch((err) => {
+						console.log("API (GET): Getting likes error: ", err.message);
+					});
 
-				const userLike = await getDoc(userLikeRef).then((doc) => {
-					if (doc.exists()) {
-						return doc.data() as PostLike;
-					} else {
-						return null;
-					}
-				});
+				if (userLikeData) {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((post) => {
+							if (post.post.id === userLikeData.postId) {
+								return {
+									...post,
+									userLike: userLikeData,
+								};
+							}
 
-				setPostStateValue((prev) => ({
-					...prev,
-					posts: prev.posts.map((prevPost) => {
-						if (prevPost.post.id === post.id) {
-							return {
-								...prevPost,
-								userLike,
-							};
-						}
+							return post;
+						}),
+					}));
+				} else {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((postData) => {
+							if (postData.post.id === post.id) {
+								return {
+									...postData,
+									userLike: null,
+								};
+							}
 
-						return prevPost;
-					}),
-				}));
+							return postData;
+						}),
+					}));
+				}
 			}
 		} catch (error: any) {
 			console.log("Firestore: Fetching Post Vote Error", error.message);

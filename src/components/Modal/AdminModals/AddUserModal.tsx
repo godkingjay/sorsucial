@@ -8,7 +8,6 @@ import AddImportUserTab from "./AddUserModalTabs/AddImportUserTab";
 import AddUserListTab from "./AddUserModalTabs/AddUserListTab";
 import { BiSend } from "react-icons/bi";
 import { FiLoader } from "react-icons/fi";
-import { Timestamp } from "firebase/firestore";
 import { SiteUser } from "@/lib/interfaces/user";
 
 type AddUserModal = {
@@ -31,7 +30,7 @@ export interface NewUserType {
 		size?: number;
 		type?: string;
 	} | null;
-	birthdate?: Timestamp | null;
+	birthdate?: Date;
 	gender?: "male" | "female" | "other" | "none";
 	streetAddress?: string;
 	barangay?: string;

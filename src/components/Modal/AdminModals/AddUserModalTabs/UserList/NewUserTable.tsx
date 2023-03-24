@@ -36,7 +36,7 @@ const NewUserTable: React.FC<Props> = ({
 				})}
 			</td>
 			<td className="birthdate">
-				{moment(newUser.birthdate?.toDate()).format("MMMM DD, YYYY")}
+				{moment(newUser.birthdate?.getTime()).format("MMMM DD, YYYY")}
 			</td>
 			<td className="gender">
 				{newUser.gender

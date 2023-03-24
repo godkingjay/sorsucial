@@ -1,19 +1,7 @@
-import { PostData } from "@/atoms/postAtom";
-import { db } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
+import clientPromise from "@/lib/mongodb";
 import axios from "axios";
-import {
-	query,
-	collection,
-	where,
-	orderBy,
-	limit,
-	getDocs,
-	startAfter,
-	doc,
-} from "firebase/firestore";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
 export default async function handler(
@@ -28,59 +16,63 @@ export default async function handler(
 			return;
 		}
 
-		const postQuery = lastPost
-			? query(
-					collection(db, "posts"),
-					where("postType", "==", postType),
-					orderBy("createdAt", "desc"),
-					startAfter(lastPost.createdAt),
-					limit(10)
-			  )
-			: query(
-					collection(db, "posts"),
-					where("postType", "==", postType),
-					orderBy("createdAt", "desc"),
-					limit(10)
-			  );
+		if (req.method === "POST") {
+			const client = await clientPromise;
+			const db = client.db("sorsu-db");
+			const postsCollection = db.collection("posts");
 
-		const postDocs = await getDocs(postQuery);
+			const postDocs = lastPost
+				? await postsCollection
+						.find({
+							postType,
+							createdAt: lastPost.createdAt,
+						})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.toArray()
+				: await postsCollection
+						.find({
+							postType,
+						})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.toArray();
 
-		const posts = await Promise.all(
-			postDocs.docs.map(async (postDoc) => {
-				const post = postDoc.data() as SitePost;
-				const creator: SiteUser = await axios
-					.post(apiConfig.apiEndpoint + "user/get-user", {
-						userId: post.creatorId,
-					})
-					.then((response) => response.data.user);
+			const posts = await Promise.all(
+				postDocs.map(async (postDoc) => {
+					const post = postDoc;
+					const creatorData = await axios
+						.post(apiConfig.apiEndpoint + "user/get-user", {
+							userId: post.creatorId,
+						})
+						.then((res) => res.data.userData as SiteUser)
+						.catch((err) => {
+							res.status(500).json({ error: err.message });
+							return null;
+						});
 
-				// Check if post has image or video attached to it.
-				if (post.hasImageOrVideo) {
-				}
+					if (!creatorData) {
+						res.status(500).json({ error: "Could not get creator data" });
+						return;
+					}
 
-				// Check if post has file attached to it.
-				if (post.hasFile) {
-				}
+					const postData = {
+						post,
+						creator: creatorData,
+					};
 
-				// Check if post has link attached to it.
-				if (post.hasLink) {
-				}
+					return postData;
+				})
+			);
 
-				// Check if post has poll attached to it.
-				if (post.hasPoll) {
-				}
-
-				return {
-					post,
-					creator,
-				};
-			})
-		);
-
-		if (posts.length > 0) {
-			res.status(200).json({ posts });
+			if (posts.length > 0) {
+				res.status(200).json({ posts });
+			} else {
+				res.status(200).json({ posts: [] });
+			}
 		} else {
-			res.status(200).json({ posts: [] });
+			res.status(400).json({ error: "Invalid method" });
+			return;
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

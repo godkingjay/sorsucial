@@ -1,11 +1,11 @@
-import { db } from "@/firebase/clientApp";
+import { clientDb } from "@/firebase/clientApp";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 
 const useCheck = () => {
 	const checkUserEmailExists = async (userEmail: string): Promise<boolean> => {
 		try {
 			const usersQuery = query(
-				collection(db, "users"),
+				collection(clientDb, "users"),
 				where("email", "==", userEmail),
 				limit(1)
 			);

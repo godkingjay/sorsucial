@@ -1,24 +1,9 @@
 import { adminState } from "@/atoms/adminAtom";
 import { adminModalState } from "@/atoms/modalAtom";
 import { NewUserType } from "@/components/Modal/AdminModals/AddUserModal";
-import { db } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
-import {
-	Timestamp,
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	limit,
-	orderBy,
-	query,
-	serverTimestamp,
-	startAfter,
-	where,
-	writeBatch,
-} from "firebase/firestore";
 import { useRecoilState } from "recoil";
 
 const useAdmin = () => {
@@ -28,8 +13,6 @@ const useAdmin = () => {
 
 	const createNewUsers = async (newUsers: NewUserType[]) => {
 		try {
-			const batch = writeBatch(db);
-
 			const newAdminStateUsers: SiteUser[] = [];
 
 			await Promise.all(
@@ -39,7 +22,7 @@ const useAdmin = () => {
 
 						try {
 							await axios
-								.post(apiConfig.apiEndpoint + "admin/create-user", {
+								.post(apiConfig.apiEndpoint + "admin/create-account", {
 									email,
 									password,
 									privateKey: apiConfig.privateKey,
@@ -47,10 +30,9 @@ const useAdmin = () => {
 								.then(async (res) => {
 									const { uid: userId } = res.data;
 
-									const userDocRef = doc(db, "users", userId);
-									const userDoc = await getDoc(userDocRef);
+									const date = new Date();
 
-									if (!userDoc.exists()) {
+									if (userId) {
 										const newUserDoc: SiteUser = {
 											uid: userId,
 											email: newUser.email,
@@ -62,77 +44,52 @@ const useAdmin = () => {
 											numberOfConnections: 0,
 											numberOfFollowers: 0,
 											imageURL: "",
-											birthDate: newUser.birthdate as Timestamp,
+											birthDate: newUser.birthdate,
 											gender: newUser.gender as SiteUser["gender"],
 											stateOrProvince: newUser.stateOrProvince,
 											cityOrMunicipality: newUser.cityOrMunicipality,
 											barangay: newUser.barangay,
 											streetAddress: newUser.streetAddress,
-											createdAt: serverTimestamp() as Timestamp,
+											createdAt: date,
+											updatedAt: date,
 										};
-										batch.set(userDocRef, newUserDoc);
+
+										const newUserData = await axios
+											.post(apiConfig.apiEndpoint + "user/create-user", {
+												newUser: newUserDoc,
+											})
+											.then((response) => response.data.newUser)
+											.catch((error: any) => {
+												console.log(
+													"API: Creating User Error: ",
+													newUserDoc.firstName,
+													newUserDoc.lastName
+												);
+											});
+
 										newAdminStateUsers.push({
-											...newUserDoc,
+											...newUserData,
 										} as SiteUser);
 									}
 								})
 								.catch((error: any) => {
-									console.log("Create User Error: ", error.message);
+									console.log("API: Creating Account Error: ", newUser.email);
 								});
 						} catch (error: any) {
-							console.log("Create User Error: ", error.message);
+							console.log("Mongo: Creating Account Error: ", error.message);
 						}
 					} catch (error: any) {
-						console.log(
-							`Error Creating User ${newUser.email}: ${error.message}`
-						);
+						console.log("Mongo: Error Creating Users Error:", error.message);
 					}
 				})
 			);
 
-			await batch.commit();
 			setAdminStateValue((prev) => ({
 				...prev,
 				manageUsers: [...newAdminStateUsers, ...prev.manageUsers],
 			}));
 		} catch (error: any) {
-			console.log("Creating New Users Error!: ", error.message);
-			throw error;
-		}
-	};
-
-	type DeleteDocumentAndSubcollections = {
-		docId: string;
-		collectionName: string;
-		path?: string;
-	};
-
-	const deleteDocumentAndSubcollections = async ({
-		docId,
-		collectionName,
-		path,
-	}: DeleteDocumentAndSubcollections) => {
-		try {
-			if (docId && collectionName && !path) {
-				await axios
-					.post(apiConfig.apiEndpoint + "admin/delete-document", {
-						docId,
-						collectionName,
-						path,
-						privateKey: apiConfig.privateKey,
-					})
-					.catch((error: any) => {
-						console.log({
-							message: "API: Delete Document Error: " + error.message,
-							docId,
-							collectionName,
-						});
-						throw error;
-					});
-			}
-		} catch (error: any) {
-			console.error("Hook: Error deleting document and subcollections!");
-			throw error;
+			console.log("Mongo: Creating New Users Error!: ", error.message);
 		}
 	};
 
@@ -140,38 +97,27 @@ const useAdmin = () => {
 		try {
 			if (userId) {
 				await axios
-					.post(apiConfig.apiEndpoint + "admin/delete-user", {
+					.post(apiConfig.apiEndpoint + "admin/delete-account", {
 						uid: userId,
 						privateKey: apiConfig.privateKey,
 					})
 					.then(async (res) => {
 						const { isDeleted } = res.data;
 						if (isDeleted) {
-							deleteDocumentAndSubcollections({
-								docId: userId,
-								collectionName: "users",
-							})
-								.then(async () => {
-									axios
-										.post(apiConfig.apiEndpoint + "admin/delete-files", {
-											path: `users/${userId}/images`,
-											privateKey:
-												process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY?.replace(
-													/\\n/g,
-													"\n"
-												),
-										})
-										.catch((error: any) => {
-											console.log(
-												"API: Delete User Images Error: " + error.message
-											);
-										});
-								})
-								.catch((error: any) => {
-									console.log("API: Delete User Data Error: " + error.message);
-								});
+							await axios.delete(apiConfig.apiEndpoint + "user/user", {
+								data: {
+									userId,
+								},
+							});
+
+							setAdminStateValue((prev) => ({
+								...prev,
+								manageUsers: prev.manageUsers.filter(
+									(user) => user.uid !== userId
+								),
+							}));
 						} else {
-							throw new Error("User not deleted!");
+							throw new Error("Account not deleted!");
 						}
 					})
 					.catch((error: any) => {
@@ -180,6 +126,12 @@ const useAdmin = () => {
 						);
 					});
 			} else {
+				axios.delete(apiConfig.apiEndpoint + "admin/delete-user", {
+					data: {
+						userId,
+						privateKey: apiConfig.privateKey,
+					},
+				});
 				throw new Error(
 					"There is no user id to delete the user from the database and auth system of firebase."
 				);
@@ -195,38 +147,29 @@ const useAdmin = () => {
 		userLimit?: number;
 	}) => {
 		try {
-			const usersQuery =
-				adminStateValue.manageUsers.length > 0
-					? query(
-							collection(db, "users"),
-							orderBy("createdAt", "desc"),
-							startAfter(
-								adminStateValue.manageUsers[
-									adminStateValue.manageUsers.length - 1
-								].createdAt
-							),
-							limit(userLimit)
-					  )
-					: query(
-							collection(db, "users"),
-							orderBy("createdAt", "desc"),
-							limit(userLimit)
-					  );
+			const lastUser = adminStateValue.manageUsers.length
+				? adminStateValue.manageUsers[adminStateValue.manageUsers.length - 1]
+				: null;
 
-			const usersSnapshot = await getDocs(usersQuery);
-
-			const users = usersSnapshot.docs.map((doc) => ({
-				id: doc.id,
-				...doc.data(),
-			}));
+			const usersData: SiteUser[] = await axios
+				.post(apiConfig.apiEndpoint + "admin/get-users", {
+					lastUser,
+					privateKey: apiConfig.privateKey,
+					userLimit,
+				})
+				.then((response) => {
+					return response.data.users;
+				})
+				.catch((error: any) => {
+					console.log("API: Fetching Users Error!: ", error.message);
+				});
 
 			setAdminStateValue((prev) => ({
 				...prev,
-				manageUsers: [...prev.manageUsers, ...users] as SiteUser[],
+				manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
 			}));
 		} catch (error: any) {
-			console.log("Fetching Users Error!: ", error.message);
-			throw error;
+			console.log("Mongo: Fetching Users Error!: ", error.message);
 		}
 	};
 

@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a course object.
  * This is the object that is stored in the database.
@@ -21,9 +19,9 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} code - The code of the course.
  * @property {number} units - The number of units of the course.
  * @property {boolean} isElective - Whether the course is an elective.
- * @property {Timestamp} [startAt] - The date and time the course started.
- * @property {Timestamp} [endAt] - The date and time the course ended.
- * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ * @property {Date} [startAt] - The date and time the course started.
+ * @property {Date} [endAt] - The date and time the course ended.
+ * @property {Date} [lastChangeAt] - The date and time the course was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -39,9 +37,9 @@ export interface Course {
 	code: string;
 	units: number;
 	isElective: boolean;
-	startAt?: Timestamp;
-	endAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	startAt?: Date;
+	endAt?: Date;
+	lastChangeAt?: Date;
 }
 
 /**
@@ -60,9 +58,9 @@ export interface Course {
  *
  * @property {string} userId - The unique identifier of the user.
  * @property {string} instructorId - The unique identifier of the instructor.
- * @property {Timestamp} [startAt] - The date and time the user started teaching the course.
- * @property {Timestamp} [endAt] - The date and time the user stopped teaching the course.
- * @property {Timestamp} [lastChangeAt] - The date and time the course instructor was last changed.
+ * @property {Date} [startAt] - The date and time the user started teaching the course.
+ * @property {Date} [endAt] - The date and time the user stopped teaching the course.
+ * @property {Date} [lastChangeAt] - The date and time the course instructor was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -71,9 +69,9 @@ export interface Course {
 export interface CourseInstructor {
 	userId: string;
 	instructorId: string;
-	startAt?: Timestamp;
-	endAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	startAt?: Date;
+	endAt?: Date;
+	lastChangeAt?: Date;
 }
 
 /**
@@ -93,9 +91,9 @@ export interface CourseInstructor {
  * @property {string} userId - The unique identifier of the user.
  * @property {string} studentId - The unique identifier of the student.
  * @property {number} [grade] - The grade of the student in the course.
- * @property {Timestamp} [startAt] - The date and time the user started taking the course.
- * @property {Timestamp} [endAt] - The date and time the user stopped taking the course.
- * @property {Timestamp} [lastChangeAt] - The date and time the course student was last changed.
+ * @property {Date} [startAt] - The date and time the user started taking the course.
+ * @property {Date} [endAt] - The date and time the user stopped taking the course.
+ * @property {Date} [lastChangeAt] - The date and time the course student was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -105,7 +103,7 @@ export interface CourseStudent {
 	userId: string;
 	studentId: string;
 	grade?: number;
-	startAt?: Timestamp;
-	endAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	startAt?: Date;
+	endAt?: Date;
+	lastChangeAt?: Date;
 }

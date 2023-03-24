@@ -13,10 +13,10 @@ const SignInPage: React.FC<SignInPageProps> = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (authUser && !authLoading) {
+		if (authUser && !authLoading && !loadingUser) {
 			router.push("/");
 		}
-	}, [authUser, authLoading]);
+	}, [authUser, authLoading, loadingUser]);
 
 	if (authLoading || authUser || loadingUser) {
 		return <LoadingScreen />;

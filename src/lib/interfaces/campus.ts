@@ -1,4 +1,4 @@
-import { GeoPoint, Timestamp } from "firebase/firestore";
+import { GeoPoint } from "firebase/firestore";
 
 /**
  * This interface is used to define the structure of a campus object.
@@ -21,7 +21,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {string} [cityOrMunicipality] - The city or municipality of the campus.
  * @property {string} [postalCode] - The postal code of the campus.
  * @property {GeoPoint} [location] - The location of the campus.
- * @property {Timestamp} [builtAt] - The date and time the campus was built.
+ * @property {Date} [builtAt] - The date and time the campus was built.
  * @property {Timestamp} [lastChangeAt] - The date and time the campus was last changed.
  *
  * ----------------------------------------------------------------
@@ -38,6 +38,6 @@ export interface Campus {
 	cityOrMunicipality?: string;
 	postalCode?: string;
 	location?: GeoPoint;
-	builtAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	builtAt?: Date;
+	lastChangeAt?: Date;
 }

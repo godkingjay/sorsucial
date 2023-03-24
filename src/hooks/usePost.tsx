@@ -5,22 +5,11 @@ import {
 	postState,
 } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
-import { clientDb as db, clientStorage as storage } from "@/firebase/clientApp";
+import { clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
-import {
-	Timestamp,
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	increment,
-	query,
-	serverTimestamp,
-	writeBatch,
-} from "firebase/firestore";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { deleteObject, ref } from "firebase/storage";
@@ -110,7 +99,10 @@ const usePost = () => {
 
 			if (postData.post.postImagesOrVideos.length) {
 				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
-					const imageOrVideoStorageRef = ref(storage, imageOrVideo.filePath);
+					const imageOrVideoStorageRef = ref(
+						clientStorage,
+						imageOrVideo.filePath
+					);
 
 					deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
@@ -123,7 +115,7 @@ const usePost = () => {
 
 			if (postData.post.postFiles.length) {
 				postData.post.postFiles.forEach((file) => {
-					const fileStorageRef = ref(storage, file.filePath);
+					const fileStorageRef = ref(clientStorage, file.filePath);
 
 					deleteObject(fileStorageRef).catch(() => {
 						console.log("Storage: File Deletion Error: ", file.id);
@@ -136,7 +128,7 @@ const usePost = () => {
 
 				postPoll.pollItems.forEach((pollItem) => {
 					const pollItemStorageRef = ref(
-						storage,
+						clientStorage,
 						pollItem.pollItemLogo?.filePath
 					);
 

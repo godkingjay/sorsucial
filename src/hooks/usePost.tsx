@@ -272,7 +272,7 @@ const usePost = () => {
 					console.log("API: get-posts error: ", err.message);
 				});
 
-			if (posts.length > 0) {
+			if (posts.length) {
 				setPostStateValue((prev) => ({
 					...prev,
 					posts: [...prev.posts, ...posts],

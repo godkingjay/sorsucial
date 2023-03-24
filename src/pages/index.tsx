@@ -60,21 +60,17 @@ export default function Home() {
 						<>
 							{postStateValue.posts
 								.filter((allPost) => allPost.post.postType === "announcement")
-								.map((announcement) => {
-									return (
-										<>
-											<PostCard
-												key={announcement.post.id}
-												userStateValue={userStateValue}
-												postData={announcement}
-												deletePost={deletePost}
-												postOptionsStateValue={postOptionsStateValue}
-												setPostOptionsStateValue={setPostOptionsStateValue}
-												onPostLike={onPostLike}
-											/>
-										</>
-									);
-								})}
+								.map((announcement) => (
+									<PostCard
+										key={announcement.post.id}
+										userStateValue={userStateValue}
+										postData={announcement}
+										deletePost={deletePost}
+										postOptionsStateValue={postOptionsStateValue}
+										setPostOptionsStateValue={setPostOptionsStateValue}
+										onPostLike={onPostLike}
+									/>
+								))}
 						</>
 					)}
 				</section>

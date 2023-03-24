@@ -5,7 +5,6 @@ import {
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { SignInRegex } from "@/components/Form/Auth/SignInForm";
-import { Timestamp } from "firebase/firestore";
 import {
 	OptionsData,
 	getBarangay,
@@ -58,7 +57,7 @@ const newUserFormInitialState: NewUserType = {
 	lastName: "",
 	middleName: "",
 	profilePhoto: null,
-	birthdate: null,
+	birthdate: new Date(),
 	gender: "none",
 	streetAddress: "",
 	barangay: "",
@@ -143,7 +142,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 		setBirthdate(e.target.value);
 		setNewUserForm((prev) => ({
 			...prev,
-			birthdate: Timestamp.fromDate(new Date(e.target.value)),
+			birthdate: new Date(e.target.value),
 		}));
 	};
 

@@ -50,7 +50,7 @@ const PostHead: React.FC<PostHeadProps> = ({
 				</div>
 				<div className="flex flex-row items-center truncate">
 					<p className="text-2xs text-gray-500 truncate">
-						{moment(new Date(postData.post.createdAt.seconds * 1000)).fromNow()}
+						{moment(postData.post.createdAt).fromNow()}
 					</p>
 				</div>
 			</div>

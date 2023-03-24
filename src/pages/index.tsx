@@ -1,5 +1,6 @@
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
+import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -31,24 +32,18 @@ export default function Home() {
 	useEffect(() => {
 		if (
 			!announcementsMounted.current &&
-			postStateValue.posts.length === 0 &&
-			userStateValue.user &&
-			authUser &&
 			!loadingUser &&
-			!authLoading
+			!authLoading &&
+			authUser &&
+			userStateValue.user.uid &&
+			postStateValue.posts.length === 0
 		) {
 			announcementsMounted.current = true;
 			fetchAnnouncements();
+		} else {
+			announcementsMounted.current = true;
 		}
-	}, [
-		announcementsMounted,
-		fetchAnnouncements,
-		postStateValue.posts,
-		authUser,
-		userStateValue.user,
-		loadingUser,
-		authLoading,
-	]);
+	}, []);
 
 	return (
 		<>
@@ -61,18 +56,22 @@ export default function Home() {
 						/>
 					)}
 					{postStateValue.posts
-						.filter((post) => post.post.postType === "announcement")
-						.map((post) => (
-							<PostCard
-								key={post.post.id}
-								userStateValue={userStateValue}
-								postData={post}
-								deletePost={deletePost}
-								postOptionsStateValue={postOptionsStateValue}
-								setPostOptionsStateValue={setPostOptionsStateValue}
-								onPostLike={onPostLike}
-							/>
-						))}
+						.filter((allPost) => allPost.post.postType === "announcement")
+						.map((announcement, index) => {
+							return (
+								<>
+									<PostCard
+										key={index}
+										userStateValue={userStateValue}
+										postData={announcement}
+										deletePost={deletePost}
+										postOptionsStateValue={postOptionsStateValue}
+										setPostOptionsStateValue={setPostOptionsStateValue}
+										onPostLike={onPostLike}
+									/>
+								</>
+							);
+						})}
 				</section>
 			</main>
 		</>

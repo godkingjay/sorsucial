@@ -6,13 +6,14 @@ import PageLeftSidebar from "../Controls/PageLeftSidebar";
 import { useRouter } from "next/router";
 import MainPageLayout from "./MainPageLayout";
 import LoadingScreen from "../Skeleton/LoadingScreen";
-import AdminPageLayout from "./AdminPageLayout";
+// import AdminPageLayout from "./AdminPageLayout";
 import { useRecoilState } from "recoil";
 import {
 	NavigationBarState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
 import AdminModals from "../Modal/AdminModals";
+import AdminPageLayout from "./AdminPageLayout";
 
 type LayoutProps = {
 	children: React.ReactNode;

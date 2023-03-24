@@ -1,5 +1,4 @@
 import { PostData } from "@/atoms/postAtom";
-import usePost from "@/hooks/usePost";
 import React from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";

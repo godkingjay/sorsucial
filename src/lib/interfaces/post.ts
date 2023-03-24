@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a post object.
  * This is the object that is stored in the database.
@@ -28,8 +26,8 @@ import { Timestamp } from "firebase/firestore";
  * @property {"public" | "restricted" | "private"} privacy - The privacy of the post.
  * @property {number} numberOfLikes - The number of likes of the post.
  * @property {number} numberOfComments - The number of comments of the post.
- * @property {Timestamp} [updatedAt] - The date and time when the post was last updated.
- * @property {Timestamp} createdAt - The date and time when the post was created.
+ * @property {Date} [updatedAt] - The date and time when the post was last updated.
+ * @property {Date} createdAt - The date and time when the post was created.
  *
  * ----------------------------------------------------------------
  *
@@ -52,8 +50,8 @@ export interface SitePost {
 	privacy: "public" | "restricted" | "private";
 	numberOfLikes: number;
 	numberOfComments: number;
-	updatedAt?: Timestamp;
-	createdAt: Timestamp;
+	updatedAt?: Date;
+	createdAt: Date;
 }
 
 /**
@@ -348,6 +346,7 @@ export interface PostLike {
 	userId: string;
 	postId: string;
 	groupId?: string;
+	createdAt: Date;
 }
 
 /**
@@ -374,7 +373,7 @@ export interface PostLike {
  * @property {number} numberOfLikes - The number of likes of the comment.
  * @property {number} numberOfReplies - The number of replies of the comment.
  * @property {boolean} isHidden - Whether the comment is hidden.
- * @property {Timestamp} createdAt - The date and time when the comment was created.
+ * @property {Date} createdAt - The date and time when the comment was created.
  *
  * ----------------------------------------------------------------
  *
@@ -391,7 +390,7 @@ export interface PostComment {
 	numberOfLikes: number;
 	numberOfReplies: number;
 	isHidden: boolean;
-	createdAt: Timestamp;
+	createdAt: Date;
 }
 
 /**

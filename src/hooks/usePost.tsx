@@ -255,9 +255,11 @@ const usePost = () => {
 					: null;
 
 			const posts = await axios
-				.post(apiConfig.apiEndpoint + "post/get-posts", {
-					postType,
-					lastPost,
+				.get(apiConfig.apiEndpoint + "post/posts", {
+					params: {
+						getPostType: postType,
+						getFromDate: lastPost?.post.createdAt,
+					},
 				})
 				.then((res) => res.data.posts)
 				.catch((err) => {
@@ -274,10 +276,10 @@ const usePost = () => {
 					await fetchUserLike(post.post);
 				});
 			} else {
-				console.log("No posts found");
+				console.log("Mongo: No posts found!");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Fetching Announcements Error", error.message);
+			console.log("Mongo: Fetching Posts Error", error.message);
 		}
 	};
 

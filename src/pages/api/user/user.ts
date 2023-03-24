@@ -1,16 +1,30 @@
 import clientPromise from "@/lib/mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+) {
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
 		const usersCollection = db.collection("users");
 
 		switch (req.method) {
-			// case "GET":
-			// 	// Get user data
-			// 	break;
+			case "GET":
+				const { getUserId } = req.query;
+
+				if (!getUserId) {
+					res.status(500).json({ error: "No user id provided" });
+					return;
+				}
+
+				const userData = await usersCollection.findOne({
+					uid: getUserId,
+				});
+
+				res.status(200).json({ userData });
+				break;
 
 			// case "POST":
 			// 	// Create user data

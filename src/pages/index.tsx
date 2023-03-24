@@ -32,17 +32,21 @@ export default function Home() {
 		setLoadingAnnouncements(false);
 	}, [fetchPosts]);
 
-	useEffect(() => {
-		if (
-			!announcementsMounted.current &&
-			postStateValue.posts.filter(
-				(allPost) => allPost.post.postType === "announcement"
-			).length === 0
-		) {
-			announcementsMounted.current = true;
-			handleFetchAnnouncements();
-		}
-	}, []);
+	// useEffect(() => {
+	// 	if (
+	// 		!announcementsMounted.current &&
+	// 		postStateValue.posts.filter(
+	// 			(allPost) => allPost.post.postType === "announcement"
+	// 		).length === 0
+	// 	) {
+	// 		announcementsMounted.current = true;
+	// 		setFirstLoadingAnnouncements(true);
+	// 		handleFetchAnnouncements();
+	// 		setFirstLoadingAnnouncements(false);
+	// 	} else {
+	// 		announcementsMounted.current = true;
+	// 	}
+	// }, []);
 
 	return (
 		<>
@@ -54,25 +58,19 @@ export default function Home() {
 							postType="announcement"
 						/>
 					)}
-					{firstLoadingAnnouncements ? (
-						<div>Loading</div>
-					) : (
-						<>
-							{postStateValue.posts
-								.filter((allPost) => allPost.post.postType === "announcement")
-								.map((announcement) => (
-									<PostCard
-										key={announcement.post.id}
-										userStateValue={userStateValue}
-										postData={announcement}
-										deletePost={deletePost}
-										postOptionsStateValue={postOptionsStateValue}
-										setPostOptionsStateValue={setPostOptionsStateValue}
-										onPostLike={onPostLike}
-									/>
-								))}
-						</>
-					)}
+					{postStateValue.posts
+						.filter((allPost) => allPost.post.postType === "announcement")
+						.map((announcement) => (
+							<PostCard
+								key={announcement.post.id}
+								userStateValue={userStateValue}
+								postData={announcement}
+								deletePost={deletePost}
+								postOptionsStateValue={postOptionsStateValue}
+								setPostOptionsStateValue={setPostOptionsStateValue}
+								onPostLike={onPostLike}
+							/>
+						))}
 				</section>
 			</main>
 		</>

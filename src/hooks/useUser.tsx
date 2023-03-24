@@ -35,8 +35,10 @@ const useUser = () => {
 		try {
 			if (user) {
 				const userData = await axios
-					.post(apiConfig.apiEndpoint + "user/get-user", {
-						userId: user.uid,
+					.get(apiConfig.apiEndpoint + "user/user", {
+						params: {
+							getUserId: user.uid,
+						},
 					})
 					.then((res) => res.data.userData)
 					.catch((error) => {

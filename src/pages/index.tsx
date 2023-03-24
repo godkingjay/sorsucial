@@ -32,21 +32,22 @@ export default function Home() {
 		setLoadingAnnouncements(false);
 	}, [fetchPosts]);
 
-	// useEffect(() => {
-	// 	if (
-	// 		!announcementsMounted.current &&
-	// 		postStateValue.posts.filter(
-	// 			(allPost) => allPost.post.postType === "announcement"
-	// 		).length === 0
-	// 	) {
-	// 		announcementsMounted.current = true;
-	// 		setFirstLoadingAnnouncements(true);
-	// 		handleFetchAnnouncements();
-	// 		setFirstLoadingAnnouncements(false);
-	// 	} else {
-	// 		announcementsMounted.current = true;
-	// 	}
-	// }, []);
+	useEffect(() => {
+		const announcementPostsLength = postStateValue.posts.filter(
+			(allPost) => allPost.post.postType === "announcement"
+		).length;
+
+		if (announcementPostsLength === 0) {
+			if (!announcementsMounted.current) {
+				announcementsMounted.current = true;
+				setFirstLoadingAnnouncements(true);
+				handleFetchAnnouncements();
+				setFirstLoadingAnnouncements(false);
+			}
+		} else {
+			announcementsMounted.current = true;
+		}
+	}, []);
 
 	return (
 		<>

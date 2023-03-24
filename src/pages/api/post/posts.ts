@@ -63,7 +63,7 @@ export default async function handler(
 				if (postsData.length) {
 					res.status(200).json({ posts: postsData });
 				} else {
-					res.status(404).json({ posts: [] });
+					res.status(200).json({ posts: [] });
 				}
 				break;
 

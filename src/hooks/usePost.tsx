@@ -263,7 +263,7 @@ const usePost = () => {
 				})
 				.then((res) => res.data.posts)
 				.catch((err) => {
-					console.log("API: get-posts error: ", err.message);
+					console.log("API (GET): Getting posts  error: ", err.message);
 				});
 
 			if (posts.length) {
@@ -342,6 +342,7 @@ const usePost = () => {
 		deletePost,
 		fetchPosts,
 		onPostLike,
+		fetchUserLike,
 	};
 };
 

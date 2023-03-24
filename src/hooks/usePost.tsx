@@ -277,8 +277,9 @@ const usePost = () => {
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
-				posts.forEach((post: PostData) => {
-					fetchUserLike(post.post);
+
+				posts.forEach(async (post: PostData) => {
+					await fetchUserLike(post.post);
 				});
 			} else {
 				console.log("No posts found");

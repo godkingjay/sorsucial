@@ -164,10 +164,14 @@ const useAdmin = () => {
 					console.log("API: Fetching Users Error!: ", error.message);
 				});
 
-			setAdminStateValue((prev) => ({
-				...prev,
-				manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
-			}));
+			if (usersData.length) {
+				setAdminStateValue((prev) => ({
+					...prev,
+					manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
+				}));
+			} else {
+				throw new Error("No more users to fetch!");
+			}
 		} catch (error: any) {
 			console.log("Mongo: Fetching Users Error!: ", error.message);
 		}

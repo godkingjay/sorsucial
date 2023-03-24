@@ -3,6 +3,7 @@ import PostCreationListener from "@/components/Post/PostCreationListener";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
+import { GetServerSideProps } from "next";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -16,10 +17,12 @@ export default function Home() {
 		fetchPosts,
 		onPostLike,
 	} = usePost();
-	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+	const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
+	const [firstLoadingAnnouncements, setFirstLoadingAnnouncements] =
+		useState(false);
 	const announcementsMounted = useRef(false);
 
-	const fetchAnnouncements = useCallback(async () => {
+	const handleFetchAnnouncements = useCallback(async () => {
 		setLoadingAnnouncements(true);
 		try {
 			await fetchPosts("announcement");
@@ -32,16 +35,12 @@ export default function Home() {
 	useEffect(() => {
 		if (
 			!announcementsMounted.current &&
-			!loadingUser &&
-			!authLoading &&
-			authUser &&
-			userStateValue.user.uid &&
-			postStateValue.posts.length === 0
+			postStateValue.posts.filter(
+				(allPost) => allPost.post.postType === "announcement"
+			).length === 0
 		) {
 			announcementsMounted.current = true;
-			fetchAnnouncements();
-		} else {
-			announcementsMounted.current = true;
+			handleFetchAnnouncements();
 		}
 	}, []);
 
@@ -55,23 +54,29 @@ export default function Home() {
 							postType="announcement"
 						/>
 					)}
-					{postStateValue.posts
-						.filter((allPost) => allPost.post.postType === "announcement")
-						.map((announcement, index) => {
-							return (
-								<>
-									<PostCard
-										key={index}
-										userStateValue={userStateValue}
-										postData={announcement}
-										deletePost={deletePost}
-										postOptionsStateValue={postOptionsStateValue}
-										setPostOptionsStateValue={setPostOptionsStateValue}
-										onPostLike={onPostLike}
-									/>
-								</>
-							);
-						})}
+					{firstLoadingAnnouncements ? (
+						<div>Loading</div>
+					) : (
+						<>
+							{postStateValue.posts
+								.filter((allPost) => allPost.post.postType === "announcement")
+								.map((announcement) => {
+									return (
+										<>
+											<PostCard
+												key={announcement.post.id}
+												userStateValue={userStateValue}
+												postData={announcement}
+												deletePost={deletePost}
+												postOptionsStateValue={postOptionsStateValue}
+												setPostOptionsStateValue={setPostOptionsStateValue}
+												onPostLike={onPostLike}
+											/>
+										</>
+									);
+								})}
+						</>
+					)}
 				</section>
 			</main>
 		</>

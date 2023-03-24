@@ -2,7 +2,6 @@ import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
-import { doc, getDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import React, { useEffect } from "react";

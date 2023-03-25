@@ -183,7 +183,8 @@
 		}
 
 		.log-out {
-			&:hover {
+			&:hover,
+			&:focus {
 				@apply bg-red-500 bg-opacity-10;
 				.icon-container {
 					@apply bg-red-200 text-red-700;

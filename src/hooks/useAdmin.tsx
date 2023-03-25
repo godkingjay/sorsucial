@@ -22,13 +22,13 @@ const useAdmin = () => {
 
 						try {
 							await axios
-								.post(apiConfig.apiEndpoint + "admin/create-account", {
-									email,
-									password,
-									privateKey: apiConfig.privateKey,
+								.post(apiConfig.apiEndpoint + "admin/manage/account/account", {
+									newUserEmail: email,
+									newUserPassword: password,
+									postPrivateKey: apiConfig.privateKey,
 								})
 								.then(async (res) => {
-									const { uid: userId } = res.data;
+									const { userId } = res.data;
 
 									const date = new Date();
 
@@ -97,9 +97,11 @@ const useAdmin = () => {
 		try {
 			if (userId) {
 				await axios
-					.post(apiConfig.apiEndpoint + "admin/delete-account", {
-						uid: userId,
-						privateKey: apiConfig.privateKey,
+					.delete(apiConfig.apiEndpoint + "admin/manage/account/account", {
+						data: {
+							deleteUserId: userId,
+							deletePrivateKey: apiConfig.privateKey,
+						},
 					})
 					.then(async (res) => {
 						const { isDeleted } = res.data;
@@ -126,12 +128,15 @@ const useAdmin = () => {
 						);
 					});
 			} else {
-				axios.delete(apiConfig.apiEndpoint + "admin/delete-account", {
-					data: {
-						userId,
-						privateKey: apiConfig.privateKey,
-					},
-				});
+				await axios.delete(
+					apiConfig.apiEndpoint + "admin/manage/account/account",
+					{
+						data: {
+							deleteUserId: userId,
+							deletePrivateKey: apiConfig.privateKey,
+						},
+					}
+				);
 				throw new Error(
 					"There is no user id to delete the user from the database and auth system of firebase."
 				);

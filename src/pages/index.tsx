@@ -5,6 +5,7 @@ import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -61,6 +62,9 @@ export default function Home() {
 
 	return (
 		<>
+			<Head>
+				<title>Announcements | SorSUcial</title>
+			</Head>
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">

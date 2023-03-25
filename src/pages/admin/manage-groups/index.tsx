@@ -10,7 +10,7 @@ const AdminManageGroupsPage: React.FC<AdminManageGroupsPageProps> = () => {
 				<title>Manage Groups | SorSUcial</title>
 			</Head>
 			<main>
-				<p>AdminManageGroupsPage</p>);
+				<p>AdminManageGroupsPage</p>
 			</main>
 		</>
 	);

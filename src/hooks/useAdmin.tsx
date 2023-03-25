@@ -152,10 +152,12 @@ const useAdmin = () => {
 				: null;
 
 			const usersData: SiteUser[] = await axios
-				.post(apiConfig.apiEndpoint + "admin/get-users", {
-					lastUser,
-					privateKey: apiConfig.privateKey,
-					userLimit,
+				.get(apiConfig.apiEndpoint + "admin/manage/user/users", {
+					params: {
+						getFromDate: lastUser?.createdAt,
+						getPrivateKey: apiConfig.privateKey,
+						getUserLimit: userLimit,
+					},
 				})
 				.then((response) => {
 					return response.data.users;

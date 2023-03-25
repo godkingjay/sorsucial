@@ -58,7 +58,7 @@ export default function Home() {
 
 	return (
 		<>
-			<main className="flex flex-col w-full py-4 px-2">
+			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
 						{userStateValue.user.roles.includes("admin") && (

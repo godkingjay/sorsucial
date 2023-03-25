@@ -373,6 +373,7 @@ export interface PostLike {
  * @property {number} numberOfLikes - The number of likes of the comment.
  * @property {number} numberOfReplies - The number of replies of the comment.
  * @property {boolean} isHidden - Whether the comment is hidden.
+ * @property {Date} [updatedAt] - The date and time when the comment was last updated.
  * @property {Date} createdAt - The date and time when the comment was created.
  *
  * ----------------------------------------------------------------
@@ -390,6 +391,7 @@ export interface PostComment {
 	numberOfLikes: number;
 	numberOfReplies: number;
 	isHidden: boolean;
+	updatedAt?: Date;
 	createdAt: Date;
 }
 

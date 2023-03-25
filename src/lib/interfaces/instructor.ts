@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a instructor object.
  * This is the object that is stored in the database.
@@ -19,9 +17,9 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} [specialty] - The specialty of the instructor.
  * @property {number} yearsOfService - The number of years the instructor has been working.
  * @property {string} [status] - The status of the instructor.
- * @property {Timestamp} [workStartAt] - The date and time the instructor started working.
- * @property {Timestamp} [workEndAt] - The date and time the instructor ended working.
- * @property {Timestamp} [lastChangeAt] - The date and time the instructor was last changed.
+ * @property {Date} [workStartAt] - The date and time the instructor started working.
+ * @property {Date} [workEndAt] - The date and time the instructor ended working.
+ * @property {Date} [updatedAt] - The date and time the instructor was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -35,9 +33,9 @@ export interface Instructor {
 	specialty?: string;
 	yearsOfService: number;
 	status?: "working" | "retired" | "quit";
-	workStartAt?: Timestamp;
-	workEndAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	workStartAt?: Date;
+	workEndAt?: Date;
+	updatedAt?: Date;
 }
 
 /**
@@ -56,7 +54,7 @@ export interface Instructor {
  *
  * @property {string} courseId - The unique identifier of the course.
  * @property {string} [description] - The description of the course.
- * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ * @property {Date} [updatedAt] - The date and time the course was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -65,5 +63,5 @@ export interface Instructor {
 export interface InstructorCourse {
 	courseId: string;
 	description?: string;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
 }

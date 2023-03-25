@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of an instructor request object.
  * This is the object that is stored in the database.
@@ -18,7 +16,7 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} instructorId - The unique identifier of the instructor.
  * @property {boolean} isAccepted - The status of the request.
  * @property {boolean} isRejected - The status of the request.
- * @property {Timestamp} [createdAt] - The date and time the request was created.
+ * @property {Date} [createdAt] - The date and time the request was created.
  *
  * ----------------------------------------------------------------
  *
@@ -30,7 +28,7 @@ export interface InstructorRequest {
 	instructorId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	createdAt?: Timestamp;
+	createdAt?: Date;
 }
 
 /**
@@ -49,7 +47,7 @@ export interface InstructorRequest {
  * @property {string} staffId - The unique identifier of the staff.
  * @property {boolean} isAccepted - The status of the request.
  * @property {boolean} isRejected - The status of the request.
- * @property {Timestamp} [createdAt] - The date and time the request was created.
+ * @property {Date} [createdAt] - The date and time the request was created.
  *
  * ----------------------------------------------------------------
  *
@@ -61,5 +59,5 @@ export interface StaffRequest {
 	staffId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	createdAt?: Timestamp;
+	createdAt?: Date;
 }

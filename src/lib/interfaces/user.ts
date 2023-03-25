@@ -1,4 +1,4 @@
-import { GeoPoint, Timestamp } from "firebase/firestore";
+import { GeoPoint } from "firebase/firestore";
 
 /**
  * This interface is used to define the structure of a user object.
@@ -22,7 +22,7 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {boolean} isFirstLogin - Whether or not this is the first time the user has logged in.
  * @property {"admin" | "staff" | "student" | "instructor" | "user"} roles - The role of the user.
  * @property {string} [imageURL] - The URL of the user's profile image.
- * @property {Timestamp} [birthDate] - The date of birth of the user.
+ * @property {Date} [birthDate] - The date of birth of the user.
  * @property {"male" | "female" | "other"} [gender] - The gender of the user.
  * @property {string} [currentStatusText] - The current status text of the user.
  * @property {string} [currentStatusEmoji] - The current status emoji of the user.
@@ -34,10 +34,10 @@ import { GeoPoint, Timestamp } from "firebase/firestore";
  * @property {string} [cityOrMunicipality] - The city or municipality of the user.
  * @property {string} [barangay] - The barangay of the user.
  * @property {string} [streetAddress] - The street address of the user.
- * @property {Timestamp} createdAt - The date and time the user was created.
- * @property {Timestamp} [previousNames] - The previous names of the user.
- * @property {Timestamp} [lastLoginAt] - The date and time the user last logged in.
- * @property {Timestamp} [lastChangeAt] - The date and time the user was last changed.
+ * @property {Date} [previousNames] - The previous names of the user.
+ * @property {Date} [lastLoginAt] - The date and time the user last logged in.
+ * @property {Date} [updatedAt] - The date and time the user was last changed.
+ * @property {Date} createdAt - The date and time the user was created.
  *
  * ----------------------------------------------------------------
  *
@@ -67,8 +67,8 @@ export interface SiteUser {
 	streetAddress?: string;
 	previousNameChangeAt?: Date;
 	lastLoginAt?: Date;
-	createdAt: Date;
 	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -88,9 +88,9 @@ export interface SiteUser {
  * @property {string} userId - The unique identifier of the user.
  * @property {boolean} isAccepted - Whether or not the connection request has been accepted.
  * @property {boolean} isRejected - Whether or not the connection request has been rejected.
- * @property {Timestamp} [requestAt] - The date and time the connection request was sent.
- * @property {Timestamp} [acceptAt] - The date and time the connection request was accepted.
- * @property {Timestamp} [lastChangeAt] - The date and time the connection request was last changed.
+ * @property {Date} [requestAt] - The date and time the connection request was sent.
+ * @property {Date} [acceptAt] - The date and time the connection request was accepted.
+ * @property {Date} [updatedAt] - The date and time the connection request was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -100,9 +100,9 @@ export interface UserConnection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	requestAt?: Timestamp;
-	acceptAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	requestAt?: Date;
+	acceptAt?: Date;
+	updatedAt?: Date;
 }
 
 /**
@@ -123,7 +123,7 @@ export interface UserConnection {
  * @property {boolean} isOwner - Whether or not the user is the owner of the group.
  * @property {boolean} isAdmin - Whether or not the user is an admin of the group.
  * @property {boolean} isModerator - Whether or not the user is a moderator of the group.
- * @property {Timestamp} [lastChangeAt] - The date and time the group was last changed.
+ * @property {Date} [updatedAt] - The date and time the group was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -134,7 +134,7 @@ export interface UserGroup {
 	isOwner: boolean;
 	isAdmin: boolean;
 	isModerator: boolean;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
 }
 
 /**
@@ -268,7 +268,7 @@ export interface UserDiscussionVote {
  * @property {string} fileType - The type of the image.
  * @property {string} fileURL - The URL of the image.
  * @property {string} fileExtension - The extension of the image.
- * @property {Timestamp} createdAt - The date and time the image was created.
+ * @property {Date} createdAt - The date and time the image was created.
  *
  * ----------------------------------------------------------------
  *

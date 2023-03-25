@@ -61,7 +61,7 @@ const usePost = () => {
 			}
 
 			const newPostData: SitePost = await axios
-				.post(apiConfig.apiEndpoint + "post/create-post", {
+				.post(apiConfig.apiEndpoint + "post/post", {
 					newPost,
 					creator,
 				})

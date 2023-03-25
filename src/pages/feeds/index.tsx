@@ -1,3 +1,4 @@
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import useUser from "@/hooks/useUser";
 import React from "react";
@@ -9,14 +10,16 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 
 	return (
 		<main className="flex flex-col w-full py-4 px-2">
-			<section className="flex flex-col gap-y-4">
-				{userStateValue.user.roles.includes("user") && (
-					<PostCreationListener
-						useStateValue={userStateValue}
-						postType="feed"
-					/>
-				)}
-			</section>
+			<LimitedBodyLayout>
+				<section className="flex flex-col gap-y-4">
+					{userStateValue.user.roles.includes("user") && (
+						<PostCreationListener
+							useStateValue={userStateValue}
+							postType="feed"
+						/>
+					)}
+				</section>
+			</LimitedBodyLayout>
 		</main>
 	);
 };

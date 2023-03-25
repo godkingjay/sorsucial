@@ -1,3 +1,4 @@
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
@@ -32,18 +33,24 @@ export default function Home() {
 		setLoadingAnnouncements(false);
 	}, [fetchPosts]);
 
+	const handleFirstFetchAnnouncements = useCallback(async () => {
+		setFirstLoadingAnnouncements(true);
+		try {
+			await handleFetchAnnouncements();
+		} catch (error: any) {
+			console.log("First Fetch: fetching announcement Error: ", error.message);
+		}
+		setFirstLoadingAnnouncements(false);
+	}, []);
+
 	useEffect(() => {
 		const announcementPostsLength = postStateValue.posts.filter(
 			(allPost) => allPost.post.postType === "announcement"
 		).length;
 
-		if (announcementPostsLength === 0) {
-			if (!announcementsMounted.current) {
-				announcementsMounted.current = true;
-				setFirstLoadingAnnouncements(true);
-				handleFetchAnnouncements();
-				setFirstLoadingAnnouncements(false);
-			}
+		if (!announcementsMounted.current && announcementPostsLength === 0) {
+			announcementsMounted.current = true;
+			handleFirstFetchAnnouncements();
 		} else {
 			announcementsMounted.current = true;
 		}
@@ -52,27 +59,35 @@ export default function Home() {
 	return (
 		<>
 			<main className="flex flex-col w-full py-4 px-2">
-				<section className="flex flex-col gap-y-4">
-					{userStateValue.user.roles.includes("admin") && (
-						<PostCreationListener
-							useStateValue={userStateValue}
-							postType="announcement"
-						/>
-					)}
-					{postStateValue.posts
-						.filter((allPost) => allPost.post.postType === "announcement")
-						.map((announcement) => (
-							<PostCard
-								key={announcement.post.id}
-								userStateValue={userStateValue}
-								postData={announcement}
-								deletePost={deletePost}
-								postOptionsStateValue={postOptionsStateValue}
-								setPostOptionsStateValue={setPostOptionsStateValue}
-								onPostLike={onPostLike}
+				<LimitedBodyLayout>
+					<section className="flex flex-col gap-y-4">
+						{userStateValue.user.roles.includes("admin") && (
+							<PostCreationListener
+								useStateValue={userStateValue}
+								postType="announcement"
 							/>
-						))}
-				</section>
+						)}
+						{firstLoadingAnnouncements ? (
+							<div>Loading</div>
+						) : (
+							<>
+								{postStateValue.posts
+									.filter((allPost) => allPost.post.postType === "announcement")
+									.map((announcement) => (
+										<PostCard
+											key={announcement.post.id}
+											userStateValue={userStateValue}
+											postData={announcement}
+											deletePost={deletePost}
+											postOptionsStateValue={postOptionsStateValue}
+											setPostOptionsStateValue={setPostOptionsStateValue}
+											onPostLike={onPostLike}
+										/>
+									))}
+							</>
+						)}
+					</section>
+				</LimitedBodyLayout>
 			</main>
 		</>
 	);

@@ -254,9 +254,8 @@ const useUser = () => {
 		) {
 			router.push("/auth/signin");
 		} else if (user && !loading && !currentUserMounted.current) {
-			setCurrentUserState().then(() => {
-				currentUserMounted.current = true;
-			});
+			currentUserMounted.current = true;
+			setCurrentUserState();
 		}
 	}, [user, loading]);
 

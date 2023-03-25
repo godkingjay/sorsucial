@@ -63,7 +63,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 				},
 			}));
 		}
-	}, [loadingUser, authUser]);
+	}, [loadingUser, authUser, router.pathname]);
 
 	useEffect(() => {
 		if (

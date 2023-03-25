@@ -99,6 +99,8 @@ const useUser = () => {
 									...newUserData,
 								},
 							}));
+
+							router.push("/auth/create-user");
 						}
 					}
 				})
@@ -206,7 +208,7 @@ const useUser = () => {
 				createdAt: new Date(),
 			};
 
-			await axios.put(apiConfig.apiEndpoint + "user/upload-profile-photo", {
+			await axios.post(apiConfig.apiEndpoint + "user/image/profile-photo", {
 				newImage,
 			});
 

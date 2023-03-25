@@ -1,12 +1,18 @@
+import Head from "next/head";
 import React from "react";
 
 type AdminPageProps = {};
 
 const AdminPage: React.FC<AdminPageProps> = () => {
 	return (
-		<main>
-			<p>AdminPage</p>
-		</main>
+		<>
+			<Head>
+				<title>Dashboard | SorSUcial</title>
+			</Head>
+			<main>
+				<p>AdminPage</p>
+			</main>
+		</>
 	);
 };
 

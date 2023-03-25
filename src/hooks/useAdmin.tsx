@@ -55,7 +55,7 @@ const useAdmin = () => {
 										};
 
 										const newUserData = await axios
-											.post(apiConfig.apiEndpoint + "user/create-user", {
+											.post(apiConfig.apiEndpoint + "user/user", {
 												newUser: newUserDoc,
 											})
 											.then((response) => response.data.newUser)
@@ -126,7 +126,7 @@ const useAdmin = () => {
 						);
 					});
 			} else {
-				axios.delete(apiConfig.apiEndpoint + "admin/delete-user", {
+				axios.delete(apiConfig.apiEndpoint + "admin/delete-account", {
 					data: {
 						userId,
 						privateKey: apiConfig.privateKey,

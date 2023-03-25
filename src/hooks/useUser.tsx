@@ -84,7 +84,7 @@ const useUser = () => {
 						};
 
 						const newUserData = await axios
-							.post(apiConfig.apiEndpoint + "user/create-user", {
+							.post(apiConfig.apiEndpoint + "user/user", {
 								newUser,
 							})
 							.then((res) => res.data.newUser)
@@ -146,9 +146,9 @@ const useUser = () => {
 			}
 
 			const newUserData = await axios
-				.post(apiConfig.apiEndpoint + "user/update-user", {
-					newUser,
-					userId: user?.uid,
+				.put(apiConfig.apiEndpoint + "user/user", {
+					updatedUserData: newUser,
+					updateUserId: user?.uid,
 				})
 				.then((res) => res.data.newUser)
 				.catch((error) => {

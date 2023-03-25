@@ -26,13 +26,36 @@ export default async function handler(
 				res.status(200).json({ userData });
 				break;
 
-			// case "POST":
-			// 	// Create user data
-			// 	break;
+			case "POST":
+				const { newUser } = req.body;
 
-			// case "PUT":
-			// 	// Update user data
-			// 	break;
+				if (!newUser) {
+					res.status(500).json({ error: "No user provided" });
+					return;
+				}
+
+				const newUserState = await usersCollection.insertOne(newUser);
+
+				res.status(200).json({ newUserState, newUser });
+				break;
+
+			case "PUT":
+				const { updatedUserData, updateUserId } = req.body;
+
+				if (!updatedUserData || !updateUserId) {
+					res.status(500).json({ error: "No user data provided" });
+					return;
+				}
+
+				const updatedUserState = await usersCollection.updateOne(
+					{ uid: updateUserId },
+					{ $set: updatedUserData }
+				);
+
+				res
+					.status(200)
+					.json({ newUserState: updatedUserState, newUser: updatedUserData });
+				break;
 
 			case "DELETE":
 				const { userId } = req.body;

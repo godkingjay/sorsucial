@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a discussion object.
  * This is the object that is stored in the database.
@@ -26,8 +24,8 @@ import { Timestamp } from "firebase/firestore";
  * @property {number} numberOfReplies - The number of replies of the discussion.
  * @property {number} numberOfUpVotes - The number of upvotes of the discussion.
  * @property {number} numberOfDownVotes - The number of downvotes of the discussion.
- * @property {Timestamp} createdAt - The date and time when the discussion was created.
- * @property {Timestamp} [lastChangeAt] - The date and time when the discussion was last changed.
+ * @property {Date} [updatedAt] - The date and time when the discussion was last changed.
+ * @property {Date} createdAt - The date and time when the discussion was created.
  *
  * ----------------------------------------------------------------
  *
@@ -48,8 +46,8 @@ export interface SiteDiscussion {
 	numberOfReplies: number;
 	numberOfUpVotes: number;
 	numberOfDownVotes: number;
-	createdAt: Timestamp;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
+	createdAt: Date;
 }
 
 /**
@@ -107,8 +105,8 @@ export interface DiscussionVote {
  * @property {number} numberOfReplies - The number of replies of the reply.
  * @property {boolean} isHidden - The status of the reply.
  * @property {"reply" | "approved" | "disapproved"} replyStatus - The status of the reply.
- * @property {Timestamp} createdAt - The date and time when the reply was created.
- * @property {Timestamp} [lastChangeAt] - The date and time when the reply was last changed.
+ * @property {Date} [updatedAt] - The date and time when the reply was last changed.
+ * @property {Date} createdAt - The date and time when the reply was created.
  *
  * ----------------------------------------------------------------
  *
@@ -126,8 +124,8 @@ export interface Reply {
 	numberOfReplies: number;
 	isHidden: boolean;
 	replyStatus: "reply" | "approved" | "disapproved";
-	createdAt: Timestamp;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
+	createdAt: Date;
 }
 
 /**

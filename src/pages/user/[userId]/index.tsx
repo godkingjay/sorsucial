@@ -1,9 +1,9 @@
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
-import { db } from "@/firebase/clientApp";
 import useUser from "@/hooks/useUser";
-import { doc, getDoc } from "firebase/firestore";
+import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
+import Head from "next/head";
 import React, { useEffect } from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -28,17 +28,28 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 	}, [userPageData]);
 
 	return (
-		<main className="h-full">
-			{loadingPage ? (
-				<LoadingScreen />
-			) : !userStateValue.userPage ? (
-				<div>User Not Found</div>
-			) : (
-				<div>
-					<p>{userStateValue.userPage.user.firstName}</p>
-				</div>
-			)}
-		</main>
+		<>
+			<Head>
+				<title>
+					{loadingPage
+						? "Loading..."
+						: !userStateValue.userPage
+						? "User not Found!"
+						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName}} | Profile`}
+				</title>
+			</Head>
+			<main className="h-full">
+				{loadingPage ? (
+					<LoadingScreen />
+				) : !userStateValue.userPage ? (
+					<div>User Not Found</div>
+				) : (
+					<div>
+						<p>{userStateValue.userPage.user.firstName}</p>
+					</div>
+				)}
+			</main>
+		</>
 	);
 };
 
@@ -46,24 +57,20 @@ export const getServerSideProps = async (
 	context: GetServerSidePropsContext
 ) => {
 	try {
+		const client = await clientPromise;
+		const db = client.db();
+		const usersCollection = db.collection("users");
 		const { userId } = context.query;
 
-		const userDoc = await getDoc(doc(db, "users", userId as string));
-
-		const userPageData = userDoc.exists()
-			? {
-					user: JSON.parse(
-						safeJsonStringify({
-							id: userDoc.id,
-							...userDoc.data(),
-						})
-					),
-			  }
-			: null;
+		const userPageData = {
+			user: await usersCollection.findOne({ uid: userId }),
+		};
 
 		return {
 			props: {
-				userPageData,
+				userPageData: userPageData.user
+					? JSON.parse(safeJsonStringify(userPageData))
+					: null,
 				loadingPage: false,
 			},
 		};

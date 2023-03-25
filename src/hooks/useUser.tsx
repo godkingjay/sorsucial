@@ -35,8 +35,10 @@ const useUser = () => {
 		try {
 			if (user) {
 				const userData = await axios
-					.post(apiConfig.apiEndpoint + "user/get-user", {
-						userId: user.uid,
+					.get(apiConfig.apiEndpoint + "user/user", {
+						params: {
+							getUserId: user.uid,
+						},
 					})
 					.then((res) => res.data.userData)
 					.catch((error) => {
@@ -82,7 +84,7 @@ const useUser = () => {
 						};
 
 						const newUserData = await axios
-							.post(apiConfig.apiEndpoint + "user/create-user", {
+							.post(apiConfig.apiEndpoint + "user/user", {
 								newUser,
 							})
 							.then((res) => res.data.newUser)
@@ -97,6 +99,8 @@ const useUser = () => {
 									...newUserData,
 								},
 							}));
+
+							router.push("/auth/create-user");
 						}
 					}
 				})
@@ -144,9 +148,9 @@ const useUser = () => {
 			}
 
 			const newUserData = await axios
-				.post(apiConfig.apiEndpoint + "user/update-user", {
-					newUser,
-					userId: user?.uid,
+				.put(apiConfig.apiEndpoint + "user/user", {
+					updatedUserData: newUser,
+					updateUserId: user?.uid,
 				})
 				.then((res) => res.data.newUser)
 				.catch((error) => {
@@ -204,7 +208,7 @@ const useUser = () => {
 				createdAt: new Date(),
 			};
 
-			await axios.put(apiConfig.apiEndpoint + "user/upload-profile-photo", {
+			await axios.post(apiConfig.apiEndpoint + "user/image/profile-photo", {
 				newImage,
 			});
 
@@ -250,9 +254,8 @@ const useUser = () => {
 		) {
 			router.push("/auth/signin");
 		} else if (user && !loading && !currentUserMounted.current) {
-			setCurrentUserState().then(() => {
-				currentUserMounted.current = true;
-			});
+			currentUserMounted.current = true;
+			setCurrentUserState();
 		}
 	}, [user, loading]);
 

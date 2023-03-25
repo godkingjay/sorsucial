@@ -22,13 +22,13 @@ const useAdmin = () => {
 
 						try {
 							await axios
-								.post(apiConfig.apiEndpoint + "admin/create-account", {
-									email,
-									password,
-									privateKey: apiConfig.privateKey,
+								.post(apiConfig.apiEndpoint + "admin/manage/account/account", {
+									newUserEmail: email,
+									newUserPassword: password,
+									postPrivateKey: apiConfig.privateKey,
 								})
 								.then(async (res) => {
-									const { uid: userId } = res.data;
+									const { userId } = res.data;
 
 									const date = new Date();
 
@@ -55,7 +55,7 @@ const useAdmin = () => {
 										};
 
 										const newUserData = await axios
-											.post(apiConfig.apiEndpoint + "user/create-user", {
+											.post(apiConfig.apiEndpoint + "user/user", {
 												newUser: newUserDoc,
 											})
 											.then((response) => response.data.newUser)
@@ -97,9 +97,11 @@ const useAdmin = () => {
 		try {
 			if (userId) {
 				await axios
-					.post(apiConfig.apiEndpoint + "admin/delete-account", {
-						uid: userId,
-						privateKey: apiConfig.privateKey,
+					.delete(apiConfig.apiEndpoint + "admin/manage/account/account", {
+						data: {
+							deleteUserId: userId,
+							deletePrivateKey: apiConfig.privateKey,
+						},
 					})
 					.then(async (res) => {
 						const { isDeleted } = res.data;
@@ -126,12 +128,15 @@ const useAdmin = () => {
 						);
 					});
 			} else {
-				axios.delete(apiConfig.apiEndpoint + "admin/delete-user", {
-					data: {
-						userId,
-						privateKey: apiConfig.privateKey,
-					},
-				});
+				await axios.delete(
+					apiConfig.apiEndpoint + "admin/manage/account/account",
+					{
+						data: {
+							deleteUserId: userId,
+							deletePrivateKey: apiConfig.privateKey,
+						},
+					}
+				);
 				throw new Error(
 					"There is no user id to delete the user from the database and auth system of firebase."
 				);
@@ -152,10 +157,12 @@ const useAdmin = () => {
 				: null;
 
 			const usersData: SiteUser[] = await axios
-				.post(apiConfig.apiEndpoint + "admin/get-users", {
-					lastUser,
-					privateKey: apiConfig.privateKey,
-					userLimit,
+				.get(apiConfig.apiEndpoint + "admin/manage/user/users", {
+					params: {
+						getFromDate: lastUser?.createdAt,
+						getPrivateKey: apiConfig.privateKey,
+						getUserLimit: userLimit,
+					},
 				})
 				.then((response) => {
 					return response.data.users;
@@ -164,10 +171,14 @@ const useAdmin = () => {
 					console.log("API: Fetching Users Error!: ", error.message);
 				});
 
-			setAdminStateValue((prev) => ({
-				...prev,
-				manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
-			}));
+			if (usersData.length) {
+				setAdminStateValue((prev) => ({
+					...prev,
+					manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
+				}));
+			} else {
+				throw new Error("No more users to fetch!");
+			}
 		} catch (error: any) {
 			console.log("Mongo: Fetching Users Error!: ", error.message);
 		}

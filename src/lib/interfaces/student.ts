@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a student object.
  * This is the object that is stored in the database.
@@ -20,9 +18,9 @@ import { Timestamp } from "firebase/firestore";
  * @property {number} year - The year of the student.
  * @property {number} block - The block of the student.
  * @property {("summa cum laude" | "magna cum laude" | "cum laude" | "none")} [award] - The award of the student.
- * @property {Timestamp} [enrolledAt] - The date and time the student enrolled.
- * @property {Timestamp} [graduatedAt] - The date and time the student graduated.
- * @property {Timestamp} [lastChangeAt] - The date and time the student was last changed.
+ * @property {Date} [enrolledAt] - The date and time the student enrolled.
+ * @property {Date} [graduatedAt] - The date and time the student graduated.
+ * @property {Date} [updatedAt] - The date and time the student was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -37,9 +35,9 @@ export interface Student {
 	year: number;
 	block: number;
 	award?: "summa cum laude" | "magna cum laude" | "cum laude" | "none";
-	enrolledAt?: Timestamp;
-	graduatedAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	enrolledAt?: Date;
+	graduatedAt?: Date;
+	updatedAt?: Date;
 }
 
 /**
@@ -58,7 +56,7 @@ export interface Student {
  *
  * @property {number} courseId - The unique identifier of the course.
  * @property {string} [description] - The description of the course.
- * @property {Timestamp} [lastChangeAt] - The date and time the course was last changed.
+ * @property {Date} [updatedAt] - The date and time the course was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -67,5 +65,5 @@ export interface Student {
 export interface StudentCourse {
 	courseId: number;
 	description?: string;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
 }

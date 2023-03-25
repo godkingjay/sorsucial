@@ -1,8 +1,10 @@
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
+import { GetServerSideProps } from "next";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -16,10 +18,12 @@ export default function Home() {
 		fetchPosts,
 		onPostLike,
 	} = usePost();
-	const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+	const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
+	const [firstLoadingAnnouncements, setFirstLoadingAnnouncements] =
+		useState(false);
 	const announcementsMounted = useRef(false);
 
-	const fetchAnnouncements = useCallback(async () => {
+	const handleFetchAnnouncements = useCallback(async () => {
 		setLoadingAnnouncements(true);
 		try {
 			await fetchPosts("announcement");
@@ -29,17 +33,24 @@ export default function Home() {
 		setLoadingAnnouncements(false);
 	}, [fetchPosts]);
 
+	const handleFirstFetchAnnouncements = useCallback(async () => {
+		setFirstLoadingAnnouncements(true);
+		try {
+			await handleFetchAnnouncements();
+		} catch (error: any) {
+			console.log("First Fetch: fetching announcement Error: ", error.message);
+		}
+		setFirstLoadingAnnouncements(false);
+	}, []);
+
 	useEffect(() => {
-		if (
-			!announcementsMounted.current &&
-			!loadingUser &&
-			!authLoading &&
-			authUser &&
-			userStateValue.user.uid &&
-			postStateValue.posts.length === 0
-		) {
+		const announcementPostsLength = postStateValue.posts.filter(
+			(allPost) => allPost.post.postType === "announcement"
+		).length;
+
+		if (!announcementsMounted.current && announcementPostsLength === 0) {
 			announcementsMounted.current = true;
-			fetchAnnouncements();
+			handleFirstFetchAnnouncements();
 		} else {
 			announcementsMounted.current = true;
 		}
@@ -48,31 +59,35 @@ export default function Home() {
 	return (
 		<>
 			<main className="flex flex-col w-full py-4 px-2">
-				<section className="flex flex-col gap-y-4">
-					{userStateValue.user.roles.includes("admin") && (
-						<PostCreationListener
-							useStateValue={userStateValue}
-							postType="announcement"
-						/>
-					)}
-					{postStateValue.posts
-						.filter((allPost) => allPost.post.postType === "announcement")
-						.map((announcement, index) => {
-							return (
-								<>
-									<PostCard
-										key={index}
-										userStateValue={userStateValue}
-										postData={announcement}
-										deletePost={deletePost}
-										postOptionsStateValue={postOptionsStateValue}
-										setPostOptionsStateValue={setPostOptionsStateValue}
-										onPostLike={onPostLike}
-									/>
-								</>
-							);
-						})}
-				</section>
+				<LimitedBodyLayout>
+					<section className="flex flex-col gap-y-4">
+						{userStateValue.user.roles.includes("admin") && (
+							<PostCreationListener
+								useStateValue={userStateValue}
+								postType="announcement"
+							/>
+						)}
+						{firstLoadingAnnouncements ? (
+							<div>Loading</div>
+						) : (
+							<>
+								{postStateValue.posts
+									.filter((allPost) => allPost.post.postType === "announcement")
+									.map((announcement) => (
+										<PostCard
+											key={announcement.post.id}
+											userStateValue={userStateValue}
+											postData={announcement}
+											deletePost={deletePost}
+											postOptionsStateValue={postOptionsStateValue}
+											setPostOptionsStateValue={setPostOptionsStateValue}
+											onPostLike={onPostLike}
+										/>
+									))}
+							</>
+						)}
+					</section>
+				</LimitedBodyLayout>
 			</main>
 		</>
 	);

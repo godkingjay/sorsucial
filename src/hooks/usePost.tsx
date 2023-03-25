@@ -5,22 +5,11 @@ import {
 	postState,
 } from "@/atoms/postAtom";
 import { CreatePostType } from "@/components/Modal/PostCreationModal";
-import { clientDb as db, clientStorage as storage } from "@/firebase/clientApp";
+import { clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
-import {
-	Timestamp,
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	increment,
-	query,
-	serverTimestamp,
-	writeBatch,
-} from "firebase/firestore";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { deleteObject, ref } from "firebase/storage";
@@ -72,7 +61,7 @@ const usePost = () => {
 			}
 
 			const newPostData: SitePost = await axios
-				.post(apiConfig.apiEndpoint + "post/create-post", {
+				.post(apiConfig.apiEndpoint + "post/post", {
 					newPost,
 					creator,
 				})
@@ -110,7 +99,10 @@ const usePost = () => {
 
 			if (postData.post.postImagesOrVideos.length) {
 				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
-					const imageOrVideoStorageRef = ref(storage, imageOrVideo.filePath);
+					const imageOrVideoStorageRef = ref(
+						clientStorage,
+						imageOrVideo.filePath
+					);
 
 					deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
@@ -123,7 +115,7 @@ const usePost = () => {
 
 			if (postData.post.postFiles.length) {
 				postData.post.postFiles.forEach((file) => {
-					const fileStorageRef = ref(storage, file.filePath);
+					const fileStorageRef = ref(clientStorage, file.filePath);
 
 					deleteObject(fileStorageRef).catch(() => {
 						console.log("Storage: File Deletion Error: ", file.id);
@@ -136,7 +128,7 @@ const usePost = () => {
 
 				postPoll.pollItems.forEach((pollItem) => {
 					const pollItemStorageRef = ref(
-						storage,
+						clientStorage,
 						pollItem.pollItemLogo?.filePath
 					);
 
@@ -263,28 +255,31 @@ const usePost = () => {
 					: null;
 
 			const posts = await axios
-				.post(apiConfig.apiEndpoint + "post/get-posts", {
-					postType,
-					lastPost,
+				.get(apiConfig.apiEndpoint + "post/posts", {
+					params: {
+						getPostType: postType,
+						getFromDate: lastPost?.post.createdAt,
+					},
 				})
 				.then((res) => res.data.posts)
 				.catch((err) => {
-					console.log("API: get-posts error: ", err.message);
+					console.log("API (GET): Getting posts  error: ", err.message);
 				});
 
-			if (posts.length > 0) {
+			if (posts.length) {
 				setPostStateValue((prev) => ({
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
-				posts.forEach((post: PostData) => {
-					fetchUserLike(post.post);
+
+				posts.forEach(async (post: PostData) => {
+					await fetchUserLike(post.post);
 				});
 			} else {
-				console.log("No posts found");
+				console.log("Mongo: No posts found!");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Fetching Announcements Error", error.message);
+			console.log("Mongo: Fetching Posts Error", error.message);
 		}
 	};
 
@@ -347,6 +342,7 @@ const usePost = () => {
 		deletePost,
 		fetchPosts,
 		onPostLike,
+		fetchUserLike,
 	};
 };
 

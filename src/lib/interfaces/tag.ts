@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface represents a tag in the database.
  * It is used to store the tag's name, description, and the number of posts and discussions that are tagged with it.
@@ -18,8 +16,8 @@ import { Timestamp } from "firebase/firestore";
  * @property {number} totalCount - The total number of posts and discussions that are tagged with this tag.
  * @property {number} postCount - The number of posts that are tagged with this tag.
  * @property {number} discussionCount - The number of discussions that are tagged with this tag.
- * @property {Timestamp} [createdAt] - The timestamp of when the tag was created.
- * @property {Timestamp} [lastChangeAt] - The timestamp of when the tag was last changed.
+ * @property {Date} [updatedAt] - The timestamp of when the tag was last changed.
+ * @property {Date} [createdAt] - The timestamp of when the tag was created.
  *
  * ----------------------------------------------------------------
  *
@@ -32,6 +30,6 @@ export interface Tag {
 	totalCount: number;
 	postCount: number;
 	discussionCount: number;
-	createdAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	updatedAt?: Date;
+	createdAt?: Date;
 }

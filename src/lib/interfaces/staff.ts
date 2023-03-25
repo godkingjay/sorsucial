@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 /**
  * This interface is used to define the structure of a staff object.
  * This is the object that is stored in the database.
@@ -20,9 +18,9 @@ import { Timestamp } from "firebase/firestore";
  * @property {string} [workType] - The type of work the staff does.
  * @property {number} yearsOfService - The number of years the staff has been working.
  * @property {string} [status] - The status of the staff.
- * @property {Timestamp} [workStartAt] - The date and time the staff started working.
- * @property {Timestamp} [workEndAt] - The date and time the staff ended working.
- * @property {Timestamp} [lastChangeAt] - The date and time the staff was last changed.
+ * @property {Date} [workStartAt] - The date and time the staff started working.
+ * @property {Date} [workEndAt] - The date and time the staff ended working.
+ * @property {Date} [updatedAt] - The date and time the staff was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -35,7 +33,7 @@ export interface Staff {
 	workType?: string;
 	yearsOfService: number;
 	status?: "working" | "retired" | "quit";
-	workStartAt?: Timestamp;
-	workEndAt?: Timestamp;
-	lastChangeAt?: Timestamp;
+	workStartAt?: Date;
+	workEndAt?: Date;
+	updatedAt?: Date;
 }

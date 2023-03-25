@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 import NameAndPhoto from "./NameAndPhoto";

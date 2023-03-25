@@ -26,7 +26,6 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 			await adminFetchUsers({});
 		} catch (error: any) {
 			console.log("Fetching Users Error!: ", error.message);
-			throw error;
 		}
 		setFetchingUsers(false);
 	}, [adminFetchUsers]);

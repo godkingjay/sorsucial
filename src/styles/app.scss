@@ -455,7 +455,7 @@
 						@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg border-gray-200;
 
 						.post-creation-form-body-input-field {
-							@apply min-w-0 outline-none text-sm bg-transparent break-words min-h-[128px] px-2 py-2 resize-none;
+							@apply min-w-0 outline-none text-sm bg-transparent break-words flex-grow px-2 py-2 resize-none;
 						}
 
 						&:hover {
@@ -480,7 +480,7 @@
 						}
 
 						.image-or-video-tab-output-container {
-							@apply w-full rounded-lg flex-1 p-2 border border-gray-200 flex flex-col text-sm gap-y-2;
+							@apply w-full rounded-lg  p-2 border border-gray-200 flex flex-col text-sm flex-grow h-max gap-y-2;
 						}
 					}
 				}

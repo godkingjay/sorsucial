@@ -80,6 +80,18 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	const formatNumberWithSuffix = (number: number) => {
+		const suffixes = ["", "K", "M", "B"];
+		let suffixIndex = 0;
+		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
+			number /= 1000;
+			suffixIndex++;
+		}
+		const roundedNumber = Math.round(number * 10) / 10;
+		const suffix = suffixes[suffixIndex];
+		return `${roundedNumber}${suffix}`;
+	};
+
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
 			<PostHead
@@ -107,8 +119,19 @@ const PostCard: React.FC<PostCardProps> = ({
 					>
 						<AiFillLike className="h-full w-full" />
 					</div>
-					<p className="text-gray-500">
-						{postData.post.numberOfLikes} <span>liked this post.</span>
+					<p className="text-gray-500 truncate">
+						{postData.userLike ? (
+							<>
+								You and{" "}
+								{formatNumberWithSuffix(postData.post.numberOfLikes - 1)}{" "}
+								<span>others liked this post.</span>
+							</>
+						) : (
+							<>
+								{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
+								<span>liked this post.</span>
+							</>
+						)}
 					</p>
 				</div>
 			</div>

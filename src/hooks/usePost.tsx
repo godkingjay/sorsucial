@@ -161,90 +161,6 @@ const usePost = () => {
 		}
 	};
 
-	const onPostLike = (postData: PostData) => {
-		try {
-			if (authUser) {
-				/**
-				 * If the user has already liked the post, unlike it.
-				 * Else, like the post.
-				 */
-				if (postData.userLike) {
-					axios
-						.delete(apiConfig.apiEndpoint + "post/like/like", {
-							data: {
-								post: postData.post,
-								userLike: postData.userLike,
-							},
-						})
-						.catch((error) => {
-							console.log("API: Post Like Error: ", error.message);
-						});
-
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes - 1,
-											},
-											userLike: null,
-										};
-									}
-
-									return post;
-								}),
-							} as PostState)
-					);
-				} else {
-					const userLike: PostLike = {
-						userId: authUser.uid,
-						postId: postData.post.id,
-						createdAt: new Date(),
-					};
-
-					if (postData.post.groupId) {
-						userLike.groupId = postData.post.groupId;
-					}
-
-					axios.post(apiConfig.apiEndpoint + "post/like/like", {
-						post: postData.post,
-						userLike,
-					});
-
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes + 1,
-											},
-											userLike,
-										};
-									}
-
-									return post;
-								}),
-							} as PostState)
-					);
-				}
-			} else {
-				throw new Error("You must be logged in to like a post");
-			}
-		} catch (error: any) {
-			console.log("Firestore: Post Like Error", error.message);
-		}
-	};
-
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
 			const lastPost =
@@ -267,14 +183,14 @@ const usePost = () => {
 				});
 
 			if (posts.length) {
+				await posts.forEach(async (post: PostData) => {
+					await fetchUserLike(post.post);
+				});
+
 				setPostStateValue((prev) => ({
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
-
-				posts.forEach(async (post: PostData) => {
-					await fetchUserLike(post.post);
-				});
 			} else {
 				console.log("Mongo: No posts found!");
 			}
@@ -289,8 +205,8 @@ const usePost = () => {
 				const userLikeData = await axios
 					.get(apiConfig.apiEndpoint + "post/like/like", {
 						params: {
-							postId: post.id,
-							userId: authUser.uid,
+							getPostId: post.id,
+							getUserId: authUser.uid,
 						},
 					})
 					.then((res) => res.data.userLike)
@@ -330,6 +246,89 @@ const usePost = () => {
 			}
 		} catch (error: any) {
 			console.log("Firestore: Fetching Post Vote Error", error.message);
+		}
+	};
+
+	const onPostLike = (postData: PostData) => {
+		try {
+			if (authUser) {
+				/**
+				 * If the user has already liked the post, unlike it.
+				 * Else, like the post.
+				 */
+				if (postData.userLike) {
+					axios
+						.delete(apiConfig.apiEndpoint + "post/like/like", {
+							data: {
+								deleteUserLikePostId: postData.userLike.postId,
+								deleteUserLikeUserId: postData.userLike.userId,
+							},
+						})
+						.catch((error) => {
+							console.log("API: Post Like Error: ", error.message);
+						});
+
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: post.post.numberOfLikes - 1,
+											},
+											userLike: null,
+										};
+									}
+
+									return post;
+								}),
+							} as PostState)
+					);
+				} else {
+					const userLike: PostLike = {
+						userId: authUser.uid,
+						postId: postData.post.id,
+						createdAt: new Date(),
+					};
+
+					if (postData.post.groupId) {
+						userLike.groupId = postData.post.groupId;
+					}
+
+					axios.post(apiConfig.apiEndpoint + "post/like/like", {
+						newUserLike: userLike,
+					});
+
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: post.post.numberOfLikes + 1,
+											},
+											userLike,
+										};
+									}
+
+									return post;
+								}),
+							} as PostState)
+					);
+				}
+			} else {
+				throw new Error("You must be logged in to like a post");
+			}
+		} catch (error: any) {
+			console.log("Firestore: Post Like Error", error.message);
 		}
 	};
 

@@ -8,7 +8,8 @@ import { GetServerSideProps } from "next";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
-	const { userStateValue, authUser, authLoading, loadingUser } = useUser();
+	const { userStateValue, authUser, authLoading, loadingUser, userMounted } =
+		useUser();
 	const {
 		postStateValue,
 		setPostStateValue,
@@ -48,17 +49,19 @@ export default function Home() {
 			(allPost) => allPost.post.postType === "announcement"
 		).length;
 
-		if (!announcementsMounted.current && announcementPostsLength === 0) {
-			announcementsMounted.current = true;
-			handleFirstFetchAnnouncements();
-		} else {
-			announcementsMounted.current = true;
+		if (userMounted) {
+			if (!announcementsMounted.current && announcementPostsLength === 0) {
+				announcementsMounted.current = true;
+				handleFirstFetchAnnouncements();
+			} else {
+				announcementsMounted.current = true;
+			}
 		}
-	}, []);
+	}, [userMounted]);
 
 	return (
 		<>
-			<main className="flex flex-col w-full py-4 px-2">
+			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
 						{userStateValue.user.roles.includes("admin") && (

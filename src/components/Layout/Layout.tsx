@@ -14,9 +14,14 @@ import {
 } from "@/atoms/navigationBarAtom";
 import AdminModals from "../Modal/AdminModals";
 import AdminPageLayout from "./AdminPageLayout";
+import PageContainerLayout from "./PageContainerLayout";
 
 type LayoutProps = {
 	children: React.ReactNode;
+};
+
+export type CurrentDirectory = {
+	main: string;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -85,7 +90,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
 			{(authLoading && !authUser && loadingUser) ||
-			(loadingUser && !userStateValue.user.uid && authLoading) ? (
+			(loadingUser && !userStateValue.user.uid && authLoading) ||
+			loadingUser ||
+			authLoading ? (
 				<>
 					<LoadingScreen />
 				</>
@@ -108,22 +115,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 								userStateValue={userStateValue}
 							/>
 						)}
-						{currentDirectory.main === "admin" ? (
-							<AdminPageLayout
-								navigationBarStateValue={navigationBarStateValue}
-								setNavigationBarStateValue={setNavigationBarStateValue}
-								router={router}
-								loadingUser={loadingUser}
-								authLoading={authLoading}
-								authUser={authUser}
-								userStateValue={userStateValue}
-								userMounted={userMounted}
-							>
-								{children}
-							</AdminPageLayout>
-						) : (
-							<MainPageLayout>{children}</MainPageLayout>
-						)}
+						<PageContainerLayout
+							authLoading={authLoading}
+							userStateValue={userStateValue}
+							navigationBarStateValue={navigationBarStateValue}
+							setNavigationBarStateValue={setNavigationBarStateValue}
+							currentDirectory={currentDirectory}
+							loadingUser={loadingUser}
+							router={router}
+							userMounted={userMounted}
+							authUser={authUser}
+						>
+							{children}
+						</PageContainerLayout>
 					</div>
 				</>
 			)}

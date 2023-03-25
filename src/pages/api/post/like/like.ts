@@ -11,37 +11,34 @@ export default async function handler(
 		const postsCollection = db.collection("posts");
 		const postLikesCollection = db.collection("post-likes");
 
-		const { post, userLike } = req.body;
-
 		switch (req.method) {
 			case "GET":
-				const { postId, userId } = req.query;
+				const { getPostId, getUserId } = req.query;
 
-				if (!postId || !userId) {
+				if (!getPostId || !getUserId) {
 					res.status(500).json({ error: "No post id or user id provided" });
 				}
 
 				const like = await postLikesCollection.findOne({
-					postId,
-					userId,
+					postId: getPostId,
+					userId: getUserId,
 				});
 
 				res.status(200).json({ userLike: like });
 				break;
 
 			case "POST":
-				if (!post) {
-					res.status(500).json({ error: "No post provided" });
-				}
+				const { newUserLike } = req.body;
 
-				if (!userLike) {
+				if (!newUserLike) {
 					res.status(500).json({ error: "No user like provided" });
+					return;
 				}
 
-				const newLikeState = await postLikesCollection.insertOne(userLike);
+				const newLikeState = await postLikesCollection.insertOne(newUserLike);
 				const newPostStateLiked = await postsCollection.updateOne(
 					{
-						id: post.id,
+						id: newUserLike.postId,
 					},
 					{
 						$inc: {
@@ -50,25 +47,25 @@ export default async function handler(
 					}
 				);
 
-				res.status(200).json({ newLikeState, userLike });
+				res.status(200).json({ newLikeState, newPostStateLiked });
 				break;
 
 			case "DELETE":
-				if (!post) {
-					res.status(500).json({ error: "No post provided" });
-				}
+				const { deleteUserLikePostId, deleteUserLikeUserId } = req.body;
 
-				if (!userLike) {
-					res.status(500).json({ error: "No user like provided" });
+				if (!deleteUserLikePostId || !deleteUserLikeUserId) {
+					res.status(500).json({ error: "No post id or user id provided" });
+					return;
 				}
 
 				const deleteLikeState = await postLikesCollection.deleteOne({
-					postId: userLike.postId,
-					userId: userLike.userId,
+					postId: deleteUserLikePostId,
+					userId: deleteUserLikeUserId,
 				});
+
 				const newPostStateUnliked = await postsCollection.updateOne(
 					{
-						id: post.id,
+						id: deleteUserLikePostId,
 					},
 					{
 						$inc: {
@@ -77,7 +74,7 @@ export default async function handler(
 					}
 				);
 
-				res.status(200).json({ deleteLikeState, userLike });
+				res.status(200).json({ deleteLikeState, newPostStateUnliked });
 				break;
 
 			default:

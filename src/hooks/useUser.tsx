@@ -99,8 +99,6 @@ const useUser = () => {
 									...newUserData,
 								},
 							}));
-
-							router.push("/auth/create-user");
 						}
 					}
 				})
@@ -261,7 +259,6 @@ const useUser = () => {
 
 	useEffect(() => {
 		if (
-			user &&
 			userStateValue.user.isFirstLogin &&
 			!loading &&
 			!loadingUser &&
@@ -270,7 +267,6 @@ const useUser = () => {
 			router.push("/user/create-user");
 		}
 	}, [
-		user,
 		userStateValue.user.uid,
 		userStateValue.user.isFirstLogin,
 		loading,

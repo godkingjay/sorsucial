@@ -119,9 +119,19 @@ const PostCard: React.FC<PostCardProps> = ({
 					>
 						<AiFillLike className="h-full w-full" />
 					</div>
-					<p className="text-gray-500">
-						{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
-						<span>liked this post.</span>
+					<p className="text-gray-500 truncate">
+						{postData.userLike ? (
+							<>
+								You and{" "}
+								{formatNumberWithSuffix(postData.post.numberOfLikes - 1)}{" "}
+								<span>others liked this post.</span>
+							</>
+						) : (
+							<>
+								{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
+								<span>liked this post.</span>
+							</>
+						)}
 					</p>
 				</div>
 			</div>

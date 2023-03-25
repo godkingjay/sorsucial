@@ -1,18 +1,16 @@
-import { clientDb } from "@/firebase/clientApp";
+import { clientAuth, clientDb } from "@/firebase/clientApp";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 
 const useCheck = () => {
 	const checkUserEmailExists = async (userEmail: string): Promise<boolean> => {
 		try {
-			const usersQuery = query(
-				collection(clientDb, "users"),
-				where("email", "==", userEmail),
-				limit(1)
+			const signInMethods = await fetchSignInMethodsForEmail(
+				clientAuth,
+				userEmail
 			);
 
-			const usersSnapshot = await getDocs(usersQuery);
-
-			if (usersSnapshot.docs.length > 0) {
+			if (signInMethods.length > 0) {
 				return true;
 			} else {
 				return false;

@@ -117,9 +117,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		e.preventDefault();
 		setCreatingUser(true);
 		try {
-			await createUser(createUserForm).then(() => {
-				router.push("/");
-			});
+			await createUser(createUserForm);
+			// .then(() => {
+			// 	router.push("/");
+			// });
 		} catch (error: any) {
 			console.log("Create User Error!");
 		}

@@ -40,6 +40,8 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 		}
 	);
 	const router = useRouter();
+	const [emailExists, setEmailExists] = useState(false);
+
 	const initializeCreateAccount = async (email: string) => {
 		setCreateAccountForm((prev) => ({
 			...prev,
@@ -56,27 +58,27 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 			(localStorage.getItem("emailForSignIn") as string) || params.get("email");
 
 		if (isSignInWithEmailLink(clientAuth, window.location.href) && email) {
-			const emailExists = await checkUserEmailExists(email);
-
-			if (!emailExists) {
-				await initializeCreateAccount(email);
-				setLoadingCreateAccount(false);
-				setCheckingUserEmail(false);
-			}
-
-			return !emailExists;
+			await checkUserEmailExists(email).then(async (emailExistsResult) => {
+				if (!emailExistsResult) {
+					await initializeCreateAccount(email);
+					setLoadingCreateAccount(false);
+					setCheckingUserEmail(false);
+				} else {
+					setEmailExists(true);
+				}
+			});
 		} else {
 			return false;
 		}
 	};
 
 	useEffect(() => {
-		loadPage().then((initializationStatus) => {
-			if (!initializationStatus) {
-				router.push("/auth/signin");
-			}
-		});
-	}, []);
+		if (emailExists) {
+			router.push("/auth/signin");
+		} else {
+			loadPage();
+		}
+	}, [emailExists]);
 
 	useEffect(() => {
 		if (
@@ -87,7 +89,7 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 		) {
 			router.push("/");
 		}
-	}, [authUser, authLoading]);
+	}, [authUser, authLoading, userStateValue.user.isFirstLogin, loadingUser]);
 
 	return (
 		<>

@@ -13,15 +13,10 @@ const CreateUserPage: React.FC<CreateUserPageProps> = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (
-			authUser &&
-			!loadingUser &&
-			!authLoading &&
-			!userStateValue.user.isFirstLogin
-		) {
+		if (userMounted && !userStateValue.user.isFirstLogin) {
 			router.push("/");
 		}
-	}, []);
+	}, [userMounted, userStateValue.user.isFirstLogin]);
 
 	if (
 		loadingUser ||

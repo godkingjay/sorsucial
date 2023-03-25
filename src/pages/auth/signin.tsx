@@ -9,7 +9,7 @@ import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 type SignInPageProps = {};
 
 const SignInPage: React.FC<SignInPageProps> = () => {
-	const { authUser, authLoading, loadingUser } = useUser();
+	const { authUser, authLoading, loadingUser, userMounted } = useUser();
 	const router = useRouter();
 
 	useEffect(() => {

@@ -205,6 +205,7 @@ const useUser = () => {
 				filePath: storageRef.fullPath,
 				fileURL: downloadURL,
 				fileExtension: image?.name.split(".").pop() as string,
+				fileSize: image?.size as number,
 				createdAt: new Date(),
 			};
 

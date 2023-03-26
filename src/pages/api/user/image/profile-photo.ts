@@ -29,7 +29,7 @@ export default async function handler(
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
-		const userProfilePhotoCollection = db.collection("user-profile-photo");
+		const userProfilePhotosCollection = db.collection("user-profile-photos");
 
 		switch (req.method) {
 			/**----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ export default async function handler(
 					res.status(500).json({ error: "No image provided" });
 				}
 
-				const newImageState = await userProfilePhotoCollection.insertOne(
+				const newImageState = await userProfilePhotosCollection.insertOne(
 					newImage
 				);
 
@@ -83,7 +83,7 @@ export default async function handler(
 					res.status(500).json({ error: "No image id provided" });
 				}
 
-				const imageData = await userProfilePhotoCollection.findOne({
+				const imageData = await userProfilePhotosCollection.findOne({
 					id: getImageId,
 				});
 

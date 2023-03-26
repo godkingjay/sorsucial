@@ -177,8 +177,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								height = img.width;
 							}
 
-							canvas.width = img.width;
-							canvas.height = img.height;
+							canvas.height = height;
+							canvas.width = width;
 
 							const xOffset = (img.width - width) / 2;
 							const yOffset = (img.height - height) / 2;

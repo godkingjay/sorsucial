@@ -80,6 +80,7 @@ export interface SitePost {
  * @property {string} fileExtension - The extension of the image or video.
  * @property {string} [fileTitle] - The title of the image or video.
  * @property {string} [fileDescription] - The description of the image or video.
+ * @property {number} fileSize - The size of the image or video.
  *
  * ----------------------------------------------------------------
  *
@@ -98,6 +99,7 @@ export interface PostImageOrVideo {
 	fileExtension: string;
 	fileTitle?: string;
 	fileDescription?: string;
+	fileSize: number;
 }
 
 /**
@@ -124,6 +126,7 @@ export interface PostImageOrVideo {
  * @property {string} fileExtension - The extension of the file.
  * @property {string} [fileTitle] - The title of the file.
  * @property {string} [fileDescription] - The description of the file.
+ * @property {number} fileSize - The size of the file.
  *
  * ----------------------------------------------------------------
  *
@@ -140,6 +143,7 @@ export interface PostFile {
 	fileExtension: string;
 	fileTitle?: string;
 	fileDescription?: string;
+	fileSize: number;
 }
 
 /**
@@ -279,6 +283,7 @@ export interface PollItem {
  * @property {string} filePath - The path of the image or video.
  * @property {string} fileURL - The URL of the image or video.
  * @property {string} fileExtension - The extension of the image or video.
+ * @property {number} fileSize - The size of the image or video.
  *
  * ----------------------------------------------------------------
  *
@@ -296,6 +301,7 @@ export interface PollItemLogo {
 	filePath: string;
 	fileURL: string;
 	fileExtension: string;
+	fileSize: number;
 }
 
 /**

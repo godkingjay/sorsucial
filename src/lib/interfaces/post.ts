@@ -71,6 +71,8 @@ export interface SitePost {
  * @property {string} id - The unique identifier of the image or video.
  * @property {number} index - The index of the image or video.
  * @property {string} postId - The unique identifier of the post.
+ * @property {number} height - The height of the image or video.
+ * @property {number} width - The width of the image or video.
  * @property {string} filePath - The path of the image or video.
  * @property {string} fileName - The name of the image or video.
  * @property {string} fileType - The type of the image or video.
@@ -87,6 +89,8 @@ export interface PostImageOrVideo {
 	id: string;
 	index: number;
 	postId: string;
+	height: number;
+	width: number;
 	filePath: string;
 	fileName: string;
 	fileType: string;
@@ -268,6 +272,8 @@ export interface PollItem {
  * @property {string} postId - The unique identifier of the post.
  * @property {string} pollId - The unique identifier of the poll.
  * @property {string} pollItemId - The unique identifier of the poll item.
+ * @property {number} height - The height of the image or video.
+ * @property {number} width - The width of the image or video.
  * @property {string} fileName - The name of the image or video.
  * @property {string} fileType - The type of the image or video.
  * @property {string} filePath - The path of the image or video.
@@ -283,6 +289,8 @@ export interface PollItemLogo {
 	postId: string;
 	pollId: string;
 	pollItemId: string;
+	height: number;
+	width: number;
 	fileName: string;
 	fileType: string;
 	filePath: string;

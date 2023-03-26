@@ -1,4 +1,6 @@
+import { clientStorage } from "@/firebase/clientApp";
 import clientPromise from "@/lib/mongodb";
+import { deleteObject, ref } from "firebase/storage";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -56,19 +58,41 @@ export default async function handler(
 					return;
 				}
 
-				await userProfilePhotosCollection
-					.deleteMany({ userId: deleteUserId })
-					.then((result) => {
+				const deleteProfilePhotos = await userProfilePhotosCollection
+					.find({
+						userId: deleteUserId,
+					})
+					.toArray();
+
+				if (deleteProfilePhotos.length === 0) {
+					res.status(200).json({
+						deleteProfilePhotoState: "No profile photos found",
+						deleteUserId,
+						isDeleted: true,
+					});
+					return;
+				}
+
+				await Promise.all(
+					deleteProfilePhotos.map(async (profilePhoto) => {
+						const imageStorageRef = ref(clientStorage, profilePhoto.filePath);
+
+						await deleteObject(imageStorageRef).then(async () => {
+							await userProfilePhotosCollection.deleteOne({
+								id: profilePhoto.id,
+							});
+						});
+					})
+				)
+					.then(() => {
 						res.status(200).json({
-							deleteProfilePhotoState: result,
+							deleteProfilePhotoState: "Profile photos deleted",
 							deleteUserId,
 							isDeleted: true,
 						});
-						return result;
 					})
 					.catch((err) => {
 						res.status(500).json({ error: err, isDeleted: false });
-						return err;
 					});
 
 				break;

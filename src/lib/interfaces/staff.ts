@@ -20,7 +20,8 @@
  * @property {string} [status] - The status of the staff.
  * @property {Date} [workStartAt] - The date and time the staff started working.
  * @property {Date} [workEndAt] - The date and time the staff ended working.
- * @property {Date} [updatedAt] - The date and time the staff was last changed.
+ * @property {Date} updatedAt - The date and time the staff was last changed.
+ * @property {Date} createdAt - The date and time the staff was created.
  *
  * ----------------------------------------------------------------
  *
@@ -35,5 +36,6 @@ export interface Staff {
 	status?: "working" | "retired" | "quit";
 	workStartAt?: Date;
 	workEndAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

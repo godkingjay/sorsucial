@@ -21,8 +21,9 @@ import { GeoPoint } from "firebase/firestore";
  * @property {string} [cityOrMunicipality] - The city or municipality of the department.
  * @property {string} [postalCode] - The postal code of the department.
  * @property {GeoPoint} [location] - The location of the department.
- * @property {Date} [updatedAt] - The date and time the department was last changed.
  * @property {Date} [builtAt] - The date and time the department was built.
+ * @property {Date} updatedAt - The date and time the department was last changed.
+ * @property {Date} createdAt - The date and time the department was created.
  *
  * ----------------------------------------------------------------
  *
@@ -38,6 +39,7 @@ export interface Department {
 	cityOrMunicipality?: string;
 	postalCode?: string;
 	location?: GeoPoint;
-	updatedAt?: Date;
 	builtAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

@@ -21,7 +21,8 @@
  * @property {boolean} isElective - Whether the course is an elective.
  * @property {Date} [startAt] - The date and time the course started.
  * @property {Date} [endAt] - The date and time the course ended.
- * @property {Date} [updatedAt] - The date and time the course was last changed.
+ * @property {Date} updatedAt - The date and time the course was last changed.
+ * @property {Date} createdAt - The date and time the course was created.
  *
  * ----------------------------------------------------------------
  *
@@ -39,7 +40,8 @@ export interface Course {
 	isElective: boolean;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -60,7 +62,8 @@ export interface Course {
  * @property {string} instructorId - The unique identifier of the instructor.
  * @property {Date} [startAt] - The date and time the user started teaching the course.
  * @property {Date} [endAt] - The date and time the user stopped teaching the course.
- * @property {Date} [updatedAt] - The date and time the course instructor was last changed.
+ * @property {Date} updatedAt - The date and time the course instructor was last changed.
+ * @property {Date} createdAt - The date and time the course instructor was created.
  *
  * ----------------------------------------------------------------
  *
@@ -71,7 +74,8 @@ export interface CourseInstructor {
 	instructorId: string;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -93,7 +97,8 @@ export interface CourseInstructor {
  * @property {number} [grade] - The grade of the student in the course.
  * @property {Date} [startAt] - The date and time the user started taking the course.
  * @property {Date} [endAt] - The date and time the user stopped taking the course.
- * @property {Date} [updatedAt] - The date and time the course student was last changed.
+ * @property {Date} updatedAt - The date and time the course student was last changed.
+ * @property {Date} createdAt - The date and time the course student was created.
  *
  * ----------------------------------------------------------------
  *
@@ -105,5 +110,6 @@ export interface CourseStudent {
 	grade?: number;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

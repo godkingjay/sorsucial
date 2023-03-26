@@ -17,8 +17,9 @@
  * @property {number} numberOfMembers - The number of members in the group.
  * @property {string} [imageURL] - The URL of the group's image.
  * @property {Date} [lastPostAt] - The date and time when the group last posted.
+ * @property {Date} updatedAt - The date and time when the group was last changed.
  * @property {Date} createdAt - The date and time when the group was created.
- * @property {Date} [updatedAt] - The date and time when the group was last changed.
+ *
  *
  * ----------------------------------------------------------------
  *
@@ -32,8 +33,8 @@ export interface SiteGroup {
 	numberOfMembers: number;
 	imageURL?: string;
 	lastPostAt?: Date;
+	updatedAt: Date;
 	createdAt: Date;
-	updatedAt?: Date;
 }
 
 /**
@@ -52,8 +53,8 @@ export interface SiteGroup {
  *
  * @property {string} userId - The unique identifier of the user.
  * @property {"owner" | "admin" | "moderator" | "member"} role - The role of the user in the group.
+ * @property {Date} updatedAt - The date and time when the group member was last changed.
  * @property {Date} joinedAt - The date and time when the user joined the group.
- * @property {Date} [updatedAt] - The date and time when the user's role was last changed.
  *
  * ----------------------------------------------------------------
  *
@@ -62,6 +63,6 @@ export interface SiteGroup {
 export interface GroupMember {
 	userId: string;
 	role: "owner" | "admin" | "moderator" | "member";
+	updatedAt: Date;
 	joinedAt: Date;
-	updatedAt?: Date;
 }

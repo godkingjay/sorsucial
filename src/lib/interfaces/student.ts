@@ -20,7 +20,8 @@
  * @property {("summa cum laude" | "magna cum laude" | "cum laude" | "none")} [award] - The award of the student.
  * @property {Date} [enrolledAt] - The date and time the student enrolled.
  * @property {Date} [graduatedAt] - The date and time the student graduated.
- * @property {Date} [updatedAt] - The date and time the student was last changed.
+ * @property {Date} updatedAt - The date and time the student was last changed.
+ * @property {Date} createdAt - The date and time the student was created.
  *
  * ----------------------------------------------------------------
  *
@@ -37,7 +38,8 @@ export interface Student {
 	award?: "summa cum laude" | "magna cum laude" | "cum laude" | "none";
 	enrolledAt?: Date;
 	graduatedAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -56,7 +58,8 @@ export interface Student {
  *
  * @property {number} courseId - The unique identifier of the course.
  * @property {string} [description] - The description of the course.
- * @property {Date} [updatedAt] - The date and time the course was last changed.
+ * @property {Date} updatedAt - The date and time the course was last changed.
+ * @property {Date} createdAt - The date and time the course was created.
  *
  * ----------------------------------------------------------------
  *
@@ -65,5 +68,6 @@ export interface Student {
 export interface StudentCourse {
 	courseId: number;
 	description?: string;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

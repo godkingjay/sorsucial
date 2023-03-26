@@ -16,8 +16,8 @@
  * @property {number} totalCount - The total number of posts and discussions that are tagged with this tag.
  * @property {number} postCount - The number of posts that are tagged with this tag.
  * @property {number} discussionCount - The number of discussions that are tagged with this tag.
- * @property {Date} [updatedAt] - The timestamp of when the tag was last changed.
- * @property {Date} [createdAt] - The timestamp of when the tag was created.
+ * @property {Date} updatedAt - The date and time the tag was last changed.
+ * @property {Date} createdAt - The date and time the tag was created.
  *
  * ----------------------------------------------------------------
  *
@@ -30,6 +30,6 @@ export interface Tag {
 	totalCount: number;
 	postCount: number;
 	discussionCount: number;
-	updatedAt?: Date;
-	createdAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

@@ -22,7 +22,8 @@ import { GeoPoint } from "firebase/firestore";
  * @property {string} [postalCode] - The postal code of the campus.
  * @property {GeoPoint} [location] - The location of the campus.
  * @property {Date} [builtAt] - The date and time the campus was built.
- * @property {Date} [updatedAt] - The date and time the campus was last changed.
+ * @property {Date} updatedAt - The date and time the campus was last changed.
+ * @property {Date} createdAt - The date and time the campus was created.
  *
  * ----------------------------------------------------------------
  *
@@ -39,5 +40,6 @@ export interface Campus {
 	postalCode?: string;
 	location?: GeoPoint;
 	builtAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

@@ -20,7 +20,8 @@
  * @property {number} durationYear - The duration of the program in years.
  * @property {Date} [startAt] - The date and time the program started.
  * @property {Date} [endAt] - The date and time the program ended.
- * @property {Date} [updatedAt] - The date and time the program was last changed.
+ * @property {Date} updatedAt - The date and time the program was last changed.
+ * @property {Date} createdAt - The date and time the program was created.
  *
  * ----------------------------------------------------------------
  *
@@ -37,7 +38,8 @@ export interface Program {
 	durationYear: number;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -57,7 +59,8 @@ export interface Program {
  * @property {string} courseId - The unique identifier of the course.
  * @property {Date} [startAt] - The date and time the course started.
  * @property {Date} [endAt] - The date and time the course ended.
- * @property {Date} [updatedAt] - The date and time the course was last changed.
+ * @property {Date} updatedAt - The date and time the course was last changed.
+ * @property {Date} createdAt - The date and time the course was created.
  *
  * ----------------------------------------------------------------
  *
@@ -67,7 +70,8 @@ export interface Course {
 	courseId: string;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -88,7 +92,8 @@ export interface Course {
  * @property {string} instructorId - The unique identifier of the instructor.
  * @property {Date} [startAt] - The date and time the instructor started teaching in the program.
  * @property {Date} [endAt] - The date and time the instructor ended teaching in the program.
- * @property {Date} [updatedAt] - The date and time the program instructor was last changed.
+ * @property {Date} updatedAt - The date and time the program instructor was last changed.
+ * @property {Date} createdAt - The date and time the program instructor was created.
  *
  * ----------------------------------------------------------------
  *
@@ -99,5 +104,6 @@ export interface CourseInstructor {
 	instructorId: string;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

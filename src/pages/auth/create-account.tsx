@@ -27,8 +27,14 @@ export type CreateAccountType = {
 };
 
 const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
-	const { authUser, authLoading, loadingUser, createAccount, userStateValue } =
-		useUser();
+	const {
+		authUser,
+		authLoading,
+		loadingUser,
+		createAccount,
+		userStateValue,
+		userMounted,
+	} = useUser();
 	const { checkUserEmailExists } = useCheck();
 	const [checkingUserEmail, setCheckingUserEmail] = useState(true);
 	const [loadingCreateAccount, setLoadingCreateAccount] = useState(true);
@@ -82,14 +88,21 @@ const CreateAccountPage: React.FC<CreateAccountPageProps> = () => {
 
 	useEffect(() => {
 		if (
-			authUser &&
 			!authLoading &&
+			!loadingUser &&
+			authUser &&
+			userStateValue.user.uid &&
 			!userStateValue.user.isFirstLogin &&
-			!loadingUser
+			userMounted
 		) {
 			router.push("/");
 		}
-	}, [authUser, authLoading, userStateValue.user.isFirstLogin, loadingUser]);
+	}, [
+		authUser,
+		userStateValue.user.uid,
+		userStateValue.user.isFirstLogin,
+		userMounted,
+	]);
 
 	return (
 		<>

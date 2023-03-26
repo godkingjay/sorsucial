@@ -262,19 +262,17 @@ const useUser = () => {
 
 	useEffect(() => {
 		if (
-			// userStateValue.user.uid &&
-			// userStateValue.user.isFirstLogin &&
 			!loading &&
 			!loadingUser &&
+			userStateValue.user.uid &&
+			userStateValue.user.isFirstLogin &&
 			currentUserMounted.current
 		) {
 			router.push("/user/create-user");
 		}
 	}, [
-		// userStateValue.user.uid,
-		// userStateValue.user.isFirstLogin,
-		loading,
-		loadingUser,
+		userStateValue.user.uid,
+		userStateValue.user.isFirstLogin,
 		currentUserMounted.current,
 	]);
 

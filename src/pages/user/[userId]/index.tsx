@@ -35,7 +35,7 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 						? "Loading..."
 						: !userStateValue.userPage
 						? "User not Found!"
-						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName}} | Profile`}
+						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName} | Profile`}
 				</title>
 			</Head>
 			<main className="h-full">

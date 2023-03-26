@@ -71,6 +71,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
 		setCreatingAccount(true);
 		try {
+			localStorage.removeItem("emailForSignIn");
 			await createAccount(createAccountForm.email, createAccountForm.password);
 		} catch (error: any) {
 			console.log("Account Creation Failed!");

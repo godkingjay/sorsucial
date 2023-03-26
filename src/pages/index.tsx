@@ -2,9 +2,11 @@ import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import LoadingScreen from "@/components/Skeleton/LoadingScreen";
+import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -61,19 +63,25 @@ export default function Home() {
 
 	return (
 		<>
+			<Head>
+				<title>Announcements | SorSUcial</title>
+			</Head>
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
-						{userStateValue.user.roles.includes("admin") && (
-							<PostCreationListener
-								useStateValue={userStateValue}
-								postType="announcement"
-							/>
-						)}
-						{firstLoadingAnnouncements ? (
-							<div>Loading</div>
+						{firstLoadingAnnouncements && !userMounted ? (
+							<>
+								<PostCardSkeleton />
+								<PostCardSkeleton />
+							</>
 						) : (
 							<>
+								{userStateValue.user.roles.includes("admin") && (
+									<PostCreationListener
+										useStateValue={userStateValue}
+										postType="announcement"
+									/>
+								)}
 								{postStateValue.posts
 									.filter((allPost) => allPost.post.postType === "announcement")
 									.map((announcement) => (

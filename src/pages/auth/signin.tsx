@@ -9,14 +9,14 @@ import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 type SignInPageProps = {};
 
 const SignInPage: React.FC<SignInPageProps> = () => {
-	const { authUser, authLoading, loadingUser } = useUser();
+	const { authUser, authLoading, loadingUser, userMounted } = useUser();
 	const router = useRouter();
 
 	useEffect(() => {
-		if (authUser && !authLoading && !loadingUser) {
+		if (userMounted && !authLoading && !loadingUser) {
 			router.push("/");
 		}
-	}, [authUser, authLoading, loadingUser]);
+	}, [userMounted, authLoading, loadingUser]);
 
 	if (authLoading || authUser || loadingUser) {
 		return <LoadingScreen />;

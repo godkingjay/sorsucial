@@ -16,7 +16,8 @@
  * @property {string} instructorId - The unique identifier of the instructor.
  * @property {boolean} isAccepted - The status of the request.
  * @property {boolean} isRejected - The status of the request.
- * @property {Date} [createdAt] - The date and time the request was created.
+ * @property {Date} updatedAt - The date and time the request was last changed.
+ * @property {Date} createdAt - The date and time the request was created.
  *
  * ----------------------------------------------------------------
  *
@@ -28,7 +29,8 @@ export interface InstructorRequest {
 	instructorId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	createdAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -47,7 +49,8 @@ export interface InstructorRequest {
  * @property {string} staffId - The unique identifier of the staff.
  * @property {boolean} isAccepted - The status of the request.
  * @property {boolean} isRejected - The status of the request.
- * @property {Date} [createdAt] - The date and time the request was created.
+ * @property {Date} updatedAt - The date and time the request was last changed.
+ * @property {Date} createdAt - The date and time the request was created.
  *
  * ----------------------------------------------------------------
  *
@@ -59,5 +62,6 @@ export interface StaffRequest {
 	staffId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	createdAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

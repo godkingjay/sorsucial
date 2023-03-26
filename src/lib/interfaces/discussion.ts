@@ -24,7 +24,7 @@
  * @property {number} numberOfReplies - The number of replies of the discussion.
  * @property {number} numberOfUpVotes - The number of upvotes of the discussion.
  * @property {number} numberOfDownVotes - The number of downvotes of the discussion.
- * @property {Date} [updatedAt] - The date and time when the discussion was last changed.
+ * @property {Date} updatedAt - The date and time when the discussion was last changed.
  * @property {Date} createdAt - The date and time when the discussion was created.
  *
  * ----------------------------------------------------------------
@@ -46,7 +46,7 @@ export interface SiteDiscussion {
 	numberOfReplies: number;
 	numberOfUpVotes: number;
 	numberOfDownVotes: number;
-	updatedAt?: Date;
+	updatedAt: Date;
 	createdAt: Date;
 }
 
@@ -68,6 +68,8 @@ export interface SiteDiscussion {
  * @property {string} discussionId - The unique identifier of the discussion.
  * @property {string} [groupId] - The unique identifier of the group.
  * @property {1 | -1} voteValue - The value of the vote.
+ * @property {Date} updatedAt - The date and time when the vote was last changed.
+ * @property {Date} createdAt - The date and time when the vote was created.
  *
  * ----------------------------------------------------------------
  *
@@ -78,6 +80,8 @@ export interface DiscussionVote {
 	discsussionId: string;
 	groupId?: string;
 	voteValue: 1 | -1;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -105,7 +109,7 @@ export interface DiscussionVote {
  * @property {number} numberOfReplies - The number of replies of the reply.
  * @property {boolean} isHidden - The status of the reply.
  * @property {"reply" | "approved" | "disapproved"} replyStatus - The status of the reply.
- * @property {Date} [updatedAt] - The date and time when the reply was last changed.
+ * @property {Date} updatedAt - The date and time when the reply was last changed.
  * @property {Date} createdAt - The date and time when the reply was created.
  *
  * ----------------------------------------------------------------
@@ -124,7 +128,7 @@ export interface Reply {
 	numberOfReplies: number;
 	isHidden: boolean;
 	replyStatus: "reply" | "approved" | "disapproved";
-	updatedAt?: Date;
+	updatedAt: Date;
 	createdAt: Date;
 }
 
@@ -147,6 +151,8 @@ export interface Reply {
  * @property {string} [groupId] - The unique identifier of the group.
  * @property {string} discussionId - The unique identifier of the discussion.
  * @property {1 | -1} voteValue - The value of the vote.
+ * @property {Date} updatedAt - The date and time when the vote was last changed.
+ * @property {Date} createdAt - The date and time when the vote was created.
  *
  * ----------------------------------------------------------------
  *
@@ -158,4 +164,6 @@ export interface ReplyVote {
 	groupId?: string;
 	discussionId: string;
 	voteValue: 1 | -1;
+	updatedAt: Date;
+	createdAt: Date;
 }

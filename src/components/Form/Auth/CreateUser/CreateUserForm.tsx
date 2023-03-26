@@ -27,6 +27,8 @@ export type CreateUserType = {
 		url: string;
 		size: number;
 		type: string;
+		height: number;
+		width: number;
 	} | null;
 	birthdate: Date;
 	gender: "male" | "female" | "other" | "none";
@@ -117,9 +119,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		e.preventDefault();
 		setCreatingUser(true);
 		try {
-			await createUser(createUserForm).then(() => {
-				router.push("/");
-			});
+			await createUser(createUserForm);
+			// .then(() => {
+			// 	router.push("/");
+			// });
 		} catch (error: any) {
 			console.log("Create User Error!");
 		}
@@ -163,7 +166,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 							const canvas = document.createElement("canvas");
 							const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-							let width, height;
+							let width = 0,
+								height = 0;
 
 							if (img.width > img.height) {
 								width = img.height;
@@ -173,8 +177,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 								height = img.width;
 							}
 
-							canvas.width = img.width;
-							canvas.height = img.height;
+							canvas.height = height;
+							canvas.width = width;
 
 							const xOffset = (img.width - width) / 2;
 							const yOffset = (img.height - height) / 2;
@@ -204,6 +208,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 												url: URL.createObjectURL(blob),
 												size: blob.size,
 												type: blob.type,
+												height: height,
+												width: width,
 											},
 										}));
 									}

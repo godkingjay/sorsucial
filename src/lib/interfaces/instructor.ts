@@ -19,7 +19,8 @@
  * @property {string} [status] - The status of the instructor.
  * @property {Date} [workStartAt] - The date and time the instructor started working.
  * @property {Date} [workEndAt] - The date and time the instructor ended working.
- * @property {Date} [updatedAt] - The date and time the instructor was last changed.
+ * @property {Date} updatedAt - The date and time the instructor was last changed.
+ * @property {Date} createdAt - The date and time the instructor was created.
  *
  * ----------------------------------------------------------------
  *
@@ -35,7 +36,8 @@ export interface Instructor {
 	status?: "working" | "retired" | "quit";
 	workStartAt?: Date;
 	workEndAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -54,7 +56,8 @@ export interface Instructor {
  *
  * @property {string} courseId - The unique identifier of the course.
  * @property {string} [description] - The description of the course.
- * @property {Date} [updatedAt] - The date and time the course was last changed.
+ * @property {Date} updatedAt - The date and time the course was last changed.
+ * @property {Date} createdAt - The date and time the course was created.
  *
  * ----------------------------------------------------------------
  *
@@ -63,5 +66,6 @@ export interface Instructor {
 export interface InstructorCourse {
 	courseId: string;
 	description?: string;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

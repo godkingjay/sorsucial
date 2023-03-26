@@ -112,6 +112,15 @@ const useAdmin = () => {
 								},
 							});
 
+							axios.delete(
+								apiConfig.apiEndpoint + "user/image/profile-photos",
+								{
+									data: {
+										deleteUserId: userId,
+									},
+								}
+							);
+
 							setAdminStateValue((prev) => ({
 								...prev,
 								manageUsers: prev.manageUsers.filter(

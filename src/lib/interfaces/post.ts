@@ -71,6 +71,8 @@ export interface SitePost {
  * @property {string} id - The unique identifier of the image or video.
  * @property {number} index - The index of the image or video.
  * @property {string} postId - The unique identifier of the post.
+ * @property {number} height - The height of the image or video.
+ * @property {number} width - The width of the image or video.
  * @property {string} filePath - The path of the image or video.
  * @property {string} fileName - The name of the image or video.
  * @property {string} fileType - The type of the image or video.
@@ -78,6 +80,9 @@ export interface SitePost {
  * @property {string} fileExtension - The extension of the image or video.
  * @property {string} [fileTitle] - The title of the image or video.
  * @property {string} [fileDescription] - The description of the image or video.
+ * @property {number} fileSize - The size of the image or video.
+ * @property {Date} updatedAt - The date and time when the image or video was last updated.
+ * @property {Date} createdAt - The date and time when the image or video was created.
  *
  * ----------------------------------------------------------------
  *
@@ -87,6 +92,8 @@ export interface PostImageOrVideo {
 	id: string;
 	index: number;
 	postId: string;
+	height: number;
+	width: number;
 	filePath: string;
 	fileName: string;
 	fileType: string;
@@ -94,6 +101,9 @@ export interface PostImageOrVideo {
 	fileExtension: string;
 	fileTitle?: string;
 	fileDescription?: string;
+	fileSize: number;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -120,6 +130,8 @@ export interface PostImageOrVideo {
  * @property {string} fileExtension - The extension of the file.
  * @property {string} [fileTitle] - The title of the file.
  * @property {string} [fileDescription] - The description of the file.
+ * @property {number} fileSize - The size of the file.
+ * @property {Date} createdAt - The date and time when the file was created.
  *
  * ----------------------------------------------------------------
  *
@@ -136,6 +148,9 @@ export interface PostFile {
 	fileExtension: string;
 	fileTitle?: string;
 	fileDescription?: string;
+	fileSize: number;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -159,6 +174,7 @@ export interface PostFile {
  * @property {string} [linkDescription] - The description of the link.
  * @property {string} url - The URL of the link.
  * @property {boolean} blocked - Whether the link is blocked.
+ * @property {Date} createdAt - The date and time when the link was created.
  *
  * ----------------------------------------------------------------
  *
@@ -172,6 +188,8 @@ export interface PostLink {
 	linkDescription?: string;
 	url: string;
 	blocked: boolean;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -196,6 +214,8 @@ export interface PostLink {
  * @property {number} [maxVotes] - The maximum number of votes of the poll.
  * @property {boolean} isActive - Whether the poll is active.
  * @property {PollItem[]} pollItems - The poll items of the poll.
+ * @property {Date} updatedAt - The date and time when the poll was last updated.
+ * @property {Date} createdAt - The date and time when the poll was created.
  *
  * ----------------------------------------------------------------
  *
@@ -210,6 +230,8 @@ export interface PostPoll {
 	maxVotes?: number;
 	isActive: boolean;
 	pollItems: PollItem[];
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -234,6 +256,8 @@ export interface PostPoll {
  * @property {string} [logoType] - The logo type of the poll item.
  * @property {string} [emoji] - The emoji of the poll item.
  * @property {PollItemLogo} [pollItemLogo] - The logo of the poll item.
+ * @property {Date} updatedAt - The date and time when the poll item was last updated.
+ * @property {Date} createdAt - The date and time when the poll item was created.
  *
  * ----------------------------------------------------------------
  *
@@ -248,6 +272,8 @@ export interface PollItem {
 	logoType?: "emoji" | "image";
 	emoji?: string;
 	pollItemLogo?: PollItemLogo;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -268,11 +294,16 @@ export interface PollItem {
  * @property {string} postId - The unique identifier of the post.
  * @property {string} pollId - The unique identifier of the poll.
  * @property {string} pollItemId - The unique identifier of the poll item.
+ * @property {number} height - The height of the image or video.
+ * @property {number} width - The width of the image or video.
  * @property {string} fileName - The name of the image or video.
  * @property {string} fileType - The type of the image or video.
  * @property {string} filePath - The path of the image or video.
  * @property {string} fileURL - The URL of the image or video.
  * @property {string} fileExtension - The extension of the image or video.
+ * @property {number} fileSize - The size of the image or video.
+ * @property {Date} updatedAt - The date and time when the poll item logo was last updated.
+ * @property {Date} createdAt - The date and time when the poll item logo was created.
  *
  * ----------------------------------------------------------------
  *
@@ -283,11 +314,16 @@ export interface PollItemLogo {
 	postId: string;
 	pollId: string;
 	pollItemId: string;
+	height: number;
+	width: number;
 	fileName: string;
 	fileType: string;
 	filePath: string;
 	fileURL: string;
 	fileExtension: string;
+	fileSize: number;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -318,6 +354,8 @@ export interface PollVote {
 	postId: string;
 	pollId: string;
 	pollItemId: string;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -337,6 +375,7 @@ export interface PollVote {
  * @property {string} userId - The unique identifier of the user.
  * @property {string} postId - The unique identifier of the post.
  * @property {string} [groupId] - The unique identifier of the group.
+ * @property {Date} createdAt - The date and time when the post like was created.
  *
  * ----------------------------------------------------------------
  *
@@ -373,7 +412,7 @@ export interface PostLike {
  * @property {number} numberOfLikes - The number of likes of the comment.
  * @property {number} numberOfReplies - The number of replies of the comment.
  * @property {boolean} isHidden - Whether the comment is hidden.
- * @property {Date} [updatedAt] - The date and time when the comment was last updated.
+ * @property {Date} updatedAt - The date and time when the comment was last updated.
  * @property {Date} createdAt - The date and time when the comment was created.
  *
  * ----------------------------------------------------------------
@@ -391,7 +430,7 @@ export interface PostComment {
 	numberOfLikes: number;
 	numberOfReplies: number;
 	isHidden: boolean;
-	updatedAt?: Date;
+	updatedAt: Date;
 	createdAt: Date;
 }
 
@@ -413,6 +452,7 @@ export interface PostComment {
  * @property {string} [groupId] - The unique identifier of the group.
  * @property {string} postId - The unique identifier of the post.
  * @property {string} commentId - The unique identifier of the comment.
+ * @property {Date} createdAt - The date and time when the comment like was created.
  *
  * ----------------------------------------------------------------
  *
@@ -423,4 +463,5 @@ export interface CommentLike {
 	groupId?: string;
 	postId: string;
 	commentId: string;
+	createdAt: Date;
 }

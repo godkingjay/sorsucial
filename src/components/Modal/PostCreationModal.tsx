@@ -28,6 +28,8 @@ export type PostPollItemType = {
 		url: string;
 		size: number;
 		type: string;
+		height: number;
+		width: number;
 	};
 };
 
@@ -45,6 +47,8 @@ export type CreatePostType = {
 		url: string;
 		size: number;
 		type: string;
+		height: number;
+		width: number;
 	} | null;
 	file: {
 		name: string;

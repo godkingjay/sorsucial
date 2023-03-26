@@ -21,7 +21,8 @@
  * @property {boolean} isElective - Whether the course is an elective.
  * @property {Date} [startAt] - The date and time the course started.
  * @property {Date} [endAt] - The date and time the course ended.
- * @property {Date} [updatedAt] - The date and time the course was last changed.
+ * @property {Date} updatedAt - The date and time the course was last changed.
+ * @property {Date} createdAt - The date and time the course was created.
  *
  * ----------------------------------------------------------------
  *
@@ -39,7 +40,8 @@ export interface Course {
 	isElective: boolean;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -57,10 +59,13 @@ export interface Course {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
+ * @property {string} courseId - The unique identifier of the course.
  * @property {string} instructorId - The unique identifier of the instructor.
+ * @property {string} [description] - The description of the instructor in the course.
  * @property {Date} [startAt] - The date and time the user started teaching the course.
  * @property {Date} [endAt] - The date and time the user stopped teaching the course.
- * @property {Date} [updatedAt] - The date and time the course instructor was last changed.
+ * @property {Date} updatedAt - The date and time the course instructor was last changed.
+ * @property {Date} createdAt - The date and time the course instructor was created.
  *
  * ----------------------------------------------------------------
  *
@@ -68,10 +73,13 @@ export interface Course {
  */
 export interface CourseInstructor {
 	userId: string;
+	courseId: string;
 	instructorId: string;
+	description?: string;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }
 
 /**
@@ -89,11 +97,14 @@ export interface CourseInstructor {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
+ * @property {string} courseId - The unique identifier of the course.
  * @property {string} studentId - The unique identifier of the student.
  * @property {number} [grade] - The grade of the student in the course.
+ * @property {string} [description] - The description of the student in the course.
  * @property {Date} [startAt] - The date and time the user started taking the course.
  * @property {Date} [endAt] - The date and time the user stopped taking the course.
- * @property {Date} [updatedAt] - The date and time the course student was last changed.
+ * @property {Date} updatedAt - The date and time the course student was last changed.
+ * @property {Date} createdAt - The date and time the course student was created.
  *
  * ----------------------------------------------------------------
  *
@@ -101,9 +112,12 @@ export interface CourseInstructor {
  */
 export interface CourseStudent {
 	userId: string;
+	courseId: string;
 	studentId: string;
 	grade?: number;
+	description?: string;
 	startAt?: Date;
 	endAt?: Date;
-	updatedAt?: Date;
+	updatedAt: Date;
+	createdAt: Date;
 }

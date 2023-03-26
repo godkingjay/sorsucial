@@ -82,7 +82,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 					throw error;
 				});
 
-				router.push("/");
+				// router.push("/");
 			} catch (error: any) {
 				console.log("SignIn Error!");
 				setSignInError(error.message);

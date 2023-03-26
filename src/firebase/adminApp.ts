@@ -19,6 +19,6 @@ const adminApp = admin.apps.length
 	: admin.initializeApp(firebaseAdminConfig);
 const authAdmin = adminApp.auth();
 const adminDb = adminApp.firestore();
-const storageAdmin = adminApp.storage();
+const adminStorage = adminApp.storage();
 
-export { adminApp, authAdmin, adminDb, storageAdmin };
+export { adminApp, authAdmin, adminDb, adminStorage };

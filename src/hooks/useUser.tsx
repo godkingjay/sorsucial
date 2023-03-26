@@ -198,11 +198,14 @@ const useUser = () => {
 			const newImage: UserImage = {
 				id: imageId,
 				userId: user?.uid as string,
+				height: image?.height as number,
+				width: image?.width as number,
 				fileName: image?.name as string,
 				fileType: image?.type as string,
 				filePath: storageRef.fullPath,
 				fileURL: downloadURL,
 				fileExtension: image?.name.split(".").pop() as string,
+				fileSize: image?.size as number,
 				createdAt: new Date(),
 			};
 
@@ -259,18 +262,18 @@ const useUser = () => {
 
 	useEffect(() => {
 		if (
-			userStateValue.user.isFirstLogin &&
 			!loading &&
 			!loadingUser &&
-			userStateValue.user.uid
+			userStateValue.user.uid &&
+			userStateValue.user.isFirstLogin &&
+			currentUserMounted.current
 		) {
 			router.push("/user/create-user");
 		}
 	}, [
 		userStateValue.user.uid,
 		userStateValue.user.isFirstLogin,
-		loading,
-		loadingUser,
+		currentUserMounted.current,
 	]);
 
 	return {

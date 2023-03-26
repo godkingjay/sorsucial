@@ -59,7 +59,9 @@ export interface Course {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
+ * @property {string} courseId - The unique identifier of the course.
  * @property {string} instructorId - The unique identifier of the instructor.
+ * @property {string} [description] - The description of the instructor in the course.
  * @property {Date} [startAt] - The date and time the user started teaching the course.
  * @property {Date} [endAt] - The date and time the user stopped teaching the course.
  * @property {Date} updatedAt - The date and time the course instructor was last changed.
@@ -71,7 +73,9 @@ export interface Course {
  */
 export interface CourseInstructor {
 	userId: string;
+	courseId: string;
 	instructorId: string;
+	description?: string;
 	startAt?: Date;
 	endAt?: Date;
 	updatedAt: Date;
@@ -93,8 +97,10 @@ export interface CourseInstructor {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
+ * @property {string} courseId - The unique identifier of the course.
  * @property {string} studentId - The unique identifier of the student.
  * @property {number} [grade] - The grade of the student in the course.
+ * @property {string} [description] - The description of the student in the course.
  * @property {Date} [startAt] - The date and time the user started taking the course.
  * @property {Date} [endAt] - The date and time the user stopped taking the course.
  * @property {Date} updatedAt - The date and time the course student was last changed.
@@ -106,8 +112,10 @@ export interface CourseInstructor {
  */
 export interface CourseStudent {
 	userId: string;
+	courseId: string;
 	studentId: string;
 	grade?: number;
+	description?: string;
 	startAt?: Date;
 	endAt?: Date;
 	updatedAt: Date;

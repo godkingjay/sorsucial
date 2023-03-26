@@ -52,6 +52,7 @@ export interface SiteGroup {
  * ----------------------------------------------------------------
  *
  * @property {string} userId - The unique identifier of the user.
+ * @property {string} groupId - The unique identifier of the group.
  * @property {"owner" | "admin" | "moderator" | "member"} role - The role of the user in the group.
  * @property {Date} updatedAt - The date and time when the group member was last changed.
  * @property {Date} joinedAt - The date and time when the user joined the group.
@@ -62,6 +63,7 @@ export interface SiteGroup {
  */
 export interface GroupMember {
 	userId: string;
+	groupId: string;
 	role: "owner" | "admin" | "moderator" | "member";
 	updatedAt: Date;
 	joinedAt: Date;

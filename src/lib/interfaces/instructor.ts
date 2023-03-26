@@ -40,32 +40,32 @@ export interface Instructor {
 	createdAt: Date;
 }
 
-/**
- * This interface is used to define the structure of a instructor course object.
- * This is the object that is stored in the database.
- *
- * ----------------------------------------------------------------
- *
- * @export
- * @interface InstructorCourse
- * @category Interfaces
- * @subcategory Instructor
- * @see {@link Instructor}
- *
- * ----------------------------------------------------------------
- *
- * @property {string} courseId - The unique identifier of the course.
- * @property {string} [description] - The description of the course.
- * @property {Date} updatedAt - The date and time the course was last changed.
- * @property {Date} createdAt - The date and time the course was created.
- *
- * ----------------------------------------------------------------
- *
- * @author Jarrian Vince Gojar
- */
-export interface InstructorCourse {
-	courseId: string;
-	description?: string;
-	updatedAt: Date;
-	createdAt: Date;
-}
+// /**
+//  * This interface is used to define the structure of a instructor course object.
+//  * This is the object that is stored in the database.
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @export
+//  * @interface InstructorCourse
+//  * @category Interfaces
+//  * @subcategory Instructor
+//  * @see {@link Instructor}
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @property {string} courseId - The unique identifier of the course.
+//  * @property {string} [description] - The description of the course.
+//  * @property {Date} updatedAt - The date and time the course was last changed.
+//  * @property {Date} createdAt - The date and time the course was created.
+//  *
+//  * ----------------------------------------------------------------
+//  *
+//  * @author Jarrian Vince Gojar
+//  */
+// export interface InstructorCourse {
+// 	courseId: string;
+// 	description?: string;
+// 	updatedAt: Date;
+// 	createdAt: Date;
+// }

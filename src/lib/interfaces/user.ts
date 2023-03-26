@@ -263,6 +263,8 @@ export interface UserDiscussionVote {
  *
  * @property {string} id - The unique identifier of the image.
  * @property {string} userId - The unique identifier of the user.
+ * @property {number} height - The height of the image.
+ * @property {number} width - The width of the image.
  * @property {string} filePath - The path of the image.
  * @property {string} fileName - The name of the image.
  * @property {string} fileType - The type of the image.
@@ -277,6 +279,8 @@ export interface UserDiscussionVote {
 export interface UserImage {
 	id: string;
 	userId: string;
+	height: number;
+	width: number;
 	filePath: string;
 	fileName: string;
 	fileType: string;

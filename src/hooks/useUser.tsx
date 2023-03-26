@@ -198,6 +198,8 @@ const useUser = () => {
 			const newImage: UserImage = {
 				id: imageId,
 				userId: user?.uid as string,
+				height: image?.height as number,
+				width: image?.width as number,
 				fileName: image?.name as string,
 				fileType: image?.type as string,
 				filePath: storageRef.fullPath,

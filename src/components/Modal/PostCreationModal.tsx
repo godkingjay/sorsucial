@@ -12,6 +12,7 @@ import PostTab from "./PostCreationModal/PostCreationTabs/PostTab";
 import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
+import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -441,37 +442,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									${postCreationModalStateValue.tab === "image/video" ? "flex" : "hidden"}
 								`}
 								>
-									<div className="post-creation-form-image-or-video-tab">
-										<div className="image-or-video-tab-input-container">
-											<div className="text-blue-500">
-												<p>Drag and drop images or videos</p>
-											</div>
-											<div className="text-xs text-gray-500">
-												<p>or</p>
-											</div>
-											<div>
-												<button
-													type="button"
-													title="Upload Image or Video"
-													className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
-													onClick={() => uploadImageOrVideoRef.current?.click()}
-												>
-													Upload
-												</button>
-											</div>
-										</div>
-										<div className="image-or-video-tab-output-container"></div>
-										<input
-											type="file"
-											title="Upload Image or Video"
-											accept={validImageTypes.concat(validVideoTypes).join(",")}
-											ref={uploadImageOrVideoRef}
-											onChange={handleImageOrVideoUpload}
-											max={20 - createPostForm.imageOrVideo.length}
-											hidden
-											multiple
-										/>
-									</div>
+									<PostImagesOrVideosTab
+										createPostForm={createPostForm}
+										uploadImageOrVideoRef={uploadImageOrVideoRef}
+										handleImageOrVideoUpload={handleImageOrVideoUpload}
+									/>
 								</div>
 							</div>
 							<PostCreationTabs

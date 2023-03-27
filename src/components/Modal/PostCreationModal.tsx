@@ -33,6 +33,28 @@ export type PostPollItemType = {
 	};
 };
 
+export type PostImageOrVideoType = {
+	name: string;
+	url: string;
+	size: number;
+	type: string;
+	height: number;
+	width: number;
+};
+
+export type PostFileType = {
+	name: string;
+	url: string;
+	size: number;
+	type: string;
+};
+
+export type PostLinkType = {
+	linkTitle?: string;
+	linkDescription?: string;
+	url: string;
+};
+
 export type CreatePostType = {
 	groupId?: SitePost["groupId"];
 	creatorId?: SitePost["creatorId"];
@@ -42,25 +64,9 @@ export type CreatePostType = {
 	postType: SitePost["postType"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
-	imageOrVideo: {
-		name: string;
-		url: string;
-		size: number;
-		type: string;
-		height: number;
-		width: number;
-	} | null;
-	file: {
-		name: string;
-		url: string;
-		size: number;
-		type: string;
-	} | null;
-	link: {
-		linkTitle?: string;
-		linkDescription?: string;
-		url: string;
-	} | null;
+	imageOrVideo: PostImageOrVideoType[];
+	file: PostFileType[];
+	link: PostLinkType[];
 	poll: {
 		pollTitle: string;
 		pollDescription?: string;
@@ -100,9 +106,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		postType: postCreationModalStateValue.postType,
 		isCommentable: true,
 		privacy: "public",
-		imageOrVideo: null,
-		file: null,
-		link: null,
+		imageOrVideo: [],
+		file: [],
+		link: [],
 		poll: null,
 	};
 	const { createPost } = usePost();
@@ -169,6 +175,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			[name]: value,
 		}));
 	};
+
+	const handleImageOrVideoUpload = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {};
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
@@ -278,7 +288,8 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											title="Upload Image or Video"
 											accept="image/jpeg, image/png, image/jpg"
 											ref={uploadImageOrVideoRef}
-											max={20}
+											onChange={handleImageOrVideoUpload}
+											max={20 - createPostForm.imageOrVideo.length}
 											hidden
 											multiple
 										/>

@@ -1,10 +1,10 @@
-import { PostCreationModalState } from "@/atoms/modalAtom";
+import { PostCreationModalState, errorModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { SetterOrUpdater } from "recoil";
+import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
@@ -76,6 +76,9 @@ export type CreatePostType = {
 	} | null;
 };
 
+export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
+export const validVideoTypes = ["image/mp4", "image/avi", "image/mov"];
+
 export const postPrivacyOptions: DropdownOption[] = [
 	{
 		label: "Public",
@@ -117,6 +120,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	);
 	const [creatingPost, setCreatingPost] = useState(false);
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
+	const setErrorModalStateValue = useSetRecoilState(errorModalState);
 
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
@@ -178,7 +182,52 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 	const handleImageOrVideoUpload = (
 		event: React.ChangeEvent<HTMLInputElement>
-	) => {};
+	) => {
+		if (event.target.files?.length) {
+			const imagesOrVideos = Array.from(event.target.files);
+			const imageOrVideo = imagesOrVideos.map((imageOrVideo) => {
+				if (validateImageOrVideo(imageOrVideo)) {
+				}
+			});
+		}
+	};
+
+	const validateImageOrVideo = (imageOrVideo: File) => {
+		if (validImageTypes.includes(imageOrVideo.type)) {
+			if (imageOrVideo.size > 1024 * 1024 * 2) {
+				setErrorModalStateValue((prev) => ({
+					...prev,
+					open: true,
+					view: "upload",
+					message: "Image size should be less than 2MB",
+				}));
+				return false;
+			}
+
+			return true;
+		} else if (validVideoTypes.includes(imageOrVideo.type)) {
+			if (imageOrVideo.size > 1024 * 1024 * 20) {
+				setErrorModalStateValue((prev) => ({
+					...prev,
+					open: true,
+					view: "upload",
+					message: "Video size should be less than 20MB",
+				}));
+				return false;
+			}
+
+			return true;
+		} else {
+			setErrorModalStateValue((prev) => ({
+				...prev,
+				open: true,
+				view: "upload",
+				message: "Invalid file type",
+			}));
+
+			return false;
+		}
+	};
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">

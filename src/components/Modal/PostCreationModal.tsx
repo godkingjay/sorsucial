@@ -36,6 +36,7 @@ export type PostPollItemType = {
 export type PostImageOrVideoType = {
 	name: string;
 	url: string;
+	index: number;
 	size: number;
 	type: string;
 	height: number;
@@ -77,7 +78,7 @@ export type CreatePostType = {
 };
 
 export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
-export const validVideoTypes = ["image/mp4", "image/avi", "image/mov"];
+export const validVideoTypes = ["video/mp4", "video/avi", "video/mov"];
 
 export const postPrivacyOptions: DropdownOption[] = [
 	{
@@ -185,10 +186,138 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	) => {
 		if (event.target.files?.length) {
 			const imagesOrVideos = Array.from(event.target.files);
-			const imageOrVideo = imagesOrVideos.map((imageOrVideo) => {
+
+			imagesOrVideos.map((imageOrVideo) => {
 				if (validateImageOrVideo(imageOrVideo)) {
+					if (validImageTypes.includes(imageOrVideo.type)) {
+						const reader = new FileReader();
+
+						reader.onload = (readerEvent) => {
+							const result = readerEvent.target?.result;
+
+							if (result) {
+								const img = new Image();
+
+								img.onload = () => {
+									const canvas = document.createElement("canvas");
+									const ctx = canvas.getContext(
+										"2d"
+									) as CanvasRenderingContext2D;
+
+									const height = img.height;
+									const width = img.width;
+
+									canvas.height = height;
+									canvas.width = width;
+
+									ctx.fillStyle = "#fff";
+									ctx.fillRect(0, 0, width, height);
+
+									ctx.drawImage(img, 0, 0, width, height);
+
+									canvas.toBlob(
+										(blob) => {
+											if (blob) {
+												setCreatePostForm((prev) => ({
+													...prev,
+													imageOrVideo: [
+														...prev.imageOrVideo,
+														{
+															name: imageOrVideo.name,
+															url: URL.createObjectURL(blob),
+															index: prev.imageOrVideo.length,
+															size: blob.size,
+															type: blob.type,
+															height: height,
+															width: width,
+														},
+													],
+												}));
+
+												URL.revokeObjectURL(result as string);
+											}
+										},
+										"image/jpeg",
+										0.8
+									);
+
+									URL.revokeObjectURL(result as string);
+									img.remove();
+									canvas.remove();
+									reader.abort();
+								};
+
+								img.src = result as string;
+							} else {
+								setErrorModalStateValue((prev) => ({
+									...prev,
+									open: true,
+									view: "upload",
+									message: "Image not loaded.",
+								}));
+							}
+						};
+
+						reader.readAsDataURL(imageOrVideo);
+					} else if (validVideoTypes.includes(imageOrVideo.type)) {
+						const reader = new FileReader();
+
+						reader.onload = () => {
+							const result = reader.result;
+
+							if (result) {
+								const blob = new Blob([result], {
+									type: imageOrVideo.type || "video/mp4",
+								});
+
+								const video = document.createElement("video");
+
+								video.onloadedmetadata = () => {
+									setCreatePostForm((prev) => ({
+										...prev,
+										imageOrVideo: [
+											...prev.imageOrVideo,
+											{
+												name: imageOrVideo.name,
+												url: URL.createObjectURL(blob),
+												index: prev.imageOrVideo.length,
+												size: blob.size,
+												type: blob.type,
+												height: video.videoHeight,
+												width: video.videoWidth,
+											},
+										],
+									}));
+
+									URL.revokeObjectURL(result as string);
+									video.remove();
+									reader.abort();
+								};
+
+								video.src = URL.createObjectURL(blob) as string;
+							} else {
+								setErrorModalStateValue((prev) => ({
+									...prev,
+									open: true,
+									view: "upload",
+									message: "Video not loaded.",
+								}));
+							}
+						};
+
+						reader.readAsArrayBuffer(imageOrVideo);
+					} else {
+						setErrorModalStateValue((prev) => ({
+							...prev,
+							open: true,
+							view: "upload",
+							message: "Invalid file type",
+						}));
+					}
 				}
 			});
+
+			event.target.value = "";
 		}
 	};
 
@@ -335,7 +464,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										<input
 											type="file"
 											title="Upload Image or Video"
-											accept="image/jpeg, image/png, image/jpg"
+											accept={validImageTypes.concat(validVideoTypes).join(",")}
 											ref={uploadImageOrVideoRef}
 											onChange={handleImageOrVideoUpload}
 											max={20 - createPostForm.imageOrVideo.length}

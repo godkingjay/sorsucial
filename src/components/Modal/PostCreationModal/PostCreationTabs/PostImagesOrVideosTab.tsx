@@ -63,6 +63,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 										height={128}
 										width={128}
 										className="image"
+										loading="lazy"
 									/>
 								)}
 								{validVideoTypes.includes(imageOrVideo.type) && (

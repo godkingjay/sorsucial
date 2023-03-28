@@ -484,10 +484,10 @@
 							@apply w-full rounded-lg  p-2 border border-gray-200 text-sm flex flex-row flex-grow h-max gap-y-2 gap-x-2 flex-wrap justify-center;
 
 							.image-or-video-item {
-								@apply max-w-[144px] max-h-[144px] aspect-square rounded-lg border-2 border-transparent bg-gray-100;
+								@apply flex-1 max-w-[144px] max-h-[144px] aspect-square rounded-lg border-2 border-transparent bg-gray-100;
 
 								.image-or-video-container {
-									@apply h-full w-full rounded-lg overflow-hidden;
+									@apply h-full w-full rounded-lg overflow-hidden flex flex-row justify-center items-center;
 
 									.image,
 									.video {

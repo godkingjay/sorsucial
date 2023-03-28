@@ -5,10 +5,11 @@ import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
-import { AiFillLike } from "react-icons/ai";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import Image from "next/image";
 import { validImageTypes, validVideoTypes } from "../Modal/PostCreationModal";
+import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
+import {} from "react-icons/gr";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -35,9 +36,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
-	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(
-		postData.post.postImagesOrVideos.length ? 0 : null
-	);
+	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
 		if (postOptionsStateValue[name] === postData.post.id) {
@@ -98,6 +97,18 @@ const PostCard: React.FC<PostCardProps> = ({
 		return `${roundedNumber}${suffix}`;
 	};
 
+	const handleImageOrVideoNav = (direction: "previous" | "next") => {
+		if (direction === "previous") {
+			if (currentImageOrVideo > 0) {
+				setCurrentImageOrVideo(currentImageOrVideo - 1);
+			}
+		} else {
+			if (currentImageOrVideo < postData.post.postImagesOrVideos.length - 1) {
+				setCurrentImageOrVideo(currentImageOrVideo + 1);
+			}
+		}
+	};
+
 	return (
 		<div className="post-card">
 			<PostHead
@@ -148,6 +159,40 @@ const PostCard: React.FC<PostCardProps> = ({
 										)}
 									</>
 								))}
+							</div>
+						</div>
+						<div className="post-images-or-videos-nav-wrapper">
+							<div className="post-images-or-videos-nav-container">
+								{currentImageOrVideo > 0 && (
+									<button
+										type="button"
+										title="Previous Image or Video"
+										className="button mr-auto"
+										onClick={() => handleImageOrVideoNav("previous")}
+										disabled={currentImageOrVideo === 0}
+									>
+										<div className="icon-container">
+											<RxCaretLeft className="icon" />
+										</div>
+									</button>
+								)}
+								{currentImageOrVideo <
+									postData.post.postImagesOrVideos.length - 1 && (
+									<button
+										type="button"
+										title="Next Image or Video"
+										className="button ml-auto"
+										onClick={() => handleImageOrVideoNav("next")}
+										disabled={
+											currentImageOrVideo ===
+											postData.post.postImagesOrVideos.length - 1
+										}
+									>
+										<div className="icon-container">
+											<RxCaretRight className="icon" />
+										</div>
+									</button>
+								)}
 							</div>
 						</div>
 					</div>

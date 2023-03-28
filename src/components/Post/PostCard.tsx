@@ -122,9 +122,14 @@ const PostCard: React.FC<PostCardProps> = ({
 					<p className="text-gray-500 truncate">
 						{postData.userLike ? (
 							<>
-								You and{" "}
-								{formatNumberWithSuffix(postData.post.numberOfLikes - 1)}{" "}
-								<span>others liked this post.</span>
+								You{" "}
+								<span>
+									{postData.post.numberOfLikes > 1 &&
+										`${formatNumberWithSuffix(
+											postData.post.numberOfLikes - 1
+										)} and others `}
+									liked this post.
+								</span>
 							</>
 						) : (
 							<>

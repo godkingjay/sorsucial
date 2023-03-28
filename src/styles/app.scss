@@ -662,7 +662,7 @@
 
 							&:hover,
 							&:focus-within {
-								@apply -translate-x-1;
+								@apply -translate-x-2;
 							}
 						}
 
@@ -671,7 +671,7 @@
 
 							&:hover,
 							&:focus-within {
-								@apply translate-x-1;
+								@apply translate-x-2;
 							}
 						}
 					}

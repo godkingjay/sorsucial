@@ -4,6 +4,10 @@ import {
 	validImageTypes,
 	validVideoTypes,
 } from "../../PostCreationModal";
+import Image from "next/image";
+import { IoClose } from "react-icons/io5";
+import { BsImages } from "react-icons/bs";
+import { ImFilm } from "react-icons/im";
 
 type PostImagesOrVideosTabProps = {
 	createPostForm: CreatePostType;
@@ -38,14 +42,58 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 					</button>
 				</div>
 			</div>
-			<div className="image-or-video-tab-output-container"></div>
+			<div className="image-or-video-tab-output-container">
+				{createPostForm.imagesOrVideos.map((imageOrVideo) => (
+					<a
+						href={imageOrVideo.url}
+						target="_blank"
+						key={imageOrVideo.index}
+						className="image-or-video-item relative"
+					>
+						<div className="image-or-video-container">
+							{validImageTypes.includes(imageOrVideo.type) && (
+								<Image
+									src={imageOrVideo.url}
+									alt="Image or Video"
+									height={128}
+									width={128}
+									className="image"
+								/>
+							)}
+							{validVideoTypes.includes(imageOrVideo.type) && (
+								<video
+									src={imageOrVideo.url}
+									className="video"
+								/>
+							)}
+
+							<div className="file-icon-container">
+								{validImageTypes.includes(imageOrVideo.type) && (
+									<BsImages className="icon" />
+								)}
+								{validVideoTypes.includes(imageOrVideo.type) && (
+									<ImFilm className="icon" />
+								)}
+							</div>
+
+							<button
+								type="button"
+								title="Remove Image or Video"
+								className="remove-button"
+							>
+								<IoClose className="icon" />
+							</button>
+						</div>
+					</a>
+				))}
+			</div>
 			<input
 				type="file"
 				title="Upload Image or Video"
 				accept={validImageTypes.concat(validVideoTypes).join(",")}
 				ref={uploadImageOrVideoRef}
 				onChange={handleImageOrVideoUpload}
-				max={20 - createPostForm.imageOrVideo.length}
+				max={20 - createPostForm.imagesOrVideos.length}
 				hidden
 				multiple
 			/>

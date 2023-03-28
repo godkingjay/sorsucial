@@ -66,9 +66,9 @@ export type CreatePostType = {
 	postType: SitePost["postType"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
-	imageOrVideo: PostImageOrVideoType[];
-	file: PostFileType[];
-	link: PostLinkType[];
+	imagesOrVideos: PostImageOrVideoType[];
+	files: PostFileType[];
+	links: PostLinkType[];
 	poll: {
 		pollTitle: string;
 		pollDescription?: string;
@@ -111,9 +111,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		postType: postCreationModalStateValue.postType,
 		isCommentable: true,
 		privacy: "public",
-		imageOrVideo: [],
-		file: [],
-		link: [],
+		imagesOrVideos: [],
+		files: [],
+		links: [],
 		poll: null,
 	};
 	const { createPost } = usePost();
@@ -221,12 +221,16 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											if (blob) {
 												setCreatePostForm((prev) => ({
 													...prev,
-													imageOrVideo: [
-														...prev.imageOrVideo,
+													imagesOrVideos: [
+														...prev.imagesOrVideos,
 														{
 															name: imageOrVideo.name,
 															url: URL.createObjectURL(blob),
-															index: prev.imageOrVideo.length,
+															index: prev.imagesOrVideos.length
+																? prev.imagesOrVideos[
+																		prev.imagesOrVideos.length - 1
+																  ].index + 1
+																: 0,
 															size: blob.size,
 															type: blob.type,
 															height: height,
@@ -234,8 +238,6 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 														},
 													],
 												}));
-
-												URL.revokeObjectURL(result as string);
 											}
 										},
 										"image/jpeg",
@@ -276,12 +278,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								video.onloadedmetadata = () => {
 									setCreatePostForm((prev) => ({
 										...prev,
-										imageOrVideo: [
-											...prev.imageOrVideo,
+										imagesOrVideos: [
+											...prev.imagesOrVideos,
 											{
 												name: imageOrVideo.name,
 												url: URL.createObjectURL(blob),
-												index: prev.imageOrVideo.length,
+												index: prev.imagesOrVideos.length
+													? prev.imagesOrVideos[prev.imagesOrVideos.length - 1]
+															.index + 1
+													: 0,
 												size: blob.size,
 												type: blob.type,
 												height: video.videoHeight,

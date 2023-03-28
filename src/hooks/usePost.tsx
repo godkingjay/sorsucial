@@ -48,13 +48,13 @@ const usePost = () => {
 				newPost.groupId = postForm.groupId;
 			}
 
-			if (postForm.imageOrVideo) {
+			if (postForm.imagesOrVideos) {
 			}
 
-			if (postForm.file) {
+			if (postForm.files) {
 			}
 
-			if (postForm.link) {
+			if (postForm.links) {
 			}
 
 			if (postForm.poll) {

@@ -35,10 +35,8 @@ const PostCard: React.FC<PostCardProps> = ({
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
-	const [currentImageOrVide, setCurrentImageOrVideo] = useState(
-		postData.post.postImagesOrVideos.length
-			? postData.post.postImagesOrVideos[0].id
-			: ""
+	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(
+		postData.post.postImagesOrVideos.length ? 0 : null
 	);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
@@ -120,7 +118,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					<div className="post-images-or-videos-container">
 						<div className="post-images-or-videos-bg">
 							<div className="post-images-or-videos-items-container">
-								{postData.post.postImagesOrVideos.map((imageOrVideo) => (
+								{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (
 									<>
 										{validImageTypes.includes(imageOrVideo.fileType) && (
 											<Image
@@ -131,7 +129,7 @@ const PostCard: React.FC<PostCardProps> = ({
 												key={imageOrVideo.id}
 												className="images-or-videos"
 												data-current-image={
-													currentImageOrVide === imageOrVideo.id ? true : false
+													currentImageOrVideo === index ? true : false
 												}
 											/>
 										)}
@@ -143,7 +141,7 @@ const PostCard: React.FC<PostCardProps> = ({
 												key={imageOrVideo.id}
 												className="images-or-videos"
 												data-current-image={
-													currentImageOrVide === imageOrVideo.id ? true : false
+													currentImageOrVideo === index ? true : false
 												}
 												controls
 											/>

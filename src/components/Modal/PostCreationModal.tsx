@@ -34,7 +34,7 @@ export type PostPollItemType = {
 	};
 };
 
-export type PostImageOrVideoType = {
+export type CreatePostImageOrVideoType = {
 	name: string;
 	url: string;
 	index: number;
@@ -42,6 +42,8 @@ export type PostImageOrVideoType = {
 	type: string;
 	height: number;
 	width: number;
+	fileTitle?: string;
+	fileDescription?: string;
 };
 
 export type PostFileType = {
@@ -49,6 +51,8 @@ export type PostFileType = {
 	url: string;
 	size: number;
 	type: string;
+	fileTitle?: string;
+	fileDescription?: string;
 };
 
 export type PostLinkType = {
@@ -66,7 +70,7 @@ export type CreatePostType = {
 	postType: SitePost["postType"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
-	imagesOrVideos: PostImageOrVideoType[];
+	imagesOrVideos: CreatePostImageOrVideoType[];
 	files: PostFileType[];
 	links: PostLinkType[];
 	poll: {

@@ -4,15 +4,24 @@ import {
 	postOptionsState,
 	postState,
 } from "@/atoms/postAtom";
-import { CreatePostType } from "@/components/Modal/PostCreationModal";
-import { clientStorage } from "@/firebase/clientApp";
+import {
+	CreatePostImageOrVideoType,
+	CreatePostType,
+} from "@/components/Modal/PostCreationModal";
+import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { PostLike, SitePost } from "@/lib/interfaces/post";
+import { PostImageOrVideo, PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
-import { deleteObject, ref } from "firebase/storage";
+import {
+	deleteObject,
+	getDownloadURL,
+	ref,
+	uploadBytes,
+} from "firebase/storage";
+import { collection, doc } from "firebase/firestore";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
@@ -48,18 +57,6 @@ const usePost = () => {
 				newPost.groupId = postForm.groupId;
 			}
 
-			if (postForm.imagesOrVideos) {
-			}
-
-			if (postForm.files) {
-			}
-
-			if (postForm.links) {
-			}
-
-			if (postForm.poll) {
-			}
-
 			const newPostData: SitePost = await axios
 				.post(apiConfig.apiEndpoint + "post/post", {
 					newPost,
@@ -72,6 +69,51 @@ const usePost = () => {
 				});
 
 			if (newPostData) {
+				if (postForm.imagesOrVideos) {
+					await Promise.all(
+						postForm.imagesOrVideos.map(async (imageOrVideo) => {
+							const postImageOrVideoRef = doc(
+								collection(clientDb, `posts/${newPostData.id}/imagesOrVideos}`)
+							);
+
+							const postImageOrVideo = await uploadPostImageOrVideo(
+								newPostData,
+								imageOrVideo,
+								postImageOrVideoRef.id
+							).catch((error: any) => {
+								console.log(
+									"Hook: Upload Image Or Video Error: ",
+									error.message
+								);
+							});
+
+							if (postImageOrVideo) {
+								newPostData.postImagesOrVideos.push(postImageOrVideo);
+							}
+						})
+					).then(async () => {
+						await axios
+							.put(apiConfig.apiEndpoint + "post/post", {
+								updatedPost: newPostData,
+							})
+							.catch((error) => {
+								console.log(
+									"API: Post Update Images Or Videos Error: ",
+									error.message
+								);
+							});
+					});
+				}
+
+				if (postForm.files) {
+				}
+
+				if (postForm.links) {
+				}
+
+				if (postForm.poll) {
+				}
+
 				setPostStateValue(
 					(prev) =>
 						({
@@ -88,6 +130,64 @@ const usePost = () => {
 			}
 		} catch (error: any) {
 			console.log("MONGO: Post Creation Error", error.message);
+		}
+	};
+
+	const uploadPostImageOrVideo = async (
+		post: SitePost,
+		imageOrVideo: CreatePostImageOrVideoType,
+		imageOrVideoId: string
+	) => {
+		try {
+			const storageRef = ref(
+				clientStorage,
+				`posts/${post.id}/imagesOrVideos/${imageOrVideoId}`
+			);
+
+			const response = await fetch(imageOrVideo.url as string);
+			const blob = await response.blob();
+
+			await uploadBytes(storageRef, blob).catch((error: any) => {
+				console.log(
+					"Firebase Storage: Image Or Video Upload Error: ",
+					error.message
+				);
+				throw error;
+			});
+
+			const downloadURL = await getDownloadURL(storageRef).catch(
+				(error: any) => {
+					console.log(
+						"Firebase Storage: Image Or Video Download URL Error: ",
+						error.message
+					);
+					throw error;
+				}
+			);
+
+			const date = new Date();
+
+			const newPostImageOrVideo: PostImageOrVideo = {
+				id: imageOrVideoId,
+				postId: post.id,
+				index: imageOrVideo.index,
+				height: imageOrVideo.height,
+				width: imageOrVideo.width,
+				fileTitle: imageOrVideo.fileTitle,
+				fileDescription: imageOrVideo.fileDescription,
+				fileName: imageOrVideo.name,
+				fileType: imageOrVideo.type,
+				filePath: storageRef.fullPath,
+				fileUrl: downloadURL,
+				fileExtension: imageOrVideo.name.split(".").pop() as string,
+				fileSize: imageOrVideo.size,
+				updatedAt: date,
+				createdAt: date,
+			};
+
+			return newPostImageOrVideo;
+		} catch (error: any) {
+			console.log("MONGO: Image Or Video Creation Error", error.message);
 		}
 	};
 

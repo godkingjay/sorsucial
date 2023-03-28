@@ -6,6 +6,8 @@ import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
 import { AiFillLike } from "react-icons/ai";
+import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
+import Image from "next/image";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -30,6 +32,11 @@ const PostCard: React.FC<PostCardProps> = ({
 			? postData.post.postBody?.length < 256
 				? postData.post.postBody
 				: postData.post.postBody?.slice(0, 256) + "..."
+			: ""
+	);
+	const [currentImageOrVide, setCurrentImageOrVideo] = useState(
+		postData.post.postImagesOrVideos.length
+			? postData.post.postImagesOrVideos[0].id
 			: ""
 	);
 
@@ -93,7 +100,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
+		<div className="post-card">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
@@ -101,45 +108,39 @@ const PostCard: React.FC<PostCardProps> = ({
 				handlePostOptions={handlePostOptions}
 				handleDeletePost={handleDeletePost}
 			/>
-			<div className="flex flex-col px-4 pb-4 gap-y-2">
-				<PostTextContent
-					postData={postData}
-					postBody={postBody}
-					seeMore={seeMore}
-					handleSeeMore={handleSeeMore}
-				/>
-			</div>
-			<div className="px-4 pb-2">
-				<div className="text-sm flex flex-row items-center gap-x-1">
-					<div
-						className={`
-						h-5 w-5 aspect-square
-						${postData.post.numberOfLikes > 0 ? "text-blue-500" : "text-gray-500"}
-					`}
-					>
-						<AiFillLike className="h-full w-full" />
+			<PostTextContent
+				postData={postData}
+				postBody={postBody}
+				seeMore={seeMore}
+				handleSeeMore={handleSeeMore}
+			/>
+			{postData.post.postImagesOrVideos.length > 0 && (
+				<div className="post-images-or-videos-wrapper">
+					<div className="post-images-or-videos-container">
+						<div className="post-images-or-videos-bg">
+							<div className="post-images-or-videos-items-container">
+								{postData.post.postImagesOrVideos.map((imageOrVideo) => (
+									<Image
+										src={imageOrVideo.fileUrl}
+										alt={imageOrVideo.fileName}
+										height={imageOrVideo.height}
+										width={imageOrVideo.width}
+										key={imageOrVideo.id}
+										className="images-or-videos"
+										data-current-image={
+											currentImageOrVide === imageOrVideo.id ? true : false
+										}
+									/>
+								))}
+							</div>
+						</div>
 					</div>
-					<p className="text-gray-500 truncate">
-						{postData.userLike ? (
-							<>
-								You{" "}
-								<span>
-									{postData.post.numberOfLikes > 1 &&
-										`${formatNumberWithSuffix(
-											postData.post.numberOfLikes - 1
-										)} and others `}
-									liked this post.
-								</span>
-							</>
-						) : (
-							<>
-								{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
-								<span>liked this post.</span>
-							</>
-						)}
-					</p>
 				</div>
-			</div>
+			)}
+			<PostLikeAndCommentDetails
+				postData={postData}
+				formatNumberWithSuffix={formatNumberWithSuffix}
+			/>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="flex flex-col">
 				<PostFooter

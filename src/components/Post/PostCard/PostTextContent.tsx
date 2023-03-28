@@ -15,7 +15,7 @@ const PostTextContent: React.FC<PostTextContentProps> = ({
 	handleSeeMore,
 }) => {
 	return (
-		<>
+		<div className="flex flex-col px-4 pb-4 gap-y-2">
 			<h1 className="text-lg font-bold whitespace-pre-wrap break-words w-full">
 				{postData.post.postTitle}
 			</h1>
@@ -43,7 +43,7 @@ const PostTextContent: React.FC<PostTextContentProps> = ({
 					</div>
 				</>
 			)}
-		</>
+		</div>
 	);
 };
 

@@ -5,7 +5,9 @@ import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
-import { AiFillLike } from "react-icons/ai";
+import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
+import {} from "react-icons/gr";
+import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -32,6 +34,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				: postData.post.postBody?.slice(0, 256) + "..."
 			: ""
 	);
+	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
 		if (postOptionsStateValue[name] === postData.post.id) {
@@ -92,8 +95,20 @@ const PostCard: React.FC<PostCardProps> = ({
 		return `${roundedNumber}${suffix}`;
 	};
 
+	const handleImageOrVideoNav = (direction: "previous" | "next") => {
+		if (direction === "previous") {
+			if (currentImageOrVideo > 0) {
+				setCurrentImageOrVideo(currentImageOrVideo - 1);
+			}
+		} else {
+			if (currentImageOrVideo < postData.post.postImagesOrVideos.length - 1) {
+				setCurrentImageOrVideo(currentImageOrVideo + 1);
+			}
+		}
+	};
+
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
+		<div className="post-card">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
@@ -101,40 +116,23 @@ const PostCard: React.FC<PostCardProps> = ({
 				handlePostOptions={handlePostOptions}
 				handleDeletePost={handleDeletePost}
 			/>
-			<div className="flex flex-col px-4 pb-4 gap-y-2">
-				<PostTextContent
+			<PostTextContent
+				postData={postData}
+				postBody={postBody}
+				seeMore={seeMore}
+				handleSeeMore={handleSeeMore}
+			/>
+			{postData.post.postImagesOrVideos.length > 0 && (
+				<PostImagesOrVideos
 					postData={postData}
-					postBody={postBody}
-					seeMore={seeMore}
-					handleSeeMore={handleSeeMore}
+					currentImageOrVideo={currentImageOrVideo}
+					handleImageOrVideoNav={handleImageOrVideoNav}
 				/>
-			</div>
-			<div className="px-4 pb-2">
-				<div className="text-sm flex flex-row items-center gap-x-1">
-					<div
-						className={`
-						h-5 w-5 aspect-square
-						${postData.post.numberOfLikes > 0 ? "text-blue-500" : "text-gray-500"}
-					`}
-					>
-						<AiFillLike className="h-full w-full" />
-					</div>
-					<p className="text-gray-500 truncate">
-						{postData.userLike ? (
-							<>
-								You and{" "}
-								{formatNumberWithSuffix(postData.post.numberOfLikes - 1)}{" "}
-								<span>others liked this post.</span>
-							</>
-						) : (
-							<>
-								{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
-								<span>liked this post.</span>
-							</>
-						)}
-					</p>
-				</div>
-			</div>
+			)}
+			<PostLikeAndCommentDetails
+				postData={postData}
+				formatNumberWithSuffix={formatNumberWithSuffix}
+			/>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="flex flex-col">
 				<PostFooter

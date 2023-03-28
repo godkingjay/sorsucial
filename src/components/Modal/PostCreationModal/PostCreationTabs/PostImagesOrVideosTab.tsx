@@ -15,12 +15,14 @@ type PostImagesOrVideosTabProps = {
 	handleImageOrVideoUpload: (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => void;
+	handleRemoveImageOrVideo: (index: number) => void;
 };
 
 const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 	createPostForm,
 	uploadImageOrVideoRef,
 	handleImageOrVideoUpload,
+	handleRemoveImageOrVideo,
 }) => {
 	return (
 		<div className="post-creation-form-image-or-video-tab">
@@ -44,28 +46,32 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 			</div>
 			<div className="image-or-video-tab-output-container">
 				{createPostForm.imagesOrVideos.map((imageOrVideo) => (
-					<a
-						href={imageOrVideo.url}
-						target="_blank"
+					<div
 						key={imageOrVideo.index}
 						className="image-or-video-item relative"
 					>
 						<div className="image-or-video-container">
-							{validImageTypes.includes(imageOrVideo.type) && (
-								<Image
-									src={imageOrVideo.url}
-									alt="Image or Video"
-									height={128}
-									width={128}
-									className="image"
-								/>
-							)}
-							{validVideoTypes.includes(imageOrVideo.type) && (
-								<video
-									src={imageOrVideo.url}
-									className="video"
-								/>
-							)}
+							<a
+								href={imageOrVideo.url}
+								target="_blank"
+								className="h-full w-full"
+							>
+								{validImageTypes.includes(imageOrVideo.type) && (
+									<Image
+										src={imageOrVideo.url}
+										alt="Image or Video"
+										height={128}
+										width={128}
+										className="image"
+									/>
+								)}
+								{validVideoTypes.includes(imageOrVideo.type) && (
+									<video
+										src={imageOrVideo.url}
+										className="video"
+									/>
+								)}
+							</a>
 
 							<div className="file-icon-container">
 								{validImageTypes.includes(imageOrVideo.type) && (
@@ -80,11 +86,12 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 								type="button"
 								title="Remove Image or Video"
 								className="remove-button"
+								onClick={() => handleRemoveImageOrVideo(imageOrVideo.index)}
 							>
 								<IoClose className="icon" />
 							</button>
 						</div>
-					</a>
+					</div>
 				))}
 			</div>
 			<input

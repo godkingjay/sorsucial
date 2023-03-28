@@ -495,7 +495,7 @@
 									}
 
 									.file-icon-container {
-										@apply h-6 w-6 absolute top-1 left-1 text-white text-opacity-25 duration-300;
+										@apply h-6 w-6 absolute top-1 left-1 text-white text-opacity-25 duration-300 pointer-events-none;
 									}
 								}
 

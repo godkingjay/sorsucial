@@ -8,6 +8,7 @@ import PostFooter from "./PostCard/PostFooter";
 import { AiFillLike } from "react-icons/ai";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import Image from "next/image";
+import { validImageTypes, validVideoTypes } from "../Modal/PostCreationModal";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -120,17 +121,34 @@ const PostCard: React.FC<PostCardProps> = ({
 						<div className="post-images-or-videos-bg">
 							<div className="post-images-or-videos-items-container">
 								{postData.post.postImagesOrVideos.map((imageOrVideo) => (
-									<Image
-										src={imageOrVideo.fileUrl}
-										alt={imageOrVideo.fileName}
-										height={imageOrVideo.height}
-										width={imageOrVideo.width}
-										key={imageOrVideo.id}
-										className="images-or-videos"
-										data-current-image={
-											currentImageOrVide === imageOrVideo.id ? true : false
-										}
-									/>
+									<>
+										{validImageTypes.includes(imageOrVideo.fileType) && (
+											<Image
+												src={imageOrVideo.fileUrl}
+												alt={imageOrVideo.fileName}
+												height={imageOrVideo.height}
+												width={imageOrVideo.width}
+												key={imageOrVideo.id}
+												className="images-or-videos"
+												data-current-image={
+													currentImageOrVide === imageOrVideo.id ? true : false
+												}
+											/>
+										)}
+										{validVideoTypes.includes(imageOrVideo.fileType) && (
+											<video
+												src={imageOrVideo.fileUrl}
+												height={imageOrVideo.height}
+												width={imageOrVideo.width}
+												key={imageOrVideo.id}
+												className="images-or-videos"
+												data-current-image={
+													currentImageOrVide === imageOrVideo.id ? true : false
+												}
+												controls
+											/>
+										)}
+									</>
 								))}
 							</div>
 						</div>

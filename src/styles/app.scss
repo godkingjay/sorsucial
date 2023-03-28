@@ -621,7 +621,7 @@
 						@apply h-full w-full flex flex-row items-center justify-center rounded-xl overflow-hidden;
 
 						.images-or-videos {
-							@apply object-contain bg-slate-900 duration-300;
+							@apply object-contain bg-slate-900 duration-200;
 
 							&[data-current-image="true"] {
 								@apply h-full w-full opacity-100;

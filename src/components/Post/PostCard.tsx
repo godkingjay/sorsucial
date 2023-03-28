@@ -159,6 +159,21 @@ const PostCard: React.FC<PostCardProps> = ({
 										)}
 									</>
 								))}
+								<div className="absolute w-full flex flex-col items-center justify-center bottom-2">
+									<div className="flex flex-row items-center justify-center gap-x-1">
+										{postData.post.postImagesOrVideos.map(
+											(imageOrVideo, index) => (
+												<div
+													key={index}
+													className="h-2 w-2 aspect-square bg-gray-500 bg-opacity-50 rounded-full data-[current-image=true]:bg-gray-300"
+													data-current-image={
+														currentImageOrVideo === index ? true : false
+													}
+												></div>
+											)
+										)}
+									</div>
+								</div>
 							</div>
 						</div>
 						<div className="post-images-or-videos-nav-wrapper">

@@ -32,6 +32,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										height={imageOrVideo.height}
 										width={imageOrVideo.width}
 										key={imageOrVideo.id}
+										loading="lazy"
 										className="images-or-videos"
 										data-current-image={
 											currentImageOrVideo === index ? true : false
@@ -78,7 +79,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 							<button
 								type="button"
 								title="Previous Image or Video"
-								className="button mr-auto"
+								className="button prev"
 								onClick={() => handleImageOrVideoNav("previous")}
 								disabled={currentImageOrVideo === 0}
 							>
@@ -92,7 +93,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 							<button
 								type="button"
 								title="Next Image or Video"
-								className="button ml-auto"
+								className="button next"
 								onClick={() => handleImageOrVideoNav("next")}
 								disabled={
 									currentImageOrVideo ===

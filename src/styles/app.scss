@@ -638,7 +638,7 @@
 					@apply absolute w-full top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] pointer-events-none;
 
 					.post-images-or-videos-nav-container {
-						@apply flex flex-row items-center justify-between p-1;
+						@apply flex flex-row items-center justify-between p-4;
 
 						.button {
 							@apply h-12 w-12 bg-white bg-opacity-20 rounded-full opacity-20 duration-200 pointer-events-auto;
@@ -654,6 +654,24 @@
 							&:hover,
 							&:focus-within {
 								@apply bg-opacity-50 shadow-around-xl;
+							}
+						}
+
+						.prev {
+							@apply mr-auto;
+
+							&:hover,
+							&:focus-within {
+								@apply -translate-x-1;
+							}
+						}
+
+						.next {
+							@apply ml-auto;
+
+							&:hover,
+							&:focus-within {
+								@apply translate-x-1;
 							}
 						}
 					}

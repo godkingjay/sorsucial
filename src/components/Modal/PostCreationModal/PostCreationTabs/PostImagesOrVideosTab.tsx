@@ -8,6 +8,7 @@ import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { BsImages } from "react-icons/bs";
 import { ImFilm } from "react-icons/im";
+import { FaPhotoVideo } from "react-icons/fa";
 
 type PostImagesOrVideosTabProps = {
 	createPostForm: CreatePostType;
@@ -45,56 +46,71 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 				</div>
 			</div>
 			<div className="image-or-video-tab-output-container">
-				{createPostForm.imagesOrVideos.map((imageOrVideo) => (
-					<div
-						key={imageOrVideo.index}
-						className="image-or-video-item relative"
-					>
-						<div className="image-or-video-container">
-							<a
-								href={imageOrVideo.url}
-								target="_blank"
-								className="h-full w-full"
+				{createPostForm.imagesOrVideos.length ? (
+					<>
+						{createPostForm.imagesOrVideos.map((imageOrVideo) => (
+							<div
+								key={imageOrVideo.index}
+								className="image-or-video-item relative"
 							>
-								{validImageTypes.includes(imageOrVideo.type) && (
-									<Image
-										src={imageOrVideo.url}
-										alt="Image or Video"
-										height={128}
-										width={128}
-										className="image"
-										loading="lazy"
-									/>
-								)}
-								{validVideoTypes.includes(imageOrVideo.type) && (
-									<video
-										src={imageOrVideo.url}
-										className="video"
-										tabIndex={-1}
-									/>
-								)}
-							</a>
+								<div className="image-or-video-container">
+									<a
+										href={imageOrVideo.url}
+										target="_blank"
+										className="h-full w-full"
+									>
+										{validImageTypes.includes(imageOrVideo.type) && (
+											<Image
+												src={imageOrVideo.url}
+												alt="Image or Video"
+												height={128}
+												width={128}
+												className="image"
+												loading="lazy"
+											/>
+										)}
+										{validVideoTypes.includes(imageOrVideo.type) && (
+											<video
+												src={imageOrVideo.url}
+												className="video"
+												tabIndex={-1}
+												controls={false}
+												playsInline={false}
+											/>
+										)}
+									</a>
 
-							<div className="file-icon-container">
-								{validImageTypes.includes(imageOrVideo.type) && (
-									<BsImages className="icon" />
-								)}
-								{validVideoTypes.includes(imageOrVideo.type) && (
-									<ImFilm className="icon" />
-								)}
+									<div className="file-icon-container">
+										{validImageTypes.includes(imageOrVideo.type) && (
+											<BsImages className="icon" />
+										)}
+										{validVideoTypes.includes(imageOrVideo.type) && (
+											<ImFilm className="icon" />
+										)}
+									</div>
+
+									<button
+										type="button"
+										title="Remove Image or Video"
+										className="remove-button"
+										onClick={() => handleRemoveImageOrVideo(imageOrVideo.index)}
+									>
+										<IoClose className="icon" />
+									</button>
+								</div>
 							</div>
-
-							<button
-								type="button"
-								title="Remove Image or Video"
-								className="remove-button"
-								onClick={() => handleRemoveImageOrVideo(imageOrVideo.index)}
-							>
-								<IoClose className="icon" />
-							</button>
+						))}
+					</>
+				) : (
+					<div className="h-full w-full py-2 px-6 text-gray-500 text-opacity-25 text-center font-semibold flex flex-col items-center justify-center text-sm gap-y-2">
+						<div className="h-12 w-12 aspect-square">
+							<FaPhotoVideo className="h-full w-full" />
 						</div>
+						<p className="max-w-[192px]">
+							Add an Image or Video and you can see it here.
+						</p>
 					</div>
-				))}
+				)}
 			</div>
 			<input
 				type="file"

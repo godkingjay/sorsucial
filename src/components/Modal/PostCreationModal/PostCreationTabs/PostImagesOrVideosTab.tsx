@@ -69,6 +69,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 									<video
 										src={imageOrVideo.url}
 										className="video"
+										tabIndex={-1}
 									/>
 								)}
 							</a>

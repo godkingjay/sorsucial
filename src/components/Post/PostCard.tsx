@@ -115,7 +115,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			/>
 			{postData.post.postImagesOrVideos.length > 0 && (
 				<div className="post-images-or-videos-wrapper">
-					<div className="post-images-or-videos-container">
+					<div className="post-images-or-videos-container relative">
 						<div className="post-images-or-videos-bg">
 							<div className="post-images-or-videos-items-container">
 								{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (

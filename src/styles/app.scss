@@ -612,7 +612,7 @@
 			@apply flex flex-col w-full px-4 pb-4;
 
 			.post-images-or-videos-container {
-				@apply flex flex-col w-full aspect-square relative;
+				@apply flex flex-col w-full aspect-square;
 
 				.post-images-or-videos-bg {
 					@apply h-full w-full bg-gray-200 rounded-xl shadow-around-lg;

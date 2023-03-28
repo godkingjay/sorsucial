@@ -12,6 +12,7 @@ import PostTab from "./PostCreationModal/PostCreationTabs/PostTab";
 import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
+import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -33,7 +34,7 @@ export type PostPollItemType = {
 	};
 };
 
-export type PostImageOrVideoType = {
+export type CreatePostImageOrVideoType = {
 	name: string;
 	url: string;
 	index: number;
@@ -41,6 +42,8 @@ export type PostImageOrVideoType = {
 	type: string;
 	height: number;
 	width: number;
+	fileTitle?: string;
+	fileDescription?: string;
 };
 
 export type PostFileType = {
@@ -48,6 +51,8 @@ export type PostFileType = {
 	url: string;
 	size: number;
 	type: string;
+	fileTitle?: string;
+	fileDescription?: string;
 };
 
 export type PostLinkType = {
@@ -65,9 +70,9 @@ export type CreatePostType = {
 	postType: SitePost["postType"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
-	imageOrVideo: PostImageOrVideoType[];
-	file: PostFileType[];
-	link: PostLinkType[];
+	imagesOrVideos: CreatePostImageOrVideoType[];
+	files: PostFileType[];
+	links: PostLinkType[];
 	poll: {
 		pollTitle: string;
 		pollDescription?: string;
@@ -110,9 +115,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		postType: postCreationModalStateValue.postType,
 		isCommentable: true,
 		privacy: "public",
-		imageOrVideo: [],
-		file: [],
-		link: [],
+		imagesOrVideos: [],
+		files: [],
+		links: [],
 		poll: null,
 	};
 	const { createPost } = usePost();
@@ -220,12 +225,16 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											if (blob) {
 												setCreatePostForm((prev) => ({
 													...prev,
-													imageOrVideo: [
-														...prev.imageOrVideo,
+													imagesOrVideos: [
+														...prev.imagesOrVideos,
 														{
 															name: imageOrVideo.name,
 															url: URL.createObjectURL(blob),
-															index: prev.imageOrVideo.length,
+															index: prev.imagesOrVideos.length
+																? prev.imagesOrVideos[
+																		prev.imagesOrVideos.length - 1
+																  ].index + 1
+																: 0,
 															size: blob.size,
 															type: blob.type,
 															height: height,
@@ -233,8 +242,6 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 														},
 													],
 												}));
-
-												URL.revokeObjectURL(result as string);
 											}
 										},
 										"image/jpeg",
@@ -275,12 +282,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								video.onloadedmetadata = () => {
 									setCreatePostForm((prev) => ({
 										...prev,
-										imageOrVideo: [
-											...prev.imageOrVideo,
+										imagesOrVideos: [
+											...prev.imagesOrVideos,
 											{
 												name: imageOrVideo.name,
 												url: URL.createObjectURL(blob),
-												index: prev.imageOrVideo.length,
+												index: prev.imagesOrVideos.length
+													? prev.imagesOrVideos[prev.imagesOrVideos.length - 1]
+															.index + 1
+													: 0,
 												size: blob.size,
 												type: blob.type,
 												height: video.videoHeight,
@@ -356,6 +366,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 			return false;
 		}
+	};
+
+	const handleRemoveImageOrVideo = (index: number) => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			imagesOrVideos: prev.imagesOrVideos.filter(
+				(imageOrVideo) => imageOrVideo.index !== index
+			),
+		}));
 	};
 
 	return (
@@ -441,37 +460,12 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									${postCreationModalStateValue.tab === "image/video" ? "flex" : "hidden"}
 								`}
 								>
-									<div className="post-creation-form-image-or-video-tab">
-										<div className="image-or-video-tab-input-container">
-											<div className="text-blue-500">
-												<p>Drag and drop images or videos</p>
-											</div>
-											<div className="text-xs text-gray-500">
-												<p>or</p>
-											</div>
-											<div>
-												<button
-													type="button"
-													title="Upload Image or Video"
-													className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
-													onClick={() => uploadImageOrVideoRef.current?.click()}
-												>
-													Upload
-												</button>
-											</div>
-										</div>
-										<div className="image-or-video-tab-output-container"></div>
-										<input
-											type="file"
-											title="Upload Image or Video"
-											accept={validImageTypes.concat(validVideoTypes).join(",")}
-											ref={uploadImageOrVideoRef}
-											onChange={handleImageOrVideoUpload}
-											max={20 - createPostForm.imageOrVideo.length}
-											hidden
-											multiple
-										/>
-									</div>
+									<PostImagesOrVideosTab
+										createPostForm={createPostForm}
+										uploadImageOrVideoRef={uploadImageOrVideoRef}
+										handleImageOrVideoUpload={handleImageOrVideoUpload}
+										handleRemoveImageOrVideo={handleRemoveImageOrVideo}
+									/>
 								</div>
 							</div>
 							<PostCreationTabs

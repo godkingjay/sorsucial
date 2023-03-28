@@ -75,7 +75,6 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 												className="video"
 												tabIndex={-1}
 												controls={false}
-												playsInline={false}
 											/>
 										)}
 									</a>

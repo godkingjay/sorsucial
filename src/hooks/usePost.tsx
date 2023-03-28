@@ -22,9 +22,11 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
+import { userState } from "@/atoms/userAtom";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
+	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
 	const { authUser } = useUser();
@@ -193,7 +195,10 @@ const usePost = () => {
 
 	const deletePost = async (postData: PostData) => {
 		try {
-			if (authUser?.uid !== postData.post.creatorId) {
+			if (
+				userStateValue.user.uid !== postData.post.creatorId ||
+				!userStateValue.user.roles.includes("admin")
+			) {
 				throw new Error("You are not authorized to delete this post");
 			}
 
@@ -206,7 +211,7 @@ const usePost = () => {
 
 					deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
-							"Storage: Image Or Video Deletion Error: ",
+							"Firebase Storage: Image Or Video Deletion Error: ",
 							imageOrVideo.id
 						);
 					});
@@ -218,7 +223,7 @@ const usePost = () => {
 					const fileStorageRef = ref(clientStorage, file.filePath);
 
 					deleteObject(fileStorageRef).catch(() => {
-						console.log("Storage: File Deletion Error: ", file.id);
+						console.log("Firebase Storage: File Deletion Error: ", file.id);
 					});
 				});
 			}
@@ -234,7 +239,7 @@ const usePost = () => {
 
 					deleteObject(pollItemStorageRef).catch(() => {
 						console.log(
-							"Storage: Poll Item Logo Deletion Error: ",
+							"Firebase Storage: Poll Item Logo Deletion Error: ",
 							pollItem.id
 						);
 					});
@@ -257,7 +262,7 @@ const usePost = () => {
 					} as PostState)
 			);
 		} catch (error: any) {
-			console.log("Firestore: Post Deletion Error", error.message);
+			console.log("MONGO: Post Deletion Error", error.message);
 		}
 	};
 

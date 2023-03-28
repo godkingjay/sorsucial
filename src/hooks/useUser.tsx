@@ -137,7 +137,6 @@ const useUser = () => {
 					imageDocRef.id
 				).catch((error: any) => {
 					console.log("Hook: Upload Profile Photo Error: ", error.message);
-					throw error;
 				});
 
 				if (userProfilePhoto) {
@@ -164,7 +163,6 @@ const useUser = () => {
 			}));
 		} catch (error: any) {
 			console.log("Hook: User Creation Error!");
-			throw error;
 		}
 	};
 

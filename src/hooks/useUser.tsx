@@ -179,14 +179,17 @@ const useUser = () => {
 			const blob = await response.blob();
 
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log("Hook: Uploading Profile Photo Error: ", error.message);
+				console.log(
+					"Firebase Storage: Uploading Profile Photo Error: ",
+					error.message
+				);
 				throw error;
 			});
 
 			const downloadURL = await getDownloadURL(storageRef).catch(
 				(error: any) => {
 					console.log(
-						"Hook: Getting Profile Photo Download URL Error: ",
+						"Firebase Storage: Getting Profile Photo Download URL Error: ",
 						error.message
 					);
 					throw error;
@@ -213,7 +216,7 @@ const useUser = () => {
 
 			return newImage;
 		} catch (error: any) {
-			console.log("Hook: Upload Profile Photo Error!");
+			console.log("Firebase Storage: Upload Profile Photo Error!");
 			throw error;
 		}
 	};

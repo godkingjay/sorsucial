@@ -13,6 +13,7 @@ import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
 import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
+import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -81,9 +82,6 @@ export type CreatePostType = {
 		postItems: PostPollItemType[];
 	} | null;
 };
-
-export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
-export const validVideoTypes = ["video/mp4", "video/avi", "video/mov"];
 
 export const postPrivacyOptions: DropdownOption[] = [
 	{
@@ -496,6 +494,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										<input
 											type="file"
 											title="Upload File"
+											// accept={validImageTypes.concat(validVideoTypes).join(",")}
 											ref={uploadFileRef}
 											onChange={handleFileUpload}
 											max={10 - createPostForm.files.length}

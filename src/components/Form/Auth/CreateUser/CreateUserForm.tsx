@@ -14,7 +14,7 @@ import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { errorModalState } from "@/atoms/modalAtom";
-import moment from "moment";
+import { validImageTypes } from "@/lib/types/validFiles";
 
 type CreateUserFormProps = {};
 
@@ -46,8 +46,6 @@ export type CreateUserErrorType = {
 
 export const NameRegex =
 	/^(?=.{1,49}$)([A-Z][a-z]*(?:[\s'-]([A-Z][a-z]*|[A-Z]?[a-z]+))*)$/;
-
-export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 
 export const genderOptions = [
 	{

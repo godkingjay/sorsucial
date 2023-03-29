@@ -13,7 +13,11 @@ import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
 import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
-import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
+import {
+	validAllTypes,
+	validImageTypes,
+	validVideoTypes,
+} from "@/lib/types/validFiles";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -494,7 +498,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										<input
 											type="file"
 											title="Upload File"
-											// accept={validImageTypes.concat(validVideoTypes).join(",")}
+											accept={validAllTypes.join(",")}
 											ref={uploadFileRef}
 											onChange={handleFileUpload}
 											max={10 - createPostForm.files.length}

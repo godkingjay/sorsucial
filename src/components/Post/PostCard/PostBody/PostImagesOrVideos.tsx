@@ -24,14 +24,13 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 				<div className="post-images-or-videos-bg">
 					<div className="post-images-or-videos-items-container">
 						{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (
-							<>
+							<React.Fragment key={imageOrVideo.id}>
 								{validImageTypes.includes(imageOrVideo.fileType) && (
 									<Image
 										src={imageOrVideo.fileUrl}
 										alt={imageOrVideo.fileName}
 										height={imageOrVideo.height}
 										width={imageOrVideo.width}
-										key={imageOrVideo.id}
 										loading="lazy"
 										className="images-or-videos"
 										data-current-image={
@@ -44,7 +43,6 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										src={imageOrVideo.fileUrl}
 										height={imageOrVideo.height}
 										width={imageOrVideo.width}
-										key={imageOrVideo.id}
 										className="images-or-videos"
 										data-current-image={
 											currentImageOrVideo === index ? true : false
@@ -52,7 +50,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										controls
 									/>
 								)}
-							</>
+							</React.Fragment>
 						))}
 						{postData.post.postImagesOrVideos.length > 1 && (
 							<div className="absolute w-full flex flex-col items-center justify-center bottom-2">

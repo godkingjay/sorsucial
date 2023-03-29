@@ -96,7 +96,10 @@ const usePost = () => {
 					).then(async () => {
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
-								updatedPost: newPostData,
+								updatedPost: {
+									...newPost,
+									updatedAt: new Date(),
+								},
 							})
 							.catch((error) => {
 								console.log(

@@ -24,14 +24,14 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 				<div className="post-images-or-videos-bg">
 					<div className="post-images-or-videos-items-container">
 						{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (
-							<>
+							<React.Fragment key={imageOrVideo.id}>
 								{validImageTypes.includes(imageOrVideo.fileType) && (
 									<Image
 										src={imageOrVideo.fileUrl}
 										alt={imageOrVideo.fileName}
 										height={imageOrVideo.height}
 										width={imageOrVideo.width}
-										key={imageOrVideo.id}
+										loading="lazy"
 										className="images-or-videos"
 										data-current-image={
 											currentImageOrVideo === index ? true : false
@@ -43,7 +43,6 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										src={imageOrVideo.fileUrl}
 										height={imageOrVideo.height}
 										width={imageOrVideo.width}
-										key={imageOrVideo.id}
 										className="images-or-videos"
 										data-current-image={
 											currentImageOrVideo === index ? true : false
@@ -51,7 +50,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										controls
 									/>
 								)}
-							</>
+							</React.Fragment>
 						))}
 						{postData.post.postImagesOrVideos.length > 1 && (
 							<div className="absolute w-full flex flex-col items-center justify-center bottom-2">
@@ -78,7 +77,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 							<button
 								type="button"
 								title="Previous Image or Video"
-								className="button mr-auto"
+								className="button prev"
 								onClick={() => handleImageOrVideoNav("previous")}
 								disabled={currentImageOrVideo === 0}
 							>
@@ -92,7 +91,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 							<button
 								type="button"
 								title="Next Image or Video"
-								className="button ml-auto"
+								className="button next"
 								onClick={() => handleImageOrVideoNav("next")}
 								disabled={
 									currentImageOrVideo ===

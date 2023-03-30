@@ -54,6 +54,7 @@ export type CreatePostImageOrVideoType = {
 export type PostFileType = {
 	name: string;
 	url: string;
+	index: number;
 	size: number;
 	type: string;
 	fileTitle?: string;
@@ -319,14 +320,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						};
 
 						reader.readAsArrayBuffer(imageOrVideo);
-					} else {
-						setErrorModalStateValue((prev) => ({
-							...prev,
-							open: true,
-							view: "upload",
-							message: "Invalid file type",
-						}));
 					}
+					// else {
+					// 	setErrorModalStateValue((prev) => ({
+					// 		...prev,
+					// 		open: true,
+					// 		view: "upload",
+					// 		message: "Invalid file type",
+					// 	}));
+					// }
 				}
 			});
 
@@ -381,7 +383,75 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	};
 
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-		console.log("Upload File!");
+		if (event.target.files?.length) {
+			const files = Array.from(event.target.files);
+
+			files.map((file) => {
+				if (validateFile(file)) {
+					const reader = new FileReader();
+
+					reader.onload = () => {
+						const result = reader.result;
+
+						if (result) {
+							const blob = new Blob([result], {
+								type: file.type ? file.type : file.name.split(".").pop(),
+							});
+
+							setCreatePostForm((prev) => ({
+								...prev,
+								files: [
+									...prev.files,
+									{
+										name: file.name,
+										url: URL.createObjectURL(blob),
+										index: prev.files.length
+											? prev.files[prev.files.length - 1].index + 1
+											: 0,
+										size: blob.size,
+										type: blob.type,
+									},
+								],
+							}));
+						} else {
+							setErrorModalStateValue((prev) => ({
+								...prev,
+								open: true,
+								view: "upload",
+								message: "File not loaded.",
+							}));
+						}
+					};
+
+					reader.readAsArrayBuffer(file);
+				}
+			});
+		}
+	};
+
+	const validateFile = (file: File) => {
+		if (validAllTypes.includes(file.type)) {
+			if (file.size > 1024 * 1024 * 20) {
+				setErrorModalStateValue((prev) => ({
+					...prev,
+					open: true,
+					view: "upload",
+					message: "File size should be less than 20MB",
+				}));
+				return false;
+			}
+
+			return true;
+		} else {
+			setErrorModalStateValue((prev) => ({
+				...prev,
+				open: true,
+				view: "upload",
+				message: "Invalid file type",
+			}));
+
+			return false;
+		}
 	};
 
 	return (
@@ -501,7 +571,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											accept={validAllTypes.join(",")}
 											ref={uploadFileRef}
 											onChange={handleFileUpload}
-											max={10 - createPostForm.files.length}
+											max={20 - createPostForm.files.length}
 											hidden
 											multiple
 										/>

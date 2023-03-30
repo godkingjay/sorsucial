@@ -1,14 +1,11 @@
 import React from "react";
-import {
-	CreatePostType,
-	validImageTypes,
-	validVideoTypes,
-} from "../../PostCreationModal";
+import { CreatePostType } from "../../PostCreationModal";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { BsImages } from "react-icons/bs";
 import { ImFilm } from "react-icons/im";
 import { FaPhotoVideo } from "react-icons/fa";
+import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 
 type PostImagesOrVideosTabProps = {
 	createPostForm: CreatePostType;

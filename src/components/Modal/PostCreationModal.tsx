@@ -3,7 +3,7 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import { IoAdd, IoClose } from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
@@ -13,6 +13,11 @@ import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
 import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
+import {
+	validAllTypes,
+	validImageTypes,
+	validVideoTypes,
+} from "@/lib/types/validFiles";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -49,6 +54,7 @@ export type CreatePostImageOrVideoType = {
 export type PostFileType = {
 	name: string;
 	url: string;
+	index: number;
 	size: number;
 	type: string;
 	fileTitle?: string;
@@ -81,9 +87,6 @@ export type CreatePostType = {
 		postItems: PostPollItemType[];
 	} | null;
 };
-
-export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
-export const validVideoTypes = ["video/mp4", "video/avi", "video/mov"];
 
 export const postPrivacyOptions: DropdownOption[] = [
 	{
@@ -125,8 +128,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		defaultCreatePostForm
 	);
 	const [creatingPost, setCreatingPost] = useState(false);
-	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const setErrorModalStateValue = useSetRecoilState(errorModalState);
+	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
+	const uploadFileRef = useRef<HTMLInputElement>(null);
 
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
@@ -316,14 +320,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						};
 
 						reader.readAsArrayBuffer(imageOrVideo);
-					} else {
-						setErrorModalStateValue((prev) => ({
-							...prev,
-							open: true,
-							view: "upload",
-							message: "Invalid file type",
-						}));
 					}
+					// else {
+					// 	setErrorModalStateValue((prev) => ({
+					// 		...prev,
+					// 		open: true,
+					// 		view: "upload",
+					// 		message: "Invalid file type",
+					// 	}));
+					// }
 				}
 			});
 
@@ -375,6 +380,78 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				(imageOrVideo) => imageOrVideo.index !== index
 			),
 		}));
+	};
+
+	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files?.length) {
+			const files = Array.from(event.target.files);
+
+			files.map((file) => {
+				if (validateFile(file)) {
+					const reader = new FileReader();
+
+					reader.onload = () => {
+						const result = reader.result;
+
+						if (result) {
+							const blob = new Blob([result], {
+								type: file.type ? file.type : file.name.split(".").pop(),
+							});
+
+							setCreatePostForm((prev) => ({
+								...prev,
+								files: [
+									...prev.files,
+									{
+										name: file.name,
+										url: URL.createObjectURL(blob),
+										index: prev.files.length
+											? prev.files[prev.files.length - 1].index + 1
+											: 0,
+										size: blob.size,
+										type: blob.type,
+									},
+								],
+							}));
+						} else {
+							setErrorModalStateValue((prev) => ({
+								...prev,
+								open: true,
+								view: "upload",
+								message: "File not loaded.",
+							}));
+						}
+					};
+
+					reader.readAsArrayBuffer(file);
+				}
+			});
+		}
+	};
+
+	const validateFile = (file: File) => {
+		if (validAllTypes.includes(file.type)) {
+			if (file.size > 1024 * 1024 * 20) {
+				setErrorModalStateValue((prev) => ({
+					...prev,
+					open: true,
+					view: "upload",
+					message: "File size should be less than 20MB",
+				}));
+				return false;
+			}
+
+			return true;
+		} else {
+			setErrorModalStateValue((prev) => ({
+				...prev,
+				open: true,
+				view: "upload",
+				message: "Invalid file type",
+			}));
+
+			return false;
+		}
 	};
 
 	return (
@@ -466,6 +543,39 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleImageOrVideoUpload={handleImageOrVideoUpload}
 										handleRemoveImageOrVideo={handleRemoveImageOrVideo}
 									/>
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "file" ? "flex" : "hidden"}
+								`}
+								>
+									<div className="flex flex-col gap-y-2 flex-1">
+										<button
+											type="button"
+											title="Add File"
+											className="flex flex-row items-center justify-center gap-x-2 border-2 border-dashed rounded-lg text-purple-500 border-purple-500 text-sm font-semibold py-2 px-6 relative overflow-hidden [&:hover>.deco]:w-full [&:focus-within>.deco]:w-full [&:hover>.deco]:rounded-r-none [&:focus-within>.deco]:rounded-r-none outline-none"
+											onClick={() => uploadFileRef.current?.click()}
+										>
+											<div className="deco -z-10 absolute h-full w-0 duration-500 ease-in-out top-0 left-0 bg-purple-100 rounded-r-full"></div>
+											<div className="h-6 w-6">
+												<IoAdd className="h-full w-full" />
+											</div>
+											<div className="h-full flex flex-row items-center">
+												<p>Add File</p>
+											</div>
+										</button>
+										<input
+											type="file"
+											title="Upload File"
+											accept={validAllTypes.join(",")}
+											ref={uploadFileRef}
+											onChange={handleFileUpload}
+											max={20 - createPostForm.files.length}
+											hidden
+											multiple
+										/>
+									</div>
 								</div>
 							</div>
 							<PostCreationTabs

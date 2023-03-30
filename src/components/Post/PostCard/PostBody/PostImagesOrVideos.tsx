@@ -1,8 +1,5 @@
 import { PostData } from "@/atoms/postAtom";
-import {
-	validImageTypes,
-	validVideoTypes,
-} from "@/components/Modal/PostCreationModal";
+import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 import Image from "next/image";
 import React from "react";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";

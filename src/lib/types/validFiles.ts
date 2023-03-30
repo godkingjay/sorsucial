@@ -11,12 +11,12 @@ export const validArchiveTypes = [
 	".tar.gz",
 	".tgz",
 	".xapk",
-	".zip",
+	"application/x-zip-compressed",
 	".zipx",
 ];
 
 export const validConfigTypes = [
-	".json",
+	"application/json",
 	".xml",
 	".yaml",
 	".ini",
@@ -80,10 +80,10 @@ export const validDiskImageTypes = [
 
 export const validDocumentTypes = [
 	".doc",
-	".docx",
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 	".xls",
-	".xlsx",
-	".pdf",
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	"application/pdf",
 	".odt",
 ];
 
@@ -113,7 +113,12 @@ export const validPageLayoutTypes = [
 	".xps",
 ];
 
-export const validPresentationTypes = [".ppt", ".pptx", ".odp", ".key"];
+export const validPresentationTypes = [
+	".ppt",
+	"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+	".odp",
+	".key",
+];
 
 export const validProgramTypes = [
 	".exe",
@@ -148,11 +153,9 @@ export const validThreeDImage = [
 ];
 
 export const validVectorImageTypes = [
-	".ai",
 	".cdr",
-	".eps",
 	".emf",
-	".ps",
+	"application/postscript",
 	".sketch",
 	".svg",
 	".vsdx",

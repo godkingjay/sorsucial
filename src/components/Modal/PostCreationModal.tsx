@@ -106,6 +106,12 @@ export const postPrivacyOptions: DropdownOption[] = [
 	},
 ];
 
+export const maxPostItems = {
+	imagesOrVideos: 20,
+	files: 20,
+	links: 20,
+};
+
 const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	postCreationModalStateValue,
 	setPostCreationModalStateValue,
@@ -571,7 +577,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											accept={validAllTypes.join(",")}
 											ref={uploadFileRef}
 											onChange={handleFileUpload}
-											max={20 - createPostForm.files.length}
+											max={maxPostItems.files - createPostForm.files.length}
 											hidden
 											multiple
 										/>

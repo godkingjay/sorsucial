@@ -1,5 +1,5 @@
 import React from "react";
-import { CreatePostType } from "../../PostCreationModal";
+import { CreatePostType, maxPostItems } from "../../PostCreationModal";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { BsImages } from "react-icons/bs";
@@ -114,7 +114,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 				accept={validImageTypes.concat(validVideoTypes).join(",")}
 				ref={uploadImageOrVideoRef}
 				onChange={handleImageOrVideoUpload}
-				max={20 - createPostForm.imagesOrVideos.length}
+				max={maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length}
 				hidden
 				multiple
 			/>

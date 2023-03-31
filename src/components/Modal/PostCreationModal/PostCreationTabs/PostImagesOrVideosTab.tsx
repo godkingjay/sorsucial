@@ -1,5 +1,5 @@
 import React from "react";
-import { CreatePostType } from "../../PostCreationModal";
+import { CreatePostType, maxPostItems } from "../../PostCreationModal";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { BsImages } from "react-icons/bs";
@@ -24,7 +24,16 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 }) => {
 	return (
 		<div className="post-creation-form-image-or-video-tab">
-			<div className="image-or-video-tab-input-container">
+			<div
+				className={`
+					image-or-video-tab-input-container
+					${
+						createPostForm.imagesOrVideos.length === maxPostItems.imagesOrVideos
+							? "grayscale pointer-events-none"
+							: ""
+					}
+				`}
+			>
 				<div className="text-blue-500">
 					<p>Drag and drop images or videos</p>
 				</div>
@@ -35,8 +44,16 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 					<button
 						type="button"
 						title="Upload Image or Video"
-						className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
-						onClick={() => uploadImageOrVideoRef.current?.click()}
+						className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none disabled:bg-transparent disabled:grayscale"
+						onClick={(e) =>
+							e.currentTarget.disabled
+								? null
+								: uploadImageOrVideoRef.current?.click()
+						}
+						disabled={
+							createPostForm.imagesOrVideos.length >=
+							maxPostItems.imagesOrVideos
+						}
 					>
 						Upload
 					</button>
@@ -56,7 +73,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 										target="_blank"
 										className="h-full w-full"
 									>
-										{validImageTypes.includes(imageOrVideo.type) && (
+										{validImageTypes.ext.includes(imageOrVideo.type) && (
 											<Image
 												src={imageOrVideo.url}
 												alt="Image or Video"
@@ -66,7 +83,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 												loading="lazy"
 											/>
 										)}
-										{validVideoTypes.includes(imageOrVideo.type) && (
+										{validVideoTypes.ext.includes(imageOrVideo.type) && (
 											<video
 												src={imageOrVideo.url}
 												className="video"
@@ -77,10 +94,10 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 									</a>
 
 									<div className="file-icon-container">
-										{validImageTypes.includes(imageOrVideo.type) && (
+										{validImageTypes.ext.includes(imageOrVideo.type) && (
 											<BsImages className="icon" />
 										)}
-										{validVideoTypes.includes(imageOrVideo.type) && (
+										{validVideoTypes.ext.includes(imageOrVideo.type) && (
 											<ImFilm className="icon" />
 										)}
 									</div>
@@ -111,10 +128,15 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 			<input
 				type="file"
 				title="Upload Image or Video"
-				accept={validImageTypes.concat(validVideoTypes).join(",")}
+				accept={validImageTypes.ext.concat(validVideoTypes.ext).join(",")}
 				ref={uploadImageOrVideoRef}
-				onChange={handleImageOrVideoUpload}
-				max={20 - createPostForm.imagesOrVideos.length}
+				onChange={(event) =>
+					event.currentTarget.disabled ? null : handleImageOrVideoUpload(event)
+				}
+				disabled={
+					createPostForm.imagesOrVideos.length >= maxPostItems.imagesOrVideos
+				}
+				max={maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length}
 				hidden
 				multiple
 			/>

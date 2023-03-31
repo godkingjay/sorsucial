@@ -1,193 +1,185 @@
-export const validArchiveTypes = [
-	".7z",
-	".cbr",
-	".deb",
-	".gz",
-	".gzip",
-	".pak",
-	".pkg",
-	".rar",
-	".rpm",
-	".tar.gz",
-	".tgz",
-	".xapk",
-	"application/x-zip-compressed",
-	".zipx",
-];
+export const validArchiveTypes = {
+	ext: [
+		".7z",
+		".cbr",
+		".deb",
+		".gz",
+		".gzip",
+		".pak",
+		".pkg",
+		".rar",
+		".rpm",
+		".tar.gz",
+		".tgz",
+		".xapk",
+		"application/x-zip-compressed",
+		".zipx",
+	],
+	type: "archive",
+};
 
-export const validConfigTypes = [
-	"application/json",
-	".xml",
-	".yaml",
-	".ini",
-	".conf",
-	".config",
-	".properties",
-];
+export const validConfigTypes = {
+	ext: [
+		"application/json",
+		".xml",
+		".yaml",
+		".ini",
+		".conf",
+		".config",
+		".properties",
+	],
+	type: "config",
+};
 
-export const validDataTypes = [
-	".aae",
-	".bin",
-	".csv",
-	".dat",
-	".mpp",
-	".obb",
-	".rpt",
-	".sdf",
-	".vcf",
-];
+export const validDataTypes = {
+	ext: [".aae", ".bin", ".csv", ".dat", ".mpp", ".obb", ".rpt", ".sdf", ".vcf"],
+	type: "data",
+};
 
-export const validDatabaseTypes = [
-	".accdb",
-	".crypt14",
-	".db",
-	".mdb",
-	".odb",
-	".pdb",
-	".sql",
-	".sqlite",
-];
+export const validDatabaseTypes = {
+	ext: [".accdb", ".crypt14", ".db", ".mdb", ".odb", ".pdb", ".sql", ".sqlite"],
+	type: "database",
+};
 
-export const validDeveloperFilesTypes = [
-	".c",
-	".class",
-	".cpp",
-	".cs",
-	".h",
-	".java",
-	".kt",
-	".lua",
-	".m",
-	".pl",
-	".php",
-	".py",
-	".swift",
-	".unity",
-	".vb",
-	".vcxproj",
-	".xcodeproj",
-	".yml",
-];
+export const validDeveloperFilesTypes = {
+	ext: [
+		".c",
+		".class",
+		".cpp",
+		".cs",
+		".h",
+		".java",
+		".kt",
+		".lua",
+		".m",
+		".pl",
+		".php",
+		".py",
+		".swift",
+		".unity",
+		".vb",
+		".vcxproj",
+		".xcodeproj",
+		".yml",
+	],
+	type: "developer-files",
+};
 
-export const validDiskImageTypes = [
-	".dmg",
-	".img",
-	".iso",
-	".mdf",
-	".rom",
-	".vcd",
-];
+export const validDiskImageTypes = {
+	ext: [".dmg", ".img", ".iso", ".mdf", ".rom", ".vcd"],
+	type: "disk-image",
+};
 
-export const validDocumentTypes = [
-	".doc",
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-	".xls",
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-	"application/pdf",
-	".odt",
-];
+export const validDocumentTypes = {
+	ext: [
+		".doc",
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		".odt",
+	],
+	type: "document",
+};
 
-export const validFontTypes = [".fnt", ".otf", ".ttf", ".woff", ".woff2"];
+export const validFontTypes = {
+	ext: [".fnt", ".otf", ".ttf", ".woff", ".woff2"],
+	type: "font",
+};
 
-export const validHTMLTypes = [".html", ".htm"];
+export const validHTMLTypes = {
+	ext: [".htm", ".html", ".xhtml"],
+	type: "html",
+};
 
-export const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
+export const validImageTypes = {
+	ext: ["image/png", "image/jpeg", "image/jpg"],
+	type: "image",
+};
 
-export const validMessageTypes = [".msg", ".eml"];
+export const validMessageTypes = {
+	ext: [".eml", ".msg", ".oft", ".ost", ".pst", ".vcf"],
+	type: "message",
+};
 
-export const validMusicTypes = [
-	"audio/mpeg",
-	"audio/mp3",
-	"audio/wav",
-	"audio/ogg",
-	"audio/m4a",
-];
+export const validMusicTypes = {
+	ext: ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/m4a"],
+	type: "music",
+};
 
-export const validPageLayoutTypes = [
-	".afpub",
-	".indd",
-	".oxps",
-	".pmd",
-	".pub",
-	".qxp",
-	".xps",
-];
+export const validPageLayoutTypes = {
+	ext: [".afpub", ".indd", ".oxps", ".pmd", ".pub", ".qxp", ".xps"],
+	type: "page-layout",
+};
 
-export const validPresentationTypes = [
-	".ppt",
-	"application/vnd.openxmlformats-officedocument.presentationml.presentation",
-	".odp",
-	".key",
-];
+export const validPdfType = {
+	ext: ["application/pdf"],
+	type: "pdf",
+};
 
-export const validProgramTypes = [
-	".exe",
-	".msi",
-	".jar",
-	".apk",
-	".app",
-	".ipa",
-	".bat",
-	".run",
-	".sh",
-];
+export const validPresentationTypes = {
+	ext: [
+		".ppt",
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+		".odp",
+		".key",
+	],
+	type: "presentation",
+};
 
-export const validSpreadsheetTypes = [
-	".xls",
-	".xlsx",
-	".numbers",
-	".ods",
-	".xlr",
-];
+export const validProgramTypes = {
+	ext: [".exe", ".msi", ".jar", ".apk", ".app", ".ipa", ".bat", ".run", ".sh"],
+	type: "program",
+};
 
-export const validTextTypes = [".txt", ".md", ".log", ".rtf", ".tex", ".wpd"];
+export const validSpreadsheetTypes = {
+	ext: [
+		".xls",
+		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		".numbers",
+		".ods",
+		".xlr",
+	],
+	type: "spreadsheet",
+};
 
-export const validThreeDImage = [
-	".3dm",
-	".3ds",
-	".max",
-	".obj",
-	".blend",
-	".fbx",
-	".dae",
-];
+export const validTextTypes = {
+	ext: [".txt", ".md", ".log", ".rtf", ".tex", ".wpd"],
+	type: "text",
+};
 
-export const validVectorImageTypes = [
-	".cdr",
-	".emf",
-	"application/postscript",
-	".sketch",
-	".svg",
-	".vsdx",
-];
+export const validThreeDImageTypes = {
+	ext: [".3dm", ".3ds", ".max", ".obj", ".blend", ".fbx", ".dae"],
+	type: "3d-image",
+};
 
-export const validVideoTypes = [
-	"video/mp4",
-	"video/avi",
-	"video/mov",
-	"video/wmv",
-	"video/m4v",
-];
+export const validVectorImageTypes = {
+	ext: [".cdr", ".emf", "application/postscript", ".sketch", ".svg", ".vsdx"],
+	type: "vector-image",
+};
+
+export const validVideoTypes = {
+	ext: ["video/mp4", "video/avi", "video/mov", "video/wmv", "video/m4v"],
+	type: "video",
+};
 
 export const validAllTypes = [
-	...validArchiveTypes,
-	...validConfigTypes,
-	...validDataTypes,
-	...validDatabaseTypes,
-	...validDeveloperFilesTypes,
-	...validDiskImageTypes,
-	...validDocumentTypes,
-	...validFontTypes,
-	...validHTMLTypes,
-	...validImageTypes,
-	...validMessageTypes,
-	...validMusicTypes,
-	...validPageLayoutTypes,
-	...validPresentationTypes,
-	...validProgramTypes,
-	...validSpreadsheetTypes,
-	...validTextTypes,
-	...validThreeDImage,
-	...validVectorImageTypes,
-	...validVideoTypes,
+	validArchiveTypes,
+	validConfigTypes,
+	validDataTypes,
+	validDatabaseTypes,
+	validDeveloperFilesTypes,
+	validDiskImageTypes,
+	validDocumentTypes,
+	validFontTypes,
+	validHTMLTypes,
+	validImageTypes,
+	validMessageTypes,
+	validMusicTypes,
+	validPageLayoutTypes,
+	validPdfType,
+	validPresentationTypes,
+	validProgramTypes,
+	validSpreadsheetTypes,
+	validTextTypes,
+	validThreeDImageTypes,
+	validVectorImageTypes,
+	validVideoTypes,
 ];

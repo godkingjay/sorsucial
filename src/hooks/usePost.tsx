@@ -5,12 +5,18 @@ import {
 	postState,
 } from "@/atoms/postAtom";
 import {
+	CreatePostFileType,
 	CreatePostImageOrVideoType,
 	CreatePostType,
 } from "@/components/Modal/PostCreationModal";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { PostImageOrVideo, PostLike, SitePost } from "@/lib/interfaces/post";
+import {
+	PostFile,
+	PostImageOrVideo,
+	PostLike,
+	SitePost,
+} from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
@@ -75,7 +81,7 @@ const usePost = () => {
 					await Promise.all(
 						postForm.imagesOrVideos.map(async (imageOrVideo) => {
 							const postImageOrVideoRef = doc(
-								collection(clientDb, `posts/${newPostData.id}/imagesOrVideos}`)
+								collection(clientDb, `posts/${newPostData.id}/imagesOrVideos`)
 							);
 
 							const postImageOrVideo = await uploadPostImageOrVideo(
@@ -97,7 +103,7 @@ const usePost = () => {
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
 								updatedPost: {
-									...newPost,
+									...newPostData,
 									updatedAt: new Date(),
 								},
 							})
@@ -111,6 +117,36 @@ const usePost = () => {
 				}
 
 				if (postForm.files) {
+					await Promise.all(
+						postForm.files.map(async (file) => {
+							const postFileRef = doc(
+								collection(clientDb, `posts/${newPostData.id}/files`)
+							);
+
+							const postFile = await uploadPostFile(
+								newPostData,
+								file,
+								postFileRef.id
+							).catch((error: any) => {
+								console.log("Hook: Upload File Error: ", error.message);
+							});
+
+							if (postFile) {
+								newPostData.postFiles.push(postFile);
+							}
+						})
+					).then(async () => {
+						await axios
+							.put(apiConfig.apiEndpoint + "post/post", {
+								updatedPost: {
+									...newPostData,
+									updatedAt: new Date(),
+								},
+							})
+							.catch((error) => {
+								console.log("API: Post Files Error: ", error.message);
+							});
+					});
 				}
 
 				if (postForm.links) {
@@ -192,7 +228,57 @@ const usePost = () => {
 
 			return newPostImageOrVideo;
 		} catch (error: any) {
-			console.log("MONGO: Image Or Video Creation Error", error.message);
+			console.log("MONGO: Image Or Video Upload Error", error.message);
+		}
+	};
+
+	const uploadPostFile = async (
+		post: SitePost,
+		file: CreatePostFileType,
+		fileId: string
+	) => {
+		try {
+			const storageRef = ref(clientStorage, `posts/${post.id}/files/${fileId}`);
+
+			const response = await fetch(file.url as string);
+			const blob = await response.blob();
+
+			await uploadBytes(storageRef, blob).catch((error: any) => {
+				console.log("Firebase Storage: File Upload Error: ", error.message);
+				throw error;
+			});
+
+			const downloadURL = await getDownloadURL(storageRef).catch(
+				(error: any) => {
+					console.log(
+						"Firebase Storage: file Download URL Error: ",
+						error.message
+					);
+					throw error;
+				}
+			);
+
+			const date = new Date();
+
+			const newPostFile: PostFile = {
+				id: fileId,
+				postId: post.id,
+				index: file.index,
+				fileTitle: file.fileTitle ? file.fileTitle : file.name,
+				fileDescription: file.fileDescription,
+				fileName: file.name,
+				fileType: file.type,
+				filePath: storageRef.fullPath,
+				fileUrl: downloadURL,
+				fileExtension: file.name.split(".").pop() as string,
+				fileSize: file.size,
+				updatedAt: date,
+				createdAt: date,
+			};
+
+			return newPostFile;
+		} catch (error: any) {
+			console.log("MONGO: File Upload Error", error.message);
 		}
 	};
 

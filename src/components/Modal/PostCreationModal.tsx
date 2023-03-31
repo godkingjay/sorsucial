@@ -3,7 +3,7 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import { IoAdd, IoClose } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
@@ -18,6 +18,7 @@ import {
 	validImageTypes,
 	validVideoTypes,
 } from "@/lib/types/validFiles";
+import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -25,7 +26,7 @@ type PostCreationModalProps = {
 	userStateValue: UserState;
 };
 
-export type PostPollItemType = {
+export type CreatePostPollItemType = {
 	postItemTitle: string;
 	logoType?: PollItem["logoType"];
 	emoji?: string;
@@ -51,7 +52,7 @@ export type CreatePostImageOrVideoType = {
 	fileDescription?: string;
 };
 
-export type PostFileType = {
+export type CreatePostFileType = {
 	name: string;
 	url: string;
 	index: number;
@@ -61,7 +62,7 @@ export type PostFileType = {
 	fileDescription?: string;
 };
 
-export type PostLinkType = {
+export type CreatePostLinkType = {
 	linkTitle?: string;
 	linkDescription?: string;
 	url: string;
@@ -77,14 +78,14 @@ export type CreatePostType = {
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
 	imagesOrVideos: CreatePostImageOrVideoType[];
-	files: PostFileType[];
-	links: PostLinkType[];
+	files: CreatePostFileType[];
+	links: CreatePostLinkType[];
 	poll: {
 		pollTitle: string;
 		pollDescription?: string;
 		maxVotes?: number;
 		isActive: boolean;
-		postItems: PostPollItemType[];
+		postItems: CreatePostPollItemType[];
 	} | null;
 };
 
@@ -105,6 +106,12 @@ export const postPrivacyOptions: DropdownOption[] = [
 		icon: <FaLock className="w-full h-full" />,
 	},
 ];
+
+export const maxPostItems = {
+	imagesOrVideos: 20,
+	files: 20,
+	links: 20,
+};
 
 const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	postCreationModalStateValue,
@@ -194,11 +201,14 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
 		if (event.target.files?.length) {
-			const imagesOrVideos = Array.from(event.target.files);
+			const imagesOrVideos = Array.from(event.target.files).splice(
+				0,
+				maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length
+			);
 
 			imagesOrVideos.map((imageOrVideo) => {
 				if (validateImageOrVideo(imageOrVideo)) {
-					if (validImageTypes.includes(imageOrVideo.type)) {
+					if (validImageTypes.ext.includes(imageOrVideo.type)) {
 						const reader = new FileReader();
 
 						reader.onload = (readerEvent) => {
@@ -270,7 +280,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						};
 
 						reader.readAsDataURL(imageOrVideo);
-					} else if (validVideoTypes.includes(imageOrVideo.type)) {
+					} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
 						const reader = new FileReader();
 
 						reader.onload = () => {
@@ -337,7 +347,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	};
 
 	const validateImageOrVideo = (imageOrVideo: File) => {
-		if (validImageTypes.includes(imageOrVideo.type)) {
+		if (validImageTypes.ext.includes(imageOrVideo.type)) {
 			if (imageOrVideo.size > 1024 * 1024 * 2) {
 				setErrorModalStateValue((prev) => ({
 					...prev,
@@ -349,7 +359,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			}
 
 			return true;
-		} else if (validVideoTypes.includes(imageOrVideo.type)) {
+		} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
 			if (imageOrVideo.size > 1024 * 1024 * 20) {
 				setErrorModalStateValue((prev) => ({
 					...prev,
@@ -384,7 +394,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files?.length) {
-			const files = Array.from(event.target.files);
+			const files = Array.from(event.target.files).splice(
+				0,
+				maxPostItems.files - createPostForm.files.length
+			);
 
 			files.map((file) => {
 				if (validateFile(file)) {
@@ -410,6 +423,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											: 0,
 										size: blob.size,
 										type: blob.type,
+										fileTitle: file.name,
 									},
 								],
 							}));
@@ -430,7 +444,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	};
 
 	const validateFile = (file: File) => {
-		if (validAllTypes.includes(file.type)) {
+		if (validAllTypes.find((type) => type.ext.includes(file.type))) {
 			if (file.size > 1024 * 1024 * 20) {
 				setErrorModalStateValue((prev) => ({
 					...prev,
@@ -452,6 +466,34 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 			return false;
 		}
+	};
+
+	const handleFileDetailsChange = (
+		index: number,
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const { name, value } = event.target;
+
+		setCreatePostForm((prev) => ({
+			...prev,
+			files: prev.files.map((file) => {
+				if (file.index === index) {
+					return {
+						...file,
+						[name]: value,
+					};
+				}
+
+				return file;
+			}),
+		}));
+	};
+
+	const handleRemoveFile = (index: number) => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			files: prev.files.filter((file) => file.index !== index),
+		}));
 	};
 
 	return (
@@ -550,32 +592,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									${postCreationModalStateValue.tab === "file" ? "flex" : "hidden"}
 								`}
 								>
-									<div className="flex flex-col gap-y-2 flex-1">
-										<button
-											type="button"
-											title="Add File"
-											className="flex flex-row items-center justify-center gap-x-2 border-2 border-dashed rounded-lg text-purple-500 border-purple-500 text-sm font-semibold py-2 px-6 relative overflow-hidden [&:hover>.deco]:w-full [&:focus-within>.deco]:w-full [&:hover>.deco]:rounded-r-none [&:focus-within>.deco]:rounded-r-none outline-none"
-											onClick={() => uploadFileRef.current?.click()}
-										>
-											<div className="deco -z-10 absolute h-full w-0 duration-500 ease-in-out top-0 left-0 bg-purple-100 rounded-r-full"></div>
-											<div className="h-6 w-6">
-												<IoAdd className="h-full w-full" />
-											</div>
-											<div className="h-full flex flex-row items-center">
-												<p>Add File</p>
-											</div>
-										</button>
-										<input
-											type="file"
-											title="Upload File"
-											accept={validAllTypes.join(",")}
-											ref={uploadFileRef}
-											onChange={handleFileUpload}
-											max={20 - createPostForm.files.length}
-											hidden
-											multiple
-										/>
-									</div>
+									<PostFilesTab
+										createPostForm={createPostForm}
+										uploadFileRef={uploadFileRef}
+										handleFileUpload={handleFileUpload}
+										handleFileDetailsChange={handleFileDetailsChange}
+										handleRemoveFile={handleRemoveFile}
+									/>
 								</div>
 							</div>
 							<PostCreationTabs

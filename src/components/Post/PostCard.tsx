@@ -8,6 +8,11 @@ import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
+import { validAllTypes } from "@/lib/types/validFiles";
+import FileIcons from "../Icons/FileIcons";
+import { FiDownload } from "react-icons/fi";
+import { HiDownload } from "react-icons/hi";
+import PostFiles from "./PostCard/PostBody/PostFiles";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -107,6 +112,17 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	const formatFileSize = (size: number) => {
+		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+		let i = 0;
+		let fileSize = size;
+		while (fileSize >= 1024) {
+			fileSize /= 1024;
+			i++;
+		}
+		return fileSize.toFixed(2) + " " + units[i];
+	};
+
 	return (
 		<div className="post-card">
 			<PostHead
@@ -127,6 +143,12 @@ const PostCard: React.FC<PostCardProps> = ({
 					postData={postData}
 					currentImageOrVideo={currentImageOrVideo}
 					handleImageOrVideoNav={handleImageOrVideoNav}
+				/>
+			)}
+			{postData.post.postFiles.length > 0 && (
+				<PostFiles
+					postData={postData}
+					formatFileSize={formatFileSize}
 				/>
 			)}
 			<PostLikeAndCommentDetails

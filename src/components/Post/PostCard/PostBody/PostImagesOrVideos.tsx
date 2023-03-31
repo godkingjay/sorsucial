@@ -22,7 +22,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 					<div className="post-images-or-videos-items-container">
 						{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (
 							<React.Fragment key={imageOrVideo.id}>
-								{validImageTypes.includes(imageOrVideo.fileType) && (
+								{validImageTypes.ext.includes(imageOrVideo.fileType) && (
 									<Image
 										src={imageOrVideo.fileUrl}
 										alt={imageOrVideo.fileName}
@@ -35,7 +35,7 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 										}
 									/>
 								)}
-								{validVideoTypes.includes(imageOrVideo.fileType) && (
+								{validVideoTypes.ext.includes(imageOrVideo.fileType) && (
 									<video
 										src={imageOrVideo.fileUrl}
 										height={imageOrVideo.height}

@@ -81,9 +81,6 @@ export const validDiskImageTypes = [
 export const validDocumentTypes = [
 	".doc",
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-	".xls",
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-	"application/pdf",
 	".odt",
 ];
 
@@ -113,6 +110,8 @@ export const validPageLayoutTypes = [
 	".xps",
 ];
 
+export const validPdfType = ["application/pdf"];
+
 export const validPresentationTypes = [
 	".ppt",
 	"application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -134,7 +133,7 @@ export const validProgramTypes = [
 
 export const validSpreadsheetTypes = [
 	".xls",
-	".xlsx",
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 	".numbers",
 	".ods",
 	".xlr",
@@ -183,6 +182,7 @@ export const validAllTypes = [
 	...validMessageTypes,
 	...validMusicTypes,
 	...validPageLayoutTypes,
+	...validPdfType,
 	...validPresentationTypes,
 	...validProgramTypes,
 	...validSpreadsheetTypes,

@@ -542,7 +542,7 @@
 							@apply flex flex-col gap-y-2;
 
 							.post-file-item {
-								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-row rounded-lg gap-2;
+								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-col xs:flex-row rounded-lg gap-2;
 
 								.logo-container {
 									@apply p-4 border-2 border-gray-500 border-opacity-25 h-20 w-20 aspect-square rounded-lg relative stroke-1 text-gray-400;

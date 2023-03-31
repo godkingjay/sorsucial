@@ -7,6 +7,8 @@ import {
 	validConfigTypes,
 } from "@/lib/types/validFiles";
 import { BsFileEarmark } from "react-icons/bs";
+import Image from "next/image";
+import FileIcons from "@/components/Icons/FileIcons";
 
 type PostFilesTabProps = {
 	createPostForm: CreatePostType;
@@ -22,17 +24,25 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 	return (
 		<div className="post-creation-form-file-tab-container">
 			<div className="post-file-tab-output-container">
-				{createPostForm.files.map((file) => (
-					<div
-						key={file.index}
-						className="post-file-item"
-					>
-						<div className="p-5 border-2 border-gray-500 border-opacity-25 h-24 w-24 aspect-square rounded-lg relative stroke-1">
-							<BsFileEarmark className="w-full h-full" />
+				{createPostForm.files.map((file) => {
+					const fileDetails =
+						validAllTypes.find((type) => type.ext.includes(file.type)) || null;
+
+					console.log(fileDetails);
+
+					return (
+						<div
+							key={file.index}
+							className="post-file-item"
+							data-file-type={fileDetails?.type || "file"}
+						>
+							<div className="logo-container">
+								{fileDetails ? <FileIcons type={fileDetails.type} /> : null}
+							</div>
+							<p className="text-sm text-gray-500">Drag and drop files</p>
 						</div>
-						<p className="text-sm text-gray-500">Drag and drop files</p>
-					</div>
-				))}
+					);
+				})}
 			</div>
 			<button
 				type="button"

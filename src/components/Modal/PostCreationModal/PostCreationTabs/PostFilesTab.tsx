@@ -3,6 +3,7 @@ import { CreatePostType, maxPostItems } from "../../PostCreationModal";
 import { IoAdd } from "react-icons/io5";
 import { validAllTypes } from "@/lib/types/validFiles";
 import FileIcons from "@/components/Icons/FileIcons";
+import { MdDelete } from "react-icons/md";
 
 type PostFilesTabProps = {
 	createPostForm: CreatePostType;
@@ -36,19 +37,28 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 							<div className="logo-container">
 								{fileDetails ? <FileIcons type={fileDetails.type} /> : null}
 							</div>
-							<div className="flex-1 flex flex-col gap-y-2">
+							<div className="details-container">
 								<input
 									type="text"
 									title="Document Title"
 									placeholder={file.name}
 									name="fileTitle"
 									value={file.fileTitle}
-									className="font-bold px-2 py-1 border border-gray-300 rounded-lg"
+									className="file-title-input-field"
 									onChange={(event) =>
 										handleFileDetailsChange(file.index, event)
 									}
 									maxLength={128}
 								/>
+								<div className="buttons-container">
+									<button
+										type="button"
+										title="Remove File"
+										className="button remove"
+									>
+										<MdDelete className="icon" />
+									</button>
+								</div>
 							</div>
 						</div>
 					);

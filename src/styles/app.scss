@@ -677,6 +677,40 @@
 										@apply text-red-700 border-red-700;
 									}
 								}
+
+								.details-container {
+									@apply flex-1 flex flex-col gap-y-1;
+
+									.file-title-input-field {
+										@apply font-bold px-2 py-1 border border-gray-300 rounded-md;
+									}
+
+									.buttons-container {
+										@apply h-8 w-full flex flex-row items-center justify-end gap-x-2;
+
+										.button {
+											@apply h-8 w-8 aspect-square p-1.5 border-2 rounded-md text-gray-500 border-gray-500;
+
+											.icon {
+												@apply h-full w-full;
+											}
+
+											&:hover,
+											&:focus {
+												@apply bg-gray-500 text-white;
+											}
+										}
+
+										.remove {
+											@apply border-red-500 text-red-500;
+
+											&:hover,
+											&:focus {
+												@apply bg-red-500 text-white;
+											}
+										}
+									}
+								}
 							}
 						}
 					}

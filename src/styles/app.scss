@@ -534,6 +534,18 @@
 							}
 						}
 					}
+
+					.post-creation-form-file-tab-container {
+						@apply flex flex-col gap-y-2 flex-1;
+
+						.post-file-tab-output-container {
+							@apply flex flex-col gap-y-2;
+
+							.post-file-item {
+								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-row rounded-lg gap-4;
+							}
+						}
+					}
 				}
 
 				.post-creation-form-tabs-container {

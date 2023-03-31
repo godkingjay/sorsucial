@@ -73,7 +73,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 										target="_blank"
 										className="h-full w-full"
 									>
-										{validImageTypes.includes(imageOrVideo.type) && (
+										{validImageTypes.ext.includes(imageOrVideo.type) && (
 											<Image
 												src={imageOrVideo.url}
 												alt="Image or Video"
@@ -83,7 +83,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 												loading="lazy"
 											/>
 										)}
-										{validVideoTypes.includes(imageOrVideo.type) && (
+										{validVideoTypes.ext.includes(imageOrVideo.type) && (
 											<video
 												src={imageOrVideo.url}
 												className="video"
@@ -94,10 +94,10 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 									</a>
 
 									<div className="file-icon-container">
-										{validImageTypes.includes(imageOrVideo.type) && (
+										{validImageTypes.ext.includes(imageOrVideo.type) && (
 											<BsImages className="icon" />
 										)}
-										{validVideoTypes.includes(imageOrVideo.type) && (
+										{validVideoTypes.ext.includes(imageOrVideo.type) && (
 											<ImFilm className="icon" />
 										)}
 									</div>
@@ -128,7 +128,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 			<input
 				type="file"
 				title="Upload Image or Video"
-				accept={validImageTypes.concat(validVideoTypes).join(",")}
+				accept={validImageTypes.ext.concat(validVideoTypes.ext).join(",")}
 				ref={uploadImageOrVideoRef}
 				onChange={(event) =>
 					event.currentTarget.disabled ? null : handleImageOrVideoUpload(event)

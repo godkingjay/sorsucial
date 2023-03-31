@@ -1,7 +1,12 @@
 import React from "react";
 import { CreatePostType, maxPostItems } from "../../PostCreationModal";
 import { IoAdd } from "react-icons/io5";
-import { validAllTypes } from "@/lib/types/validFiles";
+import {
+	validAllTypes,
+	validArchiveTypes,
+	validConfigTypes,
+} from "@/lib/types/validFiles";
+import { BsFileEarmark } from "react-icons/bs";
 
 type PostFilesTabProps = {
 	createPostForm: CreatePostType;
@@ -15,7 +20,20 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 	handleFileUpload,
 }) => {
 	return (
-		<div className="flex flex-col gap-y-2 flex-1">
+		<div className="post-creation-form-file-tab-container">
+			<div className="post-file-tab-output-container">
+				{createPostForm.files.map((file) => (
+					<div
+						key={file.index}
+						className="post-file-item"
+					>
+						<div className="p-5 border-2 border-gray-500 border-opacity-25 h-24 w-24 aspect-square rounded-lg relative stroke-1">
+							<BsFileEarmark className="w-full h-full" />
+						</div>
+						<p className="text-sm text-gray-500">Drag and drop files</p>
+					</div>
+				))}
+			</div>
 			<button
 				type="button"
 				title="Add File"

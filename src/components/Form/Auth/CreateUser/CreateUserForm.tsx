@@ -137,7 +137,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 			}));
 			return false;
 		}
-		if (!validImageTypes.includes(profilePhoto.type)) {
+		if (!validImageTypes.ext.includes(profilePhoto.type)) {
 			setErrorModalStateValue((prev) => ({
 				...prev,
 				open: true,

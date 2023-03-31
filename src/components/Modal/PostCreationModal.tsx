@@ -208,7 +208,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 			imagesOrVideos.map((imageOrVideo) => {
 				if (validateImageOrVideo(imageOrVideo)) {
-					if (validImageTypes.includes(imageOrVideo.type)) {
+					if (validImageTypes.ext.includes(imageOrVideo.type)) {
 						const reader = new FileReader();
 
 						reader.onload = (readerEvent) => {
@@ -280,7 +280,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						};
 
 						reader.readAsDataURL(imageOrVideo);
-					} else if (validVideoTypes.includes(imageOrVideo.type)) {
+					} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
 						const reader = new FileReader();
 
 						reader.onload = () => {
@@ -347,7 +347,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	};
 
 	const validateImageOrVideo = (imageOrVideo: File) => {
-		if (validImageTypes.includes(imageOrVideo.type)) {
+		if (validImageTypes.ext.includes(imageOrVideo.type)) {
 			if (imageOrVideo.size > 1024 * 1024 * 2) {
 				setErrorModalStateValue((prev) => ({
 					...prev,
@@ -359,7 +359,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			}
 
 			return true;
-		} else if (validVideoTypes.includes(imageOrVideo.type)) {
+		} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
 			if (imageOrVideo.size > 1024 * 1024 * 20) {
 				setErrorModalStateValue((prev) => ({
 					...prev,
@@ -444,7 +444,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	};
 
 	const validateFile = (file: File) => {
-		if (validAllTypes.includes(file.type)) {
+		if (validAllTypes.find((type) => type.ext.includes(file.type))) {
 			if (file.size > 1024 * 1024 * 20) {
 				setErrorModalStateValue((prev) => ({
 					...prev,

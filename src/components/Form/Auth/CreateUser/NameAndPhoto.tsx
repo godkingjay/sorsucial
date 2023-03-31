@@ -3,10 +3,10 @@ import {
 	CreateUserErrorType,
 	CreateUserType,
 	NameRegex,
-	validImageTypes,
 } from "./CreateUserForm";
 import Image from "next/image";
 import { HiOutlineUpload } from "react-icons/hi";
+import { validImageTypes } from "@/lib/types/validFiles";
 
 type NameAndPhotoProps = {
 	createUserForm: CreateUserType;
@@ -63,7 +63,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 					type="file"
 					title="Profile Photo"
 					ref={profilePhotoRef}
-					accept={validImageTypes.join(",")}
+					accept={validImageTypes.ext.join(",")}
 					onChange={handleFileChange}
 					hidden
 				/>

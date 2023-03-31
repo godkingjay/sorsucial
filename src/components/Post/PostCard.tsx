@@ -157,7 +157,9 @@ const PostCard: React.FC<PostCardProps> = ({
 										<FileIcons type={fileDetails ? fileDetails.type : ""} />
 									</div>
 									<div className="details-container">
-										<h2 className="file-name">{file.fileName}</h2>
+										<h2 className="file-name">
+											{file.fileTitle || file.fileName}
+										</h2>
 										<div className="buttons-container">
 											<a
 												download={file.fileName}

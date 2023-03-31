@@ -1,25 +1,24 @@
 import React from "react";
 import { CreatePostType, maxPostItems } from "../../PostCreationModal";
 import { IoAdd } from "react-icons/io5";
-import {
-	validAllTypes,
-	validArchiveTypes,
-	validConfigTypes,
-} from "@/lib/types/validFiles";
-import { BsFileEarmark } from "react-icons/bs";
-import Image from "next/image";
+import { validAllTypes } from "@/lib/types/validFiles";
 import FileIcons from "@/components/Icons/FileIcons";
 
 type PostFilesTabProps = {
 	createPostForm: CreatePostType;
 	uploadFileRef: React.RefObject<HTMLInputElement>;
 	handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	handleFileDetailsChange: (
+		index: number,
+		event: React.ChangeEvent<HTMLInputElement>
+	) => void;
 };
 
 const PostFilesTab: React.FC<PostFilesTabProps> = ({
 	createPostForm,
 	uploadFileRef,
 	handleFileUpload,
+	handleFileDetailsChange,
 }) => {
 	return (
 		<div className="post-creation-form-file-tab-container">
@@ -28,18 +27,29 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 					const fileDetails =
 						validAllTypes.find((type) => type.ext.includes(file.type)) || null;
 
-					console.log(fileDetails);
-
 					return (
 						<div
 							key={file.index}
 							className="post-file-item"
-							data-file-type={fileDetails?.type || "file"}
+							file-type={fileDetails?.type || "file"}
 						>
 							<div className="logo-container">
 								{fileDetails ? <FileIcons type={fileDetails.type} /> : null}
 							</div>
-							<p className="text-sm text-gray-500">Drag and drop files</p>
+							<div className="flex-1 flex flex-col gap-y-2">
+								<input
+									type="text"
+									title="Document Title"
+									placeholder={file.name}
+									name="fileTitle"
+									value={file.fileTitle}
+									className="font-bold px-2 py-1 border border-gray-300 rounded-lg"
+									onChange={(event) =>
+										handleFileDetailsChange(file.index, event)
+									}
+									maxLength={128}
+								/>
+							</div>
 						</div>
 					);
 				})}

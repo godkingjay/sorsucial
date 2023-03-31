@@ -542,13 +542,19 @@
 							@apply flex flex-col gap-y-2;
 
 							.post-file-item {
-								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-row rounded-lg gap-4;
+								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-row rounded-lg gap-2;
 
 								.logo-container {
 									@apply p-4 border-2 border-gray-500 border-opacity-25 h-24 w-24 aspect-square rounded-lg relative stroke-1 text-gray-400;
 
 									& > * {
 										@apply w-full h-full;
+									}
+								}
+
+								&[file-type="pdf"] {
+									.logo-container {
+										@apply text-red-500 border-red-500;
 									}
 								}
 							}

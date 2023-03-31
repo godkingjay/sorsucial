@@ -37,7 +37,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 							file-type={fileDetails?.type || "file"}
 						>
 							<div className="logo-container">
-								{fileDetails ? <FileIcons type={fileDetails.type} /> : null}
+								<FileIcons type={fileDetails ? fileDetails.type : ""} />
 							</div>
 							<div className="details-container">
 								<input

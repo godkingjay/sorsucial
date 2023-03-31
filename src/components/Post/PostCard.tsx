@@ -8,6 +8,10 @@ import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
+import { validAllTypes } from "@/lib/types/validFiles";
+import FileIcons from "../Icons/FileIcons";
+import { FiDownload } from "react-icons/fi";
+import { HiDownload } from "react-icons/hi";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -128,6 +132,50 @@ const PostCard: React.FC<PostCardProps> = ({
 					currentImageOrVideo={currentImageOrVideo}
 					handleImageOrVideoNav={handleImageOrVideoNav}
 				/>
+			)}
+			{postData.post.postFiles.length > 0 && (
+				<div className="post-files-wrapper">
+					<div className="post-files-header">
+						<div className="divider"></div>
+						<h2 className="text">Attached Files</h2>
+					</div>
+					<div className="post-files-container">
+						{postData.post.postFiles.map((file) => {
+							const fileDetails =
+								validAllTypes.find((type) =>
+									type.ext.includes(file.fileType)
+								) || null;
+
+							return (
+								<div
+									className="post-file-item"
+									key={file.id}
+									file-type={fileDetails?.type || "file"}
+								>
+									<div className="deco-1"></div>
+									<div className="logo-container">
+										<FileIcons type={fileDetails ? fileDetails.type : ""} />
+									</div>
+									<div className="details-container">
+										<h2 className="file-name">{file.fileName}</h2>
+										<div className="buttons-container">
+											<a
+												download={file.fileName}
+												href={file.fileUrl}
+												target="_blank"
+												title="Download"
+												className="button download"
+												rel="noopener"
+											>
+												<HiDownload className="icon" />
+											</a>
+										</div>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</div>
 			)}
 			<PostLikeAndCommentDetails
 				postData={postData}

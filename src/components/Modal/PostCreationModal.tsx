@@ -138,8 +138,6 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const uploadFileRef = useRef<HTMLInputElement>(null);
 
-	console.log(createPostForm.imagesOrVideos);
-
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	) => {
@@ -395,7 +393,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files?.length) {
-			const files = Array.from(event.target.files);
+			const files = Array.from(event.target.files).splice(
+				0,
+				maxPostItems.files - createPostForm.files.length
+			);
 
 			files.map((file) => {
 				if (validateFile(file)) {
@@ -565,8 +566,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										<button
 											type="button"
 											title="Add File"
-											className="flex flex-row items-center justify-center gap-x-2 border-2 border-dashed rounded-lg text-purple-500 border-purple-500 text-sm font-semibold py-2 px-6 relative overflow-hidden [&:hover>.deco]:w-full [&:focus-within>.deco]:w-full [&:hover>.deco]:rounded-r-none [&:focus-within>.deco]:rounded-r-none outline-none"
-											onClick={() => uploadFileRef.current?.click()}
+											className="flex flex-row items-center justify-center gap-x-2 border-2 border-dashed rounded-lg text-purple-500 border-purple-500 text-sm font-semibold py-2 px-6 relative overflow-hidden [&:hover>.deco]:w-full [&:focus-within>.deco]:w-full [&:hover>.deco]:rounded-r-none [&:focus-within>.deco]:rounded-r-none outline-none disabled:pointer-events-none disabled:grayscale"
+											onClick={(event) =>
+												event.currentTarget.disabled
+													? null
+													: uploadFileRef.current?.click()
+											}
+											disabled={
+												createPostForm.files.length >= maxPostItems.files
+											}
 										>
 											<div className="deco -z-10 absolute h-full w-0 duration-500 ease-in-out top-0 left-0 bg-purple-100 rounded-r-full"></div>
 											<div className="h-6 w-6">
@@ -581,8 +589,15 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											title="Upload File"
 											accept={validAllTypes.join(",")}
 											ref={uploadFileRef}
-											onChange={handleFileUpload}
+											onChange={(event) =>
+												event.currentTarget.disabled
+													? null
+													: handleFileUpload(event)
+											}
 											max={maxPostItems.files - createPostForm.files.length}
+											disabled={
+												createPostForm.files.length >= maxPostItems.files
+											}
 											hidden
 											multiple
 										/>

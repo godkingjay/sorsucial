@@ -47,7 +47,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 						className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none disabled:bg-transparent disabled:grayscale"
 						onClick={(e) =>
 							e.currentTarget.disabled
-								? () => {}
+								? null
 								: uploadImageOrVideoRef.current?.click()
 						}
 						disabled={
@@ -131,9 +131,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 				accept={validImageTypes.concat(validVideoTypes).join(",")}
 				ref={uploadImageOrVideoRef}
 				onChange={(event) =>
-					event.currentTarget.disabled
-						? () => {}
-						: handleImageOrVideoUpload(event)
+					event.currentTarget.disabled ? null : handleImageOrVideoUpload(event)
 				}
 				disabled={
 					createPostForm.imagesOrVideos.length >= maxPostItems.imagesOrVideos

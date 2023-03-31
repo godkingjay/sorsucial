@@ -1301,6 +1301,13 @@
 					}
 				}
 
+				.post-like-button {
+					&:hover,
+					&:focus {
+						@apply text-blue-500 bg-blue-100;
+					}
+				}
+
 				.post-like-button[data-liked="true"] {
 					@apply text-blue-500;
 

@@ -87,7 +87,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 			<input
 				type="file"
 				title="Upload File"
-				accept={validAllTypes.join(",")}
+				accept={validAllTypes.map((type) => type.ext).join(",")}
 				ref={uploadFileRef}
 				onChange={(event) =>
 					event.currentTarget.disabled ? null : handleFileUpload(event)

@@ -423,6 +423,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 											: 0,
 										size: blob.size,
 										type: blob.type,
+										fileTitle: file.name,
 									},
 								],
 							}));

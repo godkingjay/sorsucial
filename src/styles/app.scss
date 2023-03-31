@@ -1004,7 +1004,7 @@
 				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
 
 				.post-file-item {
-					@apply z-0 flex flex-row w-full min-w-[384px] h-24 bg-white shadow-page-box-1 rounded-lg p-2 gap-x-4 relative;
+					@apply z-0 flex flex-row w-full min-w-[384px] h-24 bg-white shadow-page-box-1 rounded-lg p-4 gap-x-4 relative;
 
 					& > * {
 						@apply z-10;
@@ -1015,7 +1015,7 @@
 					}
 
 					.logo-container {
-						@apply p-4 border-2 border-gray-500 border-opacity-25 h-20 w-20 aspect-square rounded-lg relative stroke-1 text-gray-400;
+						@apply p-4 border-2 border-gray-500 border-opacity-25 h-16 w-16 aspect-square rounded-lg stroke-1 text-gray-400;
 
 						& > * {
 							@apply w-full h-full;
@@ -1034,13 +1034,13 @@
 									transform: rotate(0deg);
 								}
 								10% {
-									transform: rotate(14deg);
+									transform: rotate(12deg);
 								}
 								20% {
 									transform: rotate(-8deg);
 								}
 								30% {
-									transform: rotate(14deg);
+									transform: rotate(12deg);
 								}
 								40% {
 									transform: rotate(-4deg);
@@ -1300,7 +1300,7 @@
 						}
 
 						.buttons-container {
-							@apply flex flex-row mt-auto items-center justify-end gap-x-2;
+							@apply flex flex-row mt-auto items-center justify-end gap-x-2 absolute bottom-2 right-2;
 
 							.button {
 								@apply h-6 w-6 aspect-square text-gray-400;

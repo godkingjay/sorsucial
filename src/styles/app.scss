@@ -1276,7 +1276,7 @@
 							@apply flex flex-row mt-auto items-center justify-end gap-x-2 absolute bottom-2 right-2;
 
 							.button {
-								@apply h-6 w-6 aspect-square text-gray-400;
+								@apply h-6 w-6 aspect-square text-gray-400 rounded-md;
 
 								.icon {
 									@apply h-full w-full;
@@ -1285,6 +1285,10 @@
 								&:hover,
 								&:focus {
 									@apply text-gray-600;
+								}
+
+								&:focus {
+									@apply outline-none ring-blue-500 ring-1;
 								}
 							}
 

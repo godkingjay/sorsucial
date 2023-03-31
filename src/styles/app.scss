@@ -545,16 +545,136 @@
 								@apply border-2 border-gray-500 border-opacity-10 p-4 flex flex-row rounded-lg gap-2;
 
 								.logo-container {
-									@apply p-4 border-2 border-gray-500 border-opacity-25 h-24 w-24 aspect-square rounded-lg relative stroke-1 text-gray-400;
+									@apply p-4 border-2 border-gray-500 border-opacity-25 h-20 w-20 aspect-square rounded-lg relative stroke-1 text-gray-400;
 
 									& > * {
 										@apply w-full h-full;
 									}
 								}
 
+								&[file-type="archive"] {
+									.logo-container {
+										@apply text-yellow-500 border-yellow-500;
+									}
+								}
+
+								&[file-type="config"] {
+									.logo-container {
+										@apply text-gray-500 border-gray-500;
+									}
+								}
+
+								&[file-type="data"] {
+									.logo-container {
+										@apply text-green-500 border-green-500;
+									}
+								}
+
+								&[file-type="database"] {
+									.logo-container {
+										@apply text-purple-500 border-purple-500;
+									}
+								}
+
+								&[file-type="developer-files"] {
+									.logo-container {
+										@apply text-cyan-500 border-cyan-500;
+									}
+								}
+
+								&[file-type="disk-image"] {
+									.logo-container {
+										@apply text-yellow-300 border-yellow-300;
+									}
+								}
+
+								&[file-type="document"] {
+									.logo-container {
+										@apply text-blue-500 border-blue-500;
+									}
+								}
+
+								&[file-type="font"] {
+									.logo-container {
+										@apply text-violet-700 border-violet-700;
+									}
+								}
+
+								&[file-type="html"] {
+									.logo-container {
+										@apply text-orange-500 border-orange-500;
+									}
+								}
+
+								&[file-type="image"] {
+									.logo-container {
+										@apply text-green-500 border-green-500;
+									}
+								}
+
+								&[file-type="message"] {
+									.logo-container {
+										@apply text-slate-500 border-slate-500;
+									}
+								}
+
+								&[file-type="music"] {
+									.logo-container {
+										@apply text-pink-500 border-pink-500;
+									}
+								}
+
+								&[file-type="page-layout"] {
+									.logo-container {
+										@apply text-sky-500 border-sky-500;
+									}
+								}
+
 								&[file-type="pdf"] {
 									.logo-container {
 										@apply text-red-500 border-red-500;
+									}
+								}
+
+								&[file-type="presentation"] {
+									.logo-container {
+										@apply text-red-400 border-red-400;
+									}
+								}
+
+								&[file-type="program"] {
+									.logo-container {
+										@apply text-purple-300 border-purple-300;
+									}
+								}
+
+								&[file-type="spreadsheet"] {
+									.logo-container {
+										@apply text-green-400 border-green-400;
+									}
+								}
+
+								&[file-type="text"] {
+									.logo-container {
+										@apply text-gray-700 border-gray-700;
+									}
+								}
+
+								&[file-type="3d-image"] {
+									.logo-container {
+										@apply text-pink-700 border-pink-700;
+									}
+								}
+
+								&[file-type="vector-image"] {
+									.logo-container {
+										@apply text-teal-500 border-teal-500;
+									}
+								}
+
+								&[file-type="video"] {
+									.logo-container {
+										@apply text-red-700 border-red-700;
 									}
 								}
 							}

@@ -13,6 +13,7 @@ type PostFilesTabProps = {
 		index: number,
 		event: React.ChangeEvent<HTMLInputElement>
 	) => void;
+	handleRemoveFile: (index: number) => void;
 };
 
 const PostFilesTab: React.FC<PostFilesTabProps> = ({
@@ -20,6 +21,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 	uploadFileRef,
 	handleFileUpload,
 	handleFileDetailsChange,
+	handleRemoveFile,
 }) => {
 	return (
 		<div className="post-creation-form-file-tab-container">
@@ -55,6 +57,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 										type="button"
 										title="Remove File"
 										className="button remove"
+										onClick={() => handleRemoveFile(file.index)}
 									>
 										<MdDelete className="icon" />
 									</button>

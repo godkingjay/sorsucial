@@ -489,6 +489,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleRemoveFile = (index: number) => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			files: prev.files.filter((file) => file.index !== index),
+		}));
+	};
+
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
@@ -590,6 +597,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										uploadFileRef={uploadFileRef}
 										handleFileUpload={handleFileUpload}
 										handleFileDetailsChange={handleFileDetailsChange}
+										handleRemoveFile={handleRemoveFile}
 									/>
 								</div>
 							</div>

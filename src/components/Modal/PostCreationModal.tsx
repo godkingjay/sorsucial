@@ -138,6 +138,8 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const uploadFileRef = useRef<HTMLInputElement>(null);
 
+	console.log(createPostForm.imagesOrVideos);
+
 	const handleCreatePostSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	) => {
@@ -200,7 +202,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
 		if (event.target.files?.length) {
-			const imagesOrVideos = Array.from(event.target.files);
+			const imagesOrVideos = Array.from(event.target.files).splice(
+				0,
+				maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length
+			);
 
 			imagesOrVideos.map((imageOrVideo) => {
 				if (validateImageOrVideo(imageOrVideo)) {

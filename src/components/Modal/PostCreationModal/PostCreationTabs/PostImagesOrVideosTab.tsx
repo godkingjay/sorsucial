@@ -24,7 +24,16 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 }) => {
 	return (
 		<div className="post-creation-form-image-or-video-tab">
-			<div className="image-or-video-tab-input-container">
+			<div
+				className={`
+					image-or-video-tab-input-container
+					${
+						createPostForm.imagesOrVideos.length === maxPostItems.imagesOrVideos
+							? "grayscale pointer-events-none"
+							: ""
+					}
+				`}
+			>
 				<div className="text-blue-500">
 					<p>Drag and drop images or videos</p>
 				</div>
@@ -35,8 +44,16 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 					<button
 						type="button"
 						title="Upload Image or Video"
-						className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none"
-						onClick={() => uploadImageOrVideoRef.current?.click()}
+						className="page-button w-max h-max py-1.5 px-6 bg-transparent border-blue-500 text-blue-500 text-xs hover:bg-blue-50 focus:bg-blue-100 outline-none disabled:bg-transparent disabled:grayscale"
+						onClick={(e) =>
+							e.currentTarget.disabled
+								? () => {}
+								: uploadImageOrVideoRef.current?.click()
+						}
+						disabled={
+							createPostForm.imagesOrVideos.length >=
+							maxPostItems.imagesOrVideos
+						}
 					>
 						Upload
 					</button>
@@ -113,7 +130,14 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 				title="Upload Image or Video"
 				accept={validImageTypes.concat(validVideoTypes).join(",")}
 				ref={uploadImageOrVideoRef}
-				onChange={handleImageOrVideoUpload}
+				onChange={(event) =>
+					event.currentTarget.disabled
+						? () => {}
+						: handleImageOrVideoUpload(event)
+				}
+				disabled={
+					createPostForm.imagesOrVideos.length >= maxPostItems.imagesOrVideos
+				}
 				max={maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length}
 				hidden
 				multiple

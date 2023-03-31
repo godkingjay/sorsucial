@@ -510,8 +510,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 					<button
 						type="button"
 						title="Close"
-						className="h-8 w-8 aspect-square bg-gray-200 rounded-full p-1 text-gray-400 absolute top-[50%] right-4 translate-y-[-50%] hover:bg-red-100 hover:text-red-500"
-						onClick={handleClose}
+						className="h-8 w-8 aspect-square bg-gray-200 rounded-full p-1 text-gray-400 absolute top-[50%] right-4 translate-y-[-50%] hover:bg-red-100 hover:text-red-500 disabled:pointer-events-none"
+						onClick={() => (creatingPost ? null : handleClose())}
+						disabled={creatingPost}
 					>
 						<IoClose className="h-full w-full" />
 					</button>

@@ -8,10 +8,6 @@ import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
-import { validAllTypes } from "@/lib/types/validFiles";
-import FileIcons from "../Icons/FileIcons";
-import { FiDownload } from "react-icons/fi";
-import { HiDownload } from "react-icons/hi";
 import PostFiles from "./PostCard/PostBody/PostFiles";
 
 type PostCardProps = {

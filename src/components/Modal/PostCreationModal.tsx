@@ -26,7 +26,7 @@ type PostCreationModalProps = {
 	userStateValue: UserState;
 };
 
-export type PostPollItemType = {
+export type CreatePostPollItemType = {
 	postItemTitle: string;
 	logoType?: PollItem["logoType"];
 	emoji?: string;
@@ -52,7 +52,7 @@ export type CreatePostImageOrVideoType = {
 	fileDescription?: string;
 };
 
-export type PostFileType = {
+export type CreatePostFileType = {
 	name: string;
 	url: string;
 	index: number;
@@ -62,7 +62,7 @@ export type PostFileType = {
 	fileDescription?: string;
 };
 
-export type PostLinkType = {
+export type CreatePostLinkType = {
 	linkTitle?: string;
 	linkDescription?: string;
 	url: string;
@@ -78,14 +78,14 @@ export type CreatePostType = {
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
 	imagesOrVideos: CreatePostImageOrVideoType[];
-	files: PostFileType[];
-	links: PostLinkType[];
+	files: CreatePostFileType[];
+	links: CreatePostLinkType[];
 	poll: {
 		pollTitle: string;
 		pollDescription?: string;
 		maxVotes?: number;
 		isActive: boolean;
-		postItems: PostPollItemType[];
+		postItems: CreatePostPollItemType[];
 	} | null;
 };
 

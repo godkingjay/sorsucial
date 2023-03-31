@@ -103,7 +103,7 @@ const usePost = () => {
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
 								updatedPost: {
-									...newPost,
+									...newPostData,
 									updatedAt: new Date(),
 								},
 							})
@@ -139,7 +139,7 @@ const usePost = () => {
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
 								updatedPost: {
-									...newPost,
+									...newPostData,
 									updatedAt: new Date(),
 								},
 							})
@@ -238,26 +238,20 @@ const usePost = () => {
 		fileId: string
 	) => {
 		try {
-			const storageRef = ref(
-				clientStorage,
-				`posts/${post.id}/imagesOrVideos/${fileId}`
-			);
+			const storageRef = ref(clientStorage, `posts/${post.id}/files/${fileId}`);
 
 			const response = await fetch(file.url as string);
 			const blob = await response.blob();
 
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log(
-					"Firebase Storage: Image Or Video Upload Error: ",
-					error.message
-				);
+				console.log("Firebase Storage: File Upload Error: ", error.message);
 				throw error;
 			});
 
 			const downloadURL = await getDownloadURL(storageRef).catch(
 				(error: any) => {
 					console.log(
-						"Firebase Storage: Image Or Video Download URL Error: ",
+						"Firebase Storage: file Download URL Error: ",
 						error.message
 					);
 					throw error;

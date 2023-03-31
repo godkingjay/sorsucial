@@ -317,16 +317,46 @@ const useAdmin = () => {
 		}
 	};
 
+	/**
+	 * This will fetch the users from the database.
+	 *
+	 * This will send a request to the API to fetch the users from the database.
+	 *
+	 * This will then add the users to the admin state.
+	 *
+	 * If an error occurs, it will catch the error and log it to the console.
+	 *
+	 * @param userLimit - The number of users to fetch from the database.
+	 */
 	const adminFetchUsers = async ({
 		userLimit = 25,
 	}: {
 		userLimit?: number;
 	}) => {
+		/**
+		 * Try to fetch the users from the database.
+		 *
+		 * If an error occurs, it will catch the error and log it to the console.
+		 */
 		try {
+			/**
+			 * The last user in the admin state.
+			 *
+			 * This will be used to get the users from the database that were created after the last user in the admin state.
+			 */
 			const lastUser = adminStateValue.manageUsers.length
 				? adminStateValue.manageUsers[adminStateValue.manageUsers.length - 1]
 				: null;
 
+			/**
+			 * This will send a request to the API to fetch the users from the database.
+			 *
+			 * This will return an array of users.
+			 *
+			 * If the request is successful, it will add the users to the admin state.
+			 *
+			 * If the request is not successful, it will log an error to the console.
+			 */
 			const usersData: SiteUser[] = await axios
 				.get(apiConfig.apiEndpoint + "admin/manage/user/users", {
 					params: {
@@ -342,6 +372,11 @@ const useAdmin = () => {
 					console.log("API: Fetching Users Error!: ", error.message);
 				});
 
+			/**
+			 * If there are users to add to the admin state, it will add the users to the admin state.
+			 *
+			 * Else it will throw an error.
+			 */
 			if (usersData.length) {
 				setAdminStateValue((prev) => ({
 					...prev,

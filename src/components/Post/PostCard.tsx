@@ -12,6 +12,7 @@ import { validAllTypes } from "@/lib/types/validFiles";
 import FileIcons from "../Icons/FileIcons";
 import { FiDownload } from "react-icons/fi";
 import { HiDownload } from "react-icons/hi";
+import PostFiles from "./PostCard/PostBody/PostFiles";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -111,6 +112,17 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	const formatFileSize = (size: number) => {
+		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+		let i = 0;
+		let fileSize = size;
+		while (fileSize >= 1024) {
+			fileSize /= 1024;
+			i++;
+		}
+		return fileSize.toFixed(2) + " " + units[i];
+	};
+
 	return (
 		<div className="post-card">
 			<PostHead
@@ -134,50 +146,10 @@ const PostCard: React.FC<PostCardProps> = ({
 				/>
 			)}
 			{postData.post.postFiles.length > 0 && (
-				<div className="post-files-wrapper">
-					<div className="post-files-header">
-						<div className="divider"></div>
-						<h2 className="text">Attached Files</h2>
-					</div>
-					<div className="post-files-container">
-						{postData.post.postFiles.map((file) => {
-							const fileDetails =
-								validAllTypes.find((type) =>
-									type.ext.includes(file.fileType)
-								) || null;
-
-							return (
-								<div
-									className="post-file-item"
-									key={file.id}
-									file-type={fileDetails?.type || "file"}
-								>
-									<div className="deco-1"></div>
-									<div className="logo-container">
-										<FileIcons type={fileDetails ? fileDetails.type : ""} />
-									</div>
-									<div className="details-container">
-										<h2 className="file-name">
-											{file.fileTitle || file.fileName}
-										</h2>
-										<div className="buttons-container">
-											<a
-												download={file.fileName}
-												href={file.fileUrl}
-												target="_blank"
-												title="Download"
-												className="button download"
-												rel="noopener"
-											>
-												<HiDownload className="icon" />
-											</a>
-										</div>
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				</div>
+				<PostFiles
+					postData={postData}
+					formatFileSize={formatFileSize}
+				/>
 			)}
 			<PostLikeAndCommentDetails
 				postData={postData}

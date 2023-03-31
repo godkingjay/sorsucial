@@ -1242,8 +1242,28 @@
 					.details-container {
 						@apply flex-1 flex flex-col gap-y-1;
 
-						.file-name {
-							@apply font-bold truncate;
+						.details-header {
+							@apply flex flex-col;
+
+							.file-name {
+								@apply font-bold truncate;
+							}
+
+							.extra {
+								@apply text-xs text-gray-400 flex flex-col gap-x-1 w-full;
+
+								.name {
+									@apply truncate;
+								}
+
+								.file-extra {
+									@apply flex flex-row gap-x-1 text-2xs;
+
+									.extension {
+										@apply font-semibold uppercase;
+									}
+								}
+							}
 						}
 
 						.buttons-container {

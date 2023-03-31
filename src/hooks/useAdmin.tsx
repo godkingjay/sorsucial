@@ -212,9 +212,43 @@ const useAdmin = () => {
 		}
 	};
 
+	/**
+	 * This will delete a user from the database.
+	 *
+	 * This will send a request to the API to delete the user account in firebase.
+	 *
+	 * This will send another request to the API to delete the user document in the database.
+	 *
+	 * This will then delete the user from the admin state.
+	 *
+	 * If an error occurs, it will catch the error and log it to the console.
+	 *
+	 *  @param userId - The user id of the user to be deleted.
+	 */
 	const deleteUser = async (userId: string) => {
+		/**
+		 * Try to delete the user from the database.
+		 *
+		 * If an error occurs, it will catch the error and log it to the console.
+		 */
 		try {
+			/**
+			 * If a user id is provided, it will send a request to the API to delete the user account in firebase.
+			 *
+			 * If the request is successful, it will send another request to the API to delete the user document in the database.
+			 *
+			 * If the request is not successful, it will log an error to the console.
+			 */
 			if (userId) {
+				/**
+				 * This will send a request to the API to delete the user account in firebase.
+				 *
+				 * This request will return a boolean value indicating if the user was deleted.
+				 *
+				 * If the request is successful, it will send another request to the API to delete the user document in the database.
+				 *
+				 * If the request is not successful, it will log an error to the console.
+				 */
 				await axios
 					.delete(apiConfig.apiEndpoint + "admin/manage/account/account", {
 						data: {
@@ -223,15 +257,30 @@ const useAdmin = () => {
 						},
 					})
 					.then(async (res) => {
+						/**
+						 * The response data from the request sent.
+						 */
 						const { isDeleted } = res.data;
+
+						/**
+						 * If the user was deleted, it will send another request to the API to delete the user document in the database.
+						 *
+						 * Else it will throw an error.
+						 */
 						if (isDeleted) {
+							/**
+							 * This will send another request to the API to delete the user document in the database.
+							 */
 							await axios.delete(apiConfig.apiEndpoint + "user/user", {
 								data: {
 									userId,
 								},
 							});
 
-							axios.delete(
+							/**
+							 * This will send another request to the API to delete the user's profile photo.
+							 */
+							await axios.delete(
 								apiConfig.apiEndpoint + "user/image/profile-photos",
 								{
 									data: {
@@ -240,6 +289,9 @@ const useAdmin = () => {
 								}
 							);
 
+							/**
+							 * This will delete the user from the admin state.
+							 */
 							setAdminStateValue((prev) => ({
 								...prev,
 								manageUsers: prev.manageUsers.filter(
@@ -256,15 +308,6 @@ const useAdmin = () => {
 						);
 					});
 			} else {
-				await axios.delete(
-					apiConfig.apiEndpoint + "admin/manage/account/account",
-					{
-						data: {
-							deleteUserId: userId,
-							deletePrivateKey: apiConfig.privateKey,
-						},
-					}
-				);
 				throw new Error(
 					"There is no user id to delete the user from the database and auth system of firebase."
 				);

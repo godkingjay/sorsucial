@@ -1,8 +1,6 @@
 import { PostData } from "@/atoms/postAtom";
-import FileIcons from "@/components/Icons/FileIcons";
 import { validAllTypes } from "@/lib/types/validFiles";
 import React from "react";
-import { HiDownload, HiOutlineDownload } from "react-icons/hi";
 import PostFileCard from "./PostCards/PostFileCard";
 
 type PostFilesProps = {

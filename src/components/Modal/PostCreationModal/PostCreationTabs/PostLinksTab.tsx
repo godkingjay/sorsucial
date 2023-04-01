@@ -1,18 +1,18 @@
 import React from "react";
 import { currentLinkType } from "../../PostCreationModal";
-import { IoAddOutline, IoEyeOutline, IoLinkOutline } from "react-icons/io5";
+import { IoAddOutline, IoLinkOutline } from "react-icons/io5";
 
 type PostLinksTabProps = {
 	currentLink: currentLinkType;
 	handleLinkChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	handleLinkPreview: () => void;
+	// handleLinkPreview: () => void;
 	handleLinkAdd: () => void;
 };
 
 const PostLinksTab: React.FC<PostLinksTabProps> = ({
 	currentLink,
 	handleLinkChange,
-	handleLinkPreview,
+	// handleLinkPreview,
 	handleLinkAdd,
 }) => {
 	return (
@@ -38,7 +38,7 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 					/>
 				</div>
 				<div className="link-input-buttons-container">
-					<button
+					{/* <button
 						type="button"
 						title="Add Link"
 						className="button preview-link-button"
@@ -55,7 +55,7 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						<div className="label-container">
 							<p className="label">Preview</p>
 						</div>
-					</button>
+					</button> */}
 					<button
 						type="button"
 						title="Add Link"
@@ -75,6 +75,11 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						</div>
 					</button>
 				</div>
+				{/* {currentLink.preview && (
+          <div className="flex">
+            <PostLinkCard url={currentLink.link}/>
+          </div>
+        )} */}
 			</div>
 		</div>
 	);

@@ -524,16 +524,16 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
-	const handleLinkPreview = () => {
-		if (!currentLink.isValidLink) {
-			return;
-		}
+	// const handleLinkPreview = () => {
+	// 	if (!currentLink.isValidLink) {
+	// 		return;
+	// 	}
 
-		setCurrentLink((prev) => ({
-			...prev,
-			preview: true,
-		}));
-	};
+	// 	setCurrentLink((prev) => ({
+	// 		...prev,
+	// 		preview: true,
+	// 	}));
+	// };
 
 	const handleLinkAdd = () => {
 		if (!currentLink.isValidLink) {
@@ -674,7 +674,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									<PostLinksTab
 										currentLink={currentLink}
 										handleLinkChange={handleLinkChange}
-										handleLinkPreview={handleLinkPreview}
+										// handleLinkPreview={handleLinkPreview}
 										handleLinkAdd={handleLinkAdd}
 									/>
 								</div>

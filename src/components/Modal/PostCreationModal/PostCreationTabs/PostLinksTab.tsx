@@ -1,6 +1,6 @@
 import React from "react";
 import { CreatePostType, currentLinkType } from "../../PostCreationModal";
-import { IoAddOutline, IoLinkOutline } from "react-icons/io5";
+import { IoAddOutline, IoClose, IoLinkOutline } from "react-icons/io5";
 import PostLinkCard from "@/components/Post/PostCard/PostBody/PostCards/PostLinkCard";
 
 type PostLinksTabProps = {
@@ -9,6 +9,7 @@ type PostLinksTabProps = {
 	handleLinkChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	// handleLinkPreview: () => void;
 	handleLinkAdd: () => void;
+	handleLinkRemove: (index: number) => void;
 };
 
 const PostLinksTab: React.FC<PostLinksTabProps> = ({
@@ -17,14 +18,26 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 	handleLinkChange,
 	// handleLinkPreview,
 	handleLinkAdd,
+	handleLinkRemove,
 }) => {
 	return (
 		<div className="post-creation-form-link-tab-container">
 			{createPostForm.links.length > 0 && (
 				<div className="flex flex-col gap-y-2">
 					{createPostForm.links.map((link) => (
-						<div key={link.index}>
+						<div
+							key={link.index}
+							className="relative"
+						>
 							<PostLinkCard postLink={link} />
+							<button
+								type="button"
+								title="Remove Link"
+								className="absolute top-0 right-0 h-6 w-6 p-1 bg-red-500 shadow-md translate-x-1 -translate-y-1 rounded-full text-white hover:text-red-800"
+								onClick={() => handleLinkRemove(link.index)}
+							>
+								<IoClose className="h-full w-full" />
+							</button>
 						</div>
 					))}
 				</div>

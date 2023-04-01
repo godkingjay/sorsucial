@@ -560,6 +560,13 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleLinkRemove = (index: number) => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			links: prev.links.filter((link) => link.index !== index),
+		}));
+	};
+
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
@@ -677,6 +684,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleLinkChange={handleLinkChange}
 										// handleLinkPreview={handleLinkPreview}
 										handleLinkAdd={handleLinkAdd}
+										handleLinkRemove={handleLinkRemove}
 									/>
 								</div>
 							</div>

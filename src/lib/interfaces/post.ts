@@ -184,8 +184,6 @@ export interface PostLink {
 	id: string;
 	index: number;
 	postId: string;
-	linkTitle?: string;
-	linkDescription?: string;
 	url: string;
 	blocked: boolean;
 	updatedAt: Date;

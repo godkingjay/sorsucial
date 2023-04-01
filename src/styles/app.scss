@@ -1448,4 +1448,31 @@
 			}
 		}
 	}
+
+	.post-link-card {
+		@apply flex flex-row bg-white p-2 shadow-page-box-1 rounded-lg relative gap-x-2;
+
+		.post-link-logo-container {
+			@apply h-16 w-16 rounded-lg border border-gray-500 border-opacity-25 p-3 text-gray-400 bg-gray-50;
+
+			.post-link-logo {
+				@apply h-full w-full;
+			}
+		}
+		.post-link-details-container {
+			@apply flex flex-col flex-1 gap-y-1;
+
+			.post-link-header-container {
+				@apply flex flex-col;
+
+				.post-link-title {
+					@apply font-bold truncate;
+				}
+
+				.post-link-full-url {
+					@apply text-xs truncate underline text-gray-400;
+				}
+			}
+		}
+	}
 }

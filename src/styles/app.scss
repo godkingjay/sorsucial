@@ -1403,6 +1403,30 @@
 			}
 		}
 
+		.post-links-wrapper {
+			@apply flex flex-col w-full pb-2;
+
+			.post-links-header {
+				@apply px-4 flex flex-col gap-y-2;
+
+				.divider {
+					@apply h-[1px] w-full bg-gray-500 bg-opacity-20;
+				}
+
+				.text {
+					@apply font-bold text-lg;
+				}
+			}
+
+			.post-links-container {
+				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
+
+				.post-link-card-wrapper {
+					@apply min-w-[384px];
+				}
+			}
+		}
+
 		.post-footer-wrapper {
 			@apply flex flex-row items-center h-12 rounded-b-lg p-1;
 
@@ -1450,7 +1474,7 @@
 	}
 
 	.post-link-card {
-		@apply flex flex-row bg-white p-2 shadow-page-box-1 rounded-lg relative gap-x-2;
+		@apply w-full flex flex-row bg-white p-2 shadow-page-box-1 rounded-lg relative gap-x-2;
 
 		.post-link-container {
 			@apply z-0 flex flex-row flex-1 gap-x-2;

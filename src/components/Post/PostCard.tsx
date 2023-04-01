@@ -9,6 +9,8 @@ import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
+import PostLinkCard from "./PostCard/PostBody/PostCards/PostLinkCard";
+import PostLinks from "./PostCard/PostBody/PostLinks";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -147,6 +149,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					formatFileSize={formatFileSize}
 				/>
 			)}
+			{postData.post.postLinks.length > 0 && <PostLinks postData={postData} />}
 			<PostLikeAndCommentDetails
 				postData={postData}
 				formatNumberWithSuffix={formatNumberWithSuffix}

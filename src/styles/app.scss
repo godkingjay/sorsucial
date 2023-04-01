@@ -826,7 +826,7 @@
 					}
 
 					.post-creation-form-link-tab-container {
-						@apply flex flex-col gap-y-2 flex-1;
+						@apply flex flex-col gap-y-4 flex-1;
 
 						.link-input-container {
 							@apply flex flex-col gap-y-2 border p-2 rounded-lg border-gray-200;
@@ -1452,25 +1452,59 @@
 	.post-link-card {
 		@apply flex flex-row bg-white p-2 shadow-page-box-1 rounded-lg relative gap-x-2;
 
-		.post-link-logo-container {
-			@apply h-16 w-16 rounded-lg border border-gray-500 border-opacity-25 p-3 text-gray-400 bg-gray-50;
+		.post-link-container {
+			@apply z-0 flex flex-row flex-1 gap-x-2;
 
-			.post-link-logo {
-				@apply h-full w-full;
+			.post-link-logo-container {
+				@apply h-16 w-16 rounded-lg border border-gray-500 border-opacity-25 p-3 text-gray-400 bg-gray-50;
+
+				.post-link-logo {
+					@apply h-full w-full;
+				}
+			}
+
+			.post-link-details-container {
+				@apply flex flex-col flex-1 gap-y-1;
+
+				.post-link-header-container {
+					@apply flex flex-col;
+
+					.post-link-title {
+						@apply font-bold truncate;
+					}
+
+					.post-link-full-url {
+						@apply text-xs truncate underline text-gray-400;
+					}
+				}
 			}
 		}
-		.post-link-details-container {
-			@apply flex flex-col flex-1 gap-y-1;
 
-			.post-link-header-container {
-				@apply flex flex-col;
+		.deco-1 {
+			@apply -z-0 absolute top-0 left-0 h-full w-0 bg-blue-50 rounded-lg ease-in-out duration-200;
+		}
 
-				.post-link-title {
-					@apply font-bold truncate;
+		&:hover,
+		&:focus-within {
+			.deco-1 {
+				@apply w-full;
+			}
+
+			.post-link-container {
+				.post-link-logo-container {
+					@apply border-blue-500 text-blue-500 bg-blue-50;
 				}
+			}
 
-				.post-link-full-url {
-					@apply text-xs truncate underline text-gray-400;
+			.post-link-details-container {
+				.post-link-header-container {
+					.post-link-title {
+						@apply text-blue-500;
+					}
+
+					.post-link-full-url {
+						@apply text-blue-400;
+					}
 				}
 			}
 		}

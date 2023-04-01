@@ -33,7 +33,7 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 							<button
 								type="button"
 								title="Remove Link"
-								className="absolute top-0 right-0 h-6 w-6 p-1 bg-red-500 shadow-md translate-x-1 -translate-y-1 rounded-full text-white hover:text-red-800"
+								className="absolute top-0 right-0 h-6 w-6 p-1 bg-red-400 shadow-md translate-x-1 -translate-y-1 rounded-full text-white hover:bg-red-500 hover:text-red-800 focus:bg-red-500 focus:text-red-800"
 								onClick={() => handleLinkRemove(link.index)}
 							>
 								<IoClose className="h-full w-full" />

@@ -12,14 +12,20 @@ const PostLinkCard: React.FC<PostLinkCardProps> = ({ postLink }) => {
 		<a
 			href={postLink.url}
 			className="post-link-card"
+			target="_blank"
 		>
-			<div className="post-link-logo-container">
-				<SlGlobe className="post-link-logo" />
-			</div>
-			<div className="post-link-details-container">
-				<div className="post-link-header-container">
-					<h1 className="post-link-title">{new URL(postLink.url).hostname}</h1>
-					<h2 className="post-link-full-url">{postLink.url}</h2>
+			<div className="deco-1"></div>
+			<div className="post-link-container">
+				<div className="post-link-logo-container">
+					<SlGlobe className="post-link-logo" />
+				</div>
+				<div className="post-link-details-container">
+					<div className="post-link-header-container">
+						<h1 className="post-link-title">
+							{new URL(postLink.url).hostname}
+						</h1>
+						<h2 className="post-link-full-url">{postLink.url}</h2>
+					</div>
 				</div>
 			</div>
 		</a>

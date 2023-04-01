@@ -38,12 +38,14 @@ const PostFiles: React.FC<PostFilesProps> = ({ postData, formatFileSize }) => {
 										{file.fileTitle || file.fileName}
 									</h2>
 									<p className="extra">
-										<p className="name">{file.fileName}</p>
-										<div className="file-extra">
-											<p className="size">{formatFileSize(file.fileSize)}</p>
-											<p>•</p>
-											<p className="extension">{file.fileExtension}</p>
-										</div>
+										<span className="name">{file.fileName}</span>
+										<span className="file-extra">
+											<span className="size">
+												{formatFileSize(file.fileSize)}
+											</span>
+											<span>•</span>
+											<span className="extension">{file.fileExtension}</span>
+										</span>
 									</p>
 								</div>
 								<div className="buttons-container">

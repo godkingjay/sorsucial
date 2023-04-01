@@ -545,6 +545,12 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				},
 			],
 		}));
+
+		setCurrentLink((prev) => ({
+			...prev,
+			link: "",
+			preview: false,
+		}));
 	};
 
 	return (

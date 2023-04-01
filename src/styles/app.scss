@@ -893,6 +893,14 @@
 											@apply flex-1;
 										}
 									}
+
+									&:disabled {
+										@apply bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed pointer-events-none;
+
+										.icon-container {
+											@apply text-gray-500;
+										}
+									}
 								}
 
 								.preview-link-button {

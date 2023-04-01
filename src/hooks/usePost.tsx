@@ -15,6 +15,7 @@ import {
 	PostFile,
 	PostImageOrVideo,
 	PostLike,
+	PostLink,
 	SitePost,
 } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
@@ -150,6 +151,36 @@ const usePost = () => {
 				}
 
 				if (postForm.links) {
+					postForm.links.map((link) => {
+						const postLinkId = doc(
+							collection(clientDb, `posts/${newPostData.id}/links`)
+						);
+
+						const date = new Date();
+
+						const newPostLink: PostLink = {
+							id: postLinkId.id,
+							postId: newPostData.id,
+							index: link.index,
+							url: link.url,
+							blocked: false,
+							updatedAt: date,
+							createdAt: date,
+						};
+
+						newPostData.postLinks.push(newPostLink);
+					});
+
+					await axios
+						.put(apiConfig.apiEndpoint + "post/post", {
+							updatedPost: {
+								...newPostData,
+								updatedAt: new Date(),
+							},
+						})
+						.catch((error) => {
+							console.log("API: Post Links Error: ", error.message);
+						});
 				}
 
 				if (postForm.poll) {

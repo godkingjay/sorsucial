@@ -3,7 +3,12 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import {
+	IoAddOutline,
+	IoClose,
+	IoEyeOutline,
+	IoLinkOutline,
+} from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
@@ -19,6 +24,8 @@ import {
 	validVideoTypes,
 } from "@/lib/types/validFiles";
 import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
+import { checkIsValidLink } from "@/lib/functions/checks";
+import PostLinksTab from "./PostCreationModal/PostCreationTabs/PostLinksTab";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -63,9 +70,8 @@ export type CreatePostFileType = {
 };
 
 export type CreatePostLinkType = {
-	linkTitle?: string;
-	linkDescription?: string;
 	url: string;
+	index: number;
 };
 
 export type CreatePostType = {
@@ -113,6 +119,12 @@ export const maxPostItems = {
 	links: 20,
 };
 
+export type currentLinkType = {
+	preview: boolean;
+	isValidLink: boolean;
+	link: string;
+};
+
 const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	postCreationModalStateValue,
 	setPostCreationModalStateValue,
@@ -136,6 +148,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	);
 	const [creatingPost, setCreatingPost] = useState(false);
 	const setErrorModalStateValue = useSetRecoilState(errorModalState);
+	const [currentLink, setCurrentLink] = useState<currentLinkType>({
+		preview: false,
+		isValidLink: false,
+		link: "",
+	});
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const uploadFileRef = useRef<HTMLInputElement>(null);
 
@@ -496,6 +513,60 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = event.target;
+
+		setCurrentLink((prev) => ({
+			...prev,
+			preview: false,
+			isValidLink: checkIsValidLink(value),
+			link: value,
+		}));
+	};
+
+	// const handleLinkPreview = () => {
+	// 	if (!currentLink.isValidLink) {
+	// 		return;
+	// 	}
+
+	// 	setCurrentLink((prev) => ({
+	// 		...prev,
+	// 		preview: true,
+	// 	}));
+	// };
+
+	const handleLinkAdd = () => {
+		if (!currentLink.isValidLink) {
+			return;
+		}
+
+		setCreatePostForm((prev) => ({
+			...prev,
+			links: [
+				...prev.links,
+				{
+					url: currentLink.link,
+					index: prev.links.length
+						? prev.links[prev.links.length - 1].index + 1
+						: 0,
+				},
+			],
+		}));
+
+		setCurrentLink((prev) => ({
+			...prev,
+			link: "",
+			preview: false,
+		}));
+	};
+
+	const handleLinkRemove = (index: number) => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			links: prev.links.filter((link) => link.index !== index),
+		}));
+	};
+
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
@@ -510,8 +581,9 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 					<button
 						type="button"
 						title="Close"
-						className="h-8 w-8 aspect-square bg-gray-200 rounded-full p-1 text-gray-400 absolute top-[50%] right-4 translate-y-[-50%] hover:bg-red-100 hover:text-red-500"
-						onClick={handleClose}
+						className="h-8 w-8 aspect-square bg-gray-200 rounded-full p-1 text-gray-400 absolute top-[50%] right-4 translate-y-[-50%] hover:bg-red-100 hover:text-red-500 disabled:pointer-events-none"
+						onClick={() => (creatingPost ? null : handleClose())}
+						disabled={creatingPost}
 					>
 						<IoClose className="h-full w-full" />
 					</button>
@@ -598,6 +670,21 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleFileUpload={handleFileUpload}
 										handleFileDetailsChange={handleFileDetailsChange}
 										handleRemoveFile={handleRemoveFile}
+									/>
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "link" ? "flex" : "hidden"}
+								`}
+								>
+									<PostLinksTab
+										createPostForm={createPostForm}
+										currentLink={currentLink}
+										handleLinkChange={handleLinkChange}
+										// handleLinkPreview={handleLinkPreview}
+										handleLinkAdd={handleLinkAdd}
+										handleLinkRemove={handleLinkRemove}
 									/>
 								</div>
 							</div>

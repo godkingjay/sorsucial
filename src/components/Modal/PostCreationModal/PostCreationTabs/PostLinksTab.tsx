@@ -1,8 +1,10 @@
 import React from "react";
-import { currentLinkType } from "../../PostCreationModal";
+import { CreatePostType, currentLinkType } from "../../PostCreationModal";
 import { IoAddOutline, IoLinkOutline } from "react-icons/io5";
+import PostLinkCard from "@/components/Post/PostCard/PostBody/PostCards/PostLinkCard";
 
 type PostLinksTabProps = {
+	createPostForm: CreatePostType;
 	currentLink: currentLinkType;
 	handleLinkChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	// handleLinkPreview: () => void;
@@ -10,6 +12,7 @@ type PostLinksTabProps = {
 };
 
 const PostLinksTab: React.FC<PostLinksTabProps> = ({
+	createPostForm,
 	currentLink,
 	handleLinkChange,
 	// handleLinkPreview,
@@ -17,6 +20,15 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 }) => {
 	return (
 		<div className="post-creation-form-link-tab-container">
+			{createPostForm.links.length > 0 && (
+				<div className="flex flex-col gap-y-2">
+					{createPostForm.links.map((link) => (
+						<div key={link.index}>
+							<PostLinkCard postLink={link} />
+						</div>
+					))}
+				</div>
+			)}
 			<div className="link-input-container">
 				<div
 					className="link-input-field-container"

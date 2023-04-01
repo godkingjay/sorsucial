@@ -672,6 +672,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								`}
 								>
 									<PostLinksTab
+										createPostForm={createPostForm}
 										currentLink={currentLink}
 										handleLinkChange={handleLinkChange}
 										// handleLinkPreview={handleLinkPreview}

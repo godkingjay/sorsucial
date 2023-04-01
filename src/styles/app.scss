@@ -824,6 +824,97 @@
 							}
 						}
 					}
+
+					.post-creation-form-link-tab-container {
+						@apply flex flex-col gap-y-2 flex-1;
+
+						.link-input-container {
+							@apply flex flex-col gap-y-2 border p-2 rounded-lg border-gray-200;
+
+							.link-input-field-container {
+								@apply flex flex-row items-center h-10 w-full rounded-lg border overflow-hidden;
+
+								.icon-container {
+									@apply h-10 w-10 aspect-square rounded-l-lg p-2 text-gray-400 bg-gray-100 duration-200;
+
+									.icon {
+										@apply h-full w-full duration-200;
+									}
+								}
+
+								.link-input-field {
+									@apply flex-1 px-2 outline-none text-sm;
+								}
+
+								&:hover,
+								&:focus-within {
+									@apply border-cyan-300;
+
+									.icon-container {
+										@apply bg-cyan-300 text-white;
+
+										.icon {
+											@apply -rotate-45;
+										}
+									}
+								}
+
+								&[valid-link="false"] {
+									@apply border-red-500;
+
+									.icon-container {
+										@apply bg-red-500 text-white;
+
+										.icon {
+											@apply -rotate-45;
+										}
+									}
+								}
+							}
+
+							.link-input-buttons-container {
+								@apply flex flex-row items-center justify-end gap-2 flex-wrap;
+
+								.button {
+									@apply flex flex-row items-center bg-logo-100 gap-x-1 text-sm h-8 pl-2 pr-4 py-1 w-max rounded-lg text-white border-2 border-logo-100;
+
+									.icon-container {
+										@apply h-6 w-6 p-0.5;
+
+										.icon {
+											@apply h-full w-full;
+										}
+									}
+
+									.label-container {
+										@apply h-full flex flex-row items-center;
+
+										.label {
+											@apply flex-1;
+										}
+									}
+								}
+
+								.preview-link-button {
+									@apply bg-cyan-500 border-cyan-500;
+
+									&:hover,
+									&:focus {
+										@apply bg-cyan-600 border-cyan-600;
+									}
+								}
+
+								.add-link-button {
+									@apply bg-green-500 border-green-500;
+
+									&:hover,
+									&:focus {
+										@apply bg-green-600 border-green-600;
+									}
+								}
+							}
+						}
+					}
 				}
 
 				.post-creation-form-tabs-container {

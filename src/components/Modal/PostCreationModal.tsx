@@ -3,7 +3,12 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import {
+	IoAddOutline,
+	IoClose,
+	IoEyeOutline,
+	IoLinkOutline,
+} from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
@@ -19,6 +24,7 @@ import {
 	validVideoTypes,
 } from "@/lib/types/validFiles";
 import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
+import { checkIsValidLink } from "@/lib/functions/checks";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -63,9 +69,8 @@ export type CreatePostFileType = {
 };
 
 export type CreatePostLinkType = {
-	linkTitle?: string;
-	linkDescription?: string;
 	url: string;
+	index: number;
 };
 
 export type CreatePostType = {
@@ -136,6 +141,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	);
 	const [creatingPost, setCreatingPost] = useState(false);
 	const setErrorModalStateValue = useSetRecoilState(errorModalState);
+	const [currentLink, setCurrentLink] = useState({
+		preview: false,
+		isValidLink: false,
+		link: "",
+	});
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const uploadFileRef = useRef<HTMLInputElement>(null);
 
@@ -496,6 +506,47 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = event.target;
+
+		setCurrentLink((prev) => ({
+			...prev,
+			preview: false,
+			isValidLink: checkIsValidLink(value),
+			link: value,
+		}));
+	};
+
+	const handleLinkPreview = () => {
+		if (!currentLink.isValidLink) {
+			return;
+		}
+
+		setCurrentLink((prev) => ({
+			...prev,
+			preview: true,
+		}));
+	};
+
+	const handleLinkAdd = () => {
+		if (!currentLink.isValidLink) {
+			return;
+		}
+
+		setCreatePostForm((prev) => ({
+			...prev,
+			links: [
+				...prev.links,
+				{
+					url: currentLink.link,
+					index: prev.links.length
+						? prev.links[prev.links.length - 1].index + 1
+						: 0,
+				},
+			],
+		}));
+	};
+
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
@@ -600,6 +651,76 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleFileDetailsChange={handleFileDetailsChange}
 										handleRemoveFile={handleRemoveFile}
 									/>
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "link" ? "flex" : "hidden"}
+								`}
+								>
+									<div className="post-creation-form-link-tab-container">
+										<div className="link-input-container">
+											<div
+												className="link-input-field-container"
+												valid-link={
+													!currentLink.isValidLink && currentLink.link
+														? "false"
+														: "true"
+												}
+											>
+												<div className="icon-container">
+													<IoLinkOutline className="icon" />
+												</div>
+												<input
+													type="text"
+													title="Add Link"
+													name="link"
+													placeholder="Add Link"
+													className="link-input-field"
+													value={currentLink.link}
+													onChange={handleLinkChange}
+												/>
+											</div>
+											<div className="link-input-buttons-container">
+												<button
+													type="button"
+													title="Add Link"
+													className="button preview-link-button"
+													onClick={(event) =>
+														currentLink.isValidLink &&
+														!event.currentTarget.disabled &&
+														handleLinkPreview()
+													}
+													disabled={!currentLink.isValidLink}
+												>
+													<div className="icon-container">
+														<IoEyeOutline className="icon" />
+													</div>
+													<div className="label-container">
+														<p className="label">Preview</p>
+													</div>
+												</button>
+												<button
+													type="button"
+													title="Add Link"
+													className="button add-link-button"
+													onClick={(event) =>
+														currentLink.isValidLink &&
+														!event.currentTarget.disabled &&
+														handleLinkAdd()
+													}
+													disabled={!currentLink.isValidLink}
+												>
+													<div className="icon-container">
+														<IoAddOutline className="icon" />
+													</div>
+													<div className="label-container">
+														<p className="label">Add Link</p>
+													</div>
+												</button>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 							<PostCreationTabs

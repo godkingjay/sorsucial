@@ -170,10 +170,9 @@ export interface PostFile {
  * @property {string} id - The unique identifier of the link.
  * @property {number} index - The index of the link.
  * @property {string} postId - The unique identifier of the post.
- * @property {string} [linkTitle] - The title of the link.
- * @property {string} [linkDescription] - The description of the link.
  * @property {string} url - The URL of the link.
  * @property {boolean} blocked - Whether the link is blocked.
+ * @property {Date} updatedAt - The date and time when the link was last updated.
  * @property {Date} createdAt - The date and time when the link was created.
  *
  * ----------------------------------------------------------------

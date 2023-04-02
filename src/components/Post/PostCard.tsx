@@ -10,6 +10,7 @@ import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
 import PostLinks from "./PostCard/PostBody/PostLinks";
 import { NextRouter } from "next/router";
+import { siteDetails } from "@/lib/host";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -168,7 +169,40 @@ const PostCard: React.FC<PostCardProps> = ({
 		return false;
 	};
 
-	const handleFooterShareClick = (type: postShareType) => {};
+	const handleFooterShareClick = async (type: postShareType) => {
+		switch (type) {
+			case "copy": {
+				let url = siteDetails.host;
+				switch (postData.post.postType) {
+					case "announcement": {
+						url += `announcements/${postData.post.id}`;
+						break;
+					}
+
+					case "feed": {
+						url += `feeds/${postData.post.creatorId}/posts/${postData.post.id}`;
+						break;
+					}
+
+					case "group": {
+						url += `groups/${postData.post.groupId}/posts/${postData.post.id}`;
+						break;
+					}
+
+					default: {
+						break;
+					}
+				}
+				await navigator.clipboard.writeText(url);
+				alert("Post link copied to clipboard!");
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+	};
 
 	const formatNumberWithSuffix = (number: number) => {
 		const suffixes = ["", "K", "M", "B"];

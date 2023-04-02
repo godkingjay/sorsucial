@@ -425,6 +425,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			);
 
 			files.map((file) => {
+				console.log(file.type);
 				if (validateFile(file)) {
 					const reader = new FileReader();
 

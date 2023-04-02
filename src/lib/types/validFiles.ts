@@ -141,7 +141,7 @@ export const validSpreadsheetTypes = {
 };
 
 export const validTextTypes = {
-	ext: [".txt", ".md", ".log", ".rtf", ".tex", ".wpd"],
+	ext: ["text/plain", ".md", ".log", ".rtf", ".tex", ".wpd"],
 	type: "text",
 };
 

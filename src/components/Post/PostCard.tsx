@@ -9,6 +9,7 @@ import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
 import PostLinks from "./PostCard/PostBody/PostLinks";
+import { NextRouter } from "next/router";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -17,6 +18,7 @@ type PostCardProps = {
 	postData: PostData;
 	deletePost: (postData: PostData) => Promise<void>;
 	onPostLike: (postData: PostData) => void;
+	router: NextRouter;
 };
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -26,6 +28,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	postData,
 	deletePost,
 	onPostLike,
+	router,
 }) => {
 	const [seeMore, setSeeMore] = useState(false);
 	const [postBody, setPostBody] = useState(

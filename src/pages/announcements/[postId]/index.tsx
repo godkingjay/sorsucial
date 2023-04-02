@@ -7,6 +7,7 @@ import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -30,6 +31,7 @@ const AnnouncementView: React.FC<Props> = ({
 		onPostLike,
 	} = usePost();
 	const [fetchingPostUserData, setFetchingPostUserData] = useState(true);
+	const router = useRouter();
 
 	const fetchPostUserData = async () => {
 		setFetchingPostUserData(true);
@@ -99,6 +101,7 @@ const AnnouncementView: React.FC<Props> = ({
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}
 											onPostLike={onPostLike}
+											router={router}
 										/>
 									</>
 								)}

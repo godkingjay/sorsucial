@@ -7,9 +7,11 @@ import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
+	const router = useRouter();
 	const { userStateValue, authUser, authLoading, loadingUser, userMounted } =
 		useUser();
 	const {
@@ -93,6 +95,7 @@ export default function Home() {
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}
 											onPostLike={onPostLike}
+											router={router}
 										/>
 									))}
 							</>

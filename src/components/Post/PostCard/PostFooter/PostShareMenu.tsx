@@ -2,15 +2,18 @@ import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import React from "react";
 import { BsFacebook } from "react-icons/bs";
 import { IoLinkOutline } from "react-icons/io5";
+import { postShareType } from "../../PostCard";
 
 type PostShareMenuProps = {
 	postData: PostData;
 	postOptionsStateValue: PostOptionsState;
+	handleFooterShareClick: (type: postShareType) => void;
 };
 
 const PostShareMenu: React.FC<PostShareMenuProps> = ({
 	postData,
 	postOptionsStateValue,
+	handleFooterShareClick,
 }) => {
 	return (
 		<div
@@ -23,14 +26,16 @@ const PostShareMenu: React.FC<PostShareMenuProps> = ({
 				<button
 					type="button"
 					title="Share to Facebook"
-					className="rounded-full bg-gray-100 text-blue-500 h-10 w-10 aspect-square hover:text-blue-600 focus-within:text-blue-600 outline-none focus-within:ring-2 focus-within:ring-offset-1 ring-blue-500"
+					className="rounded-full bg-gray-100 text-blue-500 h-10 w-10 aspect-square hover:text-blue-600 focus-within:text-blue-600"
+					onClick={() => handleFooterShareClick("facebook")}
 				>
 					<BsFacebook className="h-full w-full" />
 				</button>
 				<button
 					type="button"
 					title="Copy Link"
-					className="rounded-full bg-gray-100 text-gray-500 h-10 w-10 aspect-square p-2 hover:bg-gray-200 focus-within:bg-gray-200 outline-none focus-within:ring-2 focus-within:ring-offset-1 ring-blue-500"
+					className="rounded-full bg-gray-100 text-gray-500 h-10 w-10 aspect-square p-2 hover:bg-gray-200 focus-within:bg-gray-200"
+					onClick={() => handleFooterShareClick("copy")}
 				>
 					<IoLinkOutline className="h-full w-full" />
 				</button>

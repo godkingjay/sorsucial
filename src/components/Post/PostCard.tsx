@@ -21,6 +21,8 @@ type PostCardProps = {
 	router: NextRouter;
 };
 
+export type postShareType = "facebook" | "copy";
+
 const PostCard: React.FC<PostCardProps> = ({
 	userStateValue,
 	postOptionsStateValue,
@@ -166,6 +168,8 @@ const PostCard: React.FC<PostCardProps> = ({
 		return false;
 	};
 
+	const handleFooterShareClick = (type: postShareType) => {};
+
 	const formatNumberWithSuffix = (number: number) => {
 		const suffixes = ["", "K", "M", "B"];
 		let suffixIndex = 0;
@@ -230,6 +234,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					handlePostLike={handlePostLike}
 					handleFooterCommentClick={handleFooterCommentClick}
 					handlePostOptions={handlePostOptions}
+					handleFooterShareClick={handleFooterShareClick}
 				/>
 			</div>
 		</div>

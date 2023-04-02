@@ -2,10 +2,9 @@ import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import React from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
-import { BsFacebook } from "react-icons/bs";
-import { IoLinkOutline } from "react-icons/io5";
 import { RiShareForwardLine } from "react-icons/ri";
 import PostShareMenu from "./PostFooter/PostShareMenu";
+import { postShareType } from "../PostCard";
 
 type PostFooterProps = {
 	postData: PostData;
@@ -13,6 +12,7 @@ type PostFooterProps = {
 	handlePostLike: () => Promise<void>;
 	handleFooterCommentClick: () => void;
 	handlePostOptions: (name: keyof PostOptionsState) => void;
+	handleFooterShareClick: (type: postShareType) => void;
 };
 
 const PostFooter: React.FC<PostFooterProps> = ({
@@ -21,6 +21,7 @@ const PostFooter: React.FC<PostFooterProps> = ({
 	handlePostLike,
 	handleFooterCommentClick,
 	handlePostOptions,
+	handleFooterShareClick,
 }) => {
 	return (
 		<div className="post-footer-wrapper">
@@ -87,6 +88,7 @@ const PostFooter: React.FC<PostFooterProps> = ({
 				<PostShareMenu
 					postData={postData}
 					postOptionsStateValue={postOptionsStateValue}
+					handleFooterShareClick={handleFooterShareClick}
 				/>
 			)}
 		</div>

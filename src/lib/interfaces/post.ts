@@ -225,6 +225,8 @@ export interface PostPoll {
 	pollDescription?: string;
 	numberOfVotes: number;
 	maxVotes?: number;
+	voteMode: "single" | "multiple";
+	maxUserVotes?: number;
 	isActive: boolean;
 	pollItems: PollItem[];
 	updatedAt: Date;

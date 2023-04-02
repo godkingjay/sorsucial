@@ -33,20 +33,6 @@ type PostCreationModalProps = {
 	userStateValue: UserState;
 };
 
-export type CreatePostPollItemType = {
-	postItemTitle: string;
-	logoType?: PollItem["logoType"];
-	emoji?: string;
-	image?: {
-		name: string;
-		url: string;
-		size: number;
-		type: string;
-		height: number;
-		width: number;
-	};
-};
-
 export type CreatePostImageOrVideoType = {
 	name: string;
 	url: string;
@@ -74,6 +60,30 @@ export type CreatePostLinkType = {
 	index: number;
 };
 
+export type CreatePostPollType = {
+	pollTitle: string;
+	pollDescription?: string;
+	maxVotes?: number;
+	voteMode: "single" | "multiple";
+	maxUserVotes?: number;
+	isActive: boolean;
+	postItems: CreatePostPollItemType[];
+};
+
+export type CreatePostPollItemType = {
+	postItemTitle: string;
+	logoType?: PollItem["logoType"];
+	emoji?: string;
+	image?: {
+		name: string;
+		url: string;
+		size: number;
+		type: string;
+		height: number;
+		width: number;
+	};
+};
+
 export type CreatePostType = {
 	groupId?: SitePost["groupId"];
 	creatorId?: SitePost["creatorId"];
@@ -86,13 +96,7 @@ export type CreatePostType = {
 	imagesOrVideos: CreatePostImageOrVideoType[];
 	files: CreatePostFileType[];
 	links: CreatePostLinkType[];
-	poll: {
-		pollTitle: string;
-		pollDescription?: string;
-		maxVotes?: number;
-		isActive: boolean;
-		postItems: CreatePostPollItemType[];
-	} | null;
+	poll: CreatePostPollType | null;
 };
 
 export const postPrivacyOptions: DropdownOption[] = [
@@ -687,6 +691,12 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleLinkRemove={handleLinkRemove}
 									/>
 								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "poll" ? "flex" : "hidden"}
+								`}
+								></div>
 							</div>
 							<PostCreationTabs
 								handleFormTabChange={handleFormTabChange}

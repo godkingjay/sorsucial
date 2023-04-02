@@ -60,18 +60,20 @@ const PostFooter: React.FC<PostFooterProps> = ({
 						</div>
 					</button>
 				)}
-				<button
-					type="button"
-					title="Share"
-					className="post-footer-button"
-				>
-					<div className="icon-container">
-						<RiShareForwardLine className="icon" />
-					</div>
-					<div className="label-container">
-						<p className="label">Share</p>
-					</div>
-				</button>
+				{postData.post.privacy !== "private" && (
+					<button
+						type="button"
+						title="Share"
+						className="post-footer-button"
+					>
+						<div className="icon-container">
+							<RiShareForwardLine className="icon" />
+						</div>
+						<div className="label-container">
+							<p className="label">Share</p>
+						</div>
+					</button>
+				)}
 			</div>
 		</div>
 	);

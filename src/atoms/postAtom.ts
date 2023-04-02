@@ -2,10 +2,7 @@ import {
 	PollItem,
 	PollItemLogo,
 	PollVote,
-	PostFile,
-	PostImageOrVideo,
 	PostLike,
-	PostLink,
 	PostPoll,
 	SitePost,
 } from "@/lib/interfaces/post";

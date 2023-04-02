@@ -5,6 +5,7 @@ import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type FeedsPageProps = {};
@@ -24,6 +25,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	const [loadingFeeds, setLoadingFeeds] = useState(false);
 	const [firstLoadingFeeds, setFirstLoadingFeeds] = useState(false);
 	const feedsMounted = useRef(false);
+	const router = useRouter();
 
 	const handleFetchFeeds = useCallback(async () => {
 		setLoadingFeeds(true);
@@ -90,6 +92,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}
 											onPostLike={onPostLike}
+											router={router}
 										/>
 									))}
 							</>

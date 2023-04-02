@@ -36,7 +36,7 @@ const PostShareMenu: React.FC<PostShareMenuProps> = ({
 				</button>
 			</div>
 			<h2 className="absolute bottom-[100%] left-[50%] translate-x-[-50%] text-2xs font-bold w-max text-gray-500">
-				Share With
+				Share To
 			</h2>
 		</div>
 	);

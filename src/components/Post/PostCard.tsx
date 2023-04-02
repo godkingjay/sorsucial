@@ -6,11 +6,11 @@ import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
-import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
-import PostLinkCard from "./PostCard/PostBody/PostCards/PostLinkCard";
 import PostLinks from "./PostCard/PostBody/PostLinks";
+import { NextRouter } from "next/router";
+import { siteDetails } from "@/lib/host";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -19,7 +19,10 @@ type PostCardProps = {
 	postData: PostData;
 	deletePost: (postData: PostData) => Promise<void>;
 	onPostLike: (postData: PostData) => void;
+	router: NextRouter;
 };
+
+export type postShareType = "facebook" | "copy";
 
 const PostCard: React.FC<PostCardProps> = ({
 	userStateValue,
@@ -28,6 +31,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	postData,
 	deletePost,
 	onPostLike,
+	router,
 }) => {
 	const [seeMore, setSeeMore] = useState(false);
 	const [postBody, setPostBody] = useState(
@@ -86,18 +90,6 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
-	const formatNumberWithSuffix = (number: number) => {
-		const suffixes = ["", "K", "M", "B"];
-		let suffixIndex = 0;
-		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
-			number /= 1000;
-			suffixIndex++;
-		}
-		const roundedNumber = Math.round(number * 10) / 10;
-		const suffix = suffixes[suffixIndex];
-		return `${roundedNumber}${suffix}`;
-	};
-
 	const handleImageOrVideoNav = (direction: "previous" | "next") => {
 		if (direction === "previous") {
 			if (currentImageOrVideo > 0) {
@@ -108,6 +100,149 @@ const PostCard: React.FC<PostCardProps> = ({
 				setCurrentImageOrVideo(currentImageOrVideo + 1);
 			}
 		}
+	};
+
+	const handleFooterCommentClick = () => {
+		if (isSinglePostPage()) {
+			console.log("Comment Clicked!");
+		} else {
+			switch (postData.post.postType) {
+				case "announcement": {
+					router.push(`/announcements/${postData.post.id}`);
+					break;
+				}
+
+				case "feed": {
+					router.push(
+						`/feeds/${postData.post.creatorId}/posts/${postData.post.id}`
+					);
+					break;
+				}
+
+				case "group": {
+					router.push(
+						`/groups/${postData.post.groupId}/posts/${postData.post.id}`
+					);
+					break;
+				}
+
+				default: {
+					break;
+				}
+			}
+		}
+	};
+
+	const isSinglePostPage = () => {
+		const { asPath } = router;
+		const { id: postId, creatorId } = postData.post;
+
+		switch (postData.post.postType) {
+			case "announcement": {
+				if (asPath === `/announcements/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			case "feed": {
+				if (asPath === `user/${creatorId}/posts/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			case "group": {
+				const groupId = postData.post.groupId;
+				if (asPath === `/groups/${groupId}/posts/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			default: {
+				return false;
+				break;
+			}
+		}
+
+		return false;
+	};
+
+	const handleFooterShareClick = async (type: postShareType) => {
+		let url = siteDetails.host;
+		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
+
+		const title = `&og_site_title=${encodeURIComponent(
+			postData.post.postTitle
+		)}`;
+
+		const description = `&og_description=${encodeURIComponent(
+			postData.post.postBody?.slice(0, 512) || ""
+		)}`;
+
+		const faviconUrl = document
+			.querySelector("link[rel='icon']")
+			?.getAttribute("href");
+
+		const image = `&og_image=${encodeURIComponent(
+			postData.post.postImagesOrVideos.length
+				? postData.post.postImagesOrVideos[0].fileUrl
+				: faviconUrl || ""
+		)}`;
+
+		switch (postData.post.postType) {
+			case "announcement": {
+				url += `announcements/${postData.post.id}`;
+				break;
+			}
+
+			case "feed": {
+				url += `user/${postData.post.creatorId}/posts/${postData.post.id}`;
+				break;
+			}
+
+			case "group": {
+				url += `groups/${postData.post.groupId}/posts/${postData.post.id}`;
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+
+		switch (type) {
+			case "copy": {
+				await navigator.clipboard.writeText(url);
+				alert("Post link copied to clipboard!");
+				break;
+			}
+
+			case "facebook": {
+				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+					url
+				)}${siteName}${title}${description}${image}`;
+				window.open(fbSharerUrl, "_blank");
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+	};
+
+	const formatNumberWithSuffix = (number: number) => {
+		const suffixes = ["", "K", "M", "B"];
+		let suffixIndex = 0;
+		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
+			number /= 1000;
+			suffixIndex++;
+		}
+		const roundedNumber = Math.round(number * 10) / 10;
+		const suffix = suffixes[suffixIndex];
+		return `${roundedNumber}${suffix}`;
 	};
 
 	const formatFileSize = (size: number) => {
@@ -158,7 +293,11 @@ const PostCard: React.FC<PostCardProps> = ({
 			<div className="flex flex-col">
 				<PostFooter
 					postData={postData}
+					postOptionsStateValue={postOptionsStateValue}
 					handlePostLike={handlePostLike}
+					handleFooterCommentClick={handleFooterCommentClick}
+					handlePostOptions={handlePostOptions}
+					handleFooterShareClick={handleFooterShareClick}
 				/>
 			</div>
 		</div>

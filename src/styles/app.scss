@@ -844,6 +844,10 @@
 
 								.link-input-field {
 									@apply flex-1 px-2 outline-none text-sm;
+
+									&:disabled {
+										@apply grayscale cursor-not-allowed pointer-events-none;
+									}
 								}
 
 								&:hover,
@@ -995,6 +999,14 @@
 					}
 				}
 			}
+
+			&[menu-open="false"] {
+				@apply translate-y-[-8px] opacity-0;
+
+				* {
+					@apply pointer-events-none;
+				}
+			}
 		}
 
 		.post-images-or-videos-wrapper {
@@ -1095,7 +1107,7 @@
 				}
 
 				.text {
-					@apply font-bold text-lg;
+					@apply font-bold;
 				}
 			}
 
@@ -1103,7 +1115,7 @@
 				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
 
 				.post-file-item {
-					@apply z-0 flex flex-row w-full min-w-[384px] h-24 bg-white shadow-page-box-1 rounded-lg p-4 gap-x-4 relative;
+					@apply z-0 flex flex-row w-full min-w-[352px] h-24 bg-white shadow-page-box-1 rounded-lg p-4 gap-x-4 relative;
 
 					& > * {
 						@apply z-10;
@@ -1414,7 +1426,7 @@
 				}
 
 				.text {
-					@apply font-bold text-lg;
+					@apply font-bold;
 				}
 			}
 
@@ -1422,13 +1434,13 @@
 				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
 
 				.post-link-card-wrapper {
-					@apply min-w-[384px];
+					@apply flex flex-row w-full min-w-[352px];
 				}
 			}
 		}
 
 		.post-footer-wrapper {
-			@apply flex flex-row items-center h-12 rounded-b-lg p-1;
+			@apply flex flex-row items-center h-12 rounded-b-lg p-1 relative;
 
 			.post-footer-container {
 				@apply flex flex-row items-center h-full flex-1;
@@ -1468,6 +1480,22 @@
 					&:focus {
 						@apply text-blue-600;
 					}
+				}
+			}
+		}
+
+		.post-footer-share-menu-wrapper {
+			@apply ml-1 max-w-sm absolute p-2 bg-white rounded-[40px] shadow-around-lg border border-gray-100 bottom-[105%] right-1 duration-75 pointer-events-none;
+
+			.post-footer-share-menu-container {
+				@apply flex flex-row items-center justify-center gap-2 flex-wrap pointer-events-auto;
+			}
+
+			&[menu-open="false"] {
+				@apply translate-y-[8px] opacity-0;
+
+				* {
+					@apply pointer-events-none;
 				}
 			}
 		}

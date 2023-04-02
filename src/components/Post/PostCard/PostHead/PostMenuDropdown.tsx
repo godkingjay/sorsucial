@@ -27,14 +27,10 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 				<BsThreeDots className="h-full w-full" />
 			</button>
 			<div
-				className={`
-          post-dropdown-menu-wrapper
-          ${
-						postOptionsStateValue.menu === postData.post.id
-							? " "
-							: " translate-y-[-8px] opacity-0 [&_*]:pointer-events-none"
-					}
-        `}
+				className="post-dropdown-menu-wrapper"
+				menu-open={
+					postOptionsStateValue.menu === postData.post.id ? "true" : "false"
+				}
 			>
 				<div className="post-dropdown-menu !max-h-[384px]">
 					<ul className="post-dropdown-list">

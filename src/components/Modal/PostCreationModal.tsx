@@ -1,6 +1,6 @@
 import { PostCreationModalState, errorModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
-import { PollItem, SitePost } from "@/lib/interfaces/post";
+import { PollItem, PostPoll, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
 import {
@@ -26,25 +26,12 @@ import {
 import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
 import { checkIsValidLink } from "@/lib/functions/checks";
 import PostLinksTab from "./PostCreationModal/PostCreationTabs/PostLinksTab";
+import { BiPoll } from "react-icons/bi";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
 	setPostCreationModalStateValue: SetterOrUpdater<PostCreationModalState>;
 	userStateValue: UserState;
-};
-
-export type CreatePostPollItemType = {
-	postItemTitle: string;
-	logoType?: PollItem["logoType"];
-	emoji?: string;
-	image?: {
-		name: string;
-		url: string;
-		size: number;
-		type: string;
-		height: number;
-		width: number;
-	};
 };
 
 export type CreatePostImageOrVideoType = {
@@ -74,6 +61,33 @@ export type CreatePostLinkType = {
 	index: number;
 };
 
+export type CreatePostPollType = {
+	pollTitle: string;
+	pollDescription?: string;
+	pollStyle: PostPoll["pollStyle"];
+	maxVotes?: number;
+	voteMode: PostPoll["voteMode"];
+	hiddenVotes: boolean;
+	maxUserVotes?: number;
+	isActive: boolean;
+	postItems: CreatePostPollItemType[];
+};
+
+export type CreatePostPollItemType = {
+	index: number;
+	postItemTitle: string;
+	logoType?: PollItem["logoType"];
+	emoji?: string;
+	image?: {
+		name: string;
+		url: string;
+		size: number;
+		type: string;
+		height: number;
+		width: number;
+	};
+};
+
 export type CreatePostType = {
 	groupId?: SitePost["groupId"];
 	creatorId?: SitePost["creatorId"];
@@ -86,13 +100,7 @@ export type CreatePostType = {
 	imagesOrVideos: CreatePostImageOrVideoType[];
 	files: CreatePostFileType[];
 	links: CreatePostLinkType[];
-	poll: {
-		pollTitle: string;
-		pollDescription?: string;
-		maxVotes?: number;
-		isActive: boolean;
-		postItems: CreatePostPollItemType[];
-	} | null;
+	poll: CreatePostPollType | null;
 };
 
 export const postPrivacyOptions: DropdownOption[] = [
@@ -417,6 +425,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			);
 
 			files.map((file) => {
+				console.log(file.type);
 				if (validateFile(file)) {
 					const reader = new FileReader();
 
@@ -567,6 +576,29 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
+	const handleCreatePoll = () => {
+		setCreatePostForm((prev) => ({
+			...prev,
+			poll: {
+				isActive: true,
+				pollStyle: "list",
+				voteMode: "single",
+				pollTitle: "Vote",
+				hiddenVotes: false,
+				postItems: [
+					{
+						postItemTitle: "Option 1",
+						index: 0,
+					},
+					{
+						postItemTitle: "Option 2",
+						index: 1,
+					},
+				],
+			},
+		}));
+	};
+
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[1000] flex flex-col items-center px-8 py-16 overflow-y-auto scroll-y-style overflow-x-hidden">
 			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto">
@@ -686,6 +718,30 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 										handleLinkAdd={handleLinkAdd}
 										handleLinkRemove={handleLinkRemove}
 									/>
+								</div>
+								<div
+									className={`
+									flex-1 h-full flex-row
+									${postCreationModalStateValue.tab === "poll" ? "flex" : "hidden"}
+								`}
+								>
+									<div className="flex flex-col gap-y-4 flex-1">
+										<button
+											type="button"
+											title="Create Poll"
+											className="flex flex-row items-center justify-center gap-x-2 border-2 border-dashed rounded-lg text-yellow-500 border-yellow-500 text-sm font-semibold py-2 px-6 relative overflow-hidden [&:hover>.deco]:w-full [&:focus-within>.deco]:w-full [&:hover>.deco]:rounded-r-none [&:focus-within>.deco]:rounded-r-none outline-none disabled:pointer-events-none disabled:grayscale"
+											disabled={createPostForm.poll !== null}
+											onClick={() => handleCreatePoll()}
+										>
+											<div className="deco -z-10 absolute h-full w-0 duration-500 ease-in-out top-0 left-0 bg-yellow-100 rounded-r-full"></div>
+											<div className="h-6 w-6 aspect-square">
+												<BiPoll className="h-full w-full" />
+											</div>
+											<div className="flex flex-row h-full items-center">
+												<p>Create Poll</p>
+											</div>
+										</button>
+									</div>
 								</div>
 							</div>
 							<PostCreationTabs

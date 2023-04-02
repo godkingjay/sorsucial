@@ -408,14 +408,28 @@ const usePost = () => {
 				});
 
 			if (posts.length) {
-				await posts.forEach(async (post: PostData) => {
-					await fetchUserLike(post.post);
-				});
-
 				setPostStateValue((prev) => ({
 					...prev,
 					posts: [...prev.posts, ...posts],
 				}));
+
+				await posts.forEach(async (post: PostData) => {
+					const userLikeData = await fetchUserLike(post.post);
+
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts.map((postData) => {
+							if (postData.post.id === post.post.id) {
+								return {
+									...postData,
+									userLike: userLikeData,
+								};
+							}
+
+							return postData;
+						}),
+					}));
+				});
 			} else {
 				console.log("Mongo: No posts found!");
 			}
@@ -440,33 +454,35 @@ const usePost = () => {
 					});
 
 				if (userLikeData) {
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts.map((post) => {
-							if (post.post.id === userLikeData.postId) {
-								return {
-									...post,
-									userLike: userLikeData,
-								};
-							}
+					// setPostStateValue((prev) => ({
+					// 	...prev,
+					// 	posts: prev.posts.map((postData) => {
+					// 		if (postData.post.id === userLikeData.postId) {
+					// 			return {
+					// 				...postData,
+					// 				userLike: userLikeData,
+					// 			};
+					// 		}
 
-							return post;
-						}),
-					}));
+					// 		return postData;
+					// 	}),
+					// }));
+					return userLikeData;
 				} else {
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts.map((postData) => {
-							if (postData.post.id === post.id) {
-								return {
-									...postData,
-									userLike: null,
-								};
-							}
+					// setPostStateValue((prev) => ({
+					// 	...prev,
+					// 	posts: prev.posts.map((postData) => {
+					// 		if (postData.post.id === post.id) {
+					// 			return {
+					// 				...postData,
+					// 				userLike: null,
+					// 			};
+					// 		}
 
-							return postData;
-						}),
-					}));
+					// 		return postData;
+					// 	}),
+					// }));
+					return null;
 				}
 			}
 		} catch (error: any) {

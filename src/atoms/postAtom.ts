@@ -82,10 +82,8 @@ export interface PostPollData {
  *
  * @property {SitePost} post - The post data.
  * @property {SiteUser | null} creator - The post creator data.
- * @property {PostImageOrVideo[]} postImagesOrVideos - The post images or videos data.
- * @property {PostFile[]} postFiles - The post files data.
- * @property {PostLink[]} postLinks - The post links data.
- * @property {PostPollData} postPoll - The post poll data.
+ * @property {PostLike | null} userLike - The post like data of the current user.
+ * @property {PollVote | null} userVote - The poll vote data of the current user.
  *
  * ----------------------------------------------------------------
  *
@@ -112,7 +110,7 @@ export interface PostData {
  */
 export interface PostState {
 	posts: PostData[];
-	currentPost: SitePost | null;
+	currentPost: PostData | null;
 }
 
 /**

@@ -509,6 +509,26 @@ const usePost = () => {
 							console.log("API: Post Like Error: ", error.message);
 						});
 
+					if (postStateValue.currentPost?.post) {
+						if (postData.post.id === postStateValue.currentPost.post.id) {
+							setPostStateValue(
+								(prev) =>
+									({
+										...prev,
+										currentPost: {
+											...prev.currentPost,
+											post: {
+												...prev.currentPost?.post,
+												numberOfLikes:
+													prev.currentPost?.post.numberOfLikes! - 1,
+											},
+											userLike: null,
+										},
+									} as PostState)
+							);
+						}
+					}
+
 					setPostStateValue(
 						(prev) =>
 							({
@@ -543,6 +563,26 @@ const usePost = () => {
 					axios.post(apiConfig.apiEndpoint + "post/like/like", {
 						newUserLike: userLike,
 					});
+
+					if (postStateValue.currentPost?.post) {
+						if (postData.post.id === postStateValue.currentPost.post.id) {
+							setPostStateValue(
+								(prev) =>
+									({
+										...prev,
+										currentPost: {
+											...prev.currentPost,
+											post: {
+												...prev.currentPost?.post,
+												numberOfLikes:
+													prev.currentPost?.post.numberOfLikes! + 1,
+											},
+											userLike,
+										},
+									} as PostState)
+							);
+						}
+					}
 
 					setPostStateValue(
 						(prev) =>

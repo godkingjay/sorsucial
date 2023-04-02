@@ -146,7 +146,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			}
 
 			case "feed": {
-				if (asPath === `/feeds/${creatorId}/posts/${postId}`) {
+				if (asPath === `user/${creatorId}/posts/${postId}`) {
 					return true;
 				}
 				break;
@@ -198,7 +198,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			}
 
 			case "feed": {
-				url += `feeds/${postData.post.creatorId}/posts/${postData.post.id}`;
+				url += `user/${postData.post.creatorId}/posts/${postData.post.id}`;
 				break;
 			}
 

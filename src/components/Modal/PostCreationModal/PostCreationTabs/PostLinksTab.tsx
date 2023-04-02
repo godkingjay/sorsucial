@@ -1,5 +1,9 @@
 import React from "react";
-import { CreatePostType, currentLinkType } from "../../PostCreationModal";
+import {
+	CreatePostType,
+	currentLinkType,
+	maxPostItems,
+} from "../../PostCreationModal";
 import { IoAddOutline, IoClose, IoLinkOutline } from "react-icons/io5";
 import PostLinkCard from "@/components/Post/PostCard/PostBody/PostCards/PostLinkCard";
 
@@ -42,7 +46,12 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 					))}
 				</div>
 			)}
-			<div className="link-input-container">
+			<div
+				className={`
+					link-input-container
+					${createPostForm.links.length >= maxPostItems.links ? "!hidden" : ""}
+				`}
+			>
 				<div
 					className="link-input-field-container"
 					valid-link={
@@ -60,6 +69,7 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						className="link-input-field"
 						value={currentLink.link}
 						onChange={handleLinkChange}
+						disabled={createPostForm.links.length >= maxPostItems.links}
 					/>
 				</div>
 				<div className="link-input-buttons-container">
@@ -88,9 +98,13 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						onClick={(event) =>
 							currentLink.isValidLink &&
 							!event.currentTarget.disabled &&
+							createPostForm.links.length < maxPostItems.links &&
 							handleLinkAdd()
 						}
-						disabled={!currentLink.isValidLink}
+						disabled={
+							!currentLink.isValidLink ||
+							createPostForm.links.length >= maxPostItems.links
+						}
 					>
 						<div className="icon-container">
 							<IoAddOutline className="icon" />

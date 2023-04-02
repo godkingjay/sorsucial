@@ -844,6 +844,10 @@
 
 								.link-input-field {
 									@apply flex-1 px-2 outline-none text-sm;
+
+									&:disabled {
+										@apply grayscale cursor-not-allowed pointer-events-none;
+									}
 								}
 
 								&:hover,

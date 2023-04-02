@@ -6,10 +6,8 @@ import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
-import {} from "react-icons/gr";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
-import PostLinkCard from "./PostCard/PostBody/PostCards/PostLinkCard";
 import PostLinks from "./PostCard/PostBody/PostLinks";
 
 type PostCardProps = {

@@ -207,8 +207,12 @@ export interface PostLink {
  * @property {string} postId - The unique identifier of the post.
  * @property {string} pollTitle - The title of the poll.
  * @property {string} [pollDescription] - The description of the poll.
+ * @property {"list" | "cards" | "tiles"} pollStyle - The style of the poll.
  * @property {number} numberOfVotes - The number of votes of the poll.
  * @property {number} [maxVotes] - The maximum number of votes of the poll.
+ * @property {"single" | "multiple"} voteMode - The vote mode of the poll.
+ * @property {boolean} hiddenVotes - Whether the votes of the poll are hidden.
+ * @property {number} [maxUserVotes] - The maximum number of votes per user of the poll.
  * @property {boolean} isActive - Whether the poll is active.
  * @property {PollItem[]} pollItems - The poll items of the poll.
  * @property {Date} updatedAt - The date and time when the poll was last updated.
@@ -223,9 +227,11 @@ export interface PostPoll {
 	postId: string;
 	pollTitle: string;
 	pollDescription?: string;
+	pollStyle: "list" | "cards" | "tiles";
 	numberOfVotes: number;
 	maxVotes?: number;
 	voteMode: "single" | "multiple";
+	hiddenVotes: boolean;
 	maxUserVotes?: number;
 	isActive: boolean;
 	pollItems: PollItem[];

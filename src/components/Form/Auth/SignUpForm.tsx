@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { SignInRegex } from "./SignInForm";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import { siteDetails } from "@/lib/host";
 
 type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
@@ -65,7 +66,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 				} else {
 					await sendSignInLinkToEmail(clientAuth, signUpForm.email, {
 						url:
-							(process.env.NEXT_PUBLIC_HOST as string) +
+							siteDetails.host +
 							`/auth/create-account?email=${signUpForm.email}`,
 						handleCodeInApp: true,
 					}).catch((error) => {

@@ -1,19 +1,26 @@
-import { PostData } from "@/atoms/postAtom";
+import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import React from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
+import { BsFacebook } from "react-icons/bs";
+import { IoLinkOutline } from "react-icons/io5";
 import { RiShareForwardLine } from "react-icons/ri";
+import PostShareMenu from "./PostFooter/PostShareMenu";
 
 type PostFooterProps = {
 	postData: PostData;
+	postOptionsStateValue: PostOptionsState;
 	handlePostLike: () => Promise<void>;
 	handleFooterCommentClick: () => void;
+	handlePostOptions: (name: keyof PostOptionsState) => void;
 };
 
 const PostFooter: React.FC<PostFooterProps> = ({
 	postData,
+	postOptionsStateValue,
 	handlePostLike,
 	handleFooterCommentClick,
+	handlePostOptions,
 }) => {
 	return (
 		<div className="post-footer-wrapper">
@@ -65,6 +72,7 @@ const PostFooter: React.FC<PostFooterProps> = ({
 						type="button"
 						title="Share"
 						className="post-footer-button"
+						onClick={() => handlePostOptions("share")}
 					>
 						<div className="icon-container">
 							<RiShareForwardLine className="icon" />
@@ -75,6 +83,12 @@ const PostFooter: React.FC<PostFooterProps> = ({
 					</button>
 				)}
 			</div>
+			{postData.post.privacy !== "private" && (
+				<PostShareMenu
+					postData={postData}
+					postOptionsStateValue={postOptionsStateValue}
+				/>
+			)}
 		</div>
 	);
 };

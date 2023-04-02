@@ -999,6 +999,14 @@
 					}
 				}
 			}
+
+			&[menu-open="false"] {
+				@apply translate-y-[-8px] opacity-0;
+
+				* {
+					@apply pointer-events-none;
+				}
+			}
 		}
 
 		.post-images-or-videos-wrapper {
@@ -1472,6 +1480,22 @@
 					&:focus {
 						@apply text-blue-600;
 					}
+				}
+			}
+		}
+
+		.post-footer-share-menu-wrapper {
+			@apply ml-1 max-w-sm absolute p-2 bg-white rounded-[40px] shadow-around-lg border border-gray-100 bottom-[105%] right-1 duration-75 pointer-events-none;
+
+			.post-footer-share-menu-container {
+				@apply flex flex-row items-center justify-center gap-2 flex-wrap pointer-events-auto;
+			}
+
+			&[menu-open="false"] {
+				@apply translate-y-[8px] opacity-0;
+
+				* {
+					@apply pointer-events-none;
 				}
 			}
 		}

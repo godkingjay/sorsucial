@@ -87,18 +87,6 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
-	const formatNumberWithSuffix = (number: number) => {
-		const suffixes = ["", "K", "M", "B"];
-		let suffixIndex = 0;
-		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
-			number /= 1000;
-			suffixIndex++;
-		}
-		const roundedNumber = Math.round(number * 10) / 10;
-		const suffix = suffixes[suffixIndex];
-		return `${roundedNumber}${suffix}`;
-	};
-
 	const handleImageOrVideoNav = (direction: "previous" | "next") => {
 		if (direction === "previous") {
 			if (currentImageOrVideo > 0) {
@@ -178,6 +166,18 @@ const PostCard: React.FC<PostCardProps> = ({
 		return false;
 	};
 
+	const formatNumberWithSuffix = (number: number) => {
+		const suffixes = ["", "K", "M", "B"];
+		let suffixIndex = 0;
+		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
+			number /= 1000;
+			suffixIndex++;
+		}
+		const roundedNumber = Math.round(number * 10) / 10;
+		const suffix = suffixes[suffixIndex];
+		return `${roundedNumber}${suffix}`;
+	};
+
 	const formatFileSize = (size: number) => {
 		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 		let i = 0;
@@ -226,8 +226,10 @@ const PostCard: React.FC<PostCardProps> = ({
 			<div className="flex flex-col">
 				<PostFooter
 					postData={postData}
+					postOptionsStateValue={postOptionsStateValue}
 					handlePostLike={handlePostLike}
 					handleFooterCommentClick={handleFooterCommentClick}
+					handlePostOptions={handlePostOptions}
 				/>
 			</div>
 		</div>

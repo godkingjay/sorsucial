@@ -1115,7 +1115,7 @@
 				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
 
 				.post-file-item {
-					@apply z-0 flex flex-row w-full min-w-[384px] h-24 bg-white shadow-page-box-1 rounded-lg p-4 gap-x-4 relative;
+					@apply z-0 flex flex-row w-full min-w-[352px] h-24 bg-white shadow-page-box-1 rounded-lg p-4 gap-x-4 relative;
 
 					& > * {
 						@apply z-10;
@@ -1434,7 +1434,7 @@
 				@apply flex flex-row items-center px-4 gap-x-4 overflow-x-auto scroll-x-style py-2;
 
 				.post-link-card-wrapper {
-					@apply min-w-[384px];
+					@apply flex flex-row w-full min-w-[352px];
 				}
 			}
 		}

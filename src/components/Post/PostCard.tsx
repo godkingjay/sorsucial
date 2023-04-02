@@ -111,6 +111,73 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
+	const handleFooterCommentClick = () => {
+		if (isSinglePostPage()) {
+			console.log("Comment Clicked!");
+		} else {
+			switch (postData.post.postType) {
+				case "announcement": {
+					router.push(`/announcements/${postData.post.id}`);
+					break;
+				}
+
+				case "feed": {
+					router.push(
+						`/feeds/${postData.post.creatorId}/posts/${postData.post.id}`
+					);
+					break;
+				}
+
+				case "group": {
+					router.push(
+						`/groups/${postData.post.groupId}/posts/${postData.post.id}`
+					);
+					break;
+				}
+
+				default: {
+					break;
+				}
+			}
+		}
+	};
+
+	const isSinglePostPage = () => {
+		const { asPath } = router;
+		const { id: postId, creatorId } = postData.post;
+
+		switch (postData.post.postType) {
+			case "announcement": {
+				if (asPath === `/announcements/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			case "feed": {
+				if (asPath === `/feeds/${creatorId}/posts/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			case "group": {
+				const groupId = postData.post.groupId;
+				if (asPath === `/groups/${groupId}/posts/${postId}`) {
+					return true;
+				}
+				break;
+			}
+
+			default: {
+				return false;
+				break;
+			}
+		}
+
+		return false;
+	};
+
 	const formatFileSize = (size: number) => {
 		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 		let i = 0;
@@ -160,6 +227,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				<PostFooter
 					postData={postData}
 					handlePostLike={handlePostLike}
+					handleFooterCommentClick={handleFooterCommentClick}
 				/>
 			</div>
 		</div>

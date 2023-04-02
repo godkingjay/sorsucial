@@ -32,6 +32,7 @@ const AnnouncementView: React.FC<Props> = ({
 	} = usePost();
 	const [fetchingPostUserData, setFetchingPostUserData] = useState(true);
 	const router = useRouter();
+	const { postId } = router.query;
 
 	const fetchPostUserData = async () => {
 		setFetchingPostUserData(true);
@@ -83,20 +84,28 @@ const AnnouncementView: React.FC<Props> = ({
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
-						{(loadingPage || fetchingPostUserData) && !userMounted ? (
+						{(loadingPage || fetchingPostUserData) &&
+						!userMounted &&
+						!postStateValue.posts.find((post) => post.post.id === postId) ? (
 							<>
 								<PostCardSkeleton />
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost ? (
+								{!postStateValue.currentPost &&
+								!postStateValue.posts.find(
+									(post) => post.post.id === postId
+								) ? (
 									<div>Not Found</div>
 								) : (
 									<>
 										<PostCard
-											key={postStateValue.currentPost.post.id}
 											userStateValue={userStateValue}
-											postData={postStateValue.currentPost}
+											postData={
+												postStateValue.posts.find(
+													(post) => post.post.id === postId
+												)! || postStateValue.currentPost
+											}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}

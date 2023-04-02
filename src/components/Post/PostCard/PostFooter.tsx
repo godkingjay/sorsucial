@@ -7,11 +7,13 @@ import { RiShareForwardLine } from "react-icons/ri";
 type PostFooterProps = {
 	postData: PostData;
 	handlePostLike: () => Promise<void>;
+	handleFooterCommentClick: () => void;
 };
 
 const PostFooter: React.FC<PostFooterProps> = ({
 	postData,
 	handlePostLike,
+	handleFooterCommentClick,
 }) => {
 	return (
 		<div className="post-footer-wrapper">
@@ -47,6 +49,7 @@ const PostFooter: React.FC<PostFooterProps> = ({
 					type="button"
 					title="Comment"
 					className="post-footer-button"
+					onClick={handleFooterCommentClick}
 				>
 					<div className="icon-container">
 						<BiComment className="icon" />

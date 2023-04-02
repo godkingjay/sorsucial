@@ -25,48 +25,51 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 }) => {
 	return (
 		<div className="post-creation-form-file-tab-container">
-			<div className="post-file-tab-output-container">
-				{createPostForm.files.map((file) => {
-					const fileDetails =
-						validAllTypes.find((type) => type.ext.includes(file.type)) || null;
+			{createPostForm.files.length > 0 && (
+				<div className="post-file-tab-output-container">
+					{createPostForm.files.map((file) => {
+						const fileDetails =
+							validAllTypes.find((type) => type.ext.includes(file.type)) ||
+							null;
 
-					return (
-						<div
-							key={file.index}
-							className="post-file-item"
-							file-type={fileDetails?.type || "file"}
-						>
-							<div className="logo-container">
-								<FileIcons type={fileDetails ? fileDetails.type : ""} />
-							</div>
-							<div className="details-container">
-								<input
-									type="text"
-									title="Document Title"
-									placeholder={file.name}
-									name="fileTitle"
-									value={file.fileTitle}
-									className="file-title-input-field"
-									onChange={(event) =>
-										handleFileDetailsChange(file.index, event)
-									}
-									maxLength={128}
-								/>
-								<div className="buttons-container">
-									<button
-										type="button"
-										title="Remove File"
-										className="button remove"
-										onClick={() => handleRemoveFile(file.index)}
-									>
-										<MdDelete className="icon" />
-									</button>
+						return (
+							<div
+								key={file.index}
+								className="post-file-item"
+								file-type={fileDetails?.type || "file"}
+							>
+								<div className="logo-container">
+									<FileIcons type={fileDetails ? fileDetails.type : ""} />
+								</div>
+								<div className="details-container">
+									<input
+										type="text"
+										title="Document Title"
+										placeholder={file.name}
+										name="fileTitle"
+										value={file.fileTitle}
+										className="file-title-input-field"
+										onChange={(event) =>
+											handleFileDetailsChange(file.index, event)
+										}
+										maxLength={128}
+									/>
+									<div className="buttons-container">
+										<button
+											type="button"
+											title="Remove File"
+											className="button remove"
+											onClick={() => handleRemoveFile(file.index)}
+										>
+											<MdDelete className="icon" />
+										</button>
+									</div>
 								</div>
 							</div>
-						</div>
-					);
-				})}
-			</div>
+						);
+					})}
+				</div>
+			)}
 			<button
 				type="button"
 				title="Add File"

@@ -45,19 +45,21 @@ const PostFooter: React.FC<PostFooterProps> = ({
 						</>
 					)}
 				</button>
-				<button
-					type="button"
-					title="Comment"
-					className="post-footer-button"
-					onClick={handleFooterCommentClick}
-				>
-					<div className="icon-container">
-						<BiComment className="icon" />
-					</div>
-					<div className="label-container">
-						<p className="label">Comment</p>
-					</div>
-				</button>
+				{postData.post.isCommentable && (
+					<button
+						type="button"
+						title="Comment"
+						className="post-footer-button"
+						onClick={handleFooterCommentClick}
+					>
+						<div className="icon-container">
+							<BiComment className="icon" />
+						</div>
+						<div className="label-container">
+							<p className="label">Comment</p>
+						</div>
+					</button>
+				)}
 				<button
 					type="button"
 					title="Share"

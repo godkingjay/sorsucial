@@ -170,31 +170,60 @@ const PostCard: React.FC<PostCardProps> = ({
 	};
 
 	const handleFooterShareClick = async (type: postShareType) => {
+		let url = siteDetails.host;
+		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
+
+		const title = `&og_site_title=${encodeURIComponent(
+			postData.post.postTitle
+		)}`;
+
+		const description = `&og_description=${encodeURIComponent(
+			postData.post.postBody?.slice(0, 512) || ""
+		)}`;
+
+		const faviconUrl = document
+			.querySelector("link[rel='icon']")
+			?.getAttribute("href");
+
+		const image = `&og_image=${encodeURIComponent(
+			postData.post.postImagesOrVideos.length
+				? postData.post.postImagesOrVideos[0].fileUrl
+				: faviconUrl || ""
+		)}`;
+
+		switch (postData.post.postType) {
+			case "announcement": {
+				url += `announcements/${postData.post.id}`;
+				break;
+			}
+
+			case "feed": {
+				url += `feeds/${postData.post.creatorId}/posts/${postData.post.id}`;
+				break;
+			}
+
+			case "group": {
+				url += `groups/${postData.post.groupId}/posts/${postData.post.id}`;
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+
 		switch (type) {
 			case "copy": {
-				let url = siteDetails.host;
-				switch (postData.post.postType) {
-					case "announcement": {
-						url += `announcements/${postData.post.id}`;
-						break;
-					}
-
-					case "feed": {
-						url += `feeds/${postData.post.creatorId}/posts/${postData.post.id}`;
-						break;
-					}
-
-					case "group": {
-						url += `groups/${postData.post.groupId}/posts/${postData.post.id}`;
-						break;
-					}
-
-					default: {
-						break;
-					}
-				}
 				await navigator.clipboard.writeText(url);
 				alert("Post link copied to clipboard!");
+				break;
+			}
+
+			case "facebook": {
+				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+					url
+				)}${siteName}${title}${description}${image}`;
+				window.open(fbSharerUrl, "_blank");
 				break;
 			}
 

@@ -12,12 +12,12 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import safeJsonStringify from "safe-json-stringify";
 
-type Props = {
+type FeedPostViewProps = {
 	postPageData: PostState["currentPost"];
 	loadingPage: boolean;
 };
 
-const AnnouncementView: React.FC<Props> = ({
+const FeedPostView: React.FC<FeedPostViewProps> = ({
 	postPageData,
 	loadingPage = true,
 }) => {
@@ -82,9 +82,9 @@ const AnnouncementView: React.FC<Props> = ({
 			<Head>
 				<title>
 					{loadingPage || fetchingPostUserData
-						? "Loading Announcement"
+						? "Loading Post"
 						: postStateValue.currentPost === null
-						? "Announcement Not Found"
+						? "Post Not Found"
 						: postStateValue.currentPost.post.postTitle}{" "}
 					| SorSUcial
 				</title>
@@ -169,12 +169,13 @@ export const getServerSideProps = async (
 		const db = client.db("sorsu-db");
 		const postsCollection = db.collection("posts");
 		const usersCollection = db.collection("users");
-		const { postId } = context.query;
+		const { userId, postId } = context.query;
 
 		const postPageData: any = {
 			post: await postsCollection.findOne({
 				id: postId,
-				postType: "announcement",
+				creatorId: userId,
+				postType: "feed",
 			}),
 		};
 
@@ -199,4 +200,4 @@ export const getServerSideProps = async (
 	}
 };
 
-export default AnnouncementView;
+export default FeedPostView;

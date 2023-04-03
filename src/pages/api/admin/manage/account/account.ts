@@ -44,7 +44,7 @@ export default async function handler(
 			 *
 			 * -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
-			case "POST":
+			case "POST": {
 				// Create a new user in the Firebase Authentication service.
 				const { newUserEmail, newUserPassword, postPrivateKey } = req.body;
 
@@ -77,6 +77,7 @@ export default async function handler(
 						return;
 					});
 				break;
+			}
 
 			/**-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 *
@@ -93,7 +94,7 @@ export default async function handler(
 			 *
 			 * -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
-			case "DELETE":
+			case "DELETE": {
 				// Delete a user from the Firebase Authentication service.
 				const { deleteUserId, deletePrivateKey } = req.body;
 
@@ -123,6 +124,7 @@ export default async function handler(
 						return;
 					});
 				break;
+			}
 
 			/**-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 *
@@ -139,9 +141,10 @@ export default async function handler(
 			 *
 			 * -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(405).json({ message: "Method not allowed" });
 				return;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

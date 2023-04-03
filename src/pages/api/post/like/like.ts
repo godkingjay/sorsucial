@@ -48,7 +48,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
-			case "POST":
+			case "POST": {
 				const { newUserLike } = req.body;
 
 				if (!newUserLike) {
@@ -70,6 +70,7 @@ export default async function handler(
 
 				res.status(200).json({ newLikeState, newPostStateLiked });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------------------------------
 			 *
@@ -86,7 +87,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
-			case "GET":
+			case "GET": {
 				const { getPostId, getUserId } = req.query;
 
 				if (!getPostId || !getUserId) {
@@ -100,6 +101,7 @@ export default async function handler(
 
 				res.status(200).json({ userLike: like });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------------------------------
 			 *
@@ -116,7 +118,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
-			case "DELETE":
+			case "DELETE": {
 				const { deleteUserLikePostId, deleteUserLikeUserId } = req.body;
 
 				if (!deleteUserLikePostId || !deleteUserLikeUserId) {
@@ -142,6 +144,7 @@ export default async function handler(
 
 				res.status(200).json({ deleteLikeState, newPostStateUnliked });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------------------------------
 			 *
@@ -158,9 +161,10 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(500).json({ error: "Invalid method" });
 				break;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

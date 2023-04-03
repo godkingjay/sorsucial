@@ -4,6 +4,7 @@ import PostCard from "@/components/Post/PostCard";
 import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
+import { siteDetails } from "@/lib/host";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
@@ -79,7 +80,44 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 	return (
 		<>
 			<Head>
-				<title>Feeds | SorSUcial</title>
+				<title>
+					{loadingPage || fetchingPostUserData
+						? "Loading Post"
+						: postStateValue.currentPost === null
+						? "Post Not Found"
+						: postStateValue.currentPost.post.postTitle}{" "}
+					| SorSUcial
+				</title>
+				<meta
+					name="title"
+					property="og:title"
+					content={postStateValue.currentPost?.post.postTitle || ""}
+				/>
+				<meta
+					name="type"
+					property="og:type"
+					content="article"
+				/>
+				<meta
+					name="description"
+					property="og:description"
+					content={
+						postStateValue.currentPost?.post.postBody?.slice(0, 512) || ""
+					}
+				/>
+				<meta
+					name="url"
+					property="og:url"
+					content={siteDetails.host + router.asPath.slice(1)}
+				/>
+				<meta
+					name="updated_time"
+					property="og:updated_time"
+					content={
+						postStateValue.currentPost?.post.updatedAt?.toString() ||
+						new Date().toString()
+					}
+				/>
 			</Head>
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>

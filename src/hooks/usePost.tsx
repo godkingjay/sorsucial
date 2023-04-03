@@ -372,6 +372,16 @@ const usePost = () => {
 				},
 			});
 
+			if (postStateValue.currentPost?.post.id === postData.post.id) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							currentPost: null,
+						} as PostState)
+				);
+			}
+
 			setPostStateValue(
 				(prev) =>
 					({

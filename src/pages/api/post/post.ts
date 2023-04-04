@@ -51,7 +51,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			case "POST":
+			case "POST": {
 				const { newPost, creator } = req.body;
 
 				if (!newPost) {
@@ -86,6 +86,7 @@ export default async function handler(
 					},
 				});
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -102,10 +103,11 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			case "GET":
-				const posts = await postsCollection.find({}).limit(1).toArray();
-				res.status(200).json({ posts });
+			case "GET": {
+				const post = await postsCollection.find({}).limit(1).toArray();
+				res.status(200).json({ post });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -122,7 +124,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			case "PUT":
+			case "PUT": {
 				const { updatedPost } = req.body;
 
 				if (!updatedPost) {
@@ -141,6 +143,7 @@ export default async function handler(
 
 				res.status(200).json({ updateState });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -157,7 +160,7 @@ export default async function handler(
 			 *
 			 * --------------------------------------------------------------------------------------------
 			 */
-			case "DELETE":
+			case "DELETE": {
 				const { deletedPost } = req.body;
 
 				if (!deletedPost) {
@@ -175,6 +178,7 @@ export default async function handler(
 
 				res.status(200).json({ deleteState, deletePostLikesState });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -191,9 +195,10 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(500).json({ error: "Invalid method" });
 				break;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

@@ -50,7 +50,7 @@ export default async function handler(
 			 *
 			 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
-			case "DELETE":
+			case "DELETE": {
 				const { deleteUserId } = req.body;
 
 				if (!deleteUserId) {
@@ -96,6 +96,7 @@ export default async function handler(
 					});
 
 				break;
+			}
 
 			/**----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 *
@@ -112,9 +113,10 @@ export default async function handler(
 			 *
 			 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(500).json({ error: "No method provided" });
 				return;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ message: error.message });

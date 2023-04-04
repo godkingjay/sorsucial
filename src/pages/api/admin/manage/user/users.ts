@@ -48,7 +48,7 @@ export default async function handler(
 			 *
 			 * --------------------------------------------------------------------------------------------------------------------------------
 			 */
-			case "GET":
+			case "GET": {
 				const { getFromDate, getPrivateKey, getUserLimit } = req.query;
 
 				if (!getPrivateKey || getPrivateKey !== apiConfig.privateKey) {
@@ -71,6 +71,7 @@ export default async function handler(
 				res.status(200).json({ users });
 				return;
 				break;
+			}
 
 			/**--------------------------------------------------------------------------------------------------------------------------------
 			 *
@@ -87,9 +88,10 @@ export default async function handler(
 			 *
 			 * --------------------------------------------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(500).json({ error: "Invalid request method" });
 				break;
+			}
 		}
 	} catch (error) {
 		res.status(500).json({ error: "Something went wrong" });

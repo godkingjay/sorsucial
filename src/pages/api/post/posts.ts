@@ -51,7 +51,7 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
-			case "GET":
+			case "GET": {
 				const { getPostType, getFromDate } = req.query;
 
 				if (!getPostType) {
@@ -102,6 +102,7 @@ export default async function handler(
 					res.status(200).json({ posts: [] });
 				}
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -118,9 +119,10 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(405).json({ error: "Method not allowed" });
 				break;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

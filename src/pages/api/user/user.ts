@@ -47,7 +47,7 @@ export default async function handler(
 			 *
 			 * ------------------------------------------------------------------------------------------
 			 */
-			case "POST":
+			case "POST": {
 				const { newUser } = req.body;
 
 				if (!newUser) {
@@ -59,6 +59,7 @@ export default async function handler(
 
 				res.status(200).json({ newUserState, newUser });
 				break;
+			}
 
 			/**------------------------------------------------------------------------------------------
 			 *
@@ -75,7 +76,7 @@ export default async function handler(
 			 *
 			 * ------------------------------------------------------------------------------------------
 			 */
-			case "GET":
+			case "GET": {
 				const { getUserId } = req.query;
 
 				if (!getUserId) {
@@ -89,6 +90,7 @@ export default async function handler(
 
 				res.status(200).json({ userData });
 				break;
+			}
 
 			/**------------------------------------------------------------------------------------------
 			 *
@@ -105,7 +107,7 @@ export default async function handler(
 			 *
 			 * ------------------------------------------------------------------------------------------
 			 */
-			case "PUT":
+			case "PUT": {
 				const { updatedUserData, updateUserId } = req.body;
 
 				if (!updatedUserData || !updateUserId) {
@@ -122,6 +124,7 @@ export default async function handler(
 					.status(200)
 					.json({ newUserState: updatedUserState, newUser: updatedUserData });
 				break;
+			}
 
 			/**------------------------------------------------------------------------------------------
 			 *
@@ -138,7 +141,7 @@ export default async function handler(
 			 *
 			 * ------------------------------------------------------------------------------------------
 			 */
-			case "DELETE":
+			case "DELETE": {
 				const { userId } = req.body;
 
 				if (!userId) {
@@ -152,6 +155,7 @@ export default async function handler(
 
 				res.status(200).json({ deleteState });
 				break;
+			}
 
 			/**-------------------------------------------------------------------------------------------
 			 *
@@ -168,9 +172,10 @@ export default async function handler(
 			 *
 			 * -------------------------------------------------------------------------------------------
 			 */
-			default:
+			default: {
 				res.status(500).json({ error: "Invalid request method" });
 				break;
+			}
 		}
 	} catch (error: any) {
 		res.status(500).json({ error: error.message });

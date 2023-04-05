@@ -11,6 +11,11 @@ import PostFiles from "./PostCard/PostBody/PostFiles";
 import PostLinks from "./PostCard/PostBody/PostLinks";
 import { NextRouter } from "next/router";
 import { siteDetails } from "@/lib/host";
+import Image from "next/image";
+import { FaUserCircle } from "react-icons/fa";
+import Link from "next/link";
+import { BiCommentDetail } from "react-icons/bi";
+import PostComment from "./PostCard/PostComment/PostComment";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -300,6 +305,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					handleFooterShareClick={handleFooterShareClick}
 				/>
 			</div>
+			{isSinglePostPage() && <PostComment userStateValue={userStateValue} />}
 		</div>
 	);
 };

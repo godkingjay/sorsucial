@@ -123,28 +123,22 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
-						{(loadingPage || fetchingPostUserData) &&
-						!userMounted &&
+						{loadingPage ||
+						fetchingPostUserData ||
+						!userMounted ||
 						!postStateValue.posts.find((post) => post.post.id === postId) ? (
 							<>
 								<PostCardSkeleton />
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost &&
-								!postStateValue.posts.find(
-									(post) => post.post.id === postId
-								) ? (
+								{!postStateValue.currentPost ? (
 									<div>Not Found</div>
 								) : (
 									<>
 										<PostCard
 											userStateValue={userStateValue}
-											postData={
-												postStateValue.posts.find(
-													(post) => post.post.id === postId
-												)! || postStateValue.currentPost
-											}
+											postData={postStateValue.currentPost}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}

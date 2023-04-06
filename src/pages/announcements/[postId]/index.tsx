@@ -45,6 +45,7 @@ const AnnouncementView: React.FC<Props> = ({
 					currentPost: {
 						...postPageData,
 						userLike: userLikeData,
+						postComments: [],
 					},
 				}));
 
@@ -140,9 +141,10 @@ const AnnouncementView: React.FC<Props> = ({
 										<PostCard
 											userStateValue={userStateValue}
 											postData={
+												postStateValue.currentPost ||
 												postStateValue.posts.find(
 													(post) => post.post.id === postId
-												)! || postStateValue.currentPost
+												)!
 											}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}

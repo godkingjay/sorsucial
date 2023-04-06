@@ -1,6 +1,7 @@
 import { PostData } from "@/atoms/postAtom";
 import React from "react";
 import { AiFillLike } from "react-icons/ai";
+import { BiCommentDetail } from "react-icons/bi";
 
 type PostLikeAndCommentDetailsProps = {
 	postData: PostData;
@@ -12,7 +13,7 @@ const PostLikeAndCommentDetails: React.FC<PostLikeAndCommentDetailsProps> = ({
 	formatNumberWithSuffix,
 }) => {
 	return (
-		<div className="px-4 pb-2">
+		<div className="px-4 pb-2 flex flex-row items-center justify-between">
 			<div className="text-sm flex flex-row items-center gap-x-1">
 				<div
 					className={`
@@ -40,6 +41,19 @@ const PostLikeAndCommentDetails: React.FC<PostLikeAndCommentDetailsProps> = ({
 							<span>liked this post.</span>
 						</>
 					)}
+				</p>
+			</div>
+			<div className="text-sm flex flex-row items-center gap-x-1">
+				<div
+					className={`
+						h-5 w-5 aspect-square text-gray-500
+					`}
+				>
+					<BiCommentDetail className="h-full w-full" />
+				</div>
+				<p className="text-gray-500 truncate">
+					{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
+					<span>Comment{postData.post.numberOfComments > 1 && "s"}</span>
 				</p>
 			</div>
 		</div>

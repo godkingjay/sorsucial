@@ -52,7 +52,7 @@ const PostLikeAndCommentDetails: React.FC<PostLikeAndCommentDetailsProps> = ({
 					<BiCommentDetail className="h-full w-full" />
 				</div>
 				<p className="text-gray-500 truncate">
-					{formatNumberWithSuffix(postData.post.numberOfLikes)}{" "}
+					{formatNumberWithSuffix(postData.post.numberOfComments)}{" "}
 					<span>Comment{postData.post.numberOfComments > 1 && "s"}</span>
 				</p>
 			</div>

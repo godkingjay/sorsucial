@@ -2,6 +2,7 @@ import { UserState } from "@/atoms/userAtom";
 import React, { useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostState } from "@/atoms/postAtom";
+import useComment from "@/hooks/useComment";
 
 type PostCommentProps = {
 	userStateValue: UserState;
@@ -9,9 +10,9 @@ type PostCommentProps = {
 };
 
 export type PostCommentFormType = {
-	commentText: string;
 	postId: string;
 	groupId?: string;
+	commentText: string;
 	commentForId?: string;
 	commentLevel: number;
 };
@@ -22,10 +23,12 @@ const PostComment: React.FC<PostCommentProps> = ({
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
+		groupId: currentPost?.post.groupId,
 		commentText: "",
 		commentLevel: 0,
 	});
 	const [creatingComment, setCreatingComment] = useState(false);
+	const { createComment } = useComment();
 
 	const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -35,6 +38,11 @@ const PostComment: React.FC<PostCommentProps> = ({
 		setCreatingComment(true);
 
 		try {
+			await createComment(postCommentForm);
+			setPostCommentForm((prev) => ({
+				...prev,
+				commentText: "",
+			}));
 		} catch (error) {
 			console.log("Hook: Error while creating comment: ", error);
 		}

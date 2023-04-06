@@ -4,7 +4,6 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
-import { PostState } from "@/atoms/postAtom";
 
 const useComment = () => {
 	const { postStateValue, setPostStateValue } = usePost();

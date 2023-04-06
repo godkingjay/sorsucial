@@ -1,3 +1,4 @@
+import { CommentLike, PostComment } from "./../lib/interfaces/post";
 import {
 	PollItem,
 	PollItemLogo,
@@ -68,6 +69,31 @@ export interface PostPollData {
 }
 
 /**
+ * This is the data that is needed to display a post comment in the UI.
+ * This is used in the post atom.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @interface PostCommentData
+ * @see {@link PostCommentData}
+ *
+ * ----------------------------------------------------------------
+ *
+ * @property {PostComment} comment - The post comment data.
+ * @property {SiteUser | null} creator - The post comment creator data.
+ * @property {CommentLike | null} commentLike - The post comment like data of the current user.
+ *
+ * ----------------------------------------------------------------
+ *
+ * @author Jarrian Vince Gojar
+ */
+export interface PostCommentData {
+	comment: PostComment;
+	creator: SiteUser | null;
+	commentLike: CommentLike | null;
+}
+
+/**
  * This is the data that is needed to display a post in the UI.
  *
  * ----------------------------------------------------------------
@@ -91,6 +117,7 @@ export interface PostData {
 	creator: SiteUser | null;
 	userLike: PostLike | null;
 	userVote: PollVote | null;
+	postComments: PostCommentData[] | null;
 }
 
 /**

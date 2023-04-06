@@ -301,7 +301,12 @@ const PostCard: React.FC<PostCardProps> = ({
 					handleFooterShareClick={handleFooterShareClick}
 				/>
 			</div>
-			{isSinglePostPage() && <PostComment userStateValue={userStateValue} />}
+			{isSinglePostPage() && (
+				<PostComment
+					userStateValue={userStateValue}
+					currentPost={postData}
+				/>
+			)}
 		</div>
 	);
 };

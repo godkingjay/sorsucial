@@ -4,7 +4,7 @@ import CommentBox from "./CommentBox";
 import { PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
 
-type PostCommentProps = {
+type PostCommentsProps = {
 	userStateValue: UserState;
 	currentPost: PostState["currentPost"];
 };
@@ -17,7 +17,7 @@ export type PostCommentFormType = {
 	commentLevel: number;
 };
 
-const PostComment: React.FC<PostCommentProps> = ({
+const PostComments: React.FC<PostCommentsProps> = ({
 	userStateValue,
 	currentPost,
 }) => {
@@ -26,6 +26,7 @@ const PostComment: React.FC<PostCommentProps> = ({
 		groupId: currentPost?.post.groupId,
 		commentText: "",
 		commentLevel: 0,
+		commentForId: currentPost?.post.id,
 	});
 	const [creatingComment, setCreatingComment] = useState(false);
 	const { createComment } = useComment();
@@ -38,7 +39,7 @@ const PostComment: React.FC<PostCommentProps> = ({
 		setCreatingComment(true);
 
 		try {
-			await createComment(postCommentForm);
+			await createComment(postCommentForm, userStateValue.user);
 			setPostCommentForm((prev) => ({
 				...prev,
 				commentText: "",
@@ -73,4 +74,4 @@ const PostComment: React.FC<PostCommentProps> = ({
 	);
 };
 
-export default PostComment;
+export default PostComments;

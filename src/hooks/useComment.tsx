@@ -1,4 +1,4 @@
-import { PostCommentFormType } from "@/components/Post/PostCard/PostComment/PostComment";
+import { PostCommentFormType } from "@/components/Post/PostCard/PostComment/PostComments";
 import { PostComment } from "@/lib/interfaces/post";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";

@@ -117,7 +117,7 @@ export interface PostData {
 	creator: SiteUser | null;
 	userLike: PostLike | null;
 	userVote: PollVote | null;
-	postComments: PostCommentData[] | null;
+	postComments: PostCommentData[];
 }
 
 /**

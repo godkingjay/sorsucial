@@ -4,8 +4,7 @@ import CommentBox from "./CommentBox";
 import { PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
 import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
-import UserIcon from "@/components/Icons/UserIcon";
-import Link from "next/link";
+import CommentItem from "./CommentItem";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
@@ -107,33 +106,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 						<div className="flex flex-col gap-y-2">
 							{currentPost?.postComments.map((comment) => (
 								<React.Fragment key={comment.comment.id}>
-									<div className="flex flex-row gap-x-2 w-full relative min-h-[40px]">
-										<UserIcon user={comment.creator} />
-										<div className="flex-1 flex flex-col gap-y-1">
-											<div className="w-full flex-1 flex flex-row">
-												<div className="bg-gray-100 w-fit py-2 rounded-[20px] px-4 text-sm flex flex-col gap-y-1">
-													<h2 className="font-semibold text-xs truncate">
-														{comment.creator ? (
-															<Link
-																href={`/user/${comment.creator.uid}`}
-																className="inline hover:underline focus:underline"
-															>
-																{`${comment.creator.firstName} ${comment.creator.lastName}`}
-															</Link>
-														) : (
-															<span>Unknown User</span>
-														)}
-													</h2>
-													<p className="break-words">
-														{comment.comment.commentText}
-													</p>
-												</div>
-											</div>
-										</div>
-										<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-											<div className="w-[2px] h-full bg-gray-500 bg-opacity-20"></div>
-										</div>
-									</div>
+									<CommentItem commentData={comment} />
 								</React.Fragment>
 							))}
 						</div>

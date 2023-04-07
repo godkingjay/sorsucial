@@ -95,9 +95,10 @@ export default async function handler(
 								},
 							})
 							.then((response) => response.data.userData as SiteUser)
-							.catch((error) =>
-								res.status(500).json({ error: "Internal server error" })
-							);
+							.catch((error) => {
+								res.status(500).json({ error: "API: Fetching creator error!" });
+								return;
+							});
 
 						if (!creatorData) {
 							res.status(404).json({ error: "User not found" });

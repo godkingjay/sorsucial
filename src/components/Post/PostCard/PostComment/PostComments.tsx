@@ -1,5 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
@@ -20,6 +20,7 @@ export type PostCommentFormType = {
 
 const PostComments: React.FC<PostCommentsProps> = ({
 	userStateValue,
+	userMounted,
 	currentPost,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
@@ -29,8 +30,32 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		commentLevel: 0,
 		commentForId: currentPost?.post.id!,
 	});
-	const [creatingComment, setCreatingComment] = useState(false);
 	const { createComment, fetchComments } = useComment();
+	const [creatingComment, setCreatingComment] = useState(false);
+	const [firstLoadingComments, setFirstLoadingComments] = useState(false);
+	const [loadingComments, setLoadingComments] = useState(true);
+	const componentDidMount = useRef(false);
+
+	const firstFetchComments = async () => {
+		setFirstLoadingComments(true);
+		await fetchPostComments();
+		setFirstLoadingComments(false);
+	};
+
+	const fetchPostComments = async () => {
+		setLoadingComments(true);
+		try {
+			if (currentPost) {
+				await fetchComments({
+					postId: currentPost.post.id,
+					commentForId: currentPost.post.id,
+				});
+			}
+		} catch (error: any) {
+			console.log("Hook: Error while fetching post comments: ", error.message);
+		}
+		setLoadingComments(false);
+	};
 
 	const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -58,6 +83,13 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			commentText: e.target.value,
 		}));
 	};
+
+	useEffect(() => {
+		if (userMounted && !componentDidMount.current) {
+			componentDidMount.current = true;
+			firstFetchComments();
+		}
+	}, [userMounted, componentDidMount.current]);
 
 	return (
 		<>

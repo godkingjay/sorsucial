@@ -101,10 +101,10 @@ const useComment = () => {
 						  ].comment
 						: null;
 
-				const comments = await axios
+				const commentsData = await axios
 					.get(apiConfig.apiEndpoint + "post/comment/comment", {
 						params: {
-							getPostId: postId,
+							getCommentPostId: postId,
 							getCommentForId: commentForId,
 							getFromDate: lastComment?.createdAt,
 						},
@@ -114,12 +114,12 @@ const useComment = () => {
 						console.log("API: Error while fetching comments: ", error.message);
 					});
 
-				if (comments.length) {
+				if (commentsData.length) {
 					setPostStateValue((prev) => ({
 						...prev,
 						currentPost: {
 							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.concat(comments),
+							postComments: prev.currentPost!.postComments.concat(commentsData),
 						},
 					}));
 				} else {

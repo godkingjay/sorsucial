@@ -11,11 +11,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 type FeedsPageProps = {};
 
 const FeedsPage: React.FC<FeedsPageProps> = () => {
-	const { userStateValue, authUser, authLoading, loadingUser, userMounted } =
-		useUser();
+	const { userStateValue, userMounted } = useUser();
 	const {
 		postStateValue,
-		setPostStateValue,
 		postOptionsStateValue,
 		setPostOptionsStateValue,
 		deletePost,

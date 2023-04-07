@@ -2,6 +2,10 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
+import { PostComment } from "@/lib/interfaces/post";
+import axios from "axios";
+import { apiConfig } from "@/lib/api/apiConfig";
+import { SiteUser } from "@/lib/interfaces/user";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -80,6 +84,38 @@ export default async function handler(
 							.sort({ createdAt: -1 })
 							.limit(10)
 							.toArray();
+
+				const commentsData = await Promise.all(
+					comments.map(async (commentDoc) => {
+						const comment = commentDoc as unknown as PostComment;
+						const creatorData = await axios
+							.get(apiConfig.apiEndpoint + "user/user", {
+								params: {
+									getUserId: comment.creatorId,
+								},
+							})
+							.then((response) => response.data.userData as SiteUser)
+							.catch((error) =>
+								res.status(500).json({ error: "Internal server error" })
+							);
+
+						if (!creatorData) {
+							res.status(404).json({ error: "User not found" });
+							return;
+						}
+
+						return {
+							comment,
+							creator: creatorData,
+						};
+					})
+				);
+
+				if (commentsData.length) {
+					res.status(200).json({ comments: commentsData });
+				} else {
+					res.status(200).json({ comments: [] });
+				}
 
 				break;
 			}

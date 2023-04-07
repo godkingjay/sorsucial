@@ -7,6 +7,10 @@
 		@apply text-xs text-center text-blue-500 underline cursor-pointer hover:text-blue-800 focus:text-blue-800 outline-0 focus:outline-1 outline-dashed outline-offset-2;
 	}
 
+	.skeleton-color {
+		@apply bg-gray-500 bg-opacity-[15%];
+	}
+
 	.auth-form {
 		@apply w-full h-full flex flex-col;
 

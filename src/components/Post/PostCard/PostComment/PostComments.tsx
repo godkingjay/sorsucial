@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
+import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
@@ -95,13 +96,17 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		<>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="p-4 flex flex-col gap-y-2">
-				<CommentBox
-					userStateValue={userStateValue}
-					value={postCommentForm.commentText}
-					onChange={handleInputChange}
-					onSubmit={handleCommentSubmit}
-					submitting={creatingComment}
-				/>
+				{firstLoadingComments || !userMounted ? (
+					<PostCommentInputBoxSkeleton />
+				) : (
+					<CommentBox
+						userStateValue={userStateValue}
+						value={postCommentForm.commentText}
+						onChange={handleInputChange}
+						onSubmit={handleCommentSubmit}
+						submitting={creatingComment}
+					/>
+				)}
 			</div>
 		</>
 	);

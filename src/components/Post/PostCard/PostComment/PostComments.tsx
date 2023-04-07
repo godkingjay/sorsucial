@@ -6,6 +6,7 @@ import useComment from "@/hooks/useComment";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
+	userMounted: boolean;
 	currentPost: PostState["currentPost"];
 };
 
@@ -29,7 +30,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		commentForId: currentPost?.post.id!,
 	});
 	const [creatingComment, setCreatingComment] = useState(false);
-	const { createComment } = useComment();
+	const { createComment, fetchComments } = useComment();
 
 	const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

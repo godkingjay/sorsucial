@@ -15,6 +15,7 @@ import PostComments from "./PostCard/PostComment/PostComments";
 
 type PostCardProps = {
 	userStateValue: UserState;
+	userMounted: boolean;
 	postOptionsStateValue: PostOptionsState;
 	setPostOptionsStateValue: SetterOrUpdater<PostOptionsState>;
 	postData: PostData;
@@ -27,6 +28,7 @@ export type postShareType = "facebook" | "copy";
 
 const PostCard: React.FC<PostCardProps> = ({
 	userStateValue,
+	userMounted,
 	postOptionsStateValue,
 	setPostOptionsStateValue,
 	postData,
@@ -304,6 +306,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			{isSinglePostPage() && (
 				<PostComments
 					userStateValue={userStateValue}
+					userMounted={userMounted}
 					currentPost={postData}
 				/>
 			)}

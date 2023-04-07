@@ -1,22 +1,18 @@
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
-import LoadingScreen from "@/components/Skeleton/LoadingScreen";
 import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
 import usePost from "@/hooks/usePost";
 import useUser from "@/hooks/useUser";
-import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
 	const router = useRouter();
-	const { userStateValue, authUser, authLoading, loadingUser, userMounted } =
-		useUser();
+	const { userStateValue, userMounted } = useUser();
 	const {
 		postStateValue,
-		setPostStateValue,
 		postOptionsStateValue,
 		setPostOptionsStateValue,
 		deletePost,

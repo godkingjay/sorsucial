@@ -411,7 +411,7 @@ export interface PostLike {
  * @property {string} creatorId - The unique identifier of the user who created the comment.
  * @property {string} postId - The unique identifier of the post.
  * @property {string} [groupId] - The unique identifier of the group.
- * @property {string} [commentForId] - The unique identifier of the comment that this comment is for.
+ * @property {string} commentForId - The unique identifier of the comment that this comment is for.
  * @property {string} commentText - The text of the comment.
  * @property {number} commentLevel - The level of the comment.
  * @property {number} numberOfLikes - The number of likes of the comment.
@@ -429,7 +429,7 @@ export interface PostComment {
 	creatorId: string;
 	postId: string;
 	groupId?: string;
-	commentForId?: string;
+	commentForId: string;
 	commentText: string;
 	commentLevel: number;
 	numberOfLikes: number;

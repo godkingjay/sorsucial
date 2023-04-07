@@ -5,6 +5,11 @@ import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
 
+export type fetchCommentsParamsType = {
+	postId: string;
+	commentForId: string;
+};
+
 const useComment = () => {
 	const { postStateValue, setPostStateValue } = usePost();
 
@@ -21,6 +26,7 @@ const useComment = () => {
 				creatorId: creator.uid,
 				commentText: commentForm.commentText,
 				commentLevel: commentForm.commentLevel,
+				commentForId: commentForm.commentForId,
 				numberOfLikes: 0,
 				numberOfReplies: 0,
 				isHidden: false,
@@ -30,10 +36,6 @@ const useComment = () => {
 
 			if (commentForm.groupId) {
 				newComment.groupId = commentForm.groupId;
-			}
-
-			if (commentForm.commentForId) {
-				newComment.commentForId = commentForm.commentForId;
 			}
 
 			const newCommentData: PostComment = await axios
@@ -56,11 +58,14 @@ const useComment = () => {
 								...prev.currentPost!.post,
 								numberOfComments: prev.currentPost!.post.numberOfComments + 1,
 							},
-							postComments: prev.currentPost!.postComments.concat({
-								comment: newCommentData,
-								creator,
-								commentLike: null,
-							}),
+							postComments: [
+								{
+									comment: newCommentData,
+									creator,
+									commentLike: null,
+								},
+								...prev.currentPost!.postComments,
+							],
 						},
 					}));
 				}
@@ -86,8 +91,55 @@ const useComment = () => {
 		}
 	};
 
+	const fetchComments = async ({
+		postId,
+		commentForId,
+	}: fetchCommentsParamsType) => {
+		try {
+			if (postStateValue.currentPost !== null) {
+				const lastComment =
+					postStateValue.currentPost?.postComments.length > 0
+						? postStateValue.currentPost?.postComments[
+								postStateValue.currentPost?.postComments.length - 1
+						  ].comment
+						: null;
+
+				const commentsData = await axios
+					.get(apiConfig.apiEndpoint + "post/comment/comment", {
+						params: {
+							getCommentPostId: postId,
+							getCommentForId: commentForId,
+							getFromLikes: lastComment
+								? lastComment.numberOfLikes
+								: Number.MAX_SAFE_INTEGER,
+							getFromDate: lastComment?.createdAt,
+						},
+					})
+					.then((response) => response.data.comments)
+					.catch((error) => {
+						console.log("API: Error while fetching comments: ", error.message);
+					});
+
+				if (commentsData.length) {
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.concat(commentsData),
+						},
+					}));
+				} else {
+					console.log("MONGO: No comments found!");
+				}
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while fetching comments: ", error.message);
+		}
+	};
+
 	return {
 		createComment,
+		fetchComments,
 	};
 };
 

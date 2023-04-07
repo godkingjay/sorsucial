@@ -138,6 +138,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 									<>
 										<PostCard
 											userStateValue={userStateValue}
+											userMounted={userMounted}
 											postData={postStateValue.currentPost}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}

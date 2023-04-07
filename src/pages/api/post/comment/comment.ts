@@ -47,6 +47,43 @@ export default async function handler(
 				break;
 			}
 
+			case "GET": {
+				const { getCommentPostId, getCommentForId, getFromDate } = req.query;
+
+				if (!getCommentPostId) {
+					res.status(500).json({ error: "No post id provided" });
+					return;
+				}
+
+				if (!getCommentForId) {
+					res.status(500).json({ error: "Comment receiver Id not provide" });
+					return;
+				}
+
+				const comments = getFromDate
+					? await postCommentsCollection
+							.find({
+								postId: getCommentPostId,
+								commentForId: getCommentForId,
+								createdAt: {
+									$lt: getFromDate,
+								},
+							})
+							.sort({ createdAt: -1 })
+							.limit(10)
+							.toArray()
+					: await postCommentsCollection
+							.find({
+								postId: getCommentPostId,
+								commentForId: getCommentForId,
+							})
+							.sort({ createdAt: -1 })
+							.limit(10)
+							.toArray();
+
+				break;
+			}
+
 			default: {
 				res.status(405).json({ error: "Method not allowed" });
 				break;

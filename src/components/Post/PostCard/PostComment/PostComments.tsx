@@ -13,7 +13,7 @@ export type PostCommentFormType = {
 	postId: string;
 	groupId?: string;
 	commentText: string;
-	commentForId?: string;
+	commentForId: string;
 	commentLevel: number;
 };
 
@@ -26,7 +26,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		groupId: currentPost?.post.groupId,
 		commentText: "",
 		commentLevel: 0,
-		commentForId: currentPost?.post.id,
+		commentForId: currentPost?.post.id!,
 	});
 	const [creatingComment, setCreatingComment] = useState(false);
 	const { createComment } = useComment();

@@ -5,6 +5,11 @@ import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
 
+export type fetchCommentsParamsType = {
+	postId: string;
+	commentForId: string;
+};
+
 const useComment = () => {
 	const { postStateValue, setPostStateValue } = usePost();
 
@@ -21,6 +26,7 @@ const useComment = () => {
 				creatorId: creator.uid,
 				commentText: commentForm.commentText,
 				commentLevel: commentForm.commentLevel,
+				commentForId: commentForm.commentForId,
 				numberOfLikes: 0,
 				numberOfReplies: 0,
 				isHidden: false,
@@ -30,10 +36,6 @@ const useComment = () => {
 
 			if (commentForm.groupId) {
 				newComment.groupId = commentForm.groupId;
-			}
-
-			if (commentForm.commentForId) {
-				newComment.commentForId = commentForm.commentForId;
 			}
 
 			const newCommentData: PostComment = await axios
@@ -85,6 +87,8 @@ const useComment = () => {
 			console.log("MONGO: Error while creating comment: ", error.message);
 		}
 	};
+
+	// const fetchComments = ({ postId, commentForId }) => {};
 
 	return {
 		createComment,

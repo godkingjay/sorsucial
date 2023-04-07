@@ -88,10 +88,52 @@ const useComment = () => {
 		}
 	};
 
-	// const fetchComments = ({ postId, commentForId }) => {};
+	const fetchComments = async ({
+		postId,
+		commentForId,
+	}: fetchCommentsParamsType) => {
+		try {
+			if (postStateValue.currentPost !== null) {
+				const lastComment =
+					postStateValue.currentPost?.postComments.length > 0
+						? postStateValue.currentPost?.postComments[
+								postStateValue.currentPost?.postComments.length - 1
+						  ].comment
+						: null;
+
+				const comments = await axios
+					.get(apiConfig.apiEndpoint + "post/comment/comment", {
+						params: {
+							getPostId: postId,
+							getCommentForId: commentForId,
+							getFromDate: lastComment?.createdAt,
+						},
+					})
+					.then((response) => response.data.comments)
+					.catch((error) => {
+						console.log("API: Error while fetching comments: ", error.message);
+					});
+
+				if (comments.length) {
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.concat(comments),
+						},
+					}));
+				} else {
+					console.log("MONGO: No comments found!");
+				}
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while fetching comments: ", error.message);
+		}
+	};
 
 	return {
 		createComment,
+		fetchComments,
 	};
 };
 

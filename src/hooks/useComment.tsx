@@ -58,11 +58,14 @@ const useComment = () => {
 								...prev.currentPost!.post,
 								numberOfComments: prev.currentPost!.post.numberOfComments + 1,
 							},
-							postComments: prev.currentPost!.postComments.concat({
-								comment: newCommentData,
-								creator,
-								commentLike: null,
-							}),
+							postComments: [
+								{
+									comment: newCommentData,
+									creator,
+									commentLike: null,
+								},
+								...prev.currentPost!.postComments,
+							],
 						},
 					}));
 				}
@@ -106,6 +109,9 @@ const useComment = () => {
 						params: {
 							getCommentPostId: postId,
 							getCommentForId: commentForId,
+							getFromLikes: lastComment
+								? lastComment.numberOfLikes
+								: Number.MAX_SAFE_INTEGER,
 							getFromDate: lastComment?.createdAt,
 						},
 					})

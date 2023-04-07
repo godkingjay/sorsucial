@@ -52,7 +52,8 @@ export default async function handler(
 			}
 
 			case "GET": {
-				const { getCommentPostId, getCommentForId, getFromDate } = req.query;
+				const { getCommentPostId, getCommentForId, getFromLikes, getFromDate } =
+					req.query;
 
 				if (!getCommentPostId) {
 					res.status(500).json({ error: "No post id provided" });
@@ -69,19 +70,25 @@ export default async function handler(
 							.find({
 								postId: getCommentPostId,
 								commentForId: getCommentForId,
+								numberOfLikes: {
+									$lt: parseInt(getFromLikes as string),
+								},
 								createdAt: {
 									$lt: getFromDate,
 								},
 							})
-							.sort({ createdAt: -1 })
+							.sort({ numberOfLikes: -1, createdAt: -1 })
 							.limit(10)
 							.toArray()
 					: await postCommentsCollection
 							.find({
 								postId: getCommentPostId,
 								commentForId: getCommentForId,
+								numberOfLikes: {
+									$lt: parseInt(getFromLikes as string),
+								},
 							})
-							.sort({ createdAt: -1 })
+							.sort({ numberOfLikes: -1, createdAt: -1 })
 							.limit(10)
 							.toArray();
 

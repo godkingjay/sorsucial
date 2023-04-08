@@ -67,7 +67,7 @@ export default function Home() {
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
-						{firstLoadingAnnouncements && !userMounted ? (
+						{firstLoadingAnnouncements || !userMounted ? (
 							<>
 								<PostCardSkeleton />
 								<PostCardSkeleton />

@@ -122,11 +122,24 @@ const PostComments: React.FC<PostCommentsProps> = ({
 						) : (
 							<>
 								<div className="flex flex-col gap-y-2">
-									{currentPost?.postComments.map((comment) => (
-										<React.Fragment key={comment.comment.id}>
-											<CommentItem commentData={comment} />
-										</React.Fragment>
-									))}
+									{currentPost?.postComments
+										.filter(
+											(comment) =>
+												comment.comment.commentLevel === 0 &&
+												comment.comment.commentForId === currentPost?.post.id
+										)
+										.map((comment) => (
+											<React.Fragment key={comment.comment.id}>
+												<CommentItem
+													currentPost={currentPost}
+													userStateValue={userStateValue}
+													submitting={creatingComment}
+													commentData={comment}
+													onSubmit={handleCommentSubmit}
+													onChange={handleInputChange}
+												/>
+											</React.Fragment>
+										))}
 								</div>
 								<CommentBox
 									userStateValue={userStateValue}

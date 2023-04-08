@@ -41,7 +41,6 @@ const useComment = () => {
 			const newCommentData: PostComment = await axios
 				.post(apiConfig.apiEndpoint + "post/comment/comment", {
 					newComment,
-					creator,
 				})
 				.then((res) => res.data.newComment)
 				.catch((error) => {
@@ -49,6 +48,46 @@ const useComment = () => {
 				});
 
 			if (newCommentData) {
+				if (newCommentData.postId !== newCommentData.commentForId) {
+					const updatedComment: Partial<PostComment> = {
+						id: newCommentData.commentForId,
+						numberOfReplies:
+							postStateValue.currentPost?.postComments.find(
+								(comment) => comment.comment.id === newCommentData.commentForId
+							)?.comment.numberOfReplies! + 1,
+					};
+
+					const isUpdated = await axios
+						.put(apiConfig.apiEndpoint + "post/comment/comment", {
+							updatedComment,
+						})
+						.then((response) => response.data.isUpdated)
+						.catch((error) => {
+							console.log("API: Error while updating comment: ", error.message);
+						});
+
+					if (isUpdated) {
+						setPostStateValue((prev) => ({
+							...prev,
+							currentPost: {
+								...prev.currentPost!,
+								postComments: prev.currentPost!.postComments.map((comment) => {
+									if (comment.comment.id === newCommentData.commentForId) {
+										return {
+											...comment,
+											comment: {
+												...comment.comment,
+												numberOfReplies: comment.comment.numberOfReplies + 1,
+											},
+										};
+									}
+									return comment;
+								}),
+							},
+						}));
+					}
+				}
+
 				if (postStateValue.currentPost?.post.id == newCommentData.postId) {
 					setPostStateValue((prev) => ({
 						...prev,

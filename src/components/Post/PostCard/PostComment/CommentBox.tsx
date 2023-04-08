@@ -79,7 +79,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 				type="submit"
 				title="Create Comment"
 				className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-sm ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-				disabled={submitting}
+				disabled={submitting || commentForm.commentText.length === 0}
 			>
 				<div className="h-5 w-5 aspect-square">
 					<BiCommentDetail className="h-full w-full" />

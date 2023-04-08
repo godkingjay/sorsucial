@@ -25,6 +25,8 @@ type CommentItemProps = {
 	) => void;
 };
 
+const maxCommentLevel = 3;
+
 const CommentItem: React.FC<CommentItemProps> = ({
 	userStateValue,
 	currentPost,
@@ -88,7 +90,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									</button>
 								</div> */}
 						</div>
-						<div className="flex flex-row items-center gap-x-4 text-xs font-semibold px-4 text-gray-500">
+						<div className="flex flex-row items-center gap-x-4 gap-y-2 text-xs font-semibold px-4 text-gray-500 flex-wrap">
 							<button
 								type="button"
 								title="Like"
@@ -103,14 +105,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									? "Liked"
 									: "Like"}
 							</button>
-							<button
-								type="button"
-								title="Reply"
-								className="btn-text"
-								onClick={handleShowCommentBox}
-							>
-								Reply
-							</button>
+							{postCommentForm.commentLevel < maxCommentLevel && (
+								<button
+									type="button"
+									title="Reply"
+									className="btn-text"
+									onClick={handleShowCommentBox}
+								>
+									Reply
+								</button>
+							)}
 							{userStateValue.user.uid === commentData.comment.creatorId && (
 								<button
 									type="button"
@@ -120,12 +124,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									Delete
 								</button>
 							)}
-							<p className="font-normal text-2xs">
+							<p className="font-normal text-2xs w-max">
 								{moment(commentData.comment.createdAt).fromNow()}
 							</p>
 						</div>
 					</div>
-					{showComments && (
+					{true && (
 						<div className="flex flex-col gap-y-2">
 							{currentPost?.postComments
 								.filter(
@@ -148,7 +152,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								))}
 						</div>
 					)}
-					{showCommentBox && (
+					{showCommentBox && postCommentForm.commentLevel < maxCommentLevel && (
 						<CommentBox
 							userStateValue={userStateValue}
 							commentForm={postCommentForm}

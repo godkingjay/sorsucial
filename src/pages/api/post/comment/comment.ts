@@ -128,6 +128,30 @@ export default async function handler(
 				break;
 			}
 
+			case "PUT": {
+				const { updatedComment } = req.body;
+
+				if (!updatedComment) {
+					res.status(500).json({ error: "No comment data provided" });
+					return;
+				}
+
+				const updatedCommentState = await postCommentsCollection.updateOne(
+					{
+						id: updatedComment.id,
+					},
+					{
+						$set: {
+							...updatedComment,
+						},
+					}
+				);
+
+				res.status(200).json({ isUpdated: updatedCommentState.acknowledged });
+
+				break;
+			}
+
 			default: {
 				res.status(405).json({ error: "Method not allowed" });
 				break;

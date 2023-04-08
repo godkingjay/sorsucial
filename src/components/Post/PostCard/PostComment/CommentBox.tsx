@@ -1,10 +1,8 @@
 import { UserState } from "@/atoms/userAtom";
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
-import { FaUserCircle } from "react-icons/fa";
 import { PostCommentFormType } from "./PostComments";
+import UserIcon from "@/components/Icons/UserIcon";
 
 type CommentBoxProps = {
 	userStateValue: UserState;
@@ -44,24 +42,16 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 			}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
-				<Link
-					href={`/user/${userStateValue.user.uid}`}
-					title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
-					className="h-10 w-10 rounded-full bg-gray-100 text-gray-300"
-				>
-					{userStateValue.user.imageURL ? (
-						<Image
-							src={userStateValue.user.imageURL}
-							alt="User Profile Picture"
-							width={48}
-							height={48}
-							loading="lazy"
-							className="rounded-full h-full w-full"
-						/>
-					) : (
-						<FaUserCircle className="h-full w-full bg-white" />
+				<div className="flex flex-row relative">
+					{commentLevel > 0 && (
+						<div className="-z-0 absolute h-10 w-10 top-0 left-0">
+							<div className="h-6 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+						</div>
 					)}
-				</Link>
+					<div className="z-0 h-10 w-10 flex flex-row">
+						<UserIcon user={userStateValue.user} />
+					</div>
+				</div>
 				<div className="flex-1 min-h-[40px] rounded-[20px] bg-gray-100">
 					<textarea
 						name="commentText"

@@ -41,7 +41,6 @@ const useComment = () => {
 			const newCommentData: PostComment = await axios
 				.post(apiConfig.apiEndpoint + "post/comment/comment", {
 					newComment,
-					creator,
 				})
 				.then((res) => res.data.newComment)
 				.catch((error) => {
@@ -49,6 +48,46 @@ const useComment = () => {
 				});
 
 			if (newCommentData) {
+				if (newCommentData.postId !== newCommentData.commentForId) {
+					const updatedComment: Partial<PostComment> = {
+						id: newCommentData.commentForId,
+						numberOfReplies:
+							postStateValue.currentPost?.postComments.find(
+								(comment) => comment.comment.id === newCommentData.commentForId
+							)?.comment.numberOfReplies! + 1,
+					};
+
+					const isUpdated = await axios
+						.put(apiConfig.apiEndpoint + "post/comment/comment", {
+							updatedComment,
+						})
+						.then((response) => response.data.isUpdated)
+						.catch((error) => {
+							console.log("API: Error while updating comment: ", error.message);
+						});
+
+					if (isUpdated) {
+						setPostStateValue((prev) => ({
+							...prev,
+							currentPost: {
+								...prev.currentPost!,
+								postComments: prev.currentPost!.postComments.map((comment) => {
+									if (comment.comment.id === newCommentData.commentForId) {
+										return {
+											...comment,
+											comment: {
+												...comment.comment,
+												numberOfReplies: comment.comment.numberOfReplies + 1,
+											},
+										};
+									}
+									return comment;
+								}),
+							},
+						}));
+					}
+				}
+
 				if (postStateValue.currentPost?.post.id == newCommentData.postId) {
 					setPostStateValue((prev) => ({
 						...prev,
@@ -97,22 +136,28 @@ const useComment = () => {
 	}: fetchCommentsParamsType) => {
 		try {
 			if (postStateValue.currentPost !== null) {
-				const lastComment =
-					postStateValue.currentPost?.postComments.length > 0
-						? postStateValue.currentPost?.postComments[
-								postStateValue.currentPost?.postComments.length - 1
-						  ].comment
-						: null;
+				const lastIndex = postStateValue.currentPost.postComments.reduceRight(
+					(acc, comment, index) => {
+						if (comment.comment.commentForId === commentForId && acc === -1) {
+							return index;
+						}
+						return acc;
+					},
+					-1
+				);
+
+				const oldestComment =
+					postStateValue.currentPost.postComments[lastIndex];
 
 				const commentsData = await axios
 					.get(apiConfig.apiEndpoint + "post/comment/comment", {
 						params: {
 							getCommentPostId: postId,
 							getCommentForId: commentForId,
-							getFromLikes: lastComment
-								? lastComment.numberOfLikes
+							getFromLikes: oldestComment
+								? oldestComment.comment.numberOfLikes
 								: Number.MAX_SAFE_INTEGER,
-							getFromDate: lastComment?.createdAt,
+							getFromDate: oldestComment?.comment.createdAt,
 						},
 					})
 					.then((response) => response.data.comments)

@@ -40,17 +40,19 @@ const PostComments: React.FC<PostCommentsProps> = ({
 
 	const firstFetchComments = async () => {
 		setFirstLoadingComments(true);
-		await fetchPostComments();
+		if (currentPost) {
+			await fetchPostComments(currentPost?.post.id, currentPost?.post.id);
+		}
 		setFirstLoadingComments(false);
 	};
 
-	const fetchPostComments = async () => {
+	const fetchPostComments = async (postId: string, commentForId: string) => {
 		setLoadingComments(true);
 		try {
 			if (currentPost) {
 				await fetchComments({
-					postId: currentPost.post.id,
-					commentForId: currentPost.post.id,
+					postId,
+					commentForId,
 				});
 			}
 		} catch (error: any) {
@@ -59,16 +61,29 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		setLoadingComments(false);
 	};
 
-	const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	const handleCommentSubmit = async (
+		event: React.FormEvent<HTMLFormElement>,
+		commentForm: PostCommentFormType,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commentForId: string,
+		commentLevel: number
+	) => {
+		event.preventDefault();
 
 		if (creatingComment) return;
 
 		setCreatingComment(true);
 
 		try {
-			await createComment(postCommentForm, userStateValue.user);
-			setPostCommentForm((prev) => ({
+			await createComment(
+				{
+					...commentForm,
+					commentForId,
+					commentLevel,
+				},
+				userStateValue.user
+			);
+			setCommentForm((prev) => ({
 				...prev,
 				commentText: "",
 			}));
@@ -79,10 +94,13 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		setCreatingComment(false);
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setPostCommentForm((prev) => ({
+	const handleInputChange = (
+		event: React.ChangeEvent<HTMLTextAreaElement>,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
+	) => {
+		setCommentForm((prev) => ({
 			...prev,
-			commentText: e.target.value,
+			commentText: event.target.value,
 		}));
 	};
 
@@ -95,31 +113,51 @@ const PostComments: React.FC<PostCommentsProps> = ({
 
 	return (
 		<>
-			<div className="h-[1px] bg-gray-200"></div>
-			<div className="p-4 flex flex-col gap-y-4">
-				{firstLoadingComments || !userMounted ? (
-					<>
-						<PostCommentInputBoxSkeleton />
-					</>
-				) : (
-					<>
-						<div className="flex flex-col gap-y-2">
-							{currentPost?.postComments.map((comment) => (
-								<React.Fragment key={comment.comment.id}>
-									<CommentItem commentData={comment} />
-								</React.Fragment>
-							))}
-						</div>
-						<CommentBox
-							userStateValue={userStateValue}
-							value={postCommentForm.commentText}
-							onChange={handleInputChange}
-							onSubmit={handleCommentSubmit}
-							submitting={creatingComment}
-						/>
-					</>
-				)}
-			</div>
+			{currentPost && (
+				<>
+					<div className="h-[1px] bg-gray-200"></div>
+					<div className="p-4 flex flex-col gap-y-4">
+						{firstLoadingComments || !userMounted ? (
+							<>
+								<PostCommentInputBoxSkeleton />
+							</>
+						) : (
+							<>
+								<div className="flex flex-col gap-y-2">
+									{currentPost?.postComments
+										.filter(
+											(comment) =>
+												comment.comment.commentLevel === 0 &&
+												comment.comment.commentForId === currentPost?.post.id
+										)
+										.map((comment) => (
+											<React.Fragment key={comment.comment.id}>
+												<CommentItem
+													currentPost={currentPost}
+													userStateValue={userStateValue}
+													submitting={creatingComment}
+													commentData={comment}
+													onSubmit={handleCommentSubmit}
+													onChange={handleInputChange}
+												/>
+											</React.Fragment>
+										))}
+								</div>
+								<CommentBox
+									userStateValue={userStateValue}
+									commentForm={postCommentForm}
+									setCommentForm={setPostCommentForm}
+									commentLevel={0}
+									commentForId={currentPost?.post.id}
+									onChange={handleInputChange}
+									onSubmit={handleCommentSubmit}
+									submitting={creatingComment}
+								/>
+							</>
+						)}
+					</div>
+				</>
+			)}
 		</>
 	);
 };

@@ -14,7 +14,8 @@ const UserIcon: React.FC<UserIconProps> = ({ user }) => {
 			{user ? (
 				<Link
 					href={`/user/${user.uid}`}
-					className="h-10 w-10 aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
+					title={`${user.firstName} ${user.lastName}`}
+					className="h-full w-full aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
 				>
 					{user.imageURL ? (
 						<Image
@@ -30,7 +31,7 @@ const UserIcon: React.FC<UserIconProps> = ({ user }) => {
 					)}
 				</Link>
 			) : (
-				<div className="h-10 w-10 aspect-square rounded-full overflow-hidden border border-transparent text-gray-300">
+				<div className="h-full w-full aspect-square rounded-full overflow-hidden border border-transparent text-gray-300">
 					<FaUserCircle className="h-full w-full bg-white" />
 				</div>
 			)}

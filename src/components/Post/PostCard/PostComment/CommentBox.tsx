@@ -1,21 +1,35 @@
 import { UserState } from "@/atoms/userAtom";
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
-import { FaUserCircle } from "react-icons/fa";
+import { PostCommentFormType } from "./PostComments";
+import UserIcon from "@/components/Icons/UserIcon";
 
 type CommentBoxProps = {
 	userStateValue: UserState;
-	value: string;
+	commentForm: PostCommentFormType;
+	setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>;
+	commentLevel: number;
+	commentForId: string;
 	submitting: boolean;
-	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-	onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	onSubmit: (
+		event: React.FormEvent<HTMLFormElement>,
+		commentForm: PostCommentFormType,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commentForId: string,
+		commentLevel: number
+	) => void;
+	onChange: (
+		event: React.ChangeEvent<HTMLTextAreaElement>,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
+	) => void;
 };
 
 const CommentBox: React.FC<CommentBoxProps> = ({
 	userStateValue,
-	value,
+	commentForm,
+	setCommentForm,
+	commentLevel,
+	commentForId,
 	submitting,
 	onChange,
 	onSubmit,
@@ -23,27 +37,21 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2"
-			onSubmit={onSubmit}
+			onSubmit={(event) =>
+				onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel)
+			}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
-				<Link
-					href={`/user/${userStateValue.user.uid}`}
-					title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
-					className="h-10 w-10 rounded-full bg-gray-100 text-gray-300"
-				>
-					{userStateValue.user.imageURL ? (
-						<Image
-							src={userStateValue.user.imageURL}
-							alt="User Profile Picture"
-							width={48}
-							height={48}
-							loading="lazy"
-							className="rounded-full h-full w-full"
-						/>
-					) : (
-						<FaUserCircle className="h-full w-full bg-white" />
+				<div className="flex flex-row relative">
+					{commentLevel > 0 && (
+						<div className="-z-0 absolute h-10 w-10 top-0 left-0">
+							<div className="h-6 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+						</div>
 					)}
-				</Link>
+					<div className="z-0 h-10 w-10 flex flex-row">
+						<UserIcon user={userStateValue.user} />
+					</div>
+				</div>
 				<div className="flex-1 min-h-[40px] rounded-[20px] bg-gray-100">
 					<textarea
 						name="commentText"
@@ -53,13 +61,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						placeholder="Write a comment..."
 						maxLength={8000}
 						className="w-full h-full resize-none outline-none bg-transparent py-2.5 px-4 min-h-[40px] text-sm"
-						onChange={(e) => {
-							onChange(e);
-							e.currentTarget.style.height = "0px";
-							e.currentTarget.style.height =
-								e.currentTarget.scrollHeight + "px";
+						onChange={(event) => {
+							onChange(event, setCommentForm);
+							event.currentTarget.style.height = "0px";
+							event.currentTarget.style.height =
+								event.currentTarget.scrollHeight + "px";
 						}}
-						value={value}
+						value={commentForm.commentText}
 						disabled={submitting}
 					></textarea>
 				</div>
@@ -71,7 +79,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 				type="submit"
 				title="Create Comment"
 				className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-sm ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-				disabled={submitting}
+				disabled={submitting || commentForm.commentText.length === 0}
 			>
 				<div className="h-5 w-5 aspect-square">
 					<BiCommentDetail className="h-full w-full" />

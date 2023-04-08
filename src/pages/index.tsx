@@ -94,6 +94,12 @@ export default function Home() {
 											router={router}
 										/>
 									))}
+								{loadingAnnouncements && (
+									<>
+										<PostCardSkeleton />
+										<PostCardSkeleton />
+									</>
+								)}
 							</>
 						)}
 					</section>

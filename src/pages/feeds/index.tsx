@@ -35,7 +35,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 		setLoadingFeeds(false);
 	}, [fetchPosts]);
 
-	const handleFirstFetchAnnouncements = useCallback(async () => {
+	const handleFirstFetchFeeds = useCallback(async () => {
 		setFirstLoadingFeeds(true);
 		try {
 			await handleFetchFeeds();
@@ -53,7 +53,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 		if (userMounted) {
 			if (!feedsMounted.current && feedPostsLength === 0) {
 				feedsMounted.current = true;
-				handleFirstFetchAnnouncements();
+				handleFirstFetchFeeds();
 			} else {
 				feedsMounted.current = true;
 			}
@@ -93,6 +93,12 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 											router={router}
 										/>
 									))}
+								{loadingFeeds && (
+									<>
+										<PostCardSkeleton />
+										<PostCardSkeleton />
+									</>
+								)}
 							</>
 						)}
 					</section>

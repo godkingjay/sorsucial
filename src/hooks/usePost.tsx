@@ -398,18 +398,21 @@ const usePost = () => {
 
 	const fetchPosts = async (postType: SitePost["postType"]) => {
 		try {
-			const lastPost =
-				postStateValue.posts.length > 0
-					? postStateValue.posts
-							.filter((post) => post.post.postType === postType)
-							.pop()
-					: null;
+			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
+				if (post.post.postType === postType && acc === -1) {
+					return index;
+				}
+
+				return acc;
+			}, -1);
+
+			const oldestPost = postStateValue.posts[lastIndex];
 
 			const posts = await axios
 				.get(apiConfig.apiEndpoint + "post/posts", {
 					params: {
 						getPostType: postType,
-						getFromDate: lastPost?.post.createdAt,
+						getFromDate: oldestPost?.post.createdAt,
 					},
 				})
 				.then((res) => res.data.posts)

@@ -423,7 +423,7 @@ const usePost = () => {
 
 					setPostStateValue((prev) => ({
 						...prev,
-						posts: [...prev.posts, ...posts],
+						posts: [...prev.posts, post],
 					}));
 
 					setPostStateValue((prev) => ({

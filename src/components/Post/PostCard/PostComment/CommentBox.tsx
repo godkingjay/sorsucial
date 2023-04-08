@@ -4,18 +4,34 @@ import Link from "next/link";
 import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
+import { PostCommentFormType } from "./PostComments";
 
 type CommentBoxProps = {
 	userStateValue: UserState;
-	value: string;
+	commentForm: PostCommentFormType;
+	setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>;
+	commentLevel: number;
+	commentForId: string;
 	submitting: boolean;
-	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-	onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	onSubmit: (
+		event: React.FormEvent<HTMLFormElement>,
+		commentForm: PostCommentFormType,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commentForId: string,
+		commentLevel: number
+	) => void;
+	onChange: (
+		event: React.ChangeEvent<HTMLTextAreaElement>,
+		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
+	) => void;
 };
 
 const CommentBox: React.FC<CommentBoxProps> = ({
 	userStateValue,
-	value,
+	commentForm,
+	setCommentForm,
+	commentLevel,
+	commentForId,
 	submitting,
 	onChange,
 	onSubmit,
@@ -23,7 +39,9 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2"
-			onSubmit={onSubmit}
+			onSubmit={(event) =>
+				onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel)
+			}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
 				<Link
@@ -53,13 +71,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						placeholder="Write a comment..."
 						maxLength={8000}
 						className="w-full h-full resize-none outline-none bg-transparent py-2.5 px-4 min-h-[40px] text-sm"
-						onChange={(e) => {
-							onChange(e);
-							e.currentTarget.style.height = "0px";
-							e.currentTarget.style.height =
-								e.currentTarget.scrollHeight + "px";
+						onChange={(event) => {
+							onChange(event, setCommentForm);
+							event.currentTarget.style.height = "0px";
+							event.currentTarget.style.height =
+								event.currentTarget.scrollHeight + "px";
 						}}
-						value={value}
+						value={commentForm.commentText}
 						disabled={submitting}
 					></textarea>
 				</div>

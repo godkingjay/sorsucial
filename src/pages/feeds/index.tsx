@@ -93,6 +93,12 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 											router={router}
 										/>
 									))}
+								{loadingFeeds && (
+									<>
+										<PostCardSkeleton />
+										<PostCardSkeleton />
+									</>
+								)}
 							</>
 						)}
 					</section>

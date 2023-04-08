@@ -554,7 +554,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			links: [
 				...prev.links,
 				{
-					url: currentLink.link,
+					url:
+						currentLink.link.startsWith("http://") ||
+						currentLink.link.startsWith("https://")
+							? currentLink.link
+							: "https://" + currentLink.link,
 					index: prev.links.length
 						? prev.links[prev.links.length - 1].index + 1
 						: 0,

@@ -418,7 +418,7 @@ const usePost = () => {
 				});
 
 			if (posts.length) {
-				await posts.forEach(async (post: PostData) => {
+				await posts.map(async (post: PostData) => {
 					const userLikeData = await fetchUserLike(post.post);
 
 					setPostStateValue((prev) => ({

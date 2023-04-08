@@ -97,13 +97,6 @@ const useComment = () => {
 	}: fetchCommentsParamsType) => {
 		try {
 			if (postStateValue.currentPost !== null) {
-				// const oldestComment =
-				// 	postStateValue.currentPost?.postComments.length > 0
-				// 		? postStateValue.currentPost?.postComments[
-				// 				postStateValue.currentPost?.postComments.length - 1
-				// 		  ]
-				// 		: null;
-
 				const lastIndex = postStateValue.currentPost.postComments.reduceRight(
 					(acc, comment, index) => {
 						if (comment.comment.commentForId === commentForId && acc === -1) {

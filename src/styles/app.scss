@@ -1565,4 +1565,11 @@
 			}
 		}
 	}
+
+	.btn-text {
+		&:hover,
+		&:focus {
+			@apply underline;
+		}
+	}
 }

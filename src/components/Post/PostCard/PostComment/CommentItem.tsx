@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import CommentBox from "./CommentBox";
 import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
+import moment from "moment";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -41,6 +42,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	});
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
+
+	const handleShowCommentBox = () => {
+		setShowCommentBox((prev) => !prev);
+	};
 
 	return (
 		<>
@@ -82,6 +87,42 @@ const CommentItem: React.FC<CommentItemProps> = ({
 										<BsThreeDots className="h-full w-full" />
 									</button>
 								</div> */}
+						</div>
+						<div className="flex flex-row items-center gap-x-4 text-xs font-semibold px-4 text-gray-500">
+							<button
+								type="button"
+								title="Like"
+								className="btn-text [&[comment-liked='true']]:!text-blue-500"
+								comment-liked={
+									commentData.commentLike?.commentId === commentData.comment.id
+										? "true"
+										: "false"
+								}
+							>
+								{commentData.commentLike?.commentId === commentData.comment.id
+									? "Liked"
+									: "Like"}
+							</button>
+							<button
+								type="button"
+								title="Reply"
+								className="btn-text"
+								onClick={handleShowCommentBox}
+							>
+								Reply
+							</button>
+							{userStateValue.user.uid === commentData.comment.creatorId && (
+								<button
+									type="button"
+									title="Delete"
+									className="btn-text"
+								>
+									Delete
+								</button>
+							)}
+							<p className="font-normal text-2xs">
+								{moment(commentData.comment.createdAt).fromNow()}
+							</p>
 						</div>
 					</div>
 					{showComments && (

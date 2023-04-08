@@ -97,12 +97,19 @@ const useComment = () => {
 	}: fetchCommentsParamsType) => {
 		try {
 			if (postStateValue.currentPost !== null) {
-				const lastComment =
-					postStateValue.currentPost?.postComments.length > 0
-						? postStateValue.currentPost?.postComments[
-								postStateValue.currentPost?.postComments.length - 1
-						  ].comment
-						: null;
+				// const lastComment =
+				// 	postStateValue.currentPost?.postComments.length > 0
+				// 		? postStateValue.currentPost?.postComments[
+				// 				postStateValue.currentPost?.postComments.length - 1
+				// 		  ].comment
+				// 		: null;
+
+				const lastComment = postStateValue.currentPost.postComments
+					.filter((comment) => comment.comment.commentForId === commentForId)
+					.sort(
+						(a, b) =>
+							b.comment.createdAt.getTime() - a.comment.createdAt.getTime()
+					)[0]?.comment;
 
 				const commentsData = await axios
 					.get(apiConfig.apiEndpoint + "post/comment/comment", {

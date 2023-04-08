@@ -40,17 +40,19 @@ const PostComments: React.FC<PostCommentsProps> = ({
 
 	const firstFetchComments = async () => {
 		setFirstLoadingComments(true);
-		await fetchPostComments();
+		if (currentPost) {
+			await fetchPostComments(currentPost?.post.id, currentPost?.post.id);
+		}
 		setFirstLoadingComments(false);
 	};
 
-	const fetchPostComments = async () => {
+	const fetchPostComments = async (postId: string, commentForId: string) => {
 		setLoadingComments(true);
 		try {
 			if (currentPost) {
 				await fetchComments({
-					postId: currentPost.post.id,
-					commentForId: currentPost.post.id,
+					postId,
+					commentForId,
 				});
 			}
 		} catch (error: any) {

@@ -231,9 +231,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						/>
 					)}
 				</div>
-				<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-					<div className="w-[2px] h-full bg-gray-200"></div>
-				</div>
+				{(showComments || showCommentBox) && (
+					<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
+						<div className="w-[2px] h-full bg-gray-200"></div>
+					</div>
+				)}
 			</div>
 		</>
 	);

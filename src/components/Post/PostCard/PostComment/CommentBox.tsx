@@ -97,9 +97,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						</button>
 					</div>
 				</div>
-				<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-					<div className="w-[2px] h-full bg-gray-500 bg-opacity-20"></div>
-				</div>
 			</div>
 		</form>
 	);

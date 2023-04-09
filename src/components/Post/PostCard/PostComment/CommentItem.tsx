@@ -12,6 +12,11 @@ type CommentItemProps = {
 	userStateValue: UserState;
 	submitting: boolean;
 	commentData: PostCommentData;
+	fetchPostComments: (
+		postId: string,
+		commentForId: string,
+		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
+	) => void;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -32,6 +37,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	currentPost,
 	submitting,
 	commentData,
+	fetchPostComments,
 	onSubmit,
 	onChange,
 }) => {
@@ -44,7 +50,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	});
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
+	const [loadingComments, setLoadingComments] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
+
+	const handleFetchComments = () => {
+		setShowComments(true);
+		fetchPostComments(
+			currentPost.post.id,
+			commentData.comment.id,
+			setLoadingComments
+		);
+	};
 
 	const handleShowCommentBox = () => {
 		setShowCommentBox((prev) => !prev);
@@ -160,6 +176,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											userStateValue={userStateValue}
 											submitting={submitting}
 											commentData={comment}
+											fetchPostComments={fetchPostComments}
 											onSubmit={onSubmit}
 											onChange={onChange}
 										/>
@@ -177,6 +194,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								type="button"
 								title="Show Replies"
 								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+								onClick={handleFetchComments}
 							>
 								{showCommentBox
 									? "View More Replies"

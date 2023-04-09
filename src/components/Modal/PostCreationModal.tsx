@@ -3,12 +3,7 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, PostPoll, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import {
-	IoAddOutline,
-	IoClose,
-	IoEyeOutline,
-	IoLinkOutline,
-} from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";

@@ -144,7 +144,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							</p>
 						</div>
 					</div>
-					{true && (
+					{showComments && (
 						<div className="flex flex-col gap-y-2">
 							{currentPost?.postComments
 								.filter(
@@ -167,6 +167,30 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								))}
 						</div>
 					)}
+					{commentData.comment.numberOfReplies >
+						currentPost.postComments.filter(
+							(comment) =>
+								comment.comment.commentForId === commentData.comment.id
+						).length && (
+						<div className="flex flex-col w-full justify-start">
+							<button
+								type="button"
+								title="Show Replies"
+								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+							>
+								{showCommentBox
+									? "View More Replies"
+									: `Show ${
+											commentData.comment.numberOfReplies -
+											currentPost.postComments.filter(
+												(comment) =>
+													comment.comment.commentForId ===
+													commentData.comment.id
+											).length
+									  } Replies`}
+							</button>
+						</div>
+					)}
 					{showCommentBox && postCommentForm.commentLevel < maxCommentLevel && (
 						<CommentBox
 							userStateValue={userStateValue}
@@ -174,10 +198,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							setCommentForm={setPostCommentForm}
 							commentForId={commentData.comment.id}
 							commentLevel={commentData.comment.commentLevel + 1}
-							onSubmit={onSubmit}
-							onChange={onChange}
 							submitting={false}
 							commentBoxRef={commentBoxRef}
+							setShowComments={setShowComments}
+							onSubmit={onSubmit}
+							onChange={onChange}
 						/>
 					)}
 				</div>

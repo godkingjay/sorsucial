@@ -12,6 +12,7 @@ type CommentBoxProps = {
 	commentForId: string;
 	submitting: boolean;
 	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
+	setShowComments?: React.Dispatch<React.SetStateAction<boolean>>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -33,15 +34,22 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	commentForId,
 	submitting,
 	commentBoxRef,
+	setShowComments,
 	onChange,
 	onSubmit,
 }) => {
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel);
+		if (setShowComments) {
+			setShowComments(true);
+		}
+	};
+
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2"
-			onSubmit={(event) =>
-				onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel)
-			}
+			onSubmit={(event) => handleSubmit(event)}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
 				<div className="flex flex-row relative">

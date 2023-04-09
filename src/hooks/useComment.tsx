@@ -155,12 +155,14 @@ const useComment = () => {
 							getCommentPostId: postId,
 							getCommentForId: commentForId,
 							getFromLikes: oldestComment
-								? oldestComment.comment.numberOfLikes
+								? oldestComment.comment.numberOfLikes + 1
 								: Number.MAX_SAFE_INTEGER,
 							getFromDate: oldestComment?.comment.createdAt,
 						},
 					})
-					.then((response) => response.data.comments)
+					.then((response) => {
+						return response.data.comments;
+					})
 					.catch((error) => {
 						console.log("API: Error while fetching comments: ", error.message);
 					});

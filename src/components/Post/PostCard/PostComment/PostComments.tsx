@@ -10,6 +10,7 @@ type PostCommentsProps = {
 	userStateValue: UserState;
 	userMounted: boolean;
 	currentPost: PostState["currentPost"];
+	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
 };
 
 export type PostCommentFormType = {
@@ -24,6 +25,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	userStateValue,
 	userMounted,
 	currentPost,
+	commentBoxRef,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
@@ -41,13 +43,21 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	const firstFetchComments = async () => {
 		setFirstLoadingComments(true);
 		if (currentPost) {
-			await fetchPostComments(currentPost?.post.id, currentPost?.post.id);
+			await fetchPostComments(
+				currentPost?.post.id,
+				currentPost?.post.id,
+				setFirstLoadingComments
+			);
 		}
 		setFirstLoadingComments(false);
 	};
 
-	const fetchPostComments = async (postId: string, commentForId: string) => {
-		setLoadingComments(true);
+	const fetchPostComments = async (
+		postId: string,
+		commentForId: string,
+		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		setFetchingComments(true);
 		try {
 			if (currentPost) {
 				await fetchComments({
@@ -58,7 +68,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		} catch (error: any) {
 			console.log("Hook: Error while fetching post comments: ", error.message);
 		}
-		setLoadingComments(false);
+		setFetchingComments(false);
 	};
 
 	const handleCommentSubmit = async (
@@ -137,6 +147,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													userStateValue={userStateValue}
 													submitting={creatingComment}
 													commentData={comment}
+													fetchPostComments={fetchPostComments}
 													onSubmit={handleCommentSubmit}
 													onChange={handleInputChange}
 												/>
@@ -152,6 +163,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 									onChange={handleInputChange}
 									onSubmit={handleCommentSubmit}
 									submitting={creatingComment}
+									commentBoxRef={commentBoxRef}
 								/>
 							</>
 						)}

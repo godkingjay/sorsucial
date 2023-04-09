@@ -3,12 +3,7 @@ import { UserState } from "@/atoms/userAtom";
 import { PollItem, PostPoll, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
-import {
-	IoAddOutline,
-	IoClose,
-	IoEyeOutline,
-	IoLinkOutline,
-} from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
@@ -554,7 +549,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 			links: [
 				...prev.links,
 				{
-					url: currentLink.link,
+					url:
+						currentLink.link.startsWith("http://") ||
+						currentLink.link.startsWith("https://")
+							? currentLink.link
+							: "https://" + currentLink.link,
 					index: prev.links.length
 						? prev.links[prev.links.length - 1].index + 1
 						: 0,

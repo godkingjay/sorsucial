@@ -11,6 +11,8 @@ type CommentBoxProps = {
 	commentLevel: number;
 	commentForId: string;
 	submitting: boolean;
+	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
+	setShowComments?: React.Dispatch<React.SetStateAction<boolean>>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -31,15 +33,23 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	commentLevel,
 	commentForId,
 	submitting,
+	commentBoxRef,
+	setShowComments,
 	onChange,
 	onSubmit,
 }) => {
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel);
+		if (setShowComments) {
+			setShowComments(true);
+		}
+	};
+
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2"
-			onSubmit={(event) =>
-				onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel)
-			}
+			onSubmit={(event) => handleSubmit(event)}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
 				<div className="flex flex-row relative">
@@ -52,7 +62,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						<UserIcon user={userStateValue.user} />
 					</div>
 				</div>
-				<div className="flex-1 min-h-[40px] rounded-[20px] bg-gray-100">
+				<div className="flex-1 min-h-[40px] rounded-[20px] bg-gray-100 flex flex-col">
 					<textarea
 						name="commentText"
 						id="commentText"
@@ -69,25 +79,28 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						}}
 						value={commentForm.commentText}
 						disabled={submitting}
+						ref={commentBoxRef}
 					></textarea>
+					<div className="flex flex-row items-center justify-end flex-wrap p-2">
+						<button
+							type="submit"
+							title="Create Comment"
+							className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={submitting || commentForm.commentText.length === 0}
+						>
+							<div className="h-4 w-4 aspect-square">
+								<BiCommentDetail className="h-full w-full" />
+							</div>
+							<div className="h-full flex flex-row items-center">
+								<p>Create Comment</p>
+							</div>
+						</button>
+					</div>
 				</div>
 				<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
 					<div className="w-[2px] h-full bg-gray-500 bg-opacity-20"></div>
 				</div>
 			</div>
-			<button
-				type="submit"
-				title="Create Comment"
-				className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-sm ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-				disabled={submitting || commentForm.commentText.length === 0}
-			>
-				<div className="h-5 w-5 aspect-square">
-					<BiCommentDetail className="h-full w-full" />
-				</div>
-				<div className="h-full flex flex-row items-center">
-					<p>Create Comment</p>
-				</div>
-			</button>
 		</form>
 	);
 };

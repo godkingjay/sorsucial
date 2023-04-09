@@ -1,17 +1,23 @@
 import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
+import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 
 type CommentItemProps = {
 	currentPost: PostData;
 	userStateValue: UserState;
 	submitting: boolean;
 	commentData: PostCommentData;
+	fetchPostComments: (
+		postId: string,
+		commentForId: string,
+		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
+	) => void;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -32,6 +38,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	currentPost,
 	submitting,
 	commentData,
+	fetchPostComments,
 	onSubmit,
 	onChange,
 }) => {
@@ -44,10 +51,35 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	});
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
+	const [loadingComments, setLoadingComments] = useState(false);
+	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
+
+	const handleFetchComments = () => {
+		setShowComments(true);
+		fetchPostComments(
+			currentPost.post.id,
+			commentData.comment.id,
+			setLoadingComments
+		);
+	};
 
 	const handleShowCommentBox = () => {
 		setShowCommentBox((prev) => !prev);
 	};
+
+	const focusCommentBox = () => {
+		commentBoxRef.current?.scrollIntoView({
+			behavior: "smooth",
+			block: "center",
+		});
+		commentBoxRef.current?.focus({ preventScroll: true });
+	};
+
+	useEffect(() => {
+		if (showCommentBox) {
+			focusCommentBox();
+		}
+	}, [showCommentBox]);
 
 	return (
 		<>
@@ -94,7 +126,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							<button
 								type="button"
 								title="Like"
-								className="btn-text [&[comment-liked='true']]:!text-blue-500"
+								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500 focus:text-blue-500"
 								comment-liked={
 									commentData.commentLike?.commentId === commentData.comment.id
 										? "true"
@@ -119,7 +151,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								<button
 									type="button"
 									title="Delete"
-									className="btn-text"
+									className="btn-text hover:text-red-500 focus:text-red-500"
 								>
 									Delete
 								</button>
@@ -129,7 +161,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							</p>
 						</div>
 					</div>
-					{true && (
+					{showComments && (
 						<div className="flex flex-col gap-y-2">
 							{currentPost?.postComments
 								.filter(
@@ -145,11 +177,43 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											userStateValue={userStateValue}
 											submitting={submitting}
 											commentData={comment}
+											fetchPostComments={fetchPostComments}
 											onSubmit={onSubmit}
 											onChange={onChange}
 										/>
 									</React.Fragment>
 								))}
+							{loadingComments && (
+								<>
+									<PostCommentItemSkeleton />
+									<PostCommentItemSkeleton />
+								</>
+							)}
+						</div>
+					)}
+					{commentData.comment.numberOfReplies >
+						currentPost.postComments.filter(
+							(comment) =>
+								comment.comment.commentForId === commentData.comment.id
+						).length && (
+						<div className="flex flex-col w-full justify-start">
+							<button
+								type="button"
+								title="Show Replies"
+								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+								onClick={handleFetchComments}
+							>
+								{showCommentBox
+									? "View More Replies"
+									: `Show ${
+											commentData.comment.numberOfReplies -
+											currentPost.postComments.filter(
+												(comment) =>
+													comment.comment.commentForId ===
+													commentData.comment.id
+											).length
+									  } Replies`}
+							</button>
 						</div>
 					)}
 					{showCommentBox && postCommentForm.commentLevel < maxCommentLevel && (
@@ -159,9 +223,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							setCommentForm={setPostCommentForm}
 							commentForId={commentData.comment.id}
 							commentLevel={commentData.comment.commentLevel + 1}
+							submitting={false}
+							commentBoxRef={commentBoxRef}
+							setShowComments={setShowComments}
 							onSubmit={onSubmit}
 							onChange={onChange}
-							submitting={false}
 						/>
 					)}
 				</div>

@@ -1,6 +1,6 @@
 import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
@@ -45,6 +45,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			: ""
 	);
 	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
+	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
 		if (postOptionsStateValue[name] === postData.post.id) {
@@ -107,7 +108,11 @@ const PostCard: React.FC<PostCardProps> = ({
 
 	const handleFooterCommentClick = () => {
 		if (isSinglePostPage()) {
-			console.log("Comment Clicked!");
+			commentBoxRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+			});
+			commentBoxRef.current?.focus({ preventScroll: true });
 		} else {
 			switch (postData.post.postType) {
 				case "announcement": {
@@ -308,6 +313,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					userStateValue={userStateValue}
 					userMounted={userMounted}
 					currentPost={postData}
+					commentBoxRef={commentBoxRef}
 				/>
 			)}
 		</div>

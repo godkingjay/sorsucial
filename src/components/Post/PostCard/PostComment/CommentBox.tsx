@@ -11,6 +11,7 @@ type CommentBoxProps = {
 	commentLevel: number;
 	commentForId: string;
 	submitting: boolean;
+	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -31,6 +32,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	commentLevel,
 	commentForId,
 	submitting,
+	commentBoxRef,
 	onChange,
 	onSubmit,
 }) => {
@@ -69,6 +71,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 						}}
 						value={commentForm.commentText}
 						disabled={submitting}
+						ref={commentBoxRef}
 					></textarea>
 					<div className="flex flex-row items-center justify-end flex-wrap p-2">
 						<button

@@ -1,7 +1,7 @@
 import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
@@ -44,9 +44,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	});
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
+	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleShowCommentBox = () => {
-		setShowCommentBox((prev) => !prev);
+		if (!showCommentBox) {
+			setShowCommentBox((prev) => !prev);
+		} else {
+			commentBoxRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+			});
+			commentBoxRef.current?.focus({ preventScroll: true });
+		}
 	};
 
 	return (
@@ -162,6 +171,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							onSubmit={onSubmit}
 							onChange={onChange}
 							submitting={false}
+							commentBoxRef={commentBoxRef}
 						/>
 					)}
 				</div>

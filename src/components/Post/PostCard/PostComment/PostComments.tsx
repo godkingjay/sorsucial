@@ -10,6 +10,7 @@ type PostCommentsProps = {
 	userStateValue: UserState;
 	userMounted: boolean;
 	currentPost: PostState["currentPost"];
+	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
 };
 
 export type PostCommentFormType = {
@@ -24,6 +25,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	userStateValue,
 	userMounted,
 	currentPost,
+	commentBoxRef,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
@@ -152,6 +154,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 									onChange={handleInputChange}
 									onSubmit={handleCommentSubmit}
 									submitting={creatingComment}
+									commentBoxRef={commentBoxRef}
 								/>
 							</>
 						)}

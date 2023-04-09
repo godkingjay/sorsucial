@@ -6,6 +6,7 @@ import CommentBox from "./CommentBox";
 import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
+import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -125,7 +126,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							<button
 								type="button"
 								title="Like"
-								className="btn-text [&[comment-liked='true']]:!text-blue-500"
+								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500 focus:text-blue-500"
 								comment-liked={
 									commentData.commentLike?.commentId === commentData.comment.id
 										? "true"
@@ -150,7 +151,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								<button
 									type="button"
 									title="Delete"
-									className="btn-text"
+									className="btn-text hover:text-red-500 focus:text-red-500"
 								>
 									Delete
 								</button>
@@ -182,6 +183,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 										/>
 									</React.Fragment>
 								))}
+							{loadingComments && (
+								<>
+									<PostCommentItemSkeleton />
+									<PostCommentItemSkeleton />
+								</>
+							)}
 						</div>
 					)}
 					{commentData.comment.numberOfReplies >

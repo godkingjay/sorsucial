@@ -583,7 +583,7 @@ const usePost = () => {
 						userLike.groupId = postData.post.groupId;
 					}
 
-					axios.post(apiConfig.apiEndpoint + "post/like/like", {
+					await axios.post(apiConfig.apiEndpoint + "post/like/like", {
 						newUserLike: userLike,
 					});
 

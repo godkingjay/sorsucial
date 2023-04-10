@@ -67,6 +67,20 @@ const useComment = () => {
 						});
 
 					if (isUpdated) {
+						if (newCommentData.commentLevel === 0) {
+							setPostStateValue((prev) => ({
+								...prev,
+								currentPost: {
+									...prev.currentPost!,
+									post: {
+										...prev.currentPost!.post,
+										numberOfFirstLevelComments:
+											prev.currentPost!.post.numberOfFirstLevelComments + 1,
+									},
+								},
+							}));
+						}
+
 						setPostStateValue((prev) => ({
 							...prev,
 							currentPost: {

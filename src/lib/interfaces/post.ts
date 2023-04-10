@@ -50,6 +50,7 @@ export interface SitePost {
 	privacy: "public" | "restricted" | "private";
 	numberOfLikes: number;
 	numberOfComments: number;
+	numberOfFirstLevelComments: number;
 	updatedAt?: Date;
 	createdAt: Date;
 }

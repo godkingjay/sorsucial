@@ -36,16 +36,29 @@ export default async function handler(
 					...newComment,
 				});
 
-				const newPostState = await postsCollection.updateOne(
-					{
-						id: newComment.postId,
-					},
-					{
-						$inc: {
-							numberOfComments: 1,
-						},
-					}
-				);
+				const newPostState =
+					newComment.commentLevel === 0
+						? await postsCollection.updateOne(
+								{
+									id: newComment.postId,
+								},
+								{
+									$inc: {
+										numberOfComments: 1,
+										numberOfFirstLevelComments: 1,
+									},
+								}
+						  )
+						: await postsCollection.updateOne(
+								{
+									id: newComment.postId,
+								},
+								{
+									$inc: {
+										numberOfComments: 1,
+									},
+								}
+						  );
 
 				res.status(200).json({ newCommentState, newComment });
 				break;

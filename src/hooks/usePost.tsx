@@ -56,6 +56,7 @@ const usePost = () => {
 				postPoll: null,
 				numberOfLikes: 0,
 				numberOfComments: 0,
+				numberOfFirstLevelComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
 				updatedAt: postDate,

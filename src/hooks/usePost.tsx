@@ -513,7 +513,7 @@ const usePost = () => {
 		}
 	};
 
-	const onPostLike = (postData: PostData) => {
+	const onPostLike = async (postData: PostData) => {
 		try {
 			if (authUser) {
 				/**
@@ -521,7 +521,7 @@ const usePost = () => {
 				 * Else, like the post.
 				 */
 				if (postData.userLike) {
-					axios
+					await axios
 						.delete(apiConfig.apiEndpoint + "post/like/like", {
 							data: {
 								deleteUserLikePostId: postData.userLike.postId,

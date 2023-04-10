@@ -1,11 +1,26 @@
 import React from "react";
 
-type PostCommentItemSkeletonProps = {};
+type PostCommentItemSkeletonProps = {
+	commentLevel: number;
+	parentShowCommentBox: boolean;
+};
 
-const PostCommentItemSkeleton: React.FC<PostCommentItemSkeletonProps> = () => {
+const PostCommentItemSkeleton: React.FC<PostCommentItemSkeletonProps> = ({
+	commentLevel,
+	parentShowCommentBox,
+}) => {
 	return (
-		<div className="flex flex-row gap-x-2 w-full relative min-h-[40px] animate-pulse">
-			<div className="flex flex-row relative">
+		<div
+			className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px] animate-pulse"
+			show-comment-box={parentShowCommentBox ? "true" : "false"}
+		>
+			<div className="left flex flex-row relative">
+				{commentLevel > 0 && (
+					<div className="deco-lines -z-0 absolute h-full w-10 top-0 left-0">
+						<div className="straight h-full w-0 border-l-2 absolute bottom-0 -left-8 translate-x-[2px]"></div>
+						<div className="curve h-8 w-[28px] absolute right-full -top-3 -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+					</div>
+				)}
 				<div className="z-0 flex flex-row h-10 w-10">
 					<div className="h-full w-full skeleton-color rounded-full"></div>
 				</div>
@@ -30,9 +45,9 @@ const PostCommentItemSkeleton: React.FC<PostCommentItemSkeletonProps> = () => {
 					</div>
 				</div>
 			</div>
-			<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
+			{/* <div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
 				<div className="w-[2px] h-full bg-gray-200"></div>
-			</div>
+			</div> */}
 		</div>
 	);
 };

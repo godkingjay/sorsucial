@@ -13,6 +13,7 @@ type CommentItemProps = {
 	userStateValue: UserState;
 	submitting: boolean;
 	commentData: PostCommentData;
+	parentShowCommentBox: boolean;
 	fetchPostComments: (
 		postId: string,
 		commentForId: string,
@@ -38,6 +39,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	currentPost,
 	submitting,
 	commentData,
+	parentShowCommentBox,
 	fetchPostComments,
 	onSubmit,
 	onChange,
@@ -83,11 +85,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
 	return (
 		<>
-			<div className="flex flex-row gap-x-2 w-full relative min-h-[40px]">
-				<div className="flex flex-row relative">
+			<div
+				className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px]"
+				show-comment-box={parentShowCommentBox ? "true" : "false"}
+			>
+				<div className="left flex flex-row relative">
 					{commentData.comment.commentLevel > 0 && (
-						<div className="-z-0 absolute h-10 w-10 top-0 left-0">
-							<div className="h-6 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+						<div className="deco-lines -z-0 absolute h-full w-10 top-0 left-0">
+							<div className="straight h-full w-0 border-l-2 absolute bottom-0 -left-8 translate-x-[2px]"></div>
+							<div className="curve h-8 w-[28px] absolute right-full -top-3 -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
 						</div>
 					)}
 					<div className="z-0 flex flex-row h-10 w-10">
@@ -95,8 +101,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
 					</div>
 				</div>
 				<div className="flex-1 flex flex-col gap-y-2">
-					<div className="flex-1 flex flex-col">
-						<div className="w-full flex-1 flex flex-row gap-x-2">
+					<div className="flex-1 flex flex-col relative">
+						<div className="w-full flex-1 flex flex-row gap-x-2 relative">
 							<div className="flex flex-row">
 								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1">
 									<h2 className="font-semibold text-xs truncate">
@@ -160,6 +166,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								{moment(commentData.comment.createdAt).fromNow()}
 							</p>
 						</div>
+						{(showComments || showCommentBox) && (
+							<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">
+								<div className="border-l-2 h-full w-0 bg-transparent"></div>
+							</div>
+						)}
 					</div>
 					{showComments && (
 						<div className="flex flex-col gap-y-2">
@@ -177,6 +188,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											userStateValue={userStateValue}
 											submitting={submitting}
 											commentData={comment}
+											parentShowCommentBox={showCommentBox}
 											fetchPostComments={fetchPostComments}
 											onSubmit={onSubmit}
 											onChange={onChange}
@@ -185,8 +197,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								))}
 							{loadingComments && (
 								<>
-									<PostCommentItemSkeleton />
-									<PostCommentItemSkeleton />
+									<PostCommentItemSkeleton
+										commentLevel={commentData.comment.commentLevel + 1}
+										parentShowCommentBox={showCommentBox}
+									/>
+									<PostCommentItemSkeleton
+										commentLevel={commentData.comment.commentLevel + 1}
+										parentShowCommentBox={showCommentBox}
+									/>
 								</>
 							)}
 						</div>
@@ -231,11 +249,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						/>
 					)}
 				</div>
-				{(showComments || showCommentBox) && (
-					<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-						<div className="w-[2px] h-full bg-gray-200"></div>
-					</div>
-				)}
 			</div>
 		</>
 	);

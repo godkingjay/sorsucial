@@ -5,6 +5,7 @@ import { PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
 import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
 import CommentItem from "./CommentItem";
+import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
@@ -46,7 +47,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			await fetchPostComments(
 				currentPost?.post.id,
 				currentPost?.post.id,
-				setFirstLoadingComments
+				setLoadingComments
 			);
 		}
 		setFirstLoadingComments(false);
@@ -129,6 +130,14 @@ const PostComments: React.FC<PostCommentsProps> = ({
 					<div className="p-4 flex flex-col gap-y-4">
 						{firstLoadingComments || !userMounted ? (
 							<>
+								<PostCommentItemSkeleton
+									commentLevel={0}
+									parentShowCommentBox={true}
+								/>
+								<PostCommentItemSkeleton
+									commentLevel={0}
+									parentShowCommentBox={true}
+								/>
 								<PostCommentInputBoxSkeleton />
 							</>
 						) : (
@@ -147,12 +156,25 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													userStateValue={userStateValue}
 													submitting={creatingComment}
 													commentData={comment}
+													parentShowCommentBox={true}
 													fetchPostComments={fetchPostComments}
 													onSubmit={handleCommentSubmit}
 													onChange={handleInputChange}
 												/>
 											</React.Fragment>
 										))}
+									{loadingComments && (
+										<>
+											<PostCommentItemSkeleton
+												commentLevel={0}
+												parentShowCommentBox={true}
+											/>
+											<PostCommentItemSkeleton
+												commentLevel={0}
+												parentShowCommentBox={true}
+											/>
+										</>
+									)}
 								</div>
 								<CommentBox
 									userStateValue={userStateValue}

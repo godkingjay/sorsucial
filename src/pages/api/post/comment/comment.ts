@@ -16,6 +16,7 @@ export default async function handler(
 		const db = client.db("sorsu-db");
 		const postsCollection = db.collection("posts");
 		const postCommentsCollection = db.collection("post-comments");
+		const postCommentLikesCollection = db.collection("post-comment-likes");
 
 		switch (req.method) {
 			case "POST": {
@@ -36,24 +37,42 @@ export default async function handler(
 					...newComment,
 				});
 
-				const newPostState = await postsCollection.updateOne(
-					{
-						id: newComment.postId,
-					},
-					{
-						$inc: {
-							numberOfComments: 1,
-						},
-					}
-				);
+				const newPostState =
+					newComment.commentLevel === 0
+						? await postsCollection.updateOne(
+								{
+									id: newComment.postId,
+								},
+								{
+									$inc: {
+										numberOfComments: 1,
+										numberOfFirstLevelComments: 1,
+									},
+								}
+						  )
+						: await postsCollection.updateOne(
+								{
+									id: newComment.postId,
+								},
+								{
+									$inc: {
+										numberOfComments: 1,
+									},
+								}
+						  );
 
 				res.status(200).json({ newCommentState, newComment });
 				break;
 			}
 
 			case "GET": {
-				const { getCommentPostId, getCommentForId, getFromLikes, getFromDate } =
-					req.query;
+				const {
+					getUserId,
+					getCommentPostId,
+					getCommentForId,
+					getFromLikes,
+					getFromDate,
+				} = req.query;
 
 				if (!getCommentPostId) {
 					res.status(500).json({ error: "No post id provided" });
@@ -77,7 +96,11 @@ export default async function handler(
 									$lt: getFromDate,
 								},
 							})
-							.sort({ numberOfLikes: -1, createdAt: -1 })
+							.sort({
+								numberOfLikes: -1,
+								numberOfReplies: -1,
+								createdAt: -1,
+							})
 							.limit(10)
 							.toArray()
 					: await postCommentsCollection
@@ -88,13 +111,23 @@ export default async function handler(
 									$lt: parseInt(getFromLikes as string),
 								},
 							})
-							.sort({ numberOfLikes: -1, createdAt: -1 })
+							.sort({
+								numberOfLikes: -1,
+								numberOfReplies: -1,
+								createdAt: -1,
+							})
 							.limit(10)
 							.toArray();
 
 				const commentsData = await Promise.all(
 					comments.map(async (commentDoc) => {
 						const comment = commentDoc as unknown as PostComment;
+						const userCommentLikeData =
+							await postCommentLikesCollection.findOne({
+								postId: comment.postId,
+								commentId: comment.id,
+								userId: getUserId,
+							});
 						const creatorData = await axios
 							.get(apiConfig.apiEndpoint + "user/user", {
 								params: {
@@ -115,6 +148,7 @@ export default async function handler(
 						return {
 							comment,
 							creator: creatorData,
+							userCommentLike: userCommentLikeData,
 						};
 					})
 				);
@@ -148,6 +182,82 @@ export default async function handler(
 				);
 
 				res.status(200).json({ isUpdated: updatedCommentState.acknowledged });
+
+				break;
+			}
+
+			case "DELETE": {
+				const { deletedComment } = req.body;
+
+				if (!deletedComment) {
+					res.status(500).json({ error: "No comment data provided" });
+					return;
+				}
+
+				let count = 0;
+
+				const deleteComment = async (comment: PostComment) => {
+					const deleteCommentState = await postCommentsCollection.deleteOne({
+						id: comment.id,
+					});
+					count += deleteCommentState.deletedCount;
+
+					const deleteCommentLikesState =
+						await postCommentLikesCollection.deleteMany({
+							postId: comment.postId,
+							commentId: comment.id,
+						});
+
+					if (comment.commentLevel === 0) {
+						const updatePostState = await postsCollection.updateOne(
+							{
+								id: comment.postId,
+							},
+							{
+								$inc: {
+									numberOfFirstLevelComments: -1,
+								},
+							}
+						);
+					} else {
+						const updateParentCommentState =
+							await postCommentsCollection.updateOne(
+								{
+									id: comment.commentForId,
+								},
+								{
+									$inc: {
+										numberOfReplies: -1,
+									},
+								}
+							);
+					}
+
+					const childComments = await postCommentsCollection
+						.find({
+							commentForId: comment.id,
+						})
+						.toArray();
+
+					for (const childComment of childComments) {
+						await deleteComment(childComment as unknown as PostComment);
+					}
+				};
+
+				await deleteComment(deletedComment);
+
+				const updatePostState = await postsCollection.updateOne(
+					{
+						id: deletedComment.postId,
+					},
+					{
+						$inc: {
+							numberOfComments: -count,
+						},
+					}
+				);
+
+				res.status(200).json({ isDeleted: count > 0, deletedCount: count });
 
 				break;
 			}

@@ -1,9 +1,11 @@
 import { PostCommentFormType } from "@/components/Post/PostCard/PostComment/PostComments";
-import { PostComment } from "@/lib/interfaces/post";
+import { CommentLike, PostComment } from "@/lib/interfaces/post";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
+import { PostCommentData, PostState } from "@/atoms/postAtom";
+import useUser from "./useUser";
 
 export type fetchCommentsParamsType = {
 	postId: string;
@@ -11,6 +13,7 @@ export type fetchCommentsParamsType = {
 };
 
 const useComment = () => {
+	const { authUser, userStateValue } = useUser();
 	const { postStateValue, setPostStateValue } = usePost();
 
 	const createComment = async (
@@ -67,6 +70,20 @@ const useComment = () => {
 						});
 
 					if (isUpdated) {
+						if (newCommentData.commentLevel === 0) {
+							setPostStateValue((prev) => ({
+								...prev,
+								currentPost: {
+									...prev.currentPost!,
+									post: {
+										...prev.currentPost!.post,
+										numberOfFirstLevelComments:
+											prev.currentPost!.post.numberOfFirstLevelComments + 1,
+									},
+								},
+							}));
+						}
+
 						setPostStateValue((prev) => ({
 							...prev,
 							currentPost: {
@@ -101,7 +118,7 @@ const useComment = () => {
 								{
 									comment: newCommentData,
 									creator,
-									commentLike: null,
+									userCommentLike: null,
 								},
 								...prev.currentPost!.postComments,
 							],
@@ -130,6 +147,84 @@ const useComment = () => {
 		}
 	};
 
+	const deleteComment = async (comment: PostComment) => {
+		try {
+			if (
+				authUser?.uid === comment.creatorId ||
+				userStateValue.user.roles.includes("admin")
+			) {
+				const deleteState = await axios
+					.delete(apiConfig.apiEndpoint + "post/comment/comment", {
+						data: {
+							deletedComment: comment,
+						},
+					})
+					.then((response) => {
+						return {
+							isDeleted: response.data.isDeleted,
+							deletedCount: response.data.deletedCount,
+						};
+					})
+					.catch((error) => {
+						throw new Error(
+							"API: Error while deleting comment: ",
+							error.message
+						);
+					});
+
+				if (deleteState.deletedCount > 0) {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts?.map((post) => {
+							if (post.post.id === comment.postId) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfComments:
+											post.post.numberOfComments - deleteState.deletedCount,
+									},
+								};
+							}
+							return post;
+						}),
+						currentPost: {
+							...prev.currentPost!,
+							post: {
+								...prev.currentPost!.post,
+								numberOfComments:
+									prev.currentPost!.post.numberOfComments -
+									deleteState.deletedCount,
+							},
+							postComments: prev
+								.currentPost!.postComments.map((commentData) => {
+									if (commentData.comment.id === comment.commentForId) {
+										return {
+											...commentData,
+											comment: {
+												...commentData.comment,
+												numberOfReplies:
+													commentData.comment.numberOfReplies - 1,
+											},
+										};
+									}
+
+									return commentData;
+								})
+								.filter((commentData) => commentData.comment.id !== comment.id),
+						},
+					}));
+				} else {
+					throw new Error("Comment was not deleted!");
+				}
+			} else {
+				throw new Error("You are not authorized to delete this comment!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while deleting comment: ", error.message);
+		}
+	};
+
 	const fetchComments = async ({
 		postId,
 		commentForId,
@@ -149,9 +244,10 @@ const useComment = () => {
 				const oldestComment =
 					postStateValue.currentPost.postComments[lastIndex];
 
-				const commentsData = await axios
+				const commentsData: PostCommentData[] = await axios
 					.get(apiConfig.apiEndpoint + "post/comment/comment", {
 						params: {
+							getUserId: authUser?.uid,
 							getCommentPostId: postId,
 							getCommentForId: commentForId,
 							getFromLikes: oldestComment
@@ -168,13 +264,19 @@ const useComment = () => {
 					});
 
 				if (commentsData.length) {
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.concat(commentsData),
-						},
-					}));
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								currentPost: {
+									...prev.currentPost!,
+									postComments: [
+										...prev.currentPost!.postComments,
+										...commentsData,
+									],
+								},
+							} as PostState)
+					);
 				} else {
 					console.log("MONGO: No comments found!");
 				}
@@ -184,9 +286,138 @@ const useComment = () => {
 		}
 	};
 
+	const fetchUserCommentLike = async (comment: PostComment) => {
+		try {
+			if (authUser) {
+				const userCommentLikeData = await axios
+					.get(apiConfig.apiEndpoint + "post/comment/likes/like", {
+						params: {
+							getPostId: comment.postId,
+							getCommentId: comment.id,
+							getUserId: authUser.uid,
+						},
+					})
+					.then((response) => response.data.userCommentLike)
+					.catch((error) => {
+						throw new Error(
+							"API: Error while fetching user comment like: ",
+							error.message
+						);
+					});
+
+				if (userCommentLikeData) {
+					return userCommentLikeData;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log(
+				"MONGO: Error while fetching user comment like: ",
+				error.message
+			);
+			return null;
+		}
+	};
+
+	const onCommentLike = async (commentData: PostCommentData) => {
+		try {
+			if (authUser) {
+				if (commentData.userCommentLike) {
+					await axios
+						.delete(apiConfig.apiEndpoint + "post/comment/likes/like", {
+							data: {
+								deletePostId: commentData.userCommentLike.postId,
+								deleteCommentId: commentData.userCommentLike.commentId,
+								deleteUserId: commentData.userCommentLike.userId,
+							},
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while deleting comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes - 1,
+										},
+										userCommentLike: null,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				} else {
+					// Create new comment like
+
+					const userCommentLike: CommentLike = {
+						userId: authUser.uid,
+						postId: commentData.comment.postId,
+						commentId: commentData.comment.id,
+						createdAt: new Date(),
+					};
+
+					if (commentData.comment.groupId) {
+						userCommentLike.groupId = commentData.comment.groupId;
+					}
+
+					await axios
+						.post(apiConfig.apiEndpoint + "post/comment/likes/like", {
+							newUserCommentLike: userCommentLike,
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while creating comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes + 1,
+										},
+										userCommentLike,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while liking comment: ", error.message);
+		}
+	};
+
 	return {
 		createComment,
 		fetchComments,
+		onCommentLike,
+		deleteComment,
 	};
 };
 

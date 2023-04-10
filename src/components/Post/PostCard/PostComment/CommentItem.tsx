@@ -7,17 +7,24 @@ import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
+import { AiFillLike } from "react-icons/ai";
 
 type CommentItemProps = {
 	currentPost: PostData;
 	userStateValue: UserState;
 	submitting: boolean;
 	commentData: PostCommentData;
+	parentShowCommentBox: boolean;
 	fetchPostComments: (
 		postId: string,
 		commentForId: string,
 		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
 	) => void;
+	handleCommentLike: (commentData: PostCommentData) => Promise<void>;
+	handleCommentDelete: (
+		comment: PostCommentData["comment"],
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+	) => Promise<void>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -29,6 +36,7 @@ type CommentItemProps = {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
 	) => void;
+	formatNumberWithSuffix: (number: number) => string;
 };
 
 const maxCommentLevel = 3;
@@ -38,9 +46,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	currentPost,
 	submitting,
 	commentData,
+	parentShowCommentBox,
 	fetchPostComments,
+	handleCommentLike,
+	handleCommentDelete,
 	onSubmit,
 	onChange,
+	formatNumberWithSuffix,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: commentData.comment.postId,
@@ -52,6 +64,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(false);
+	const [deletingComment, setDeletingComment] = useState(false);
+	const remainingReplies = currentPost.postComments.filter(
+		(comment) => comment.comment.commentForId === commentData.comment.id
+	).length;
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleFetchComments = () => {
@@ -61,6 +77,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 			commentData.comment.id,
 			setLoadingComments
 		);
+	};
+
+	const handleDeleteComment = () => {
+		handleCommentDelete(commentData.comment, setDeletingComment);
 	};
 
 	const handleShowCommentBox = () => {
@@ -83,11 +103,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
 	return (
 		<>
-			<div className="flex flex-row gap-x-2 w-full relative min-h-[40px]">
-				<div className="flex flex-row relative">
+			<div
+				className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px]"
+				show-comment-box={parentShowCommentBox ? "true" : "false"}
+			>
+				<div className="left flex flex-row relative">
 					{commentData.comment.commentLevel > 0 && (
-						<div className="-z-0 absolute h-10 w-10 top-0 left-0">
-							<div className="h-6 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+						<div className="deco-lines -z-0 absolute h-full w-10 top-0 left-0">
+							<div className="straight h-full w-0 border-l-2 absolute bottom-0 -left-8 translate-x-[2px]"></div>
+							<div className="curve h-8 w-[28px] absolute right-full -top-3 -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
 						</div>
 					)}
 					<div className="z-0 flex flex-row h-10 w-10">
@@ -95,10 +119,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 					</div>
 				</div>
 				<div className="flex-1 flex flex-col gap-y-2">
-					<div className="flex-1 flex flex-col">
-						<div className="w-full flex-1 flex flex-row gap-x-2">
+					<div className="flex-1 flex flex-col gap-y-1 relative">
+						<div className="w-full flex-1 flex flex-row gap-x-2 relative">
 							<div className="flex flex-row">
-								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1">
+								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1 relative min-w-[128px]">
 									<h2 className="font-semibold text-xs truncate">
 										{commentData.creator ? (
 											<Link
@@ -114,6 +138,22 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									<p className="break-words text-sm">
 										{commentData.comment.commentText}
 									</p>
+									<div
+										className="absolute shadow-around-sm flex flex-row items-center gap-x-1 rounded-full -bottom-1 bg-white right-0 p-0.5 pr-1"
+										style={{
+											display:
+												commentData.comment.numberOfLikes > 0 ? "flex" : "none",
+										}}
+									>
+										<div className="h-4 w-4 aspect-square text-white p-0.5 rounded-full bg-blue-500">
+											<AiFillLike className="h-full w-full" />
+										</div>
+										<p className="text-xs text-gray-500">
+											{formatNumberWithSuffix(
+												commentData.comment.numberOfLikes
+											)}
+										</p>
+									</div>
 								</div>
 							</div>
 							{/* <div className="flex-shrink-0 w-8 h-full flex flex-col items-center justify-center">
@@ -126,14 +166,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							<button
 								type="button"
 								title="Like"
-								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500 focus:text-blue-500"
+								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
+								onClick={() => handleCommentLike(commentData)}
 								comment-liked={
-									commentData.commentLike?.commentId === commentData.comment.id
+									commentData.userCommentLike?.commentId ===
+									commentData.comment.id
 										? "true"
 										: "false"
 								}
 							>
-								{commentData.commentLike?.commentId === commentData.comment.id
+								{commentData.userCommentLike?.commentId ===
+								commentData.comment.id
 									? "Liked"
 									: "Like"}
 							</button>
@@ -151,7 +194,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								<button
 									type="button"
 									title="Delete"
-									className="btn-text hover:text-red-500 focus:text-red-500"
+									className="btn-text hover:text-red-500"
+									onClick={handleDeleteComment}
 								>
 									Delete
 								</button>
@@ -160,6 +204,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								{moment(commentData.comment.createdAt).fromNow()}
 							</p>
 						</div>
+						{(showComments || showCommentBox) && (
+							<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">
+								<div className="border-l-2 h-full w-0 bg-transparent"></div>
+							</div>
+						)}
 					</div>
 					{showComments && (
 						<div className="flex flex-col gap-y-2">
@@ -177,25 +226,31 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											userStateValue={userStateValue}
 											submitting={submitting}
 											commentData={comment}
+											parentShowCommentBox={showCommentBox}
 											fetchPostComments={fetchPostComments}
+											handleCommentLike={handleCommentLike}
+											handleCommentDelete={handleCommentDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
+											formatNumberWithSuffix={formatNumberWithSuffix}
 										/>
 									</React.Fragment>
 								))}
 							{loadingComments && (
 								<>
-									<PostCommentItemSkeleton />
-									<PostCommentItemSkeleton />
+									<PostCommentItemSkeleton
+										commentLevel={commentData.comment.commentLevel + 1}
+										parentShowCommentBox={showCommentBox}
+									/>
+									<PostCommentItemSkeleton
+										commentLevel={commentData.comment.commentLevel + 1}
+										parentShowCommentBox={showCommentBox}
+									/>
 								</>
 							)}
 						</div>
 					)}
-					{commentData.comment.numberOfReplies >
-						currentPost.postComments.filter(
-							(comment) =>
-								comment.comment.commentForId === commentData.comment.id
-						).length && (
+					{commentData.comment.numberOfReplies > remainingReplies && (
 						<div className="flex flex-col w-full justify-start">
 							<button
 								type="button"
@@ -203,16 +258,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
 								onClick={handleFetchComments}
 							>
-								{showCommentBox
+								{showComments
 									? "View More Replies"
 									: `Show ${
-											commentData.comment.numberOfReplies -
-											currentPost.postComments.filter(
-												(comment) =>
-													comment.comment.commentForId ===
-													commentData.comment.id
-											).length
-									  } Replies`}
+											commentData.comment.numberOfReplies - remainingReplies
+									  } ${
+											commentData.comment.numberOfReplies - remainingReplies ===
+											1
+												? "Reply"
+												: "Replies"
+									  }`}
 							</button>
 						</div>
 					)}
@@ -230,9 +285,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							onChange={onChange}
 						/>
 					)}
-				</div>
-				<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-					<div className="w-[2px] h-full bg-gray-200"></div>
 				</div>
 			</div>
 		</>

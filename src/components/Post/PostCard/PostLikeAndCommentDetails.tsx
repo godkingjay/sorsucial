@@ -29,9 +29,9 @@ const PostLikeAndCommentDetails: React.FC<PostLikeAndCommentDetailsProps> = ({
 							You{" "}
 							<span>
 								{postData.post.numberOfLikes > 1 &&
-									`${formatNumberWithSuffix(
+									`and ${formatNumberWithSuffix(
 										postData.post.numberOfLikes - 1
-									)} and others `}
+									)} others `}
 								liked this post.
 							</span>
 						</>

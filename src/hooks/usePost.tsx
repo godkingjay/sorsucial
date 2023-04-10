@@ -56,6 +56,7 @@ const usePost = () => {
 				postPoll: null,
 				numberOfLikes: 0,
 				numberOfComments: 0,
+				numberOfFirstLevelComments: 0,
 				isHidden: false,
 				isCommentable: postForm.isCommentable,
 				updatedAt: postDate,
@@ -411,6 +412,7 @@ const usePost = () => {
 			const posts = await axios
 				.get(apiConfig.apiEndpoint + "post/posts", {
 					params: {
+						getUserId: authUser?.uid,
 						getPostType: postType,
 						getFromDate: oldestPost?.post.createdAt,
 					},
@@ -421,28 +423,13 @@ const usePost = () => {
 				});
 
 			if (posts.length) {
-				await posts.map(async (post: PostData) => {
-					const userLikeData = await fetchUserLike(post.post);
-
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: [...prev.posts, post],
-					}));
-
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts.map((postData) => {
-							if (postData.post.id === post.post.id) {
-								return {
-									...postData,
-									userLike: userLikeData,
-								};
-							}
-
-							return postData;
-						}),
-					}));
-				});
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: [...prev.posts, ...posts],
+						} as PostState)
+				);
 			} else {
 				console.log("Mongo: No posts found!");
 			}
@@ -463,7 +450,7 @@ const usePost = () => {
 					})
 					.then((res) => res.data.userLike)
 					.catch((err) => {
-						console.log("API (GET): Getting likes error: ", err.message);
+						throw new Error("API (GET): Getting likes error: ", err.message);
 					});
 
 				if (userLikeData) {
@@ -497,13 +484,16 @@ const usePost = () => {
 					// }));
 					return null;
 				}
+			} else {
+				throw new Error("User not logged in!");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Fetching Post Vote Error", error.message);
+			console.log("Mongo: Fetching Post Vote Error", error.message);
+			return null;
 		}
 	};
 
-	const onPostLike = (postData: PostData) => {
+	const onPostLike = async (postData: PostData) => {
 		try {
 			if (authUser) {
 				/**
@@ -511,7 +501,7 @@ const usePost = () => {
 				 * Else, like the post.
 				 */
 				if (postData.userLike) {
-					axios
+					await axios
 						.delete(apiConfig.apiEndpoint + "post/like/like", {
 							data: {
 								deleteUserLikePostId: postData.userLike.postId,
@@ -573,7 +563,7 @@ const usePost = () => {
 						userLike.groupId = postData.post.groupId;
 					}
 
-					axios.post(apiConfig.apiEndpoint + "post/like/like", {
+					await axios.post(apiConfig.apiEndpoint + "post/like/like", {
 						newUserLike: userLike,
 					});
 

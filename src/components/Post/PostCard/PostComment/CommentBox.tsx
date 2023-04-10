@@ -55,7 +55,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 				<div className="flex flex-row relative">
 					{commentLevel > 0 && (
 						<div className="-z-0 absolute h-10 w-10 top-0 left-0">
-							<div className="h-6 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
+							<div className="h-8 w-[28px] absolute right-full bottom-[50%] -translate-x-[2px] border-2 border-gray-200 border-t-transparent border-r-transparent rounded-bl-2xl"></div>
 						</div>
 					)}
 					<div className="z-0 h-10 w-10 flex flex-row">
@@ -96,9 +96,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 							</div>
 						</button>
 					</div>
-				</div>
-				<div className="absolute top-0 left-5 h-full w-max pt-12 translate-x-[-100%]">
-					<div className="w-[2px] h-full bg-gray-500 bg-opacity-20"></div>
 				</div>
 			</div>
 		</form>

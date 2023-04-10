@@ -1,16 +1,19 @@
 import { UserState } from "@/atoms/userAtom";
 import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
-import { PostState } from "@/atoms/postAtom";
+import { PostCommentData, PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
 import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
 import CommentItem from "./CommentItem";
+import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
+import { PostComment } from "@/lib/interfaces/post";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
 	userMounted: boolean;
 	currentPost: PostState["currentPost"];
 	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
+	formatNumberWithSuffix: (number: number) => string;
 };
 
 export type PostCommentFormType = {
@@ -26,6 +29,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	userMounted,
 	currentPost,
 	commentBoxRef,
+	formatNumberWithSuffix,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
@@ -34,7 +38,8 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		commentLevel: 0,
 		commentForId: currentPost?.post.id!,
 	});
-	const { createComment, fetchComments } = useComment();
+	const { createComment, fetchComments, onCommentLike, deleteComment } =
+		useComment();
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [firstLoadingComments, setFirstLoadingComments] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(true);
@@ -46,7 +51,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			await fetchPostComments(
 				currentPost?.post.id,
 				currentPost?.post.id,
-				setFirstLoadingComments
+				setLoadingComments
 			);
 		}
 		setFirstLoadingComments(false);
@@ -69,6 +74,53 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			console.log("Hook: Error while fetching post comments: ", error.message);
 		}
 		setFetchingComments(false);
+	};
+
+	const handleFetchComments = () => {
+		if (currentPost) {
+			fetchPostComments(
+				currentPost.post.id,
+				currentPost.post.id,
+				setLoadingComments
+			);
+		}
+	};
+
+	const handleCommentLike = async (commentData: PostCommentData) => {
+		if (!commentData) {
+			return;
+		}
+
+		try {
+			if (!userStateValue.user.uid) {
+				return;
+			}
+
+			onCommentLike(commentData);
+		} catch (error: any) {
+			console.log(
+				"Hook: Error while liking or unliking comment: ",
+				error.message
+			);
+		}
+	};
+
+	const handleCommentDelete = async (
+		comment: PostComment,
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		if (!comment) {
+			console.log("handlePostCommentDelete: Comment is not available");
+			return;
+		}
+
+		setDeleting(true);
+		try {
+			await deleteComment(comment);
+		} catch (error: any) {
+			console.log("Hook: Error while deleting comment: ", error.message);
+		}
+		setDeleting(false);
 	};
 
 	const handleCommentSubmit = async (
@@ -129,6 +181,14 @@ const PostComments: React.FC<PostCommentsProps> = ({
 					<div className="p-4 flex flex-col gap-y-4">
 						{firstLoadingComments || !userMounted ? (
 							<>
+								<PostCommentItemSkeleton
+									commentLevel={0}
+									parentShowCommentBox={true}
+								/>
+								<PostCommentItemSkeleton
+									commentLevel={0}
+									parentShowCommentBox={true}
+								/>
 								<PostCommentInputBoxSkeleton />
 							</>
 						) : (
@@ -147,12 +207,44 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													userStateValue={userStateValue}
 													submitting={creatingComment}
 													commentData={comment}
+													parentShowCommentBox={true}
 													fetchPostComments={fetchPostComments}
-													onSubmit={handleCommentSubmit}
+													handleCommentLike={handleCommentLike}
+													handleCommentDelete={handleCommentDelete}
 													onChange={handleInputChange}
+													onSubmit={handleCommentSubmit}
+													formatNumberWithSuffix={formatNumberWithSuffix}
 												/>
 											</React.Fragment>
 										))}
+									{loadingComments && (
+										<>
+											<PostCommentItemSkeleton
+												commentLevel={0}
+												parentShowCommentBox={true}
+											/>
+											<PostCommentItemSkeleton
+												commentLevel={0}
+												parentShowCommentBox={true}
+											/>
+										</>
+									)}
+									{currentPost.post.numberOfFirstLevelComments >
+										currentPost.postComments.filter(
+											(comment) =>
+												comment.comment.commentForId === currentPost.post.id
+										).length && (
+										<div className="flex flex-col w-full justify-start">
+											<button
+												type="button"
+												title="View More Comments"
+												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+												onClick={handleFetchComments}
+											>
+												View More Comments
+											</button>
+										</div>
+									)}
 								</div>
 								<CommentBox
 									userStateValue={userStateValue}

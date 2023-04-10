@@ -1572,4 +1572,26 @@
 			@apply underline;
 		}
 	}
+
+	.comment-item {
+		&:last-child {
+			& > .left {
+				& > .deco-lines {
+					& > .straight {
+						@apply hidden;
+					}
+				}
+			}
+
+			&[show-comment-box="true"] {
+				& > .left {
+					& > .deco-lines {
+						& > .straight {
+							@apply block;
+						}
+					}
+				}
+			}
+		}
+	}
 }

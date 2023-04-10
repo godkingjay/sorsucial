@@ -473,7 +473,7 @@ const usePost = () => {
 					})
 					.then((res) => res.data.userLike)
 					.catch((err) => {
-						console.log("API (GET): Getting likes error: ", err.message);
+						throw new Error("API (GET): Getting likes error: ", err.message);
 					});
 
 				if (userLikeData) {
@@ -507,9 +507,12 @@ const usePost = () => {
 					// }));
 					return null;
 				}
+			} else {
+				throw new Error("User not logged in!");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Fetching Post Vote Error", error.message);
+			console.log("Mongo: Fetching Post Vote Error", error.message);
+			return null;
 		}
 	};
 

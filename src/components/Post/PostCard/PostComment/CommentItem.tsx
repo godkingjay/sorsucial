@@ -166,11 +166,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								{moment(commentData.comment.createdAt).fromNow()}
 							</p>
 						</div>
-						{(showComments || showCommentBox) && (
-							<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">
-								<div className="border-l-2 h-full w-0 bg-transparent"></div>
-							</div>
-						)}
+						{(showComments || showCommentBox) &&
+							commentData.comment.numberOfReplies > 0 && (
+								<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">
+									<div className="border-l-2 h-full w-0 bg-transparent"></div>
+								</div>
+							)}
 					</div>
 					{showComments && (
 						<div className="flex flex-col gap-y-2">

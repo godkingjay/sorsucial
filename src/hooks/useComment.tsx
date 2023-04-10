@@ -1,9 +1,11 @@
 import { PostCommentFormType } from "@/components/Post/PostCard/PostComment/PostComments";
-import { PostComment } from "@/lib/interfaces/post";
+import { CommentLike, PostComment } from "@/lib/interfaces/post";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
+import { PostCommentData } from "@/atoms/postAtom";
+import useUser from "./useUser";
 
 export type fetchCommentsParamsType = {
 	postId: string;
@@ -11,6 +13,7 @@ export type fetchCommentsParamsType = {
 };
 
 const useComment = () => {
+	const { authUser } = useUser();
 	const { postStateValue, setPostStateValue } = usePost();
 
 	const createComment = async (
@@ -115,7 +118,7 @@ const useComment = () => {
 								{
 									comment: newCommentData,
 									creator,
-									commentLike: null,
+									userCommentLike: null,
 								},
 								...prev.currentPost!.postComments,
 							],
@@ -198,9 +201,101 @@ const useComment = () => {
 		}
 	};
 
+	const onCommentLike = async (commentData: PostCommentData) => {
+		try {
+			if (authUser) {
+				if (commentData.userCommentLike) {
+					await axios
+						.delete(apiConfig.apiEndpoint + "post/comment/likes/like", {
+							data: {
+								deletePostId: commentData.userCommentLike.postId,
+								deleteCommentId: commentData.userCommentLike.commentId,
+								deleteUserId: commentData.userCommentLike.userId,
+							},
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while deleting comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes - 1,
+										},
+										userCommentLike: null,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				} else {
+					// Create new comment like
+
+					const userCommentLike: CommentLike = {
+						userId: authUser.uid,
+						postId: commentData.comment.postId,
+						commentId: commentData.comment.id,
+						createdAt: new Date(),
+					};
+
+					if (commentData.comment.groupId) {
+						userCommentLike.groupId = commentData.comment.groupId;
+					}
+
+					await axios
+						.post(apiConfig.apiEndpoint + "post/comment/likes/like", {
+							newUserCommentLike: userCommentLike,
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while creating comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes + 1,
+										},
+										userCommentLike,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while liking comment: ", error.message);
+		}
+	};
+
 	return {
 		createComment,
 		fetchComments,
+		onCommentLike,
 	};
 };
 

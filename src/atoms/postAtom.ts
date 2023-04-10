@@ -90,7 +90,7 @@ export interface PostPollData {
 export interface PostCommentData {
 	comment: PostComment;
 	creator: SiteUser | null;
-	commentLike: CommentLike | null;
+	userCommentLike: CommentLike | null;
 }
 
 /**

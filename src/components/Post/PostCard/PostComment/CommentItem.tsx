@@ -19,6 +19,7 @@ type CommentItemProps = {
 		commentForId: string,
 		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
 	) => void;
+	handleCommentLike: (commentData: PostCommentData) => Promise<void>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -41,6 +42,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	commentData,
 	parentShowCommentBox,
 	fetchPostComments,
+	handleCommentLike,
 	onSubmit,
 	onChange,
 }) => {
@@ -104,7 +106,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 					</div>
 				</div>
 				<div className="flex-1 flex flex-col gap-y-2">
-					<div className="flex-1 flex flex-col relative">
+					<div className="flex-1 flex flex-col gap-y-1 relative">
 						<div className="w-full flex-1 flex flex-row gap-x-2 relative">
 							<div className="flex flex-row">
 								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1">
@@ -136,13 +138,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								type="button"
 								title="Like"
 								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500 focus:text-blue-500"
+								onClick={() => handleCommentLike(commentData)}
 								comment-liked={
-									commentData.commentLike?.commentId === commentData.comment.id
+									commentData.userCommentLike?.commentId ===
+									commentData.comment.id
 										? "true"
 										: "false"
 								}
 							>
-								{commentData.commentLike?.commentId === commentData.comment.id
+								{commentData.userCommentLike?.commentId ===
+								commentData.comment.id
 									? "Liked"
 									: "Like"}
 							</button>
@@ -193,6 +198,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											commentData={comment}
 											parentShowCommentBox={showCommentBox}
 											fetchPostComments={fetchPostComments}
+											handleCommentLike={handleCommentLike}
 											onSubmit={onSubmit}
 											onChange={onChange}
 										/>

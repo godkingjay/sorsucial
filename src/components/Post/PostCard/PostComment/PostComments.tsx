@@ -1,7 +1,7 @@
 import { UserState } from "@/atoms/userAtom";
 import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
-import { PostState } from "@/atoms/postAtom";
+import { PostCommentData, PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
 import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
 import CommentItem from "./CommentItem";
@@ -35,7 +35,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		commentLevel: 0,
 		commentForId: currentPost?.post.id!,
 	});
-	const { createComment, fetchComments } = useComment();
+	const { createComment, fetchComments, onCommentLike } = useComment();
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [firstLoadingComments, setFirstLoadingComments] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(true);
@@ -78,6 +78,25 @@ const PostComments: React.FC<PostCommentsProps> = ({
 				currentPost.post.id,
 				currentPost.post.id,
 				setLoadingComments
+			);
+		}
+	};
+
+	const handleCommentLike = async (commentData: PostCommentData) => {
+		if (!commentData) {
+			return;
+		}
+
+		try {
+			if (!userStateValue.user.uid) {
+				return;
+			}
+
+			onCommentLike(commentData);
+		} catch (error: any) {
+			console.log(
+				"Hook: Error while liking or unliking comment: ",
+				error.message
 			);
 		}
 	};
@@ -170,6 +189,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													fetchPostComments={fetchPostComments}
 													onSubmit={handleCommentSubmit}
 													onChange={handleInputChange}
+													handleCommentLike={handleCommentLike}
 												/>
 											</React.Fragment>
 										))}

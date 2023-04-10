@@ -30,16 +30,58 @@ import {
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
 
+/**
+ * The usePost Hook is used to create, update, delete, and fetch posts.
+ */
 const usePost = () => {
+	/**
+	 * The postStateValue is the current post state.
+	 *
+	 * The setPostStateValue is the function to set the post state.
+	 */
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
+	/**
+	 * The postOptionsStateValue is the current post options state.
+	 * This is used to show the post menus.
+	 *
+	 * The setPostOptionsStateValue is the function to set the post options state.
+	 */
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
+	/**
+	 * The authUser is the current authenticated user.
+	 *
+	 * The userStateValue is the current user state.
+	 * It contains the current authenticated user and the current user's profile.
+	 */
 	const { authUser, userStateValue } = useUser();
 
+	/**
+	 * The createPost function is used to create a new post.
+	 * It takes in the post form and the creator.
+	 *
+	 * The post is created in the database and the storage.
+	 *
+	 * @param {CreatePostType} postForm
+	 * @param {SiteUser} creator
+	 */
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
+		/**
+		 * Try and catch block to create a new post.
+		 */
 		try {
+			/**
+			 * The postDate is the current date.
+			 * This is used to set the post's created and updated date.
+			 */
 			const postDate = new Date();
 
+			/**
+			 * The newPost is the new post to be created.
+			 *
+			 * This is the document that will be created in the database.
+			 * It is of the SitePost interface.
+			 */
 			const newPost: SitePost = {
 				id: "",
 				creatorId: creator.uid,
@@ -61,10 +103,16 @@ const usePost = () => {
 				createdAt: postDate,
 			};
 
+			/**
+			 * If the post is a group post, then set the groupId.
+			 */
 			if (postForm.groupId) {
 				newPost.groupId = postForm.groupId;
 			}
 
+			/**
+			 * Try creating the post in the database.
+			 */
 			const newPostData: SitePost = await axios
 				.post(apiConfig.apiEndpoint + "post/post", {
 					newPost,
@@ -76,14 +124,37 @@ const usePost = () => {
 					throw error;
 				});
 
+			/**
+			 * If the post is created successfully then proceed.
+			 */
 			if (newPostData) {
+				/**
+				 * If the post has images or videos, then upload them.
+				 *
+				 * The postImagesOrVideos is the array of images or videos to be uploaded.
+				 */
 				if (postForm.imagesOrVideos) {
 					await Promise.all(
+						/**
+						 * Map through the postImagesOrVideos array.
+						 *
+						 * For each image or video, upload it.
+						 */
 						postForm.imagesOrVideos.map(async (imageOrVideo) => {
+							/**
+							 * The postImageOrVideoRef is the reference to the image or video in the storage.
+							 */
 							const postImageOrVideoRef = doc(
 								collection(clientDb, `posts/${newPostData.id}/imagesOrVideos`)
 							);
 
+							/**
+							 * The postImageOrVideo is the image or video to be uploaded.
+							 *
+							 * This is the document that will be created in the database.
+							 *
+							 * It is of the PostImageOrVideo interface.
+							 */
 							const postImageOrVideo = await uploadPostImageOrVideo(
 								newPostData,
 								imageOrVideo,
@@ -95,11 +166,19 @@ const usePost = () => {
 								);
 							});
 
+							/**
+							 * If the image or video is uploaded successfully, then add it to the postImagesOrVideos array.
+							 *
+							 * This is used to update the recoil state.
+							 */
 							if (postImageOrVideo) {
 								newPostData.postImagesOrVideos.push(postImageOrVideo);
 							}
 						})
 					).then(async () => {
+						/**
+						 * After all the images or videos are uploaded, then update the postImagesOrVideos array in the database.
+						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
 								updatedPost: {
@@ -116,13 +195,28 @@ const usePost = () => {
 					});
 				}
 
+				/**
+				 * If the post has files, then upload them.
+				 *
+				 * The postFiles is the array of files to be uploaded.
+				 *
+				 * The postFiles array is of the PostFile interface.
+				 */
 				if (postForm.files) {
 					await Promise.all(
 						postForm.files.map(async (file) => {
+							/**
+							 * The postFileRef is the reference to the file in the storage.
+							 */
 							const postFileRef = doc(
 								collection(clientDb, `posts/${newPostData.id}/files`)
 							);
 
+							/**
+							 * The postFile is the file to be uploaded.
+							 *
+							 * This is the document that will be created in the database.
+							 */
 							const postFile = await uploadPostFile(
 								newPostData,
 								file,
@@ -131,11 +225,19 @@ const usePost = () => {
 								console.log("Hook: Upload File Error: ", error.message);
 							});
 
+							/**
+							 * If the file is uploaded successfully, then add it to the postFiles array.
+							 *
+							 * This is used to update the recoil state.
+							 */
 							if (postFile) {
 								newPostData.postFiles.push(postFile);
 							}
 						})
 					).then(async () => {
+						/**
+						 * After all the files are uploaded, then update the postFiles array in the database.
+						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "post/post", {
 								updatedPost: {
@@ -149,14 +251,28 @@ const usePost = () => {
 					});
 				}
 
+				/**
+				 * If the post has links, then add them to the post document.
+				 *
+				 * The postLinks is the array of links to be added.
+				 */
 				if (postForm.links) {
 					postForm.links.map((link) => {
+						/**
+						 * The postLinkId is the reference to the link in the database.
+						 */
 						const postLinkId = doc(
 							collection(clientDb, `posts/${newPostData.id}/links`)
 						);
 
+						/**
+						 * The newPostLink is the link to be added.
+						 */
 						const date = new Date();
 
+						/**
+						 * The newPostLink is the link to be added.
+						 */
 						const newPostLink: PostLink = {
 							id: postLinkId.id,
 							postId: newPostData.id,
@@ -167,9 +283,17 @@ const usePost = () => {
 							createdAt: date,
 						};
 
+						/**
+						 * Add the newPostLink to the postLinks array.
+						 *
+						 * This is used to update the recoil state.
+						 */
 						newPostData.postLinks.push(newPostLink);
 					});
 
+					/**
+					 * After all the links are added, then update the postLinks array in the database.
+					 */
 					await axios
 						.put(apiConfig.apiEndpoint + "post/post", {
 							updatedPost: {
@@ -185,6 +309,13 @@ const usePost = () => {
 				if (postForm.poll) {
 				}
 
+				/**
+				 * Update the post in the recoil state.
+				 *
+				 * The post is added to the top of the posts array.
+				 *
+				 * This is done so that the post is displayed at the top of the posts list.
+				 */
 				setPostStateValue(
 					(prev) =>
 						({

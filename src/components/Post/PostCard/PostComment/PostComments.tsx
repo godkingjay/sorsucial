@@ -72,6 +72,16 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		setFetchingComments(false);
 	};
 
+	const handleFetchComments = () => {
+		if (currentPost) {
+			fetchPostComments(
+				currentPost.post.id,
+				currentPost.post.id,
+				setLoadingComments
+			);
+		}
+	};
+
 	const handleCommentSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -174,6 +184,22 @@ const PostComments: React.FC<PostCommentsProps> = ({
 												parentShowCommentBox={true}
 											/>
 										</>
+									)}
+									{currentPost.post.numberOfFirstLevelComments >
+										currentPost.postComments.filter(
+											(comment) =>
+												comment.comment.commentForId === currentPost.post.id
+										).length && (
+										<div className="flex flex-col w-full justify-start">
+											<button
+												type="button"
+												title="View More Comments"
+												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+												onClick={handleFetchComments}
+											>
+												View More Comments
+											</button>
+										</div>
 									)}
 								</div>
 								<CommentBox

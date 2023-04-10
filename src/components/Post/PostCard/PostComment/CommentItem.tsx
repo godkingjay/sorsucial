@@ -54,6 +54,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(false);
+	const remainingReplies = currentPost.postComments.filter(
+		(comment) => comment.comment.commentForId === commentData.comment.id
+	).length;
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleFetchComments = () => {
@@ -209,11 +212,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							)}
 						</div>
 					)}
-					{commentData.comment.numberOfReplies >
-						currentPost.postComments.filter(
-							(comment) =>
-								comment.comment.commentForId === commentData.comment.id
-						).length && (
+					{commentData.comment.numberOfReplies > remainingReplies && (
 						<div className="flex flex-col w-full justify-start">
 							<button
 								type="button"
@@ -221,16 +220,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
 								onClick={handleFetchComments}
 							>
-								{showCommentBox
+								{showComments
 									? "View More Replies"
 									: `Show ${
-											commentData.comment.numberOfReplies -
-											currentPost.postComments.filter(
-												(comment) =>
-													comment.comment.commentForId ===
-													commentData.comment.id
-											).length
-									  } Replies`}
+											commentData.comment.numberOfReplies - remainingReplies
+									  } ${
+											commentData.comment.numberOfReplies - remainingReplies ===
+											1
+												? "Reply"
+												: "Replies"
+									  }`}
 							</button>
 						</div>
 					)}

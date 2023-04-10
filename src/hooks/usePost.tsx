@@ -335,40 +335,104 @@ const usePost = () => {
 		}
 	};
 
+	/**
+	 * The uploadPostImageOrVideo function is used to upload an image or video to the storage.
+	 *
+	 * This function is used to upload the images or videos that are added to the post.
+	 * It will automatically upload the image or video to the storage and then add the image or video details to the database
+	 * as an object array item in the post document.
+	 *
+	 * @param {SitePost} post - The post to which the image or video belongs to
+	 * @param {CreatePostImageOrVideoType} imageOrVideo - The type of image or video to upload to the storage (image or video)
+	 * @param {string} imageOrVideoId - The id of the image or video to upload to the storage
+	 *
+	 * @returns {Promise<PostImageOrVideo | PostImageOrVideo | undefined>} - The uploaded image or video object or undefined if there is an error uploading the image or video to the storage.
+	 */
 	const uploadPostImageOrVideo = async (
 		post: SitePost,
 		imageOrVideo: CreatePostImageOrVideoType,
 		imageOrVideoId: string
 	) => {
+		/**
+		 * Try to upload the image or video to the storage.
+		 * If there is an error, then log the error.
+		 */
 		try {
+			/**
+			 * The storageRef is the reference to the image or video in the storage.
+			 *
+			 * The image or video will be stored in the storage in the following path:
+			 *
+			 * https://storage
+			 * 	      	/posts
+			 * 	      		/postId
+			 * 	      			/imagesOrVideos
+			 * 	      				/imageOrVideoId
+			 *
+			 */
 			const storageRef = ref(
 				clientStorage,
 				`posts/${post.id}/imagesOrVideos/${imageOrVideoId}`
 			);
 
+			/**
+			 * Fetch the image or video from the url.
+			 */
 			const response = await fetch(imageOrVideo.url as string);
+
+			/**
+			 * Fetch the image or video from the url.
+			 */
 			const blob = await response.blob();
 
+			/**
+			 * After fetching the image or video from the url,
+			 * then upload the image or video to the storage.
+			 *
+			 * If there is an error, then log the error.
+			 */
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log(
+				throw new Error(
 					"Firebase Storage: Image Or Video Upload Error: ",
 					error.message
 				);
-				throw error;
 			});
 
+			/**
+			 * After uploading the image or video to the storage,
+			 * then get the download url of the image or video.
+			 * The url will be used to display the image or video in the post.
+			 *
+			 * If there is an error, then log the error.
+			 */
 			const downloadURL = await getDownloadURL(storageRef).catch(
 				(error: any) => {
-					console.log(
+					throw new Error(
 						"Firebase Storage: Image Or Video Download URL Error: ",
 						error.message
 					);
-					throw error;
 				}
 			);
 
+			/**
+			 * After getting the download url of the image or video,
+			 * then add the image or video details to the database.
+			 */
 			const date = new Date();
 
+			/**
+			 * The newPostImageOrVideo is the image or video to be added.
+			 *
+			 * The image or video will be stored in the database in the following path:
+			 *
+			 * https://
+			 * 		database
+			 * 			/posts
+			 * 				/postId
+			 * 					.imagesOrVideos
+			 * 						.imageOrVideoId
+			 *
+			 */
 			const newPostImageOrVideo: PostImageOrVideo = {
 				id: imageOrVideoId,
 				postId: post.id,
@@ -387,9 +451,13 @@ const usePost = () => {
 				createdAt: date,
 			};
 
+			/**
+			 * After successfully uploading the image or video to the storage and creating the image or video details,
+			 * return the image or video details.
+			 */
 			return newPostImageOrVideo;
 		} catch (error: any) {
-			console.log("MONGO: Image Or Video Upload Error", error.message);
+			console.log("Firebase: Image Or Video Upload Error", error.message);
 		}
 	};
 

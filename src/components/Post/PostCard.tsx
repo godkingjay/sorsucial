@@ -314,6 +314,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					userMounted={userMounted}
 					currentPost={postData}
 					commentBoxRef={commentBoxRef}
+					formatNumberWithSuffix={formatNumberWithSuffix}
 				/>
 			)}
 		</div>

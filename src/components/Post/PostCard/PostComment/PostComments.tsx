@@ -13,6 +13,7 @@ type PostCommentsProps = {
 	userMounted: boolean;
 	currentPost: PostState["currentPost"];
 	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
+	formatNumberWithSuffix: (number: number) => string;
 };
 
 export type PostCommentFormType = {
@@ -28,6 +29,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	userMounted,
 	currentPost,
 	commentBoxRef,
+	formatNumberWithSuffix,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
@@ -211,6 +213,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													handleCommentDelete={handleCommentDelete}
 													onChange={handleInputChange}
 													onSubmit={handleCommentSubmit}
+													formatNumberWithSuffix={formatNumberWithSuffix}
 												/>
 											</React.Fragment>
 										))}

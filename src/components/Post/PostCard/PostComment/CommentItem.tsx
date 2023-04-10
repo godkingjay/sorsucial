@@ -7,6 +7,7 @@ import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
+import { AiFillLike } from "react-icons/ai";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -35,6 +36,7 @@ type CommentItemProps = {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
 	) => void;
+	formatNumberWithSuffix: (number: number) => string;
 };
 
 const maxCommentLevel = 3;
@@ -50,6 +52,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	handleCommentDelete,
 	onSubmit,
 	onChange,
+	formatNumberWithSuffix,
 }) => {
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: commentData.comment.postId,
@@ -119,7 +122,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 					<div className="flex-1 flex flex-col gap-y-1 relative">
 						<div className="w-full flex-1 flex flex-row gap-x-2 relative">
 							<div className="flex flex-row">
-								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1">
+								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1 relative min-w-[128px]">
 									<h2 className="font-semibold text-xs truncate">
 										{commentData.creator ? (
 											<Link
@@ -135,6 +138,22 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									<p className="break-words text-sm">
 										{commentData.comment.commentText}
 									</p>
+									<div
+										className="absolute shadow-around-sm flex flex-row items-center gap-x-1 rounded-full -bottom-1 bg-white right-0 p-0.5 pr-1"
+										style={{
+											display:
+												commentData.comment.numberOfLikes > 0 ? "flex" : "none",
+										}}
+									>
+										<div className="h-4 w-4 aspect-square text-white p-0.5 rounded-full bg-blue-500">
+											<AiFillLike className="h-full w-full" />
+										</div>
+										<p className="text-xs text-gray-500">
+											{formatNumberWithSuffix(
+												commentData.comment.numberOfLikes
+											)}
+										</p>
+									</div>
 								</div>
 							</div>
 							{/* <div className="flex-shrink-0 w-8 h-full flex flex-col items-center justify-center">
@@ -213,6 +232,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											handleCommentDelete={handleCommentDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
+											formatNumberWithSuffix={formatNumberWithSuffix}
 										/>
 									</React.Fragment>
 								))}

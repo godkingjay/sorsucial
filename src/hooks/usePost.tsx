@@ -339,7 +339,7 @@ const usePost = () => {
 	 * The uploadPostImageOrVideo function is used to upload an image or video to the storage.
 	 *
 	 * This function is used to upload the images or videos that are added to the post.
-	 * It will automatically upload the image or video to the storage and then add the image or video details to the database
+	 * It will automatically upload the image or video to the storage and then add the image or video details
 	 * as an object array item in the post document.
 	 *
 	 * @param {SitePost} post - The post to which the image or video belongs to
@@ -381,13 +381,23 @@ const usePost = () => {
 			const response = await fetch(imageOrVideo.url as string);
 
 			/**
-			 * Fetch the image or video from the url.
+			 * Convert the image or video to a blob.
 			 */
 			const blob = await response.blob();
 
 			/**
 			 * After fetching the image or video from the url,
 			 * then upload the image or video to the storage.
+			 *
+			 * The uploadBytes function is used to upload the image or video to the storage.
+			 *
+			 * The image or video will be uploaded to the storage in the following path:
+			 *
+			 * https://storage
+			 * 	      	/posts
+			 * 	      		/postId
+			 * 	      			/imagesOrVideos
+			 * 	      				/imageOrVideoId
 			 *
 			 * If there is an error, then log the error.
 			 */
@@ -429,8 +439,8 @@ const usePost = () => {
 			 * 		database
 			 * 			/posts
 			 * 				/postId
-			 * 					.imagesOrVideos
-			 * 						.imageOrVideoId
+			 * 					/imagesOrVideos
+			 * 						/imageOrVideoId
 			 *
 			 */
 			const newPostImageOrVideo: PostImageOrVideo = {
@@ -461,34 +471,95 @@ const usePost = () => {
 		}
 	};
 
+	/**
+	 * The uploadPostFile function is used to upload a file to the storage.
+	 *
+	 * This function is used to upload the files that are added to the post.
+	 * It will automatically upload the file to the storage and then add the
+	 * file details to the post document as an object array item.
+	 *
+	 * @param {SitePost} post
+	 * @param {CreatePostFileType} file
+	 * @param {string} fileId
+	 *
+	 * @returns {Promise<PostFile | undefined>} - The uploaded file object or undefined if there is an error uploading the file to the storage.
+	 */
 	const uploadPostFile = async (
 		post: SitePost,
 		file: CreatePostFileType,
 		fileId: string
 	) => {
+		/**
+		 * Try to upload the file to the storage.
+		 *
+		 * If there is an error uploading the file to the storage,
+		 * then log the error.
+		 */
 		try {
+			/**
+			 * The storageRef is the reference to the file in the storage.
+			 *
+			 * The file will be stored in the storage in the following path:
+			 *
+			 * https://storage
+			 * 	      	/posts
+			 * 	      		/postId
+			 * 	      			/files
+			 * 	      				/fileId
+			 */
 			const storageRef = ref(clientStorage, `posts/${post.id}/files/${fileId}`);
 
+			/**
+			 * Fetch the file from the url.
+			 */
 			const response = await fetch(file.url as string);
+
+			/**
+			 * Convert the file to a blob.
+			 */
 			const blob = await response.blob();
 
+			/**
+			 * After fetching the file from the url,
+			 * then upload the file to the storage.
+			 *
+			 * The file will be stored in the storage in the following path:
+			 *
+			 * https://storage
+			 * 	      	/posts
+			 * 						/postId
+			 * 							/files
+			 * 								/fileId
+			 *
+			 * If there is an error, then throw an error.
+			 */
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log("Firebase Storage: File Upload Error: ", error.message);
-				throw error;
+				throw new Error("Firebase Storage: File Upload Error: ", error.message);
 			});
 
+			/**
+			 * After uploading the file to the storage,
+			 * then get the download url of the file.
+			 *
+			 * If there is an error, then throw an error.
+			 */
 			const downloadURL = await getDownloadURL(storageRef).catch(
 				(error: any) => {
-					console.log(
+					throw new Error(
 						"Firebase Storage: file Download URL Error: ",
 						error.message
 					);
-					throw error;
 				}
 			);
 
+			/**
+			 * The date and time of the file upload.
+			 */
 			const date = new Date();
 
+			/**
+			 * This is the file object to be added as an object array item of the post document in the database.
+			 */
 			const newPostFile: PostFile = {
 				id: fileId,
 				postId: post.id,
@@ -505,6 +576,10 @@ const usePost = () => {
 				createdAt: date,
 			};
 
+			/**
+			 * After successfully uploading the file to the storage and creating the file details,
+			 * return the file details.
+			 */
 			return newPostFile;
 		} catch (error: any) {
 			console.log("MONGO: File Upload Error", error.message);

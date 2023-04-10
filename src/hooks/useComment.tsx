@@ -4,7 +4,7 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import usePost from "./usePost";
-import { PostCommentData } from "@/atoms/postAtom";
+import { PostCommentData, PostState } from "@/atoms/postAtom";
 import useUser from "./useUser";
 
 export type fetchCommentsParamsType = {
@@ -166,9 +166,10 @@ const useComment = () => {
 				const oldestComment =
 					postStateValue.currentPost.postComments[lastIndex];
 
-				const commentsData = await axios
+				const commentsData: PostCommentData[] = await axios
 					.get(apiConfig.apiEndpoint + "post/comment/comment", {
 						params: {
+							getUserId: authUser?.uid,
 							getCommentPostId: postId,
 							getCommentForId: commentForId,
 							getFromLikes: oldestComment
@@ -185,19 +186,61 @@ const useComment = () => {
 					});
 
 				if (commentsData.length) {
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.concat(commentsData),
-						},
-					}));
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								currentPost: {
+									...prev.currentPost!,
+									postComments: [
+										...prev.currentPost!.postComments,
+										...commentsData,
+									],
+								},
+							} as PostState)
+					);
 				} else {
 					console.log("MONGO: No comments found!");
 				}
 			}
 		} catch (error: any) {
 			console.log("MONGO: Error while fetching comments: ", error.message);
+		}
+	};
+
+	const fetchUserCommentLike = async (comment: PostComment) => {
+		try {
+			if (authUser) {
+				const userCommentLikeData = await axios
+					.get(apiConfig.apiEndpoint + "post/comment/likes/like", {
+						params: {
+							getPostId: comment.postId,
+							getCommentId: comment.id,
+							getUserId: authUser.uid,
+						},
+					})
+					.then((response) => response.data.userCommentLike)
+					.catch((error) => {
+						throw new Error(
+							"API: Error while fetching user comment like: ",
+							error.message
+						);
+					});
+
+				if (userCommentLikeData) {
+					return userCommentLikeData;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log(
+				"MONGO: Error while fetching user comment like: ",
+				error.message
+			);
+			return null;
 		}
 	};
 

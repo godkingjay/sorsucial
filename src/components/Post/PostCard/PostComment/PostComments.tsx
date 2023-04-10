@@ -151,6 +151,8 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		}
 	}, [userMounted, componentDidMount.current]);
 
+	// console.log(currentPost?.postComments);
+
 	return (
 		<>
 			{currentPost && (

@@ -16,6 +16,7 @@ export default async function handler(
 		const db = client.db("sorsu-db");
 		const postsCollection = db.collection("posts");
 		const postCommentsCollection = db.collection("post-comments");
+		const postCommentLikesCollection = db.collection("post-comment-likes");
 
 		switch (req.method) {
 			case "POST": {
@@ -65,8 +66,13 @@ export default async function handler(
 			}
 
 			case "GET": {
-				const { getCommentPostId, getCommentForId, getFromLikes, getFromDate } =
-					req.query;
+				const {
+					getUserId,
+					getCommentPostId,
+					getCommentForId,
+					getFromLikes,
+					getFromDate,
+				} = req.query;
 
 				if (!getCommentPostId) {
 					res.status(500).json({ error: "No post id provided" });
@@ -90,7 +96,11 @@ export default async function handler(
 									$lt: getFromDate,
 								},
 							})
-							.sort({ numberOfLikes: -1, createdAt: -1 })
+							.sort({
+								numberOfLikes: -1,
+								numberOfReplies: -1,
+								createdAt: -1,
+							})
 							.limit(10)
 							.toArray()
 					: await postCommentsCollection
@@ -101,13 +111,23 @@ export default async function handler(
 									$lt: parseInt(getFromLikes as string),
 								},
 							})
-							.sort({ numberOfLikes: -1, createdAt: -1 })
+							.sort({
+								numberOfLikes: -1,
+								numberOfReplies: -1,
+								createdAt: -1,
+							})
 							.limit(10)
 							.toArray();
 
 				const commentsData = await Promise.all(
 					comments.map(async (commentDoc) => {
 						const comment = commentDoc as unknown as PostComment;
+						const userCommentLikeData =
+							await postCommentLikesCollection.findOne({
+								postId: comment.postId,
+								commentId: comment.id,
+								userId: getUserId,
+							});
 						const creatorData = await axios
 							.get(apiConfig.apiEndpoint + "user/user", {
 								params: {
@@ -128,6 +148,7 @@ export default async function handler(
 						return {
 							comment,
 							creator: creatorData,
+							userCommentLike: userCommentLikeData,
 						};
 					})
 				);

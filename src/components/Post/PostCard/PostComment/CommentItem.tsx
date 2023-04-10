@@ -137,7 +137,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							<button
 								type="button"
 								title="Like"
-								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500 focus:text-blue-500"
+								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
 								onClick={() => handleCommentLike(commentData)}
 								comment-liked={
 									commentData.userCommentLike?.commentId ===
@@ -165,7 +165,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								<button
 									type="button"
 									title="Delete"
-									className="btn-text hover:text-red-500 focus:text-red-500"
+									className="btn-text hover:text-red-500"
 								>
 									Delete
 								</button>

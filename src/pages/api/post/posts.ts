@@ -34,6 +34,7 @@ export default async function handler(
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
 		const postsCollection = db.collection("posts");
+		const postLikesCollection = db.collection("post-likes");
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getPostType, getFromDate } = req.query;
+				const { getUserId, getPostType, getFromDate } = req.query;
 
 				if (!getPostType) {
 					res.status(500).json({ error: "No post type provided" });
@@ -74,6 +75,10 @@ export default async function handler(
 				const postsData = await Promise.all(
 					posts.map(async (postDoc) => {
 						const post = postDoc as unknown as SitePost;
+						const userLikeData = await postLikesCollection.findOne({
+							postId: post.id,
+							userId: getUserId,
+						});
 						const creatorData = await axios
 							.get(apiConfig.apiEndpoint + "user/user", {
 								params: { getUserId: post.creatorId },
@@ -92,6 +97,7 @@ export default async function handler(
 						return {
 							post,
 							creator: creatorData,
+							userLike: userLikeData,
 						};
 					})
 				);

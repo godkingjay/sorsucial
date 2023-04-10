@@ -412,6 +412,7 @@ const usePost = () => {
 			const posts = await axios
 				.get(apiConfig.apiEndpoint + "post/posts", {
 					params: {
+						getUserId: authUser?.uid,
 						getPostType: postType,
 						getFromDate: oldestPost?.post.createdAt,
 					},
@@ -422,37 +423,13 @@ const usePost = () => {
 				});
 
 			if (posts.length) {
-				await posts.map(async (post: PostData) => {
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: [
-									...prev.posts,
-									{
-										...post,
-										userLike: fetchUserLike(post.post),
-									},
-								],
-							} as PostState)
-					);
-
-					// const userLikeData = await fetchUserLike(post.post);
-
-					// setPostStateValue((prev) => ({
-					// 	...prev,
-					// 	posts: prev.posts.map((postData) => {
-					// 		if (postData.post.id === post.post.id) {
-					// 			return {
-					// 				...postData,
-					// 				userLike: userLikeData,
-					// 			};
-					// 		}
-
-					// 		return postData;
-					// 	}),
-					// }));
-				});
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: [...prev.posts, ...posts],
+						} as PostState)
+				);
 			} else {
 				console.log("Mongo: No posts found!");
 			}

@@ -29,14 +29,12 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
-import { userState } from "@/atoms/userAtom";
 
 const usePost = () => {
 	const [postStateValue, setPostStateValue] = useRecoilState(postState);
-	const [userStateValue, setUserStateValue] = useRecoilState(userState);
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
-	const { authUser } = useUser();
+	const { authUser, userStateValue } = useUser();
 
 	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
 		try {
@@ -454,34 +452,8 @@ const usePost = () => {
 					});
 
 				if (userLikeData) {
-					// setPostStateValue((prev) => ({
-					// 	...prev,
-					// 	posts: prev.posts.map((postData) => {
-					// 		if (postData.post.id === userLikeData.postId) {
-					// 			return {
-					// 				...postData,
-					// 				userLike: userLikeData,
-					// 			};
-					// 		}
-
-					// 		return postData;
-					// 	}),
-					// }));
 					return userLikeData;
 				} else {
-					// setPostStateValue((prev) => ({
-					// 	...prev,
-					// 	posts: prev.posts.map((postData) => {
-					// 		if (postData.post.id === post.id) {
-					// 			return {
-					// 				...postData,
-					// 				userLike: null,
-					// 			};
-					// 		}
-
-					// 		return postData;
-					// 	}),
-					// }));
 					return null;
 				}
 			} else {

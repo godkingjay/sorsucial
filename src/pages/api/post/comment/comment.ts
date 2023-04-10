@@ -186,6 +186,82 @@ export default async function handler(
 				break;
 			}
 
+			case "DELETE": {
+				const { deletedComment } = req.body;
+
+				if (!deletedComment) {
+					res.status(500).json({ error: "No comment data provided" });
+					return;
+				}
+
+				let count = 0;
+
+				const deleteComment = async (comment: PostComment) => {
+					const deleteCommentState = await postCommentsCollection.deleteOne({
+						id: comment.id,
+					});
+					count += deleteCommentState.deletedCount;
+
+					const deleteCommentLikesState =
+						await postCommentLikesCollection.deleteMany({
+							postId: comment.postId,
+							commentId: comment.id,
+						});
+
+					if (comment.commentLevel === 0) {
+						const updatePostState = await postsCollection.updateOne(
+							{
+								id: comment.postId,
+							},
+							{
+								$inc: {
+									numberOfFirstLevelComments: -1,
+								},
+							}
+						);
+					} else {
+						const updateParentCommentState =
+							await postCommentsCollection.updateOne(
+								{
+									id: comment.commentForId,
+								},
+								{
+									$inc: {
+										numberOfReplies: -1,
+									},
+								}
+							);
+					}
+
+					const childComments = await postCommentsCollection
+						.find({
+							commentForId: comment.id,
+						})
+						.toArray();
+
+					for (const childComment of childComments) {
+						await deleteComment(childComment as unknown as PostComment);
+					}
+				};
+
+				await deleteComment(deletedComment);
+
+				const updatePostState = await postsCollection.updateOne(
+					{
+						id: deletedComment.postId,
+					},
+					{
+						$inc: {
+							numberOfComments: -count,
+						},
+					}
+				);
+
+				res.status(200).json({ isDeleted: count > 0, deletedCount: count });
+
+				break;
+			}
+
 			default: {
 				res.status(405).json({ error: "Method not allowed" });
 				break;

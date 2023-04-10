@@ -20,6 +20,10 @@ type CommentItemProps = {
 		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
 	) => void;
 	handleCommentLike: (commentData: PostCommentData) => Promise<void>;
+	handleCommentDelete: (
+		comment: PostCommentData["comment"],
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+	) => Promise<void>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -43,6 +47,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	parentShowCommentBox,
 	fetchPostComments,
 	handleCommentLike,
+	handleCommentDelete,
 	onSubmit,
 	onChange,
 }) => {
@@ -56,6 +61,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(false);
+	const [deletingComment, setDeletingComment] = useState(false);
 	const remainingReplies = currentPost.postComments.filter(
 		(comment) => comment.comment.commentForId === commentData.comment.id
 	).length;
@@ -68,6 +74,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 			commentData.comment.id,
 			setLoadingComments
 		);
+	};
+
+	const handleDeleteComment = () => {
+		handleCommentDelete(commentData.comment, setDeletingComment);
 	};
 
 	const handleShowCommentBox = () => {
@@ -166,6 +176,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									type="button"
 									title="Delete"
 									className="btn-text hover:text-red-500"
+									onClick={handleDeleteComment}
 								>
 									Delete
 								</button>
@@ -199,6 +210,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											parentShowCommentBox={showCommentBox}
 											fetchPostComments={fetchPostComments}
 											handleCommentLike={handleCommentLike}
+											handleCommentDelete={handleCommentDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
 										/>

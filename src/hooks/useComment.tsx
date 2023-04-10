@@ -13,7 +13,7 @@ export type fetchCommentsParamsType = {
 };
 
 const useComment = () => {
-	const { authUser } = useUser();
+	const { authUser, userStateValue } = useUser();
 	const { postStateValue, setPostStateValue } = usePost();
 
 	const createComment = async (
@@ -144,6 +144,84 @@ const useComment = () => {
 			}
 		} catch (error: any) {
 			console.log("MONGO: Error while creating comment: ", error.message);
+		}
+	};
+
+	const deleteComment = async (comment: PostComment) => {
+		try {
+			if (
+				authUser?.uid === comment.creatorId ||
+				userStateValue.user.roles.includes("admin")
+			) {
+				const deleteState = await axios
+					.delete(apiConfig.apiEndpoint + "post/comment/comment", {
+						data: {
+							deletedComment: comment,
+						},
+					})
+					.then((response) => {
+						return {
+							isDeleted: response.data.isDeleted,
+							deletedCount: response.data.deletedCount,
+						};
+					})
+					.catch((error) => {
+						throw new Error(
+							"API: Error while deleting comment: ",
+							error.message
+						);
+					});
+
+				if (deleteState.deletedCount > 0) {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts?.map((post) => {
+							if (post.post.id === comment.postId) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfComments:
+											post.post.numberOfComments - deleteState.deletedCount,
+									},
+								};
+							}
+							return post;
+						}),
+						currentPost: {
+							...prev.currentPost!,
+							post: {
+								...prev.currentPost!.post,
+								numberOfComments:
+									prev.currentPost!.post.numberOfComments -
+									deleteState.deletedCount,
+							},
+							postComments: prev
+								.currentPost!.postComments.map((commentData) => {
+									if (commentData.comment.id === comment.commentForId) {
+										return {
+											...commentData,
+											comment: {
+												...commentData.comment,
+												numberOfReplies:
+													commentData.comment.numberOfReplies - 1,
+											},
+										};
+									}
+
+									return commentData;
+								})
+								.filter((commentData) => commentData.comment.id !== comment.id),
+						},
+					}));
+				} else {
+					throw new Error("Comment was not deleted!");
+				}
+			} else {
+				throw new Error("You are not authorized to delete this comment!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while deleting comment: ", error.message);
 		}
 	};
 
@@ -339,6 +417,7 @@ const useComment = () => {
 		createComment,
 		fetchComments,
 		onCommentLike,
+		deleteComment,
 	};
 };
 

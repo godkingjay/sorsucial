@@ -6,6 +6,7 @@ import useComment from "@/hooks/useComment";
 import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
 import CommentItem from "./CommentItem";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
+import { PostComment } from "@/lib/interfaces/post";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
@@ -35,7 +36,8 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		commentLevel: 0,
 		commentForId: currentPost?.post.id!,
 	});
-	const { createComment, fetchComments, onCommentLike } = useComment();
+	const { createComment, fetchComments, onCommentLike, deleteComment } =
+		useComment();
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [firstLoadingComments, setFirstLoadingComments] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(true);
@@ -101,6 +103,24 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		}
 	};
 
+	const handleCommentDelete = async (
+		comment: PostComment,
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		if (!comment) {
+			console.log("handlePostCommentDelete: Comment is not available");
+			return;
+		}
+
+		setDeleting(true);
+		try {
+			await deleteComment(comment);
+		} catch (error: any) {
+			console.log("Hook: Error while deleting comment: ", error.message);
+		}
+		setDeleting(false);
+	};
+
 	const handleCommentSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
@@ -151,8 +171,6 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		}
 	}, [userMounted, componentDidMount.current]);
 
-	// console.log(currentPost?.postComments);
-
 	return (
 		<>
 			{currentPost && (
@@ -189,9 +207,10 @@ const PostComments: React.FC<PostCommentsProps> = ({
 													commentData={comment}
 													parentShowCommentBox={true}
 													fetchPostComments={fetchPostComments}
-													onSubmit={handleCommentSubmit}
-													onChange={handleInputChange}
 													handleCommentLike={handleCommentLike}
+													handleCommentDelete={handleCommentDelete}
+													onChange={handleInputChange}
+													onSubmit={handleCommentSubmit}
 												/>
 											</React.Fragment>
 										))}

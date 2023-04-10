@@ -57,6 +57,15 @@ const usePost = () => {
 	const { authUser, userStateValue } = useUser();
 
 	/**
+	 * *  ██████╗           ██████╗  ██████╗ ███████╗████████╗
+	 * * ██╔════╝    ██╗    ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝
+	 * * ██║         ╚═╝    ██████╔╝██║   ██║███████╗   ██║
+	 * * ██║         ██╗    ██╔═══╝ ██║   ██║╚════██║   ██║
+	 * * ╚██████╗    ╚═╝    ██║     ╚██████╔╝███████║   ██║
+	 * *  ╚═════╝           ╚═╝      ╚═════╝ ╚══════╝   ╚═╝
+	 */
+
+	/**
 	 * The createPost function is used to create a new post.
 	 * It takes in the post form and the creator.
 	 *
@@ -336,6 +345,15 @@ const usePost = () => {
 	};
 
 	/**
+	 * *  ██████╗           ██╗███╗   ███╗ █████╗  ██████╗ ███████╗     ██████╗ ██████╗     ██╗   ██╗██╗██████╗ ███████╗ ██████╗
+	 * * ██╔════╝    ██╗    ██║████╗ ████║██╔══██╗██╔════╝ ██╔════╝    ██╔═══██╗██╔══██╗    ██║   ██║██║██╔══██╗██╔════╝██╔═══██╗
+	 * * ██║         ╚═╝    ██║██╔████╔██║███████║██║  ███╗█████╗      ██║   ██║██████╔╝    ██║   ██║██║██║  ██║█████╗  ██║   ██║
+	 * * ██║         ██╗    ██║██║╚██╔╝██║██╔══██║██║   ██║██╔══╝      ██║   ██║██╔══██╗    ╚██╗ ██╔╝██║██║  ██║██╔══╝  ██║   ██║
+	 * * ╚██████╗    ╚═╝    ██║██║ ╚═╝ ██║██║  ██║╚██████╔╝███████╗    ╚██████╔╝██║  ██║     ╚████╔╝ ██║██████╔╝███████╗╚██████╔╝
+	 * *  ╚═════╝           ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝      ╚═══╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝
+	 */
+
+	/**
 	 * The uploadPostImageOrVideo function is used to upload an image or video to the storage.
 	 *
 	 * This function is used to upload the images or videos that are added to the post.
@@ -472,6 +490,14 @@ const usePost = () => {
 	};
 
 	/**
+	 * *  ██████╗           ███████╗██╗██╗     ███████╗
+	 * * ██╔════╝    ██╗    ██╔════╝██║██║     ██╔════╝
+	 * * ██║         ╚═╝    █████╗  ██║██║     █████╗
+	 * * ██║         ██╗    ██╔══╝  ██║██║     ██╔══╝
+	 * * ╚██████╗    ╚═╝    ██║     ██║███████╗███████╗
+	 * *  ╚═════╝           ╚═╝     ╚═╝╚══════╝╚══════╝
+	 */
+	/**
 	 * The uploadPostFile function is used to upload a file to the storage.
 	 *
 	 * This function is used to upload the files that are added to the post.
@@ -586,159 +612,14 @@ const usePost = () => {
 		}
 	};
 
-	const deletePost = async (postData: PostData) => {
-		try {
-			if (
-				userStateValue.user.uid !== postData.post.creatorId ||
-				!userStateValue.user.roles.includes("admin")
-			) {
-				throw new Error("You are not authorized to delete this post");
-			}
-
-			if (postData.post.postImagesOrVideos.length) {
-				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
-					const imageOrVideoStorageRef = ref(
-						clientStorage,
-						imageOrVideo.filePath
-					);
-
-					deleteObject(imageOrVideoStorageRef).catch(() => {
-						console.log(
-							"Firebase Storage: Image Or Video Deletion Error: ",
-							imageOrVideo.id
-						);
-					});
-				});
-			}
-
-			if (postData.post.postFiles.length) {
-				postData.post.postFiles.forEach((file) => {
-					const fileStorageRef = ref(clientStorage, file.filePath);
-
-					deleteObject(fileStorageRef).catch(() => {
-						console.log("Firebase Storage: File Deletion Error: ", file.id);
-					});
-				});
-			}
-
-			if (postData.post.postPoll) {
-				const { postPoll } = postData.post;
-
-				postPoll.pollItems.forEach((pollItem) => {
-					const pollItemStorageRef = ref(
-						clientStorage,
-						pollItem.pollItemLogo?.filePath
-					);
-
-					deleteObject(pollItemStorageRef).catch(() => {
-						console.log(
-							"Firebase Storage: Poll Item Logo Deletion Error: ",
-							pollItem.id
-						);
-					});
-				});
-			}
-
-			await axios.delete(apiConfig.apiEndpoint + "post/post", {
-				data: {
-					deletedPost: postData.post,
-				},
-			});
-
-			if (postStateValue.currentPost?.post.id === postData.post.id) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							currentPost: null,
-						} as PostState)
-				);
-			}
-
-			setPostStateValue(
-				(prev) =>
-					({
-						...prev,
-						posts: prev.posts.filter(
-							(post) => post.post.id !== postData.post.id
-						),
-					} as PostState)
-			);
-		} catch (error: any) {
-			console.log("MONGO: Post Deletion Error", error.message);
-		}
-	};
-
-	const fetchPosts = async (postType: SitePost["postType"]) => {
-		try {
-			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
-				if (post.post.postType === postType && acc === -1) {
-					return index;
-				}
-
-				return acc;
-			}, -1);
-
-			const oldestPost = postStateValue.posts[lastIndex];
-
-			const posts = await axios
-				.get(apiConfig.apiEndpoint + "post/posts", {
-					params: {
-						getUserId: authUser?.uid,
-						getPostType: postType,
-						getFromDate: oldestPost?.post.createdAt,
-					},
-				})
-				.then((res) => res.data.posts)
-				.catch((err) => {
-					console.log("API (GET): Getting posts  error: ", err.message);
-				});
-
-			if (posts.length) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							posts: [...prev.posts, ...posts],
-						} as PostState)
-				);
-			} else {
-				console.log("Mongo: No posts found!");
-			}
-		} catch (error: any) {
-			console.log("Mongo: Fetching Posts Error", error.message);
-		}
-	};
-
-	const fetchUserLike = async (post: SitePost) => {
-		try {
-			if (authUser) {
-				const userLikeData = await axios
-					.get(apiConfig.apiEndpoint + "post/like/like", {
-						params: {
-							getPostId: post.id,
-							getUserId: authUser.uid,
-						},
-					})
-					.then((res) => res.data.userLike)
-					.catch((err) => {
-						throw new Error("API (GET): Getting likes error: ", err.message);
-					});
-
-				if (userLikeData) {
-					return userLikeData;
-				} else {
-					return null;
-				}
-			} else {
-				throw new Error("User not logged in!");
-			}
-		} catch (error: any) {
-			console.log("Mongo: Fetching Post Vote Error", error.message);
-			return null;
-		}
-	};
-
+	/**
+	 * *  ██████╗██████╗            ██╗     ██╗██╗  ██╗███████╗
+	 * * ██╔════╝██╔══██╗    ██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * * ██║     ██║  ██║    ╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ! ██║     ██║  ██║    ██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ! ╚██████╗██████╔╝    ╚═╝    ███████╗██║██║  ██╗███████╗
+	 * !  ╚═════╝╚═════╝            ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
 	const onPostLike = async (postData: PostData) => {
 		try {
 			if (authUser) {
@@ -862,16 +743,214 @@ const usePost = () => {
 		}
 	};
 
+	/**
+	 * ^ ██████╗            ██████╗  ██████╗ ███████╗████████╗███████╗
+	 * ^ ██╔══██╗    ██╗    ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝██╔════╝
+	 * ^ ██████╔╝    ╚═╝    ██████╔╝██║   ██║███████╗   ██║   ███████╗
+	 * ^ ██╔══██╗    ██╗    ██╔═══╝ ██║   ██║╚════██║   ██║   ╚════██║
+	 * ^ ██║  ██║    ╚═╝    ██║     ╚██████╔╝███████║   ██║   ███████║
+	 * ^ ╚═╝  ╚═╝           ╚═╝      ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝
+	 */
+	const fetchPosts = async (postType: SitePost["postType"]) => {
+		try {
+			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
+				if (post.post.postType === postType && acc === -1) {
+					return index;
+				}
+
+				return acc;
+			}, -1);
+
+			const oldestPost = postStateValue.posts[lastIndex];
+
+			const posts = await axios
+				.get(apiConfig.apiEndpoint + "post/posts", {
+					params: {
+						getUserId: authUser?.uid,
+						getPostType: postType,
+						getFromDate: oldestPost?.post.createdAt,
+					},
+				})
+				.then((res) => res.data.posts)
+				.catch((err) => {
+					console.log("API (GET): Getting posts  error: ", err.message);
+				});
+
+			if (posts.length) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: [...prev.posts, ...posts],
+						} as PostState)
+				);
+			} else {
+				console.log("Mongo: No posts found!");
+			}
+		} catch (error: any) {
+			console.log("Mongo: Fetching Posts Error", error.message);
+		}
+	};
+
+	/**
+	 * ^ ██████╗            ██╗     ██╗██╗  ██╗███████╗
+	 * ^ ██╔══██╗    ██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * ^ ██████╔╝    ╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ^ ██╔══██╗    ██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ^ ██║  ██║    ╚═╝    ███████╗██║██║  ██╗███████╗
+	 * ^ ╚═╝  ╚═╝           ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	const fetchUserLike = async (post: SitePost) => {
+		try {
+			if (authUser) {
+				const userLikeData = await axios
+					.get(apiConfig.apiEndpoint + "post/like/like", {
+						params: {
+							getPostId: post.id,
+							getUserId: authUser.uid,
+						},
+					})
+					.then((res) => res.data.userLike)
+					.catch((err) => {
+						throw new Error("API (GET): Getting likes error: ", err.message);
+					});
+
+				if (userLikeData) {
+					return userLikeData;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("Mongo: Fetching Post Vote Error", error.message);
+			return null;
+		}
+	};
+
+	/**
+	 * ! ██████╗            ██████╗  ██████╗ ███████╗████████╗
+	 * ! ██╔══██╗    ██╗    ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝
+	 * ! ██║  ██║    ╚═╝    ██████╔╝██║   ██║███████╗   ██║
+	 * ! ██║  ██║    ██╗    ██╔═══╝ ██║   ██║╚════██║   ██║
+	 * ! ██████╔╝    ╚═╝    ██║     ╚██████╔╝███████║   ██║
+	 * ! ╚═════╝            ╚═╝      ╚═════╝ ╚══════╝   ╚═╝
+	 */
+	const deletePost = async (postData: PostData) => {
+		try {
+			if (
+				userStateValue.user.uid !== postData.post.creatorId ||
+				!userStateValue.user.roles.includes("admin")
+			) {
+				throw new Error("You are not authorized to delete this post");
+			}
+
+			if (postData.post.postImagesOrVideos.length) {
+				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
+					const imageOrVideoStorageRef = ref(
+						clientStorage,
+						imageOrVideo.filePath
+					);
+
+					deleteObject(imageOrVideoStorageRef).catch(() => {
+						console.log(
+							"Firebase Storage: Image Or Video Deletion Error: ",
+							imageOrVideo.id
+						);
+					});
+				});
+			}
+
+			if (postData.post.postFiles.length) {
+				postData.post.postFiles.forEach((file) => {
+					const fileStorageRef = ref(clientStorage, file.filePath);
+
+					deleteObject(fileStorageRef).catch(() => {
+						console.log("Firebase Storage: File Deletion Error: ", file.id);
+					});
+				});
+			}
+
+			if (postData.post.postPoll) {
+				const { postPoll } = postData.post;
+
+				postPoll.pollItems.forEach((pollItem) => {
+					const pollItemStorageRef = ref(
+						clientStorage,
+						pollItem.pollItemLogo?.filePath
+					);
+
+					deleteObject(pollItemStorageRef).catch(() => {
+						console.log(
+							"Firebase Storage: Poll Item Logo Deletion Error: ",
+							pollItem.id
+						);
+					});
+				});
+			}
+
+			await axios.delete(apiConfig.apiEndpoint + "post/post", {
+				data: {
+					deletedPost: postData.post,
+				},
+			});
+
+			if (postStateValue.currentPost?.post.id === postData.post.id) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							currentPost: null,
+						} as PostState)
+				);
+			}
+
+			setPostStateValue(
+				(prev) =>
+					({
+						...prev,
+						posts: prev.posts.filter(
+							(post) => post.post.id !== postData.post.id
+						),
+					} as PostState)
+			);
+		} catch (error: any) {
+			console.log("MONGO: Post Deletion Error", error.message);
+		}
+	};
+
 	return {
+		/**
+		 * ~ Recoil Atoms
+		 */
 		postStateValue,
 		setPostStateValue,
+
+		/**
+		 * ~ Recoil Atoms
+		 */
+
 		postOptionsStateValue,
 		setPostOptionsStateValue,
+
+		/**
+		 * & CRUD Post
+		 */
+
 		createPost,
 		deletePost,
+
+		/**
+		 * & CRUD Posts
+		 */
 		fetchPosts,
-		onPostLike,
+
+		/**
+		 * & CRUD User Like
+		 */
 		fetchUserLike,
+		onPostLike,
 	};
 };
 

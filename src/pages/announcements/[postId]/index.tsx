@@ -123,16 +123,16 @@ const AnnouncementView: React.FC<Props> = ({
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
 					<section className="flex flex-col gap-y-4">
-						{loadingPage ||
-						fetchingPostUserData ||
-						!userMounted ||
-						!postStateValue.posts.find((post) => post.post.id === postId) ? (
+						{loadingPage || fetchingPostUserData || !userMounted ? (
 							<>
 								<PostCardSkeleton />
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost ? (
+								{!postStateValue.currentPost &&
+								!postStateValue.posts.find(
+									(post) => post.post.id === postId
+								) ? (
 									<div>Not Found</div>
 								) : (
 									<>

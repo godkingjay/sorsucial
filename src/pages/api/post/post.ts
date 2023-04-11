@@ -1,3 +1,4 @@
+import { PostComment } from "@/lib/interfaces/post";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -32,6 +33,8 @@ export default async function handler(
 		const db = client.db("sorsu-db");
 		const postsCollection = db.collection("posts");
 		const postLikesCollection = db.collection("post-likes");
+		const postCommentsCollection = db.collection("post-comments");
+		const postCommentLikesCollection = db.collection("post-comment-likes");
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------
@@ -175,6 +178,38 @@ export default async function handler(
 				const deletePostLikesState = await postLikesCollection.deleteMany({
 					postId: deletedPost.id,
 				});
+
+				const deleteComment = async (comment: PostComment) => {
+					const deleteCommentState = await postCommentsCollection.deleteOne({
+						id: comment.id,
+					});
+
+					const deleteCommentLikesState =
+						await postCommentLikesCollection.deleteMany({
+							postId: comment.postId,
+							commentId: comment.id,
+						});
+
+					const nestedComments = await postCommentsCollection
+						.find({
+							commentForId: comment.id,
+						})
+						.toArray();
+
+					for (const nestedComment of nestedComments) {
+						await deleteComment(nestedComment as unknown as PostComment);
+					}
+				};
+
+				const postComments = await postCommentsCollection
+					.find({
+						commentForId: deletedPost.id,
+					})
+					.toArray();
+
+				for (const postComment of postComments) {
+					await deleteComment(postComment as unknown as PostComment);
+				}
 
 				res.status(200).json({ deleteState, deletePostLikesState });
 				break;

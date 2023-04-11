@@ -855,13 +855,13 @@ const usePost = () => {
 			}
 
 			if (postData.post.postImagesOrVideos.length) {
-				postData.post.postImagesOrVideos.forEach((imageOrVideo) => {
+				postData.post.postImagesOrVideos.forEach(async (imageOrVideo) => {
 					const imageOrVideoStorageRef = ref(
 						clientStorage,
 						imageOrVideo.filePath
 					);
 
-					deleteObject(imageOrVideoStorageRef).catch(() => {
+					await deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
 							"Firebase Storage: Image Or Video Deletion Error: ",
 							imageOrVideo.id
@@ -871,10 +871,10 @@ const usePost = () => {
 			}
 
 			if (postData.post.postFiles.length) {
-				postData.post.postFiles.forEach((file) => {
+				postData.post.postFiles.forEach(async (file) => {
 					const fileStorageRef = ref(clientStorage, file.filePath);
 
-					deleteObject(fileStorageRef).catch(() => {
+					await deleteObject(fileStorageRef).catch(() => {
 						console.log("Firebase Storage: File Deletion Error: ", file.id);
 					});
 				});
@@ -883,13 +883,13 @@ const usePost = () => {
 			if (postData.post.postPoll) {
 				const { postPoll } = postData.post;
 
-				postPoll.pollItems.forEach((pollItem) => {
+				postPoll.pollItems.forEach(async (pollItem) => {
 					const pollItemStorageRef = ref(
 						clientStorage,
 						pollItem.pollItemLogo?.filePath
 					);
 
-					deleteObject(pollItemStorageRef).catch(() => {
+					await deleteObject(pollItemStorageRef).catch(() => {
 						console.log(
 							"Firebase Storage: Poll Item Logo Deletion Error: ",
 							pollItem.id

@@ -190,14 +190,14 @@ export default async function handler(
 							commentId: comment.id,
 						});
 
-					const childComments = await postCommentsCollection
+					const nestedComments = await postCommentsCollection
 						.find({
 							commentForId: comment.id,
 						})
 						.toArray();
 
-					for (const childComment of childComments) {
-						await deleteComment(childComment as unknown as PostComment);
+					for (const nestedComment of nestedComments) {
+						await deleteComment(nestedComment as unknown as PostComment);
 					}
 				};
 

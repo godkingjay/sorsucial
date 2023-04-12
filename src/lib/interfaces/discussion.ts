@@ -77,7 +77,7 @@ export interface SiteDiscussion {
  */
 export interface DiscussionVote {
 	userId: string;
-	discsussionId: string;
+	discussionId: string;
 	groupId?: string;
 	voteValue: 1 | -1;
 	updatedAt: Date;
@@ -99,7 +99,7 @@ export interface DiscussionVote {
  * ----------------------------------------------------------------
  *
  * @property {string} id - The unique identifier of the reply.
- * @property {string} creatorID - The unique identifier of the reply creator.
+ * @property {string} creatorId - The unique identifier of the reply creator.
  * @property {string} discussionId - The unique identifier of the discussion.
  * @property {string} replyForId - The unique identifier of the reply.
  * @property {string} [groupId] - The unique identifier of the group.
@@ -118,7 +118,7 @@ export interface DiscussionVote {
  */
 export interface Reply {
 	id: string;
-	creatorID: string;
+	creatorId: string;
 	discussionId: string;
 	replyForId: string;
 	groupId?: string;

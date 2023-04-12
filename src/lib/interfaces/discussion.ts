@@ -77,7 +77,7 @@ export interface SiteDiscussion {
  */
 export interface DiscussionVote {
 	userId: string;
-	discsussionId: string;
+	discussionId: string;
 	groupId?: string;
 	voteValue: 1 | -1;
 	updatedAt: Date;

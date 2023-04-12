@@ -12,6 +12,8 @@
  *
  * @property {string} id - The unique identifier of the group.
  * @property {string} name - The name of the group.
+ * @property {string} [description] - The description of the group.
+ * @property {string[]} [groupTags] - The tags of the group.
  * @property {string} creatorId - The unique identifier of the group creator.
  * @property {"public" | "restricted" | "private"} privacyType - The privacy type of the group.
  * @property {number} numberOfMembers - The number of members in the group.
@@ -28,6 +30,8 @@
 export interface SiteGroup {
 	id: string;
 	name: string;
+	description?: string;
+	groupTags?: string[];
 	creatorId: string;
 	privacyType: "public" | "restricted" | "private";
 	numberOfMembers: number;

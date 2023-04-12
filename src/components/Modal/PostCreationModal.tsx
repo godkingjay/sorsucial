@@ -65,7 +65,7 @@ export type CreatePostPollType = {
 	hiddenVotes: boolean;
 	maxUserVotes?: number;
 	isActive: boolean;
-	postItems: CreatePostPollItemType[];
+	pollItems: CreatePostPollItemType[];
 };
 
 export type CreatePostPollItemType = {
@@ -583,7 +583,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				voteMode: "single",
 				pollTitle: "Vote",
 				hiddenVotes: false,
-				postItems: [
+				pollItems: [
 					{
 						postItemTitle: "Option 1",
 						index: 0,

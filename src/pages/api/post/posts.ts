@@ -1,5 +1,5 @@
 import { apiConfig } from "@/lib/api/apiConfig";
-import { SitePost } from "@/lib/interfaces/post";
+import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import clientPromise from "@/lib/mongodb";
 import axios from "axios";
@@ -33,6 +33,7 @@ export default async function handler(
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
+		const usersCollection = db.collection("users");
 		const postsCollection = db.collection("posts");
 		const postLikesCollection = db.collection("post-likes");
 
@@ -75,19 +76,13 @@ export default async function handler(
 				const postsData = await Promise.all(
 					posts.map(async (postDoc) => {
 						const post = postDoc as unknown as SitePost;
-						const userLikeData = await postLikesCollection.findOne({
+						const userLikeData = (await postLikesCollection.findOne({
 							postId: post.id,
 							userId: getUserId,
-						});
-						const creatorData = await axios
-							.get(apiConfig.apiEndpoint + "user/user", {
-								params: { getUserId: post.creatorId },
-							})
-							.then((res) => res.data.userData as SiteUser)
-							.catch((err) => {
-								res.status(500).json({ error: err.message });
-								return;
-							});
+						})) as unknown as PostLike;
+						const creatorData = (await usersCollection.findOne({
+							uid: post.creatorId,
+						})) as unknown as SiteUser;
 
 						if (!creatorData) {
 							res.status(500).json({ error: "Could not get creator data" });

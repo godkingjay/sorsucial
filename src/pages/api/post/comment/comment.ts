@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
-import { PostComment } from "@/lib/interfaces/post";
+import { CommentLike, PostComment } from "@/lib/interfaces/post";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
@@ -14,6 +14,7 @@ export default async function handler(
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
+		const usersCollection = db.collection("users");
 		const postsCollection = db.collection("posts");
 		const postCommentsCollection = db.collection("post-comments");
 		const postCommentLikesCollection = db.collection("post-comment-likes");
@@ -123,27 +124,14 @@ export default async function handler(
 					comments.map(async (commentDoc) => {
 						const comment = commentDoc as unknown as PostComment;
 						const userCommentLikeData =
-							await postCommentLikesCollection.findOne({
+							(await postCommentLikesCollection.findOne({
 								postId: comment.postId,
 								commentId: comment.id,
 								userId: getUserId,
-							});
-						const creatorData = await axios
-							.get(apiConfig.apiEndpoint + "user/user", {
-								params: {
-									getUserId: comment.creatorId,
-								},
-							})
-							.then((response) => response.data.userData as SiteUser)
-							.catch((error) => {
-								res.status(500).json({ error: "API: Fetching creator error!" });
-								return;
-							});
-
-						if (!creatorData) {
-							res.status(404).json({ error: "User not found" });
-							return;
-						}
+							})) as unknown as CommentLike;
+						const creatorData = (await usersCollection.findOne({
+							uid: comment.creatorId,
+						})) as unknown as SiteUser;
 
 						return {
 							comment,

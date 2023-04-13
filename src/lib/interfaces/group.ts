@@ -18,6 +18,7 @@
  * @property {"public" | "restricted" | "private"} privacyType - The privacy type of the group.
  * @property {number} numberOfMembers - The number of members in the group.
  * @property {string} [imageURL] - The URL of the group's image.
+ * @property {string} [coverImageURL] - The URL of the group's cover image.
  * @property {Date} [lastPostAt] - The date and time when the group last posted.
  * @property {Date} updatedAt - The date and time when the group was last changed.
  * @property {Date} createdAt - The date and time when the group was created.
@@ -36,6 +37,7 @@ export interface SiteGroup {
 	privacyType: "public" | "restricted" | "private";
 	numberOfMembers: number;
 	imageURL?: string;
+	coverImageURL?: string;
 	lastPostAt?: Date;
 	updatedAt: Date;
 	createdAt: Date;

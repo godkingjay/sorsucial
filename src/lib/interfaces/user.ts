@@ -22,6 +22,7 @@ import { GeoPoint } from "firebase/firestore";
  * @property {boolean} isFirstLogin - Whether or not this is the first time the user has logged in.
  * @property {"admin" | "staff" | "student" | "instructor" | "user"} roles - The role of the user.
  * @property {string} [imageURL] - The URL of the user's profile image.
+ * @property {string} [coverImageURL] - The URL of the user's cover image.
  * @property {Date} [birthDate] - The date of birth of the user.
  * @property {"male" | "female" | "other"} [gender] - The gender of the user.
  * @property {string} [currentStatusText] - The current status text of the user.
@@ -53,6 +54,7 @@ export interface SiteUser {
 	isFirstLogin: boolean;
 	roles: ("admin" | "staff" | "student" | "instructor" | "user")[];
 	imageURL?: string;
+	coverImageURL?: string;
 	birthDate?: Date;
 	gender?: "male" | "female" | "other";
 	currentStatusText?: string;

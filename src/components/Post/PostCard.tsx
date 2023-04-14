@@ -265,7 +265,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	};
 
 	return (
-		<div className="post-card">
+		<div className="post-card entrance-animation-slide-from-right">
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}

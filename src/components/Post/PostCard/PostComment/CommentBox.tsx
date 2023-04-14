@@ -48,7 +48,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
 	return (
 		<form
-			className="w-full flex flex-col gap-y-2"
+			className="w-full flex flex-col gap-y-2 entrance-animation-slide-from-right"
 			onSubmit={(event) => handleSubmit(event)}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">

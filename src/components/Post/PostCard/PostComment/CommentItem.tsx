@@ -104,7 +104,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	return (
 		<>
 			<div
-				className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px]"
+				className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px] entrance-animation-slide-from-right"
 				show-comment-box={parentShowCommentBox ? "true" : "false"}
 			>
 				<div className="left flex flex-row relative">

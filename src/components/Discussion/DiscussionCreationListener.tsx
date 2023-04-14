@@ -29,7 +29,7 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 	// };
 
 	return (
-		<div className="discussion-creation-listener entrance-animation-float-up">
+		<div className="discussion-creation-listener entrance-animation-slide-from-right">
 			<div className="discussion-creation-listener-head">
 				<Link
 					href={`/user/${userStateValue.user.uid}`}

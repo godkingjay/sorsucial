@@ -6,7 +6,7 @@ const PostCommentInputBoxSkeleton: React.FC<
 	PostCommentInputBoxSkeletonProps
 > = () => {
 	return (
-		<div className="w-full flex flex-col gap-y-2 animate-pulse">
+		<div className="w-full flex flex-col gap-y-2 animate-pulse entrance-animation-slide-from-right">
 			<div className="flex flex-row gap-x-2 h-10">
 				<div className="h-10 w-10 aspect-square rounded-full skeleton-color"></div>
 				<div className="flex-1 h-10 rounded-full skeleton-color"></div>

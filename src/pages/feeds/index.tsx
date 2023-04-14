@@ -24,6 +24,9 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	const [loadingFeeds, setLoadingFeeds] = useState(false);
 	const [firstLoadingFeeds, setFirstLoadingFeeds] = useState(false);
 	const [endReached, setEndReached] = useState(false);
+	const feedPostsLength = postStateValue.posts.filter(
+		(allPost) => allPost.post.postType === "feed"
+	).length;
 	const feedsMounted = useRef(false);
 	const router = useRouter();
 
@@ -51,10 +54,6 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	}, []);
 
 	useEffect(() => {
-		const feedPostsLength = postStateValue.posts.filter(
-			(allPost) => allPost.post.postType === "feed"
-		).length;
-
 		if (userMounted) {
 			if (!feedsMounted.current && feedPostsLength === 0) {
 				feedsMounted.current = true;
@@ -104,7 +103,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 										<PostCardSkeleton />
 									</>
 								)}
-								{!endReached && feedsMounted && (
+								{!endReached && feedsMounted && feedPostsLength > 0 && (
 									<VisibleInViewPort
 										disabled={endReached || loadingFeeds || firstLoadingFeeds}
 										onVisible={handleFetchFeeds}

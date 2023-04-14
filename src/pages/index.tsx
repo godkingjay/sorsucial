@@ -24,6 +24,9 @@ export default function Home() {
 	const [firstLoadingAnnouncements, setFirstLoadingAnnouncements] =
 		useState(false);
 	const [endReached, setEndReached] = useState(false);
+	const announcementPostsLength = postStateValue.posts.filter(
+		(allPost) => allPost.post.postType === "announcement"
+	).length;
 	const announcementsMounted = useRef(false);
 
 	const handleFetchAnnouncements = useCallback(async () => {
@@ -50,10 +53,6 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		const announcementPostsLength = postStateValue.posts.filter(
-			(allPost) => allPost.post.postType === "announcement"
-		).length;
-
 		if (userMounted) {
 			if (!announcementsMounted.current && announcementPostsLength === 0) {
 				announcementsMounted.current = true;
@@ -105,16 +104,18 @@ export default function Home() {
 										<PostCardSkeleton />
 									</>
 								)}
-								{!endReached && announcementsMounted && (
-									<VisibleInViewPort
-										disabled={
-											endReached ||
-											loadingAnnouncements ||
-											firstLoadingAnnouncements
-										}
-										onVisible={handleFetchAnnouncements}
-									></VisibleInViewPort>
-								)}
+								{!endReached &&
+									announcementsMounted &&
+									announcementPostsLength > 0 && (
+										<VisibleInViewPort
+											disabled={
+												endReached ||
+												loadingAnnouncements ||
+												firstLoadingAnnouncements
+											}
+											onVisible={handleFetchAnnouncements}
+										></VisibleInViewPort>
+									)}
 								{endReached && (
 									<div className="h-16 flex flex-col items-center justify-center">
 										<div className="flex flex-row items-center w-full gap-x-4">

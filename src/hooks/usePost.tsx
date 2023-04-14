@@ -771,7 +771,7 @@ const usePost = () => {
 
 			const oldestPost = postStateValue.posts[lastIndex];
 
-			const posts = await axios
+			const posts: PostData[] = await axios
 				.get(apiConfig.apiEndpoint + "post/posts", {
 					params: {
 						getUserId: authUser?.uid,
@@ -795,6 +795,8 @@ const usePost = () => {
 			} else {
 				console.log("Mongo: No posts found!");
 			}
+
+			return posts.length;
 		} catch (error: any) {
 			console.log("Mongo: Fetching Posts Error", error.message);
 		}

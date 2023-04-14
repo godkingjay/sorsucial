@@ -1,3 +1,4 @@
+import DiscussionCreationListener from "@/components/Discussion/DiscussionCreationListener";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
@@ -6,7 +7,7 @@ import React, { useRef, useState } from "react";
 type DiscussionsPageProps = {};
 
 const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
-	const { userMounted } = useUser();
+	const { userMounted, userStateValue } = useUser();
 	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
 	const discussionsMounted = useRef(false);
 
@@ -23,7 +24,12 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 								<p>Loading</p>
 							</>
 						) : (
-							<div>Discussion</div>
+							<>
+								<DiscussionCreationListener
+									useStateValue={userStateValue}
+									discussionType="discussion"
+								/>
+							</>
 						)}
 					</section>
 				</LimitedBodyLayout>

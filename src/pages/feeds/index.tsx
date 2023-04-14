@@ -1,3 +1,4 @@
+import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
@@ -30,7 +31,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 		setLoadingFeeds(true);
 		try {
 			const fetchedPostLength = await fetchPosts("feed");
-			if (fetchedPostLength) {
+			if (fetchedPostLength !== undefined) {
 				setEndReached(fetchedPostLength < 10 ? true : false);
 			}
 		} catch (error: any) {
@@ -102,6 +103,12 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 										<PostCardSkeleton />
 										<PostCardSkeleton />
 									</>
+								)}
+								{!endReached && feedsMounted && (
+									<VisibleInViewPort
+										disabled={endReached || loadingFeeds || firstLoadingFeeds}
+										onVisible={handleFetchFeeds}
+									></VisibleInViewPort>
 								)}
 								{endReached && (
 									<div className="h-16 flex flex-col items-center justify-center">

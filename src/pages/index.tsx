@@ -1,3 +1,4 @@
+import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
@@ -29,7 +30,7 @@ export default function Home() {
 		setLoadingAnnouncements(true);
 		try {
 			const fetchedPostLength = await fetchPosts("announcement");
-			if (fetchedPostLength) {
+			if (fetchedPostLength !== undefined) {
 				setEndReached(fetchedPostLength < 10 ? true : false);
 			}
 		} catch (error: any) {
@@ -103,6 +104,16 @@ export default function Home() {
 										<PostCardSkeleton />
 										<PostCardSkeleton />
 									</>
+								)}
+								{!endReached && announcementsMounted && (
+									<VisibleInViewPort
+										disabled={
+											endReached ||
+											loadingAnnouncements ||
+											firstLoadingAnnouncements
+										}
+										onVisible={handleFetchAnnouncements}
+									></VisibleInViewPort>
 								)}
 								{endReached && (
 									<div className="h-16 flex flex-col items-center justify-center">

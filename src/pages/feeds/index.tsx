@@ -22,13 +22,17 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	} = usePost();
 	const [loadingFeeds, setLoadingFeeds] = useState(false);
 	const [firstLoadingFeeds, setFirstLoadingFeeds] = useState(false);
+	const [endReached, setEndReached] = useState(false);
 	const feedsMounted = useRef(false);
 	const router = useRouter();
 
 	const handleFetchFeeds = useCallback(async () => {
 		setLoadingFeeds(true);
 		try {
-			await fetchPosts("feed");
+			const fetchedPostLength = await fetchPosts("feed");
+			if (fetchedPostLength) {
+				setEndReached(fetchedPostLength < 10 ? true : false);
+			}
 		} catch (error: any) {
 			console.log("Hook: fetching feeds Error: ", error.message);
 		}
@@ -98,6 +102,15 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 										<PostCardSkeleton />
 										<PostCardSkeleton />
 									</>
+								)}
+								{endReached && (
+									<div className="h-16 flex flex-col items-center justify-center">
+										<div className="flex flex-row items-center w-full gap-x-4">
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+											<p className="text-gray-400">End of Feeds</p>
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+										</div>
+									</div>
 								)}
 							</>
 						)}

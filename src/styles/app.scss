@@ -1594,4 +1594,9 @@
 			}
 		}
 	}
+
+	.modal-container {
+		animation: entrance-animation-float-up 0.25s ease-in-out;
+		@apply w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto;
+	}
 }

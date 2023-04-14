@@ -183,6 +183,10 @@ const useComment = () => {
 										...post.post,
 										numberOfComments:
 											post.post.numberOfComments - deleteState.deletedCount,
+										numberOfFirstLevelComments:
+											comment.commentLevel === 0
+												? post.post.numberOfFirstLevelComments - 1
+												: post.post.numberOfFirstLevelComments,
 									},
 								};
 							}
@@ -195,6 +199,10 @@ const useComment = () => {
 								numberOfComments:
 									prev.currentPost!.post.numberOfComments -
 									deleteState.deletedCount,
+								numberOfFirstLevelComments:
+									comment.commentLevel === 0
+										? prev.currentPost!.post.numberOfFirstLevelComments - 1
+										: prev.currentPost!.post.numberOfFirstLevelComments,
 							},
 							postComments: prev
 								.currentPost!.postComments.map((commentData) => {

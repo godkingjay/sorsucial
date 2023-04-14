@@ -4,6 +4,7 @@ import React from "react";
 import RightNav from "./RightNav";
 import { SetterOrUpdater } from "recoil";
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
+import Link from "next/link";
 
 type NavBarProps = {
 	userStateValue: UserState;
@@ -25,15 +26,18 @@ const NavBar: React.FC<NavBarProps> = ({
 			<div className="h-14 w-full flex flex-row items-center">
 				<div className="h-full lg:w-full lg:max-w-2xs">
 					<div className="flex flex-row w-full h-full items-center gap-x-2">
-						<div className="aspect-square h-14 w-14 p-2 bg-logo-500">
+						<Link
+							href={"/"}
+							className="aspect-square h-14 w-14 p-2 bg-logo-500"
+						>
 							<Image
 								src="/assets/logo/sorsu-xs.png"
 								alt="SorSUcial Logo"
-								width={32}
-								height={32}
+								width={128}
+								height={128}
 								className="rounded-full h-full w-full"
 							/>
-						</div>
+						</Link>
 					</div>
 				</div>
 				<div className="h-full flex-1 flex flex-col items-center mx-2">

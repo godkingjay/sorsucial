@@ -1,22 +1,24 @@
-@keyframes entrance-animation-float-up {
-	0% {
-		opacity: 0%;
-		transform: translateY(16px);
+@media (prefers-reduced-motion: no-preference) {
+	@keyframes entrance-animation-float-up {
+		0% {
+			opacity: 0%;
+			transform: translateY(16px);
+		}
+		100% {
+			opacity: 100%;
+			transform: translateY(0px);
+		}
 	}
-	100% {
-		opacity: 100%;
-		transform: translateY(0px);
-	}
-}
 
-@keyframes entrance-animation-slide-from-right {
-	0% {
-		opacity: 0%;
-		transform: translateX(16px);
-	}
-	100% {
-		opacity: 100%;
-		transform: translateX(0px);
+	@keyframes entrance-animation-slide-from-right {
+		0% {
+			opacity: 0%;
+			transform: translateX(16px);
+		}
+		100% {
+			opacity: 100%;
+			transform: translateX(0px);
+		}
 	}
 }
 

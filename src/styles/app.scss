@@ -969,7 +969,7 @@
 		@apply flex flex-col shadow-page-box-1 bg-white rounded-lg relative;
 
 		.post-dropdown-menu-wrapper {
-			@apply absolute w-full top-0 duration-75 right-0 max-w-sm p-2 pt-12 pointer-events-none;
+			@apply absolute w-full top-0 duration-100 right-0 max-w-sm p-2 pt-12 pointer-events-none;
 
 			.post-dropdown-menu {
 				@apply pointer-events-auto bg-white shadow-around-lg rounded-lg flex flex-col p-2;
@@ -1489,7 +1489,7 @@
 		}
 
 		.post-footer-share-menu-wrapper {
-			@apply ml-1 max-w-sm absolute p-2 bg-white rounded-[40px] shadow-around-lg border border-gray-100 bottom-[105%] right-1 duration-75 pointer-events-none;
+			@apply ml-1 max-w-sm absolute p-2 bg-white rounded-[40px] shadow-around-lg border border-gray-100 bottom-[105%] right-1 duration-100 pointer-events-none;
 
 			.post-footer-share-menu-container {
 				@apply flex flex-row items-center justify-center gap-2 flex-wrap pointer-events-auto;

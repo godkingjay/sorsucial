@@ -43,7 +43,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 			</button>
 			<div
 				className={`
-						absolute w-full top-0 px-4 max-w-sm right-0 duration-75 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
+						absolute w-full top-0 px-4 max-w-sm right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
 						${
 							navigationBarStateValue.userDropdown.open
 								? " "

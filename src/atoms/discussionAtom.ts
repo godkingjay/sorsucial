@@ -7,6 +7,23 @@ import {
 import { SiteUser } from "@/lib/interfaces/user";
 import { atom } from "recoil";
 
+export interface DiscussionOptionsState {
+	menu: string;
+	share: string;
+	replyMenu: string;
+}
+
+export const defaultDiscussionOptionsState: DiscussionOptionsState = {
+	menu: "",
+	share: "",
+	replyMenu: "",
+};
+
+export const discussionOptionsState = atom<DiscussionOptionsState>({
+	key: "discussionOptionsState",
+	default: defaultDiscussionOptionsState,
+});
+
 export interface DiscussionReplyData {
 	reply: Reply;
 	creator: SiteUser | null;

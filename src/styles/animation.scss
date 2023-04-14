@@ -35,3 +35,9 @@
 		transform: rotate(0deg);
 	}
 }
+
+@layer components {
+	.modal-animation {
+		animation: entrance-animation-float-up 0.25s ease-in-out;
+	}
+}

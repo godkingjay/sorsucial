@@ -42,7 +42,7 @@ const useComment = () => {
 			}
 
 			const newCommentData: PostComment = await axios
-				.post(apiConfig.apiEndpoint + "post/comment/comment", {
+				.post(apiConfig.apiEndpoint + "post/comment/", {
 					newComment,
 				})
 				.then((res) => res.data.newComment)
@@ -61,7 +61,7 @@ const useComment = () => {
 					};
 
 					const isUpdated = await axios
-						.put(apiConfig.apiEndpoint + "post/comment/comment", {
+						.put(apiConfig.apiEndpoint + "post/comment/", {
 							updatedComment,
 						})
 						.then((response) => response.data.isUpdated)
@@ -154,7 +154,7 @@ const useComment = () => {
 				userStateValue.user.roles.includes("admin")
 			) {
 				const deleteState = await axios
-					.delete(apiConfig.apiEndpoint + "post/comment/comment", {
+					.delete(apiConfig.apiEndpoint + "post/comment/", {
 						data: {
 							deletedComment: comment,
 						},
@@ -183,6 +183,10 @@ const useComment = () => {
 										...post.post,
 										numberOfComments:
 											post.post.numberOfComments - deleteState.deletedCount,
+										numberOfFirstLevelComments:
+											comment.commentLevel === 0
+												? post.post.numberOfFirstLevelComments - 1
+												: post.post.numberOfFirstLevelComments,
 									},
 								};
 							}
@@ -195,6 +199,10 @@ const useComment = () => {
 								numberOfComments:
 									prev.currentPost!.post.numberOfComments -
 									deleteState.deletedCount,
+								numberOfFirstLevelComments:
+									comment.commentLevel === 0
+										? prev.currentPost!.post.numberOfFirstLevelComments - 1
+										: prev.currentPost!.post.numberOfFirstLevelComments,
 							},
 							postComments: prev
 								.currentPost!.postComments.map((commentData) => {
@@ -245,7 +253,7 @@ const useComment = () => {
 					postStateValue.currentPost.postComments[lastIndex];
 
 				const commentsData: PostCommentData[] = await axios
-					.get(apiConfig.apiEndpoint + "post/comment/comment", {
+					.get(apiConfig.apiEndpoint + "post/comment/comments", {
 						params: {
 							getUserId: authUser?.uid,
 							getCommentPostId: postId,
@@ -290,7 +298,7 @@ const useComment = () => {
 		try {
 			if (authUser) {
 				const userCommentLikeData = await axios
-					.get(apiConfig.apiEndpoint + "post/comment/likes/like", {
+					.get(apiConfig.apiEndpoint + "post/comment/like/", {
 						params: {
 							getPostId: comment.postId,
 							getCommentId: comment.id,
@@ -327,7 +335,7 @@ const useComment = () => {
 			if (authUser) {
 				if (commentData.userCommentLike) {
 					await axios
-						.delete(apiConfig.apiEndpoint + "post/comment/likes/like", {
+						.delete(apiConfig.apiEndpoint + "post/comment/like/", {
 							data: {
 								deletePostId: commentData.userCommentLike.postId,
 								deleteCommentId: commentData.userCommentLike.commentId,
@@ -375,7 +383,7 @@ const useComment = () => {
 					}
 
 					await axios
-						.post(apiConfig.apiEndpoint + "post/comment/likes/like", {
+						.post(apiConfig.apiEndpoint + "post/comment/like/", {
 							newUserCommentLike: userCommentLike,
 						})
 						.catch((error) => {

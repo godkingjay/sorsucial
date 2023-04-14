@@ -33,7 +33,7 @@ const ErrorUpload: React.FC<ErrorUploadProps> = ({
 
 	return (
 		<div className="fixed w-full h-full bg-black bg-opacity-25 z-[10000] grid place-items-center px-8 py-16 overflow-y-auto scroll-y-style">
-			<div className="w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-sm">
+			<div className="modal-container">
 				<div className="bg-red-500 p-4 w-full rounded-t-xl flex flex-row justify-between items-center">
 					<p className="font-bold text-lg text-white">Upload Error</p>
 					<button

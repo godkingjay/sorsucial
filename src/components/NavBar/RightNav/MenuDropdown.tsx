@@ -26,7 +26,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 			</button>
 			<div
 				className={`
-						absolute w-full top-0 px-4 max-w-lg right-0 duration-75 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
+						absolute w-full top-0 px-4 max-w-lg right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
 						${
 							navigationBarStateValue.menuDropdown.open
 								? " "

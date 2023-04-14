@@ -1,3 +1,4 @@
+import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCreationListener from "@/components/Post/PostCreationListener";
@@ -22,13 +23,20 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	} = usePost();
 	const [loadingFeeds, setLoadingFeeds] = useState(false);
 	const [firstLoadingFeeds, setFirstLoadingFeeds] = useState(false);
+	const [endReached, setEndReached] = useState(false);
+	const feedPostsLength = postStateValue.posts.filter(
+		(allPost) => allPost.post.postType === "feed"
+	).length;
 	const feedsMounted = useRef(false);
 	const router = useRouter();
 
 	const handleFetchFeeds = useCallback(async () => {
 		setLoadingFeeds(true);
 		try {
-			await fetchPosts("feed");
+			const fetchedPostLength = await fetchPosts("feed");
+			if (fetchedPostLength !== undefined) {
+				setEndReached(fetchedPostLength < 10 ? true : false);
+			}
 		} catch (error: any) {
 			console.log("Hook: fetching feeds Error: ", error.message);
 		}
@@ -46,10 +54,6 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	}, []);
 
 	useEffect(() => {
-		const feedPostsLength = postStateValue.posts.filter(
-			(allPost) => allPost.post.postType === "feed"
-		).length;
-
 		if (userMounted) {
 			if (!feedsMounted.current && feedPostsLength === 0) {
 				feedsMounted.current = true;
@@ -98,6 +102,21 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 										<PostCardSkeleton />
 										<PostCardSkeleton />
 									</>
+								)}
+								{!endReached && feedsMounted && feedPostsLength > 0 && (
+									<VisibleInViewPort
+										disabled={endReached || loadingFeeds || firstLoadingFeeds}
+										onVisible={handleFetchFeeds}
+									></VisibleInViewPort>
+								)}
+								{endReached && (
+									<div className="h-16 flex flex-col items-center justify-center">
+										<div className="flex flex-row items-center w-full gap-x-4">
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+											<p className="text-gray-400">End of Feeds</p>
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+										</div>
+									</div>
 								)}
 							</>
 						)}

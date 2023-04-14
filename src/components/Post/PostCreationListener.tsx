@@ -38,7 +38,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 	};
 
 	return (
-		<div className="post-creation-listener">
+		<div className="post-creation-listener entrance-animation-slide-from-right">
 			<div className="post-creation-listener-head">
 				<Link
 					href={`/user/${userStateValue.user.uid}`}

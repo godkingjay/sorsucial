@@ -11,7 +11,7 @@ const PostCommentItemSkeleton: React.FC<PostCommentItemSkeletonProps> = ({
 }) => {
 	return (
 		<div
-			className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px] animate-pulse"
+			className="comment-item flex flex-row gap-x-2 w-full relative min-h-[40px] animate-pulse entrance-animation-slide-from-right"
 			show-comment-box={parentShowCommentBox ? "true" : "false"}
 		>
 			<div className="left flex flex-row relative">

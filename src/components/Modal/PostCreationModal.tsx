@@ -169,7 +169,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 					}));
 				})
 				.catch((error: any) => {
-					throw new Error(error.message);
+					throw new Error(error);
 				});
 		} catch (error: any) {
 			console.log("Hook: Post Creation Error", error.message);

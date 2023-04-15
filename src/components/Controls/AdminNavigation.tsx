@@ -14,7 +14,7 @@ const AdminNavigation: React.FC<AdminNavigationProps> = ({
 	navigationBarStateValue,
 }) => {
 	return (
-		<div className="sticky top-14 z-[500]">
+		<div className="sticky top-14 z-[500] entrance-animation-float-down">
 			<div className="admin-nav-wrapper">
 				<ul className="admin-nav-container">
 					<li>

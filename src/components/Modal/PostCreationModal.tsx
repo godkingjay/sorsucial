@@ -13,11 +13,7 @@ import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
 import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
-import {
-	validAllTypes,
-	validImageTypes,
-	validVideoTypes,
-} from "@/lib/types/validFiles";
+import { validAllTypes, validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
 import { checkIsValidLink } from "@/lib/functions/checks";
 import PostLinksTab from "./PostCreationModal/PostCreationTabs/PostLinksTab";
@@ -146,9 +142,8 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		poll: null,
 	};
 	const { createPost } = usePost();
-	const [createPostForm, setCreatePostForm] = useState<CreatePostType>(
-		defaultCreatePostForm
-	);
+	const [createPostForm, setCreatePostForm] =
+		useState<CreatePostType>(defaultCreatePostForm);
 	const [creatingPost, setCreatingPost] = useState(false);
 	const setErrorModalStateValue = useSetRecoilState(errorModalState);
 	const [currentLink, setCurrentLink] = useState<currentLinkType>({
@@ -159,13 +154,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	const uploadImageOrVideoRef = useRef<HTMLInputElement>(null);
 	const uploadFileRef = useRef<HTMLInputElement>(null);
 
-	const handleCreatePostSubmit = async (
-		event: React.FormEvent<HTMLFormElement>
-	) => {
+	const handleCreatePostSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setCreatingPost(true);
 		try {
-			await createPost(createPostForm, userStateValue.user)
+			await createPost(createPostForm)
 				.then(() => {
 					setCreatePostForm(defaultCreatePostForm);
 					setPostCreationModalStateValue((prev) => ({
@@ -217,9 +210,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		}));
 	};
 
-	const handleImageOrVideoUpload = (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	const handleImageOrVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files?.length) {
 			const imagesOrVideos = Array.from(event.target.files).splice(
 				0,
@@ -239,9 +230,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 
 								img.onload = () => {
 									const canvas = document.createElement("canvas");
-									const ctx = canvas.getContext(
-										"2d"
-									) as CanvasRenderingContext2D;
+									const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 									const height = img.height;
 									const width = img.width;
@@ -265,9 +254,8 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 															name: imageOrVideo.name,
 															url: URL.createObjectURL(blob),
 															index: prev.imagesOrVideos.length
-																? prev.imagesOrVideos[
-																		prev.imagesOrVideos.length - 1
-																  ].index + 1
+																? prev.imagesOrVideos[prev.imagesOrVideos.length - 1]
+																		.index + 1
 																: 0,
 															size: blob.size,
 															type: blob.type,
@@ -322,8 +310,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 												name: imageOrVideo.name,
 												url: URL.createObjectURL(blob),
 												index: prev.imagesOrVideos.length
-													? prev.imagesOrVideos[prev.imagesOrVideos.length - 1]
-															.index + 1
+													? prev.imagesOrVideos[prev.imagesOrVideos.length - 1].index + 1
 													: 0,
 												size: blob.size,
 												type: blob.type,
@@ -553,9 +540,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						currentLink.link.startsWith("https://")
 							? currentLink.link
 							: "https://" + currentLink.link,
-					index: prev.links.length
-						? prev.links[prev.links.length - 1].index + 1
-						: 0,
+					index: prev.links.length ? prev.links[prev.links.length - 1].index + 1 : 0,
 				},
 			],
 		}));
@@ -605,8 +590,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						{postCreationModalStateValue.postType === "announcement" &&
 							"Create Announcement"}
 						{postCreationModalStateValue.postType === "feed" && "Create Post"}
-						{postCreationModalStateValue.postType === "group" &&
-							"Create Group Post"}
+						{postCreationModalStateValue.postType === "group" && "Create Group Post"}
 					</p>
 					<button
 						type="button"
@@ -642,8 +626,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								onChange={(e) => {
 									handleTextChange(e);
 									e.currentTarget.style.height = "0px";
-									e.currentTarget.style.height =
-										e.currentTarget.scrollHeight + "px";
+									e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
 								}}
 								rows={1}
 								value={createPostForm.postTitle}
@@ -651,11 +634,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 							/>
 							<p
 								className={`mt-auto text-2xs font-semibold
-									${
-										300 - createPostForm.postTitle.length === 0
-											? "text-red-500"
-											: "text-gray-400"
-									}
+									${300 - createPostForm.postTitle.length === 0 ? "text-red-500" : "text-gray-400"}
 								`}
 							>
 								{300 - createPostForm.postTitle.length}/300
@@ -765,8 +744,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 								<>
 									{postCreationModalStateValue.postType === "announcement" &&
 										"Create Announcement"}
-									{postCreationModalStateValue.postType === "feed" &&
-										"Create Post"}
+									{postCreationModalStateValue.postType === "feed" && "Create Post"}
 									{postCreationModalStateValue.postType === "group" &&
 										"Create Group Post"}
 								</>

@@ -1,9 +1,4 @@
-import {
-	PostData,
-	PostState,
-	postOptionsState,
-	postState,
-} from "@/atoms/postAtom";
+import { PostData, PostState, postOptionsState, postState } from "@/atoms/postAtom";
 import {
 	CreatePostFileType,
 	CreatePostImageOrVideoType,
@@ -22,12 +17,7 @@ import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
-import {
-	deleteObject,
-	getDownloadURL,
-	ref,
-	uploadBytes,
-} from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
 
 /**
@@ -82,7 +72,7 @@ const usePost = () => {
 	 * @param {CreatePostType} postForm
 	 * @param {SiteUser} creator
 	 */
-	const createPost = async (postForm: CreatePostType, creator: SiteUser) => {
+	const createPost = async (postForm: CreatePostType) => {
 		/**
 		 * Try and catch block to create a new post.
 		 */
@@ -101,7 +91,7 @@ const usePost = () => {
 			 */
 			const newPost: SitePost = {
 				id: "",
-				creatorId: creator.uid,
+				creatorId: userStateValue.user.uid,
 				privacy: postForm.privacy,
 				postTitle: postForm.postTitle.trim(),
 				postBody: postForm.postBody?.trim(),
@@ -133,7 +123,7 @@ const usePost = () => {
 			const newPostData: SitePost = await axios
 				.post(apiConfig.apiEndpoint + "post/post", {
 					newPost,
-					creator,
+					creator: userStateValue.user,
 				})
 				.then((res) => res.data.newPost)
 				.catch((error) => {
@@ -177,10 +167,7 @@ const usePost = () => {
 								imageOrVideo,
 								postImageOrVideoRef.id
 							).catch((error: any) => {
-								console.log(
-									"Hook: Upload Image Or Video Error: ",
-									error.message
-								);
+								console.log("Hook: Upload Image Or Video Error: ", error.message);
 							});
 
 							/**
@@ -204,10 +191,7 @@ const usePost = () => {
 								},
 							})
 							.catch((error) => {
-								console.log(
-									"API: Post Update Images Or Videos Error: ",
-									error.message
-								);
+								console.log("API: Post Update Images Or Videos Error: ", error.message);
 							});
 					});
 				}
@@ -278,9 +262,7 @@ const usePost = () => {
 						/**
 						 * The postLinkId is the reference to the link in the database.
 						 */
-						const postLinkId = doc(
-							collection(clientDb, `posts/${newPostData.id}/links`)
-						);
+						const postLinkId = doc(collection(clientDb, `posts/${newPostData.id}/links`));
 
 						/**
 						 * The newPostLink is the link to be added.
@@ -340,7 +322,7 @@ const usePost = () => {
 							posts: [
 								{
 									post: newPostData,
-									creator,
+									creator: userStateValue.user,
 								},
 								...prev.posts,
 							],
@@ -428,10 +410,7 @@ const usePost = () => {
 			 * If there is an error, then log the error.
 			 */
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				throw new Error(
-					"Firebase Storage: Image Or Video Upload Error: ",
-					error.message
-				);
+				throw new Error("Firebase Storage: Image Or Video Upload Error: ", error.message);
 			});
 
 			/**
@@ -441,14 +420,12 @@ const usePost = () => {
 			 *
 			 * If there is an error, then log the error.
 			 */
-			const downloadURL = await getDownloadURL(storageRef).catch(
-				(error: any) => {
-					throw new Error(
-						"Firebase Storage: Image Or Video Download URL Error: ",
-						error.message
-					);
-				}
-			);
+			const downloadURL = await getDownloadURL(storageRef).catch((error: any) => {
+				throw new Error(
+					"Firebase Storage: Image Or Video Download URL Error: ",
+					error.message
+				);
+			});
 
 			/**
 			 * After getting the download url of the image or video,
@@ -577,14 +554,9 @@ const usePost = () => {
 			 *
 			 * If there is an error, then throw an error.
 			 */
-			const downloadURL = await getDownloadURL(storageRef).catch(
-				(error: any) => {
-					throw new Error(
-						"Firebase Storage: file Download URL Error: ",
-						error.message
-					);
-				}
-			);
+			const downloadURL = await getDownloadURL(storageRef).catch((error: any) => {
+				throw new Error("Firebase Storage: file Download URL Error: ", error.message);
+			});
 
 			/**
 			 * The date and time of the file upload.
@@ -657,8 +629,7 @@ const usePost = () => {
 											...prev.currentPost,
 											post: {
 												...prev.currentPost?.post,
-												numberOfLikes:
-													prev.currentPost?.post.numberOfLikes! - 1,
+												numberOfLikes: prev.currentPost?.post.numberOfLikes! - 1,
 											},
 											userLike: null,
 										},
@@ -712,8 +683,7 @@ const usePost = () => {
 											...prev.currentPost,
 											post: {
 												...prev.currentPost?.post,
-												numberOfLikes:
-													prev.currentPost?.post.numberOfLikes! + 1,
+												numberOfLikes: prev.currentPost?.post.numberOfLikes! + 1,
 											},
 											userLike,
 										},
@@ -858,10 +828,7 @@ const usePost = () => {
 
 			if (postData.post.postImagesOrVideos.length) {
 				postData.post.postImagesOrVideos.forEach(async (imageOrVideo) => {
-					const imageOrVideoStorageRef = ref(
-						clientStorage,
-						imageOrVideo.filePath
-					);
+					const imageOrVideoStorageRef = ref(clientStorage, imageOrVideo.filePath);
 
 					await deleteObject(imageOrVideoStorageRef).catch(() => {
 						console.log(
@@ -886,16 +853,10 @@ const usePost = () => {
 				const { postPoll } = postData.post;
 
 				postPoll.pollItems.forEach(async (pollItem) => {
-					const pollItemStorageRef = ref(
-						clientStorage,
-						pollItem.pollItemLogo?.filePath
-					);
+					const pollItemStorageRef = ref(clientStorage, pollItem.pollItemLogo?.filePath);
 
 					await deleteObject(pollItemStorageRef).catch(() => {
-						console.log(
-							"Firebase Storage: Poll Item Logo Deletion Error: ",
-							pollItem.id
-						);
+						console.log("Firebase Storage: Poll Item Logo Deletion Error: ", pollItem.id);
 					});
 				});
 			}
@@ -920,9 +881,7 @@ const usePost = () => {
 				(prev) =>
 					({
 						...prev,
-						posts: prev.posts.filter(
-							(post) => post.post.id !== postData.post.id
-						),
+						posts: prev.posts.filter((post) => post.post.id !== postData.post.id),
 					} as PostState)
 			);
 		} catch (error: any) {

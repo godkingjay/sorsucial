@@ -26,10 +26,7 @@ import { NextApiRequest, NextApiResponse } from "next";
  * @param {NextApiResponse} res
  *
  */
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
@@ -83,11 +80,6 @@ export default async function handler(
 						const creatorData = (await usersCollection.findOne({
 							uid: post.creatorId,
 						})) as unknown as SiteUser;
-
-						if (!creatorData) {
-							res.status(500).json({ error: "Could not get creator data" });
-							return;
-						}
 
 						return {
 							post,

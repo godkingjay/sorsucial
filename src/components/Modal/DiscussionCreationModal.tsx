@@ -11,6 +11,7 @@ import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import { FaEye, FaLock } from "react-icons/fa";
 import DiscussionCreationModalFormHead from "./DiscussionCreationModal/DiscussionCreationModalFormHead";
+import useDiscussion from "@/hooks/useDiscussion";
 
 type DiscussionCreationModalProps = {
 	discussionCreationModalStateValue: DiscussionCreationModalState;
@@ -52,6 +53,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 	setDiscussionCreationModalStateValue,
 	userStateValue,
 }) => {
+	const { createDiscussion } = useDiscussion();
 	const defaultCreateDiscussionForm: CreateDiscussionType = {
 		discussionTitle: "",
 		discussionBody: "",
@@ -71,6 +73,18 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 		event.preventDefault();
 		setCreatingDiscussion(true);
 		try {
+			await createDiscussion(createDiscussionForm)
+				.then(() => {
+					setCreateDiscussionForm(defaultCreateDiscussionForm);
+					setDiscussionCreationModalStateValue((prev) => ({
+						...prev,
+						open: false,
+						tab: "discussion",
+					}));
+				})
+				.catch((error) => {
+					throw new Error(error);
+				});
 		} catch (error: any) {
 			console.log("Hook: Discussion Creation Error", error.message);
 		}

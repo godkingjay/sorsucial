@@ -93,7 +93,7 @@ const useDiscussion = () => {
 				-1
 			);
 
-			const lastDiscussion = discussionStateValue.discussions[lastIndex];
+			const lastDiscussion = discussionStateValue.discussions[lastIndex] || null;
 
 			const discussions: DiscussionData[] = await axios
 				.get(apiConfig.apiEndpoint + "discussion/discussions", {

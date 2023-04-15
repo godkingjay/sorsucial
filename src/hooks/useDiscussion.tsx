@@ -77,7 +77,10 @@ const useDiscussion = () => {
 		}
 	};
 
-	const fetchDiscussions = async (discussionType: SiteDiscussion["discussionType"]) => {
+	const fetchDiscussions = async (
+		discussionType: SiteDiscussion["discussionType"],
+		privacy: SiteDiscussion["privacy"]
+	) => {
 		try {
 			const lastIndex = discussionStateValue.discussions.reduceRight(
 				(acc, discussion, index) => {
@@ -97,6 +100,7 @@ const useDiscussion = () => {
 					params: {
 						getUserId: authUser?.uid,
 						getDiscussionType: discussionType,
+						getPrivacy: privacy,
 						getFromDate: lastDiscussion.discussion.createdAt,
 					},
 				})

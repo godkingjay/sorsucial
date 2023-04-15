@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		switch (req.method) {
 			case "GET": {
-				const { getUserId, getDiscussionType, getFromDate } = req.query;
+				const { getUserId, getDiscussionType, getPrivacy, getFromDate } = req.query;
 
 				if (!getDiscussionType) {
 					res.status(505).json({ error: "No discussion type provided"! });
@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					? await discussionsCollection
 							.find({
 								discussionType: getDiscussionType,
+								privacy: getPrivacy,
 								createdAt: {
 									$lt: getFromDate,
 								},
@@ -37,6 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					: await discussionsCollection
 							.find({
 								discussionType: getDiscussionType,
+								privacy: getPrivacy,
 							})
 							.sort({
 								createdAt: -1,

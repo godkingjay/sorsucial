@@ -168,11 +168,11 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 						tab: "post",
 					}));
 				})
-				.catch((error) => {
-					console.log("Hook: Post Creation Error", error.message);
+				.catch((error: any) => {
+					throw new Error(error.message);
 				});
 		} catch (error: any) {
-			console.log("Post Creation Error", error.message);
+			console.log("Hook: Post Creation Error", error.message);
 		}
 		setCreatingPost(false);
 	};

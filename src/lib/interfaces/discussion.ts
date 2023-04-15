@@ -19,7 +19,7 @@
  * @property {"discussion" | "group"} discussionType - The type of the discussion.
  * @property {boolean} isHidden - The status of the discussion.
  * @property {boolean} isOpen - The status of the discussion.
- * @property {"public" | "restricted" | "private"} privacyType - The privacy type of the discussion.
+ * @property {"public" | "restricted" | "private"} privacy - The privacy type of the discussion.
  * @property {number} numberOfVotes - The number of votes of the discussion.
  * @property {number} numberOfReplies - The number of replies of the discussion.
  * @property {number} numberOfUpVotes - The number of upvotes of the discussion.
@@ -41,7 +41,7 @@ export interface SiteDiscussion {
 	discussionType: "discussion" | "group";
 	isHidden: boolean;
 	isOpen: boolean;
-	privacyType: "public" | "restricted" | "private";
+	privacy: "public" | "restricted" | "private";
 	numberOfVotes: number;
 	numberOfReplies: number;
 	numberOfUpVotes: number;

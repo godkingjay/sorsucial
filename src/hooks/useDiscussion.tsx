@@ -128,6 +128,7 @@ const useDiscussion = () => {
 		discussionOptionsStateValue,
 		setDiscussionOptionsStateValue,
 		createDiscussion,
+		fetchDiscussions,
 	};
 };
 

@@ -5,6 +5,7 @@ import useUser from "@/hooks/useUser";
 import Head from "next/head";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 
 type DiscussionsPageProps = {};
 
@@ -72,6 +73,33 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 									useStateValue={userStateValue}
 									discussionType="discussion"
 								/>
+								{discussionStateValue.discussions
+									.filter((dis) => dis.discussion.discussionType === "discussion")
+									.map((discussion) => (
+										<React.Fragment key={discussion.discussion.id}>
+											<p>{discussion.discussion.discussionTitle}</p>
+										</React.Fragment>
+									))}
+								{loadingDiscussions && (
+									<>
+										<p>Loading Discussions</p>
+									</>
+								)}
+								{!endReached && discussionsMounted && discussionDiscussionsLength > 0 && (
+									<VisibleInViewPort
+										disabled={endReached || loadingDiscussions || firstLoadingDiscussions}
+										onVisible={handleFetchDiscussions}
+									></VisibleInViewPort>
+								)}
+								{endReached && (
+									<div className="h-16 flex flex-col items-center justify-center">
+										<div className="flex flex-row items-center w-full gap-x-4">
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+											<p className="text-gray-400">End of Discussions</p>
+											<div className="flex-1 h-[1px] bg-gray-300"></div>
+										</div>
+									</div>
+								)}
 							</>
 						)}
 					</section>

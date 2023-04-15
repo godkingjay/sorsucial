@@ -101,7 +101,7 @@ const useDiscussion = () => {
 						getUserId: authUser?.uid,
 						getDiscussionType: discussionType,
 						getPrivacy: privacy,
-						getFromDate: lastDiscussion.discussion.createdAt,
+						getFromDate: lastDiscussion?.discussion.createdAt,
 					},
 				})
 				.then((response) => response.data.discussions)

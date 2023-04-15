@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getUserId, getPostType, getFromDate } = req.query;
+				const { getUserId, getPostType, getPrivacy, getFromDate } = req.query;
 
 				if (!getPostType) {
 					res.status(500).json({ error: "No post type provided" });
@@ -60,12 +60,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				const posts = getFromDate
 					? await postsCollection
-							.find({ postType: getPostType, createdAt: { $lt: getFromDate } })
+							.find({
+								postType: getPostType,
+								privacy: getPrivacy,
+								createdAt: { $lt: getFromDate },
+							})
 							.sort({ createdAt: -1 })
 							.limit(10)
 							.toArray()
 					: await postsCollection
-							.find({ postType: getPostType })
+							.find({
+								postType: getPostType,
+								privacy: getPrivacy,
+							})
 							.sort({ createdAt: -1 })
 							.limit(10)
 							.toArray();

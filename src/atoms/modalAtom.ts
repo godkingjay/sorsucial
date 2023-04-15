@@ -1,3 +1,4 @@
+import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SitePost } from "./../lib/interfaces/post";
 import { atom } from "recoil";
 
@@ -52,4 +53,21 @@ export const defaultPostCreationModalState: PostCreationModalState = {
 export const postCreationModalState = atom<PostCreationModalState>({
 	key: "postCreationModalState",
 	default: defaultPostCreationModalState,
+});
+
+export type DiscussionCreationModalState = {
+	open: boolean;
+	discussionType: SiteDiscussion["discussionType"];
+	tab: "discussion" | "settings";
+};
+
+export const defaultDiscussionCreationModalState: DiscussionCreationModalState = {
+	open: false,
+	discussionType: "discussion",
+	tab: "discussion",
+};
+
+export const discussionCreationModalState = atom<DiscussionCreationModalState>({
+	key: "discussionCreationModalState",
+	default: defaultDiscussionCreationModalState,
 });

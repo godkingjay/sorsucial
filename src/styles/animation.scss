@@ -1,4 +1,15 @@
 @media (prefers-reduced-motion: no-preference) {
+	@keyframes entrance-animation-float-down {
+		0% {
+			opacity: 0%;
+			transform: translateY(-16px);
+		}
+		100% {
+			opacity: 100%;
+			transform: translateY(0px);
+		}
+	}
+
 	@keyframes entrance-animation-float-up {
 		0% {
 			opacity: 0%;
@@ -52,6 +63,10 @@
 @layer components {
 	.modal-animation {
 		animation: entrance-animation-float-up 0.25s ease-in-out;
+	}
+
+	.entrance-animation-float-down {
+		animation: entrance-animation-float-down 0.25s ease-in-out;
 	}
 
 	.entrance-animation-float-up {

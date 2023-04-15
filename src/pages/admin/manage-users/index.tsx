@@ -79,11 +79,8 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 				<div className="w-max min-w-full flex flex-col gap-y-6 py-4">
 					<div className="flex flex-col px-4">
 						<div className="flex flex-col shadow-around-sm bg-white rounded-md">
-							<div className="w-full p-4 bg-cyan-700 rounded-t-md">
+							<div className="w-full p-4 bg-cyan-700 rounded-md">
 								<p className="font-bold text-xl text-white">Users</p>
-							</div>
-							<div>
-								<p>Item</p>
 							</div>
 						</div>
 					</div>

@@ -5,6 +5,11 @@ import { FaUserCircle } from "react-icons/fa";
 import Link from "next/link";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { GoCommentDiscussion } from "react-icons/go";
+import { useSetRecoilState } from "recoil";
+import {
+	DiscussionCreationModalState,
+	discussionCreationModalState,
+} from "@/atoms/modalAtom";
 
 type DiscussionCreationListenerProps = {
 	useStateValue: UserState;
@@ -15,18 +20,18 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 	useStateValue: userStateValue,
 	discussionType,
 }) => {
-	// const setPostCreationModalStateValue = useSetRecoilState(
-	// 	postCreationModalState
-	// );
+	const setDiscussionCreationModalStateValue = useSetRecoilState(
+		discussionCreationModalState
+	);
 
-	// const handlePostCreationModal = (tab: PostCreationModalState["tab"]) => {
-	// 	setPostCreationModalStateValue((prev) => ({
-	// 		...prev,
-	// 		open: true,
-	// 		discussionType,
-	// 		tab,
-	// 	}));
-	// };
+	const handleDiscussionCreationModal = (tab: DiscussionCreationModalState["tab"]) => {
+		setDiscussionCreationModalStateValue((prev) => ({
+			...prev,
+			open: true,
+			discussionType,
+			tab,
+		}));
+	};
 
 	return (
 		<div className="discussion-creation-listener entrance-animation-slide-from-right">
@@ -57,6 +62,7 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 								: "Create a discussion"
 						}`}
 						className="input-box-container"
+						onClick={() => handleDiscussionCreationModal("discussion")}
 					>
 						<div className="icon-container">
 							<GoCommentDiscussion className="icon" />
@@ -65,8 +71,7 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 							<p className="label">
 								{discussionType === "discussion" &&
 									"What are your thoughts on this topic?"}
-								{discussionType === "group" &&
-									"Want to discuss this topic together?"}
+								{discussionType === "group" && "Want to discuss this topic together?"}
 							</p>
 						</div>
 					</button>

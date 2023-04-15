@@ -24,7 +24,11 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 	const handleFetchDiscussions = useCallback(async () => {
 		setLoadingDiscussions(true);
 		try {
-			const fetchedDiscussionLength = await fetchDiscussions("discussion", "public");
+			const fetchedDiscussionLength = await fetchDiscussions(
+				"discussion",
+				"public",
+				true
+			);
 			if (fetchedDiscussionLength !== undefined) {
 				setEndReached(fetchedDiscussionLength < 10 ? true : false);
 			}

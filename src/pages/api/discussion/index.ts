@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				const newDiscussionState = await discussionsCollection
 					.insertOne({
-						newDiscussion,
+						...newDiscussion,
 						_id: objectId,
 					})
 					.catch((error: any) => {

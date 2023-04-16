@@ -6,13 +6,20 @@ import Head from "next/head";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
+import { TbArrowBigDown, TbArrowBigUp, TbArrowBigUpFilled } from "react-icons/tb";
+import DiscussionCard from "@/components/Discussion/DiscussionCard";
 
 type DiscussionsPageProps = {};
 
 const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 	const router = useRouter();
 	const { userMounted, userStateValue } = useUser();
-	const { discussionStateValue, fetchDiscussions } = useDiscussion();
+	const {
+		discussionStateValue,
+		discussionOptionsStateValue,
+		setDiscussionOptionsStateValue,
+		fetchDiscussions,
+	} = useDiscussion();
 	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
 	const [loadingDiscussions, setLoadingDiscussions] = useState(false);
 	const [endReached, setEndReached] = useState(false);
@@ -81,7 +88,14 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 									.filter((dis) => dis.discussion.discussionType === "discussion")
 									.map((discussion) => (
 										<React.Fragment key={discussion.discussion.id}>
-											<p>{discussion.discussion.discussionTitle}</p>
+											<DiscussionCard
+												userStateValue={userStateValue}
+												userMounted={userMounted}
+												discussionData={discussion}
+												discussionOptionsStateValue={discussionOptionsStateValue}
+												setDiscussionOptionsStateValue={setDiscussionOptionsStateValue}
+												router={router}
+											/>
 										</React.Fragment>
 									))}
 								{loadingDiscussions && (

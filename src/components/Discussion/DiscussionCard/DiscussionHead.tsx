@@ -4,17 +4,24 @@ import UserIcon from "@/components/Icons/UserIcon";
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
+import { BsThreeDots } from "react-icons/bs";
+import { MdDeleteOutline } from "react-icons/md";
+import DiscussionMenuDropdown from "./DiscussionHead/DiscussionMenuDropdown";
 
 type DiscussionHeadProps = {
 	userStateValue: UserState;
 	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
+	handleDiscussionOptions: (name: keyof DiscussionOptionsState) => void;
+	handleDeleteDiscussion: () => void;
 };
 
 const DiscussionHead: React.FC<DiscussionHeadProps> = ({
 	userStateValue,
 	discussionData,
 	discussionOptionsStateValue,
+	handleDiscussionOptions,
+	handleDeleteDiscussion,
 }) => {
 	return (
 		<div className="p-2 flex flex-row h-18 items-center gap-x-4">
@@ -34,6 +41,15 @@ const DiscussionHead: React.FC<DiscussionHeadProps> = ({
 					</p>
 				</div>
 			</div>
+			{(discussionData.discussion.creatorId === userStateValue.user.uid ||
+				userStateValue.user.roles.includes("admin")) && (
+				<DiscussionMenuDropdown
+					discussionData={discussionData}
+					discussionOptionsStateValue={discussionOptionsStateValue}
+					handleDiscussionOptions={handleDiscussionOptions}
+					handleDeleteDiscussion={handleDeleteDiscussion}
+				/>
+			)}
 		</div>
 	);
 };

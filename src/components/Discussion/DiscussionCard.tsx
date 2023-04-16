@@ -13,6 +13,7 @@ import { FaLongArrowAltUp } from "react-icons/fa";
 import { TbArrowBigDownLinesFilled, TbArrowBigUpLinesFilled } from "react-icons/tb";
 import DiscussionVoteAndReplyDetails from "./DiscussionCard/DiscussionVoteAndReplyDetails";
 import DiscussionFooter from "./DiscussionCard/DiscussionFooter";
+import { siteDetails } from "@/lib/host";
 
 type DiscussionCardProps = {
 	userStateValue: UserState;
@@ -22,6 +23,8 @@ type DiscussionCardProps = {
 	discussionData: DiscussionData;
 	router: NextRouter;
 };
+
+export type discussionShareType = "facebook" | "copy";
 
 const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	userStateValue,
@@ -65,6 +68,59 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			await Promise.all([]);
 		} catch (error: any) {
 			console.log("Hook: Discussion Deletion Error: ", error.message);
+		}
+	};
+
+	const handleFooterShareClick = async (type: discussionShareType) => {
+		let url = siteDetails.host;
+		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
+
+		const title = `&og_site_title=${encodeURIComponent(
+			discussionData.discussion.discussionTitle
+		)}`;
+
+		const description = `&og_description=${encodeURIComponent(
+			discussionData.discussion.discussionBody?.slice(0, 512) || ""
+		)}`;
+
+		const faviconUrl = document.querySelector("link[rel='icon']")?.getAttribute("href");
+
+		const image = `&og_image=${encodeURIComponent(faviconUrl || "")}`;
+
+		switch (discussionData.discussion.discussionType) {
+			case "discussion": {
+				url += `discussions/${discussionData.discussion.id}`;
+				break;
+			}
+
+			case "group": {
+				url += `groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+
+		switch (type) {
+			case "copy": {
+				await navigator.clipboard.writeText(url);
+				alert("Post link copied to clipboard!");
+				break;
+			}
+
+			case "facebook": {
+				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+					url
+				)}${siteName}${title}${description}${image}`;
+				window.open(fbSharerUrl, "_blank");
+				break;
+			}
+
+			default: {
+				break;
+			}
 		}
 	};
 
@@ -132,7 +188,12 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 							formatNumberWithSuffix={formatNumberWithSuffix}
 						/>
 						<div className="h-[1px] bg-gray-200"></div>
-						<DiscussionFooter discussionData={discussionData} />
+						<DiscussionFooter
+							discussionData={discussionData}
+							discussionOptionsStateValue={discussionOptionsStateValue}
+							handleDiscussionOptions={handleDiscussionOptions}
+							handleFooterShareClick={handleFooterShareClick}
+						/>
 					</div>
 				</div>
 			</div>

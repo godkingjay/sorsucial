@@ -1754,6 +1754,60 @@
 		}
 	}
 
+	.discussion-menu-button {
+		@apply absolute rounded-full h-8 w-8 p-2 right-2 top-2 text-gray-500;
+
+		&:hover,
+		&:focus {
+			@apply bg-gray-100 text-gray-700;
+		}
+	}
+
+	.discussion-dropdown-menu-wrapper {
+		@apply absolute w-full top-0 duration-100 right-0 max-w-sm p-2 pt-12 pointer-events-none;
+
+		.discussion-dropdown-menu {
+			@apply pointer-events-auto bg-white shadow-around-lg rounded-lg flex flex-col p-2;
+
+			.discussion-dropdown-list {
+				@apply flex flex-col;
+
+				.discussion-dropdown-item {
+					@apply p-2 rounded-md w-full flex flex-row gap-x-4 items-center text-gray-600;
+
+					.icon-container {
+						@apply h-6 w-6;
+
+						.icon {
+							@apply h-full w-full;
+						}
+					}
+
+					.label-container {
+						@apply flex flex-row flex-1 items-center text-left h-full;
+
+						.label {
+							@apply truncate;
+						}
+					}
+
+					&:hover,
+					&:focus {
+						@apply bg-gray-100;
+					}
+				}
+			}
+		}
+
+		&[menu-open="false"] {
+			@apply translate-y-[-8px] opacity-0;
+
+			* {
+				@apply pointer-events-none;
+			}
+		}
+	}
+
 	.modal-container {
 		animation: entrance-animation-float-up 0.25s ease-in-out;
 		@apply w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto;

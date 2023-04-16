@@ -95,7 +95,9 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			discussionData.discussion.discussionBody?.slice(0, 512) || ""
 		)}`;
 
-		const faviconUrl = document.querySelector("link[rel='icon']")?.getAttribute("href");
+		const faviconUrl = document
+			.querySelector("link[rel='icon']")
+			?.getAttribute("href");
 
 		const image = `&og_image=${encodeURIComponent(faviconUrl || "")}`;
 
@@ -172,7 +174,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			number /= 1000;
 			suffixIndex++;
 		}
-		const roundedNumber = Math.round(number * 10) / 10;
+		const roundedNumber = Math.floor(number * 100) / 100;
 		const suffix = suffixes[suffixIndex];
 		return `${roundedNumber}${suffix}`;
 	};

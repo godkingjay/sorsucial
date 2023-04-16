@@ -8,7 +8,7 @@ import React from "react";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { CreateDiscussionType } from "@/components/Modal/DiscussionCreationModal";
-import { SiteDiscussion } from "@/lib/interfaces/discussion";
+import { DiscussionVote, SiteDiscussion } from "@/lib/interfaces/discussion";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 
@@ -77,6 +77,178 @@ const useDiscussion = () => {
 		}
 	};
 
+	const onDiscussionVote = async (
+		discussionData: DiscussionData,
+		voteType: "upVote" | "downVote"
+	) => {
+		try {
+			if (discussionData.userVote) {
+				if (voteType === "upVote" && discussionData.userVote.voteValue === 1) {
+					setDiscussionStateValue((prev) => ({
+						...prev,
+						discussions: prev.discussions.map((discussion) => {
+							if (discussion.discussion.id === discussionData.discussion.id) {
+								return {
+									...discussion,
+									discussion: {
+										...discussion.discussion,
+										numberOfVotes: discussion.discussion.numberOfVotes - 1,
+										numberOfUpVotes: discussion.discussion.numberOfUpVotes - 1,
+									},
+									userVote: null,
+								};
+							}
+
+							return discussion;
+						}),
+					}));
+				} else if (voteType === "downVote" && discussionData.userVote.voteValue === -1) {
+					setDiscussionStateValue((prev) => ({
+						...prev,
+						discussions: prev.discussions.map((discussion) => {
+							if (discussion.discussion.id === discussionData.discussion.id) {
+								return {
+									...discussion,
+									discussion: {
+										...discussion.discussion,
+										numberOfVotes: discussion.discussion.numberOfVotes - 1,
+										numberOfDownVotes: discussion.discussion.numberOfDownVotes - 1,
+									},
+									userVote: null,
+								};
+							}
+
+							return discussion;
+						}),
+					}));
+				} else {
+					const voteDate = new Date();
+
+					const newDiscussionVote: Partial<DiscussionVote> = {
+						voteValue: voteType === "upVote" ? 1 : -1,
+						updatedAt: voteDate,
+					};
+
+					if (voteType === "upVote") {
+						setDiscussionStateValue(
+							(prev) =>
+								({
+									...prev,
+									discussions: prev.discussions.map((discussion) => {
+										if (discussion.discussion.id === discussionData.discussion.id) {
+											return {
+												...discussion,
+												discussion: {
+													...discussion.discussion,
+													numberOfVotes: discussion.discussion.numberOfVotes,
+													numberOfUpVotes: discussion.discussion.numberOfUpVotes + 1,
+													numberOfDownVotes: discussion.discussion.numberOfDownVotes - 1,
+												},
+												userVote: {
+													...discussionData.userVote,
+													...newDiscussionVote,
+												},
+											};
+										}
+
+										return discussion;
+									}),
+								} as DiscussionState)
+						);
+					} else {
+						setDiscussionStateValue(
+							(prev) =>
+								({
+									...prev,
+									discussions: prev.discussions.map((discussion) => {
+										if (discussion.discussion.id === discussionData.discussion.id) {
+											return {
+												...discussion,
+												discussion: {
+													...discussion.discussion,
+													numberOfVotes: discussion.discussion.numberOfVotes,
+													numberOfDownVotes: discussion.discussion.numberOfDownVotes + 1,
+													numberOfUpVotes: discussion.discussion.numberOfUpVotes - 1,
+												},
+												userVote: {
+													...discussionData.userVote,
+													...newDiscussionVote,
+												},
+											};
+										}
+
+										return discussion;
+									}),
+								} as DiscussionState)
+						);
+					}
+				}
+			} else {
+				const voteDate = new Date();
+
+				const newDiscussionVote: Partial<DiscussionVote> = {
+					userId: userStateValue.user.uid,
+					discussionId: discussionData.discussion.id,
+					voteValue: voteType === "upVote" ? 1 : -1,
+					createdAt: voteDate,
+					updatedAt: voteDate,
+				};
+
+				if (discussionData.discussion.groupId) {
+					newDiscussionVote.groupId = discussionData.discussion.groupId;
+				}
+
+				if (voteType === "upVote") {
+					setDiscussionStateValue(
+						(prev) =>
+							({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (discussion.discussion.id === discussionData.discussion.id) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes + 1,
+												numberOfUpVotes: discussion.discussion.numberOfUpVotes + 1,
+											},
+											userVote: newDiscussionVote,
+										};
+									}
+
+									return discussion;
+								}),
+							} as DiscussionState)
+					);
+				} else {
+					setDiscussionStateValue(
+						(prev) =>
+							({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (discussion.discussion.id === discussionData.discussion.id) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes + 1,
+												numberOfDownVotes: discussion.discussion.numberOfDownVotes + 1,
+											},
+											userVote: newDiscussionVote,
+										};
+									}
+
+									return discussion;
+								}),
+							} as DiscussionState)
+					);
+				}
+			}
+		} catch (error: any) {
+			console.log("Mongo: Voting Discussion Error: ", error.message);
+		}
+	};
+
 	const fetchDiscussions = async (
 		discussionType: SiteDiscussion["discussionType"],
 		privacy: SiteDiscussion["privacy"],
@@ -135,6 +307,7 @@ const useDiscussion = () => {
 		setDiscussionOptionsStateValue,
 		createDiscussion,
 		fetchDiscussions,
+		onDiscussionVote,
 	};
 };
 

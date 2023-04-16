@@ -729,7 +729,17 @@ const usePost = () => {
 	 * ^ ██║  ██║    ╚═╝    ██║     ╚██████╔╝███████║   ██║   ███████║
 	 * ^ ╚═╝  ╚═╝           ╚═╝      ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝
 	 */
-	const fetchPosts = async (postType: SitePost["postType"]) => {
+
+	/**
+	 *
+	 *
+	 * @param {SitePost["postType"]} postType
+	 * @param {SitePost["privacy"]} privacy
+	 */
+	const fetchPosts = async (
+		postType: SitePost["postType"],
+		privacy: SitePost["privacy"]
+	) => {
 		try {
 			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
 				if (post.post.postType === postType && acc === -1) {
@@ -746,6 +756,7 @@ const usePost = () => {
 					params: {
 						getUserId: authUser?.uid,
 						getPostType: postType,
+						getPrivacy: privacy,
 						getFromDate: oldestPost?.post.createdAt,
 					},
 				})

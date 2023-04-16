@@ -1,4 +1,5 @@
 import {
+	DiscussionData,
 	DiscussionState,
 	discussionOptionsState,
 	discussionState,
@@ -76,12 +77,64 @@ const useDiscussion = () => {
 		}
 	};
 
+	const fetchDiscussions = async (
+		discussionType: SiteDiscussion["discussionType"],
+		privacy: SiteDiscussion["privacy"],
+		isOpen: SiteDiscussion["isOpen"]
+	) => {
+		try {
+			const lastIndex = discussionStateValue.discussions.reduceRight(
+				(acc, discussion, index) => {
+					if (discussion.discussion.discussionType === discussionType && acc === -1) {
+						return index;
+					}
+
+					return acc;
+				},
+				-1
+			);
+
+			const lastDiscussion = discussionStateValue.discussions[lastIndex] || null;
+
+			const discussions: DiscussionData[] = await axios
+				.get(apiConfig.apiEndpoint + "discussion/discussions", {
+					params: {
+						getUserId: authUser?.uid,
+						getDiscussionType: discussionType,
+						getPrivacy: privacy,
+						getIsOpen: isOpen,
+						getFromDate: lastDiscussion?.discussion.createdAt,
+					},
+				})
+				.then((response) => response.data.discussions)
+				.catch((error: any) => {
+					throw new Error(
+						`API (GET - Discussions): Getting Discussions Error: ${error.message}`
+					);
+				});
+
+			if (discussions.length) {
+				setDiscussionStateValue((prev) => ({
+					...prev,
+					discussions: [...prev.discussions, ...discussions],
+				}));
+			} else {
+				console.log("Mongo: No Discussions Found!");
+			}
+
+			return discussions.length;
+		} catch (error: any) {
+			console.log("Mongo: Fetching Discussions Error: ", error.message);
+		}
+	};
+
 	return {
 		discussionStateValue,
 		setDiscussionStateValue,
 		discussionOptionsStateValue,
 		setDiscussionOptionsStateValue,
 		createDiscussion,
+		fetchDiscussions,
 	};
 };
 

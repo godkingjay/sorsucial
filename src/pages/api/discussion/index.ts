@@ -1,16 +1,12 @@
 import { ObjectId } from "mongodb";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
-import clientPromise from "@/lib/mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
+import discussionDb from "@/lib/db/discussionDb";
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const discussionsCollection = db.collection("discussions");
-		const discussionVotesCollection = db.collection("discussion-votes");
-		const discussionRepliesCollection = db.collection("discussion-replies");
-		const discussionReplyVotesCollection = db.collection("discussion-reply-votes");
+		const { discussionsCollection, discussionVotesCollection } = await discussionDb();
 
 		switch (req.method) {
 			case "POST": {

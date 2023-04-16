@@ -1,7 +1,7 @@
 import { apiConfig } from "@/lib/api/apiConfig";
+import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { SiteUser } from "@/lib/interfaces/user";
-import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -28,10 +28,8 @@ import { NextApiRequest, NextApiResponse } from "next";
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const usersCollection = db.collection("users");
-		const apiCollection = db.collection("api");
+		const { usersCollection, apiKeysCollection } = await userDb();
+		const { privateKey } = req.body || req.query;
 
 		switch (req.method) {
 			/**------------------------------------------------------------------------------------------
@@ -80,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					createdAt: newAPIDate,
 				};
 
-				const newUserAPIState = await apiCollection.insertOne(newUserAPIKey);
+				const newUserAPIState = await apiKeysCollection.insertOne(newUserAPIKey);
 
 				res.status(200).json({ newUserState, newUser });
 				break;
@@ -102,9 +100,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getUserId, getPrivateKey } = req.query;
+				const { getUserId } = req.query;
 
-				if (!getPrivateKey || getPrivateKey !== apiConfig.privateKey) {
+				if (!privateKey || privateKey !== apiConfig.privateKey) {
 					res.status(401).json({ message: "Unauthorized" });
 					return;
 				}
@@ -118,7 +116,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					uid: getUserId,
 				});
 
-				const userAPI = await apiCollection.findOne({
+				const userAPI = await apiKeysCollection.findOne({
 					userId: getUserId,
 				});
 

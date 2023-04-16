@@ -248,7 +248,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			number /= 1000;
 			suffixIndex++;
 		}
-		const roundedNumber = Math.round(number * 10) / 10;
+		const roundedNumber = Math.floor(number * 100) / 100;
 		const suffix = suffixes[suffixIndex];
 		return `${roundedNumber}${suffix}`;
 	};

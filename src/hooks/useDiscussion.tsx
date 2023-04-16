@@ -13,7 +13,8 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 
 const useDiscussion = () => {
-	const [discussionStateValue, setDiscussionStateValue] = useRecoilState(discussionState);
+	const [discussionStateValue, setDiscussionStateValue] =
+		useRecoilState(discussionState);
 	const [discussionOptionsStateValue, setDiscussionOptionsStateValue] =
 		useRecoilState(discussionOptionsState);
 	const { authUser, userStateValue } = useUser();
@@ -70,7 +71,9 @@ const useDiscussion = () => {
 						} as DiscussionState)
 				);
 			} else {
-				throw new Error(`API(Discussion): Discussion Creation Error:  No Data Returned!`);
+				throw new Error(
+					`API(Discussion): Discussion Creation Error:  No Data Returned!`
+				);
 			}
 		} catch (error: any) {
 			console.log("Mongo: Creating Discussion Error: ", error.message);
@@ -83,104 +86,157 @@ const useDiscussion = () => {
 	) => {
 		try {
 			if (discussionData.userVote) {
-				if (voteType === "upVote" && discussionData.userVote.voteValue === 1) {
-					setDiscussionStateValue((prev) => ({
-						...prev,
-						discussions: prev.discussions.map((discussion) => {
-							if (discussion.discussion.id === discussionData.discussion.id) {
-								return {
-									...discussion,
-									discussion: {
-										...discussion.discussion,
-										numberOfVotes: discussion.discussion.numberOfVotes - 1,
-										numberOfUpVotes: discussion.discussion.numberOfUpVotes - 1,
-									},
-									userVote: null,
-								};
-							}
+				if (
+					(voteType === "upVote" && discussionData.userVote.voteValue === 1) ||
+					(voteType === "downVote" && discussionData.userVote.voteValue === -1)
+				) {
+					const { voteDeleted } = await axios
+						.delete(apiConfig.apiEndpoint + "discussion/vote/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								discussionId: discussionData.discussion.id,
+								userId: userStateValue.user.uid,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error: any) => {
+							throw new Error(
+								`API(Discussion): Discussion Vote Deletion Error:  ${error.message}`
+							);
+						});
 
-							return discussion;
-						}),
-					}));
-				} else if (voteType === "downVote" && discussionData.userVote.voteValue === -1) {
-					setDiscussionStateValue((prev) => ({
-						...prev,
-						discussions: prev.discussions.map((discussion) => {
-							if (discussion.discussion.id === discussionData.discussion.id) {
-								return {
-									...discussion,
-									discussion: {
-										...discussion.discussion,
-										numberOfVotes: discussion.discussion.numberOfVotes - 1,
-										numberOfDownVotes: discussion.discussion.numberOfDownVotes - 1,
-									},
-									userVote: null,
-								};
-							}
+					if (voteDeleted) {
+						if (voteType === "upVote") {
+							setDiscussionStateValue((prev) => ({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (
+										discussion.discussion.id === discussionData.discussion.id
+									) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes - 1,
+												numberOfUpVotes:
+													discussion.discussion.numberOfUpVotes - 1,
+											},
+											userVote: null,
+										};
+									}
 
-							return discussion;
-						}),
-					}));
+									return discussion;
+								}),
+							}));
+						} else if (voteType === "downVote") {
+							setDiscussionStateValue((prev) => ({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (
+										discussion.discussion.id === discussionData.discussion.id
+									) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes - 1,
+												numberOfDownVotes:
+													discussion.discussion.numberOfDownVotes - 1,
+											},
+											userVote: null,
+										};
+									}
+
+									return discussion;
+								}),
+							}));
+						}
+					}
 				} else {
 					const voteDate = new Date();
 
 					const newDiscussionVote: Partial<DiscussionVote> = {
+						userId: discussionData.userVote.userId,
+						discussionId: discussionData.userVote.discussionId,
 						voteValue: voteType === "upVote" ? 1 : -1,
 						updatedAt: voteDate,
 					};
 
-					if (voteType === "upVote") {
-						setDiscussionStateValue(
-							(prev) =>
-								({
-									...prev,
-									discussions: prev.discussions.map((discussion) => {
-										if (discussion.discussion.id === discussionData.discussion.id) {
-											return {
-												...discussion,
-												discussion: {
-													...discussion.discussion,
-													numberOfVotes: discussion.discussion.numberOfVotes,
-													numberOfUpVotes: discussion.discussion.numberOfUpVotes + 1,
-													numberOfDownVotes: discussion.discussion.numberOfDownVotes - 1,
-												},
-												userVote: {
-													...discussionData.userVote,
-													...newDiscussionVote,
-												},
-											};
-										}
+					const { voteChanged } = await axios
+						.put(apiConfig.apiEndpoint + "discussion/vote/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							discussionVoteData: newDiscussionVote,
+							voteType,
+						})
+						.then((response) => response.data)
+						.catch((error: any) => {
+							throw new Error(
+								`API(Discussion): Discussion Vote Change Error:  ${error.message}`
+							);
+						});
 
-										return discussion;
-									}),
-								} as DiscussionState)
-						);
-					} else {
-						setDiscussionStateValue(
-							(prev) =>
-								({
-									...prev,
-									discussions: prev.discussions.map((discussion) => {
-										if (discussion.discussion.id === discussionData.discussion.id) {
-											return {
-												...discussion,
-												discussion: {
-													...discussion.discussion,
-													numberOfVotes: discussion.discussion.numberOfVotes,
-													numberOfDownVotes: discussion.discussion.numberOfDownVotes + 1,
-													numberOfUpVotes: discussion.discussion.numberOfUpVotes - 1,
-												},
-												userVote: {
-													...discussionData.userVote,
-													...newDiscussionVote,
-												},
-											};
-										}
+					if (voteChanged) {
+						if (voteType === "upVote") {
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes + 1,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes - 1,
+														updatedAt: voteDate,
+													},
+													userVote: {
+														...discussionData.userVote,
+														...newDiscussionVote,
+													},
+												};
+											}
 
-										return discussion;
-									}),
-								} as DiscussionState)
-						);
+											return discussion;
+										}),
+									} as DiscussionState)
+							);
+						} else {
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes + 1,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes - 1,
+														updatedAt: voteDate,
+													},
+													userVote: {
+														...discussionData.userVote,
+														...newDiscussionVote,
+													},
+												};
+											}
+
+											return discussion;
+										}),
+									} as DiscussionState)
+							);
+						}
 					}
 				}
 			} else {
@@ -198,50 +254,71 @@ const useDiscussion = () => {
 					newDiscussionVote.groupId = discussionData.discussion.groupId;
 				}
 
-				if (voteType === "upVote") {
-					setDiscussionStateValue(
-						(prev) =>
-							({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (discussion.discussion.id === discussionData.discussion.id) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes + 1,
-												numberOfUpVotes: discussion.discussion.numberOfUpVotes + 1,
-											},
-											userVote: newDiscussionVote,
-										};
-									}
+				const { voteSuccess } = await axios
+					.post(apiConfig.apiEndpoint + "discussion/vote/", {
+						apiKey: userStateValue.api?.keys[0].key,
+						discussionVoteData: newDiscussionVote,
+						voteType,
+					})
+					.then((response) => response.data)
+					.catch((error) => {
+						throw new Error(
+							`API(Discussion): Discussion Vote Error:  ${error.message}`
+						);
+					});
 
-									return discussion;
-								}),
-							} as DiscussionState)
-					);
-				} else {
-					setDiscussionStateValue(
-						(prev) =>
-							({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (discussion.discussion.id === discussionData.discussion.id) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes + 1,
-												numberOfDownVotes: discussion.discussion.numberOfDownVotes + 1,
-											},
-											userVote: newDiscussionVote,
-										};
-									}
+				if (voteSuccess) {
+					if (voteType === "upVote") {
+						setDiscussionStateValue(
+							(prev) =>
+								({
+									...prev,
+									discussions: prev.discussions.map((discussion) => {
+										if (
+											discussion.discussion.id === discussionData.discussion.id
+										) {
+											return {
+												...discussion,
+												discussion: {
+													...discussion.discussion,
+													numberOfVotes: discussion.discussion.numberOfVotes + 1,
+													numberOfUpVotes:
+														discussion.discussion.numberOfUpVotes + 1,
+												},
+												userVote: newDiscussionVote,
+											};
+										}
 
-									return discussion;
-								}),
-							} as DiscussionState)
-					);
+										return discussion;
+									}),
+								} as DiscussionState)
+						);
+					} else {
+						setDiscussionStateValue(
+							(prev) =>
+								({
+									...prev,
+									discussions: prev.discussions.map((discussion) => {
+										if (
+											discussion.discussion.id === discussionData.discussion.id
+										) {
+											return {
+												...discussion,
+												discussion: {
+													...discussion.discussion,
+													numberOfVotes: discussion.discussion.numberOfVotes + 1,
+													numberOfDownVotes:
+														discussion.discussion.numberOfDownVotes + 1,
+												},
+												userVote: newDiscussionVote,
+											};
+										}
+
+										return discussion;
+									}),
+								} as DiscussionState)
+						);
+					}
 				}
 			}
 		} catch (error: any) {
@@ -257,7 +334,10 @@ const useDiscussion = () => {
 		try {
 			const lastIndex = discussionStateValue.discussions.reduceRight(
 				(acc, discussion, index) => {
-					if (discussion.discussion.discussionType === discussionType && acc === -1) {
+					if (
+						discussion.discussion.discussionType === discussionType &&
+						acc === -1
+					) {
 						return index;
 					}
 

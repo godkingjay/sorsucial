@@ -32,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const db = client.db("sorsu-db");
 		const usersCollection = db.collection("users");
 		const apiCollection = db.collection("api");
+		const { privateKey } = req.body || req.query;
 
 		switch (req.method) {
 			/**------------------------------------------------------------------------------------------
@@ -102,9 +103,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getUserId, getPrivateKey } = req.query;
+				const { getUserId } = req.query;
 
-				if (!getPrivateKey || getPrivateKey !== apiConfig.privateKey) {
+				if (!privateKey || privateKey !== apiConfig.privateKey) {
 					res.status(401).json({ message: "Unauthorized" });
 					return;
 				}

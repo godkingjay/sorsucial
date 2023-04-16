@@ -37,7 +37,7 @@ const useUser = () => {
 				const { userData, userAPI } = await axios
 					.get(apiConfig.apiEndpoint + "user/user", {
 						params: {
-							getPrivateKey: apiConfig.privateKey,
+							privateKey: apiConfig.privateKey,
 							getUserId: user.uid,
 						},
 					})

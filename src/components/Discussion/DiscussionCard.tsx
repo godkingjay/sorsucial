@@ -39,6 +39,35 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			: ""
 	);
 
+	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
+		if (discussionOptionsStateValue[name] === discussionData.discussion.id) {
+			setDiscussionOptionsStateValue({
+				...discussionOptionsStateValue,
+				[name]: "",
+			});
+		} else {
+			setDiscussionOptionsStateValue({
+				...discussionOptionsStateValue,
+				[name]: discussionData.discussion.id,
+			});
+		}
+	};
+
+	const handleDeleteDiscussion = async () => {
+		try {
+			if (
+				userStateValue.user.uid !== discussionData.discussion.creatorId ||
+				userStateValue.user.roles.includes("admin")
+			) {
+				throw new Error("You are not authorized to delete this discussion!");
+			}
+
+			await Promise.all([]);
+		} catch (error: any) {
+			console.log("Hook: Discussion Deletion Error: ", error.message);
+		}
+	};
+
 	const isSingleDiscussionPage = () => {
 		const { asPath } = router;
 		const { id: discussionId } = discussionData.discussion;
@@ -89,6 +118,8 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						userStateValue={userStateValue}
 						discussionData={discussionData}
 						discussionOptionsStateValue={discussionOptionsStateValue}
+						handleDiscussionOptions={handleDiscussionOptions}
+						handleDeleteDiscussion={handleDeleteDiscussion}
 					/>
 					<DiscussionTextContent
 						discussionData={discussionData}

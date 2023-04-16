@@ -13,7 +13,7 @@ const DiscussionTextContent: React.FC<DiscussionTextContentProps> = ({
 	isSingleDiscussionPage,
 }) => {
 	return (
-		<div className="flex flex-col px-4 pb-4 gap-y-2">
+		<div className="flex flex-col px-4 py-2 gap-y-2">
 			<h1 className="font-semibold whitespace-pre-wrap break-words w-full">
 				{discussionData.discussion.discussionTitle}
 			</h1>

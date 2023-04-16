@@ -1,8 +1,7 @@
 import { apiConfig } from "@/lib/api/apiConfig";
-import userDb from "@/lib/db/user";
+import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { SiteUser } from "@/lib/interfaces/user";
-import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 

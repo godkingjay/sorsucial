@@ -3,6 +3,7 @@ import { SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
 import { atom } from "recoil";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
+import { SiteUserAPI } from "@/lib/interfaces/api";
 
 export interface UserState {
 	user: SiteUser;
@@ -11,6 +12,7 @@ export interface UserState {
 	userPosts: SitePost[];
 	userDiscussions: SiteDiscussion[];
 	userPage: UserPageState | null;
+	api?: SiteUserAPI | null;
 }
 
 export interface UserPageState {
@@ -41,6 +43,7 @@ export const defaultUserState: UserState = {
 	userPosts: [],
 	userDiscussions: [],
 	userPage: null,
+	api: null,
 };
 
 export const userState = atom<UserState>({

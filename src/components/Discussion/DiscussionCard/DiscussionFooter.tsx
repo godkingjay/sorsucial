@@ -1,8 +1,6 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
 import React from "react";
-import { BsFacebook } from "react-icons/bs";
 import { GoCommentDiscussion } from "react-icons/go";
-import { IoLinkOutline } from "react-icons/io5";
 import { RiShareForwardLine } from "react-icons/ri";
 import { discussionShareType } from "../DiscussionCard";
 import DiscussionShareMenu from "./DiscussionFooter/DiscussionShareMenu";

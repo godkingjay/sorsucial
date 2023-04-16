@@ -1,5 +1,4 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
-import { UserState } from "@/atoms/userAtom";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdDeleteOutline } from "react-icons/md";

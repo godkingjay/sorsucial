@@ -4,8 +4,6 @@ import UserIcon from "@/components/Icons/UserIcon";
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
-import { BsThreeDots } from "react-icons/bs";
-import { MdDeleteOutline } from "react-icons/md";
 import DiscussionMenuDropdown from "./DiscussionHead/DiscussionMenuDropdown";
 
 type DiscussionHeadProps = {

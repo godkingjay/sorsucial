@@ -1,3 +1,4 @@
+import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { SiteUser } from "@/lib/interfaces/user";
 import clientPromise from "@/lib/mongodb";
@@ -101,7 +102,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getUserId } = req.query;
+				const { getUserId, getPrivateKey } = req.query;
+
+				if (!getPrivateKey || getPrivateKey !== apiConfig.privateKey) {
+					res.status(401).json({ message: "Unauthorized" });
+					return;
+				}
 
 				if (!getUserId) {
 					res.status(500).json({ error: "No user id provided" });
@@ -112,7 +118,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					uid: getUserId,
 				});
 
-				res.status(200).json({ userData });
+				const userAPI = await apiCollection.findOne({
+					userId: getUserId,
+				});
+
+				res.status(200).json({ userData, userAPI });
 				break;
 			}
 

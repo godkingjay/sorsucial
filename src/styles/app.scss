@@ -1754,6 +1754,56 @@
 		}
 	}
 
+	.discussion-vote-section {
+		@apply flex flex-col items-center p-2 bg-gray-100 rounded-l-lg;
+
+		.discussion-vote-buttons-wrapper {
+			@apply sticky top-16;
+
+			.discussion-vote-buttons-container {
+				@apply flex flex-col items-center;
+
+				.vote-button {
+					.icon-container {
+						@apply h-8 w-8 aspect-square;
+
+						.icon {
+							@apply h-full w-full stroke-1;
+						}
+					}
+				}
+
+				.upvote-button {
+					&[data-voted="true"] {
+						@apply text-blue-500;
+					}
+
+					&:hover {
+						@apply text-blue-500;
+					}
+				}
+
+				.downvote-button {
+					&[data-voted="true"] {
+						@apply text-red-500;
+					}
+
+					&:hover {
+						@apply text-red-500;
+					}
+				}
+
+				.vote-count-container {
+					@apply my-1;
+
+					.vote-count {
+						@apply text-xs font-semibold;
+					}
+				}
+			}
+		}
+	}
+
 	.discussion-menu-button {
 		@apply absolute rounded-full h-8 w-8 p-2 right-2 top-2 text-gray-500;
 

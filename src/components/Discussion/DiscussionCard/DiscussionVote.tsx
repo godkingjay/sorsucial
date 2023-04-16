@@ -19,26 +19,28 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 	formatWithSuffix,
 }) => {
 	return (
-		<div className="flex flex-col items-center p-2 bg-gray-100 rounded-l-lg">
-			<div className="sticky top-16">
-				<div className="flex flex-col items-center">
+		<div className="discussion-vote-section">
+			<div className="discussion-vote-buttons-wrapper">
+				<div className="discussion-vote-buttons-container">
 					<button
 						type="button"
 						title={discussionData.userVote?.voteValue === 1 ? "Remove Upvote" : "Upvote"}
 						onClick={() => handleDiscussionVote("upVote")}
+						className="vote-button upvote-button"
+						data-voted={discussionData.userVote?.voteValue === 1}
 					>
 						{discussionData.userVote?.voteValue === 1 ? (
-							<div className="h-8 w-8 aspect-square text-blue-500">
-								<TbArrowBigUpFilled className="h-full w-full stroke-1 text-primary-500" />
+							<div className="icon-container">
+								<TbArrowBigUpFilled className="icon" />
 							</div>
 						) : (
-							<div className="h-8 w-8 aspect-square">
-								<TbArrowBigUp className="h-full w-full stroke-1" />
+							<div className="icon-container">
+								<TbArrowBigUp className="icon" />
 							</div>
 						)}
 					</button>
-					<div className="my-1">
-						<p className="text-xs font-semibold">
+					<div className="vote-count-container">
+						<p className="vote-count">
 							{discussionData.discussion.numberOfUpVotes <
 								discussionData.discussion.numberOfDownVotes && "-"}
 							{formatWithSuffix(
@@ -55,14 +57,16 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 							discussionData.userVote?.voteValue === -1 ? "Remove Downvote" : "Downvote"
 						}
 						onClick={() => handleDiscussionVote("downVote")}
+						className="vote-button downvote-button"
+						data-voted={discussionData.userVote?.voteValue === -1}
 					>
 						{discussionData.userVote?.voteValue === -1 ? (
-							<div className="h-8 w-8 aspect-square text-red-500">
-								<TbArrowBigDownFilled className="h-full w-full stroke-1 text-primary-500" />
+							<div className="icon-container">
+								<TbArrowBigDownFilled className="icon" />
 							</div>
 						) : (
-							<div className="h-8 w-8 aspect-square">
-								<TbArrowBigDown className="h-full w-full stroke-1" />
+							<div className="icon-container">
+								<TbArrowBigDown className="icon" />
 							</div>
 						)}
 					</button>

@@ -18,7 +18,6 @@ export default async function handler(
 			discussionVoteData,
 			userId,
 			discussionId,
-			discussionVoteId,
 			voteType,
 		}: {
 			apiKey: string;
@@ -123,6 +122,89 @@ export default async function handler(
 			}
 
 			case "DELETE": {
+				if (!discussionId) {
+					res.status(500).json({ error: "No discussion ID provided" });
+				}
+
+				if (!userId) {
+					res.status(500).json({ error: "No user ID provided" });
+				}
+
+				if (userId !== userAPI.userId) {
+					res.status(500).json({ error: "User ID does not match API key" });
+				}
+
+				const discussionVote = (await discussionVotesCollection.findOne({
+					discussionId,
+					userId,
+				})) as unknown as DiscussionVote;
+
+				if (!discussionVote) {
+					res.status(500).json({ error: "No discussion vote found" });
+				}
+
+				const deleteDiscussionVoteState = await discussionVotesCollection
+					.deleteOne({
+						discussionId,
+						userId,
+					})
+					.catch((error: any) => {
+						res.status(500).json({
+							error:
+								"Mongo(API): Deleting Discussion Vote Document Error:" +
+								error.message,
+						});
+					});
+
+				if (discussionVote.voteValue === 1) {
+					await discussionsCollection
+						.updateOne(
+							{
+								id: discussionVote.discussionId,
+							},
+							{
+								$inc: {
+									numberOfVotes: -1,
+									numberOfUpVotes: -1,
+								},
+							}
+						)
+						.catch((error: any) => {
+							res.status(500).json({
+								error:
+									"Mongo(API): Updating Discussion Document Error:" +
+									error.message,
+							});
+						});
+				} else {
+					await discussionsCollection
+						.updateOne(
+							{
+								id: discussionVote.discussionId,
+							},
+							{
+								$inc: {
+									numberOfVotes: -1,
+									numberOfDownVotes: -1,
+								},
+							}
+						)
+						.catch((error: any) => {
+							res.status(500).json({
+								error:
+									"Mongo(API): Updating Discussion Document Error:" +
+									error.message,
+							});
+						});
+				}
+
+				res.status(200).json({
+					message: "Discussion vote deleted",
+					voteDeleted: deleteDiscussionVoteState
+						? deleteDiscussionVoteState.acknowledged
+						: false,
+				});
+
 				break;
 			}
 

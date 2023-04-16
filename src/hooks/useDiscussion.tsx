@@ -86,48 +86,72 @@ const useDiscussion = () => {
 	) => {
 		try {
 			if (discussionData.userVote) {
-				if (voteType === "upVote" && discussionData.userVote.voteValue === 1) {
-					setDiscussionStateValue((prev) => ({
-						...prev,
-						discussions: prev.discussions.map((discussion) => {
-							if (discussion.discussion.id === discussionData.discussion.id) {
-								return {
-									...discussion,
-									discussion: {
-										...discussion.discussion,
-										numberOfVotes: discussion.discussion.numberOfVotes - 1,
-										numberOfUpVotes: discussion.discussion.numberOfUpVotes - 1,
-									},
-									userVote: null,
-								};
-							}
-
-							return discussion;
-						}),
-					}));
-				} else if (
-					voteType === "downVote" &&
-					discussionData.userVote.voteValue === -1
+				if (
+					(voteType === "upVote" && discussionData.userVote.voteValue === 1) ||
+					(voteType === "downVote" && discussionData.userVote.voteValue === -1)
 				) {
-					setDiscussionStateValue((prev) => ({
-						...prev,
-						discussions: prev.discussions.map((discussion) => {
-							if (discussion.discussion.id === discussionData.discussion.id) {
-								return {
-									...discussion,
-									discussion: {
-										...discussion.discussion,
-										numberOfVotes: discussion.discussion.numberOfVotes - 1,
-										numberOfDownVotes:
-											discussion.discussion.numberOfDownVotes - 1,
-									},
-									userVote: null,
-								};
-							}
+					const { voteDeleted } = await axios
+						.delete(apiConfig.apiEndpoint + "discussion/vote/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								discussionId: discussionData.discussion.id,
+								userId: userStateValue.user.uid,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error: any) => {
+							throw new Error(
+								`API(Discussion): Discussion Vote Deletion Error:  ${error.message}`
+							);
+						});
 
-							return discussion;
-						}),
-					}));
+					if (voteDeleted) {
+						if (voteType === "upVote") {
+							setDiscussionStateValue((prev) => ({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (
+										discussion.discussion.id === discussionData.discussion.id
+									) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes - 1,
+												numberOfUpVotes:
+													discussion.discussion.numberOfUpVotes - 1,
+											},
+											userVote: null,
+										};
+									}
+
+									return discussion;
+								}),
+							}));
+						} else if (voteType === "downVote") {
+							setDiscussionStateValue((prev) => ({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (
+										discussion.discussion.id === discussionData.discussion.id
+									) {
+										return {
+											...discussion,
+											discussion: {
+												...discussion.discussion,
+												numberOfVotes: discussion.discussion.numberOfVotes - 1,
+												numberOfDownVotes:
+													discussion.discussion.numberOfDownVotes - 1,
+											},
+											userVote: null,
+										};
+									}
+
+									return discussion;
+								}),
+							}));
+						}
+					}
 				} else {
 					const voteDate = new Date();
 

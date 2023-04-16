@@ -9,9 +9,15 @@ import {
 
 type DiscussionVoteProps = {
 	discussionData: DiscussionData;
+	handleDiscussionVote: (voteType: "upVote" | "downVote") => void;
+	formatWithSuffix: (number: number) => string;
 };
 
-const DiscussionVote: React.FC<DiscussionVoteProps> = ({ discussionData }) => {
+const DiscussionVote: React.FC<DiscussionVoteProps> = ({
+	discussionData,
+	handleDiscussionVote,
+	formatWithSuffix,
+}) => {
 	return (
 		<div className="flex flex-col items-center p-2 bg-gray-100 rounded-l-lg">
 			<div className="sticky top-16">
@@ -19,6 +25,7 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({ discussionData }) => {
 					<button
 						type="button"
 						title={discussionData.userVote?.voteValue === 1 ? "Remove Upvote" : "Upvote"}
+						onClick={() => handleDiscussionVote("upVote")}
 					>
 						{discussionData.userVote?.voteValue === 1 ? (
 							<div className="h-8 w-8 aspect-square text-blue-500">
@@ -30,10 +37,16 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({ discussionData }) => {
 							</div>
 						)}
 					</button>
-					<div>
-						<p>
-							{discussionData.discussion.numberOfUpVotes -
-								discussionData.discussion.numberOfDownVotes}
+					<div className="my-1">
+						<p className="text-xs font-semibold">
+							{discussionData.discussion.numberOfUpVotes <
+								discussionData.discussion.numberOfDownVotes && "-"}
+							{formatWithSuffix(
+								Math.abs(
+									discussionData.discussion.numberOfUpVotes -
+										discussionData.discussion.numberOfDownVotes
+								)
+							)}
 						</p>
 					</div>
 					<button
@@ -41,6 +54,7 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({ discussionData }) => {
 						title={
 							discussionData.userVote?.voteValue === -1 ? "Remove Downvote" : "Downvote"
 						}
+						onClick={() => handleDiscussionVote("downVote")}
 					>
 						{discussionData.userVote?.voteValue === -1 ? (
 							<div className="h-8 w-8 aspect-square text-red-500">

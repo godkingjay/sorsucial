@@ -45,7 +45,7 @@ const DiscussionVoteAndReplyDetails: React.FC<DiscussionVoteAndReplyDetailsProps
 						<TbArrowBigUpLinesFilled className="h-full w-full" />
 					</div>
 					<p className="text-gray-500 truncate">
-						{formatNumberWithSuffix(discussionData.discussion.numberOfVotes)}
+						{formatNumberWithSuffix(discussionData.discussion.numberOfUpVotes)}
 					</p>
 				</div>
 				<div
@@ -61,7 +61,7 @@ const DiscussionVoteAndReplyDetails: React.FC<DiscussionVoteAndReplyDetailsProps
 						<TbArrowBigDownLinesFilled className="h-full w-full" />
 					</div>
 					<p className="text-gray-500 truncate">
-						{formatNumberWithSuffix(discussionData.discussion.numberOfVotes)}
+						{formatNumberWithSuffix(discussionData.discussion.numberOfDownVotes)}
 					</p>
 				</div>
 			</div>

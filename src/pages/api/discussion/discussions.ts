@@ -1,21 +1,28 @@
+import discussionDb from "@/lib/db/discussionDb";
 import { DiscussionVote } from "./../../../lib/interfaces/discussion";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
-import clientPromise from "@/lib/mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
+import userDb from "@/lib/db/userDb";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const usersCollection = db.collection("users");
-		const discussionsCollection = db.collection("discussions");
-		const discussionVotesCollection = db.collection("discussion-votes");
+		const { usersCollection } = await userDb();
+		const { discussionsCollection, discussionVotesCollection } =
+			await discussionDb();
 
 		switch (req.method) {
 			case "GET": {
-				const { getUserId, getDiscussionType, getPrivacy, getIsOpen, getFromDate } =
-					req.query;
+				const {
+					getUserId,
+					getDiscussionType,
+					getPrivacy,
+					getIsOpen,
+					getFromDate,
+				} = req.query;
 
 				if (!getDiscussionType) {
 					res.status(505).json({ error: "No discussion type provided"! });

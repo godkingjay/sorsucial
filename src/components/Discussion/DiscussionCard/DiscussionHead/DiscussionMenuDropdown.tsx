@@ -42,7 +42,13 @@ const DiscussionMenuDropdown: React.FC<DiscussionMenuDropdownProps> = ({
 								type="button"
 								title="Delete Post"
 								className="discussion-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
-								onClick={handleDeleteDiscussion}
+								onClick={() =>
+									discussionOptionsStateValue.menu === discussionData.discussion.id &&
+									handleDeleteDiscussion()
+								}
+								disabled={
+									discussionOptionsStateValue.menu !== discussionData.discussion.id
+								}
 							>
 								<div className="icon-container">
 									<MdDeleteOutline className="icon" />

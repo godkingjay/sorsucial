@@ -1,4 +1,7 @@
+import { SiteUserAPI } from "@/lib/interfaces/api";
+import { SiteUser } from "@/lib/interfaces/user";
 import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**------------------------------------------------------------------------------------------
@@ -22,14 +25,12 @@ import { NextApiRequest, NextApiResponse } from "next";
  * @param {NextApiResponse} res
  *
  */
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
 		const usersCollection = db.collection("users");
+		const apiCollection = db.collection("api");
 
 		switch (req.method) {
 			/**------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ export default async function handler(
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "POST": {
-				const { newUser } = req.body;
+				const { newUser }: { newUser: SiteUser } = req.body;
 
 				if (!newUser) {
 					res.status(500).json({ error: "No user provided" });
@@ -56,6 +57,29 @@ export default async function handler(
 				}
 
 				const newUserState = await usersCollection.insertOne(newUser);
+
+				const newAPIDate = new Date();
+
+				const apiId = new ObjectId();
+
+				const newUserAPIKey: Partial<SiteUserAPI> = {
+					userId: newUser.uid,
+					keys: [
+						{
+							id: apiId.toHexString(),
+							key: new ObjectId().toHexString(),
+							keyType: "default",
+							name: "User API",
+							description: "",
+							updatedAt: newAPIDate,
+							createdAt: newAPIDate,
+						},
+					],
+					updatedAt: newAPIDate,
+					createdAt: newAPIDate,
+				};
+
+				const newUserAPIState = await apiCollection.insertOne(newUserAPIKey);
 
 				res.status(200).json({ newUserState, newUser });
 				break;

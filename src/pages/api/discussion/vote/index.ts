@@ -21,7 +21,7 @@ export default async function handler(
 			voteType,
 		}: {
 			apiKey: string;
-			discussionVoteData: DiscussionVote;
+			discussionVoteData: Partial<DiscussionVote>;
 			userId: string;
 			discussionId: string;
 			discussionVoteId: string;
@@ -109,7 +109,7 @@ export default async function handler(
 
 				res.status(200).json({
 					message: "Discussion vote created",
-					discussionVoteState: newDiscussionVoteState
+					voteSuccess: newDiscussionVoteState
 						? newDiscussionVoteState.acknowledged
 						: false,
 				});
@@ -118,6 +118,84 @@ export default async function handler(
 			}
 
 			case "PUT": {
+				if (!discussionVoteData) {
+					res.status(500).json({ error: "No discussion vote data provided" });
+				}
+
+				if (discussionVoteData.userId !== userAPI.userId) {
+					res.status(500).json({ error: "User ID does not match API key" });
+				}
+
+				if (voteType !== "upVote" && voteType !== "downVote") {
+					res.status(500).json({ error: "Invalid vote type" });
+				}
+
+				const updateDiscussionVoteState =
+					await discussionVotesCollection.updateOne(
+						{
+							userId: discussionVoteData.userId,
+							discussionId: discussionVoteData.discussionId,
+						},
+						{
+							$set: discussionVoteData,
+						}
+					);
+
+				if (voteType === "upVote") {
+					await discussionsCollection
+						.updateOne(
+							{
+								id: discussionVoteData.discussionId,
+							},
+							{
+								$set: {
+									updatedAt: discussionVoteData.updatedAt,
+								},
+								$inc: {
+									numberOfUpVotes: 1,
+									numberOfDownVotes: -1,
+								},
+							}
+						)
+						.catch((error: any) => {
+							res.status(500).json({
+								error:
+									"Mongo(API): Updating Discussion Document Error:" +
+									error.message,
+							});
+						});
+				} else {
+					await discussionsCollection
+						.updateOne(
+							{
+								id: discussionVoteData.discussionId,
+							},
+							{
+								$set: {
+									updatedAt: discussionVoteData.updatedAt,
+								},
+								$inc: {
+									numberOfUpVotes: -1,
+									numberOfDownVotes: 1,
+								},
+							}
+						)
+						.catch((error: any) => {
+							res.status(500).json({
+								error:
+									"Mongo(API): Updating Discussion Document Error:" +
+									error.message,
+							});
+						});
+				}
+
+				res.status(200).json({
+					message: "Discussion vote updated",
+					voteChanged: updateDiscussionVoteState
+						? updateDiscussionVoteState.acknowledged
+						: false,
+				});
+
 				break;
 			}
 

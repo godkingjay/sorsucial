@@ -156,70 +156,87 @@ const useDiscussion = () => {
 					const voteDate = new Date();
 
 					const newDiscussionVote: Partial<DiscussionVote> = {
+						userId: discussionData.userVote.userId,
+						discussionId: discussionData.userVote.discussionId,
 						voteValue: voteType === "upVote" ? 1 : -1,
 						updatedAt: voteDate,
 					};
 
-					if (voteType === "upVote") {
-						setDiscussionStateValue(
-							(prev) =>
-								({
-									...prev,
-									discussions: prev.discussions.map((discussion) => {
-										if (
-											discussion.discussion.id === discussionData.discussion.id
-										) {
-											return {
-												...discussion,
-												discussion: {
-													...discussion.discussion,
-													numberOfVotes: discussion.discussion.numberOfVotes,
-													numberOfUpVotes:
-														discussion.discussion.numberOfUpVotes + 1,
-													numberOfDownVotes:
-														discussion.discussion.numberOfDownVotes - 1,
-												},
-												userVote: {
-													...discussionData.userVote,
-													...newDiscussionVote,
-												},
-											};
-										}
+					const { voteChanged } = await axios
+						.put(apiConfig.apiEndpoint + "discussion/vote/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							discussionVoteData: newDiscussionVote,
+							voteType,
+						})
+						.then((response) => response.data)
+						.catch((error: any) => {
+							throw new Error(
+								`API(Discussion): Discussion Vote Change Error:  ${error.message}`
+							);
+						});
 
-										return discussion;
-									}),
-								} as DiscussionState)
-						);
-					} else {
-						setDiscussionStateValue(
-							(prev) =>
-								({
-									...prev,
-									discussions: prev.discussions.map((discussion) => {
-										if (
-											discussion.discussion.id === discussionData.discussion.id
-										) {
-											return {
-												...discussion,
-												discussion: {
-													...discussion.discussion,
-													numberOfVotes: discussion.discussion.numberOfVotes,
-													numberOfDownVotes:
-														discussion.discussion.numberOfDownVotes + 1,
-													numberOfUpVotes:
-														discussion.discussion.numberOfUpVotes - 1,
-												},
-												userVote: {
-													...discussionData.userVote,
-													...newDiscussionVote,
-												},
-											};
-										}
+					if (voteChanged) {
+						if (voteType === "upVote") {
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes + 1,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes - 1,
+														updatedAt: voteDate,
+													},
+													userVote: {
+														...discussionData.userVote,
+														...newDiscussionVote,
+													},
+												};
+											}
 
-										return discussion;
-									}),
-								} as DiscussionState)
-						);
+											return discussion;
+										}),
+									} as DiscussionState)
+							);
+						} else {
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes + 1,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes - 1,
+														updatedAt: voteDate,
+													},
+													userVote: {
+														...discussionData.userVote,
+														...newDiscussionVote,
+													},
+												};
+											}
+
+											return discussion;
+										}),
+									} as DiscussionState)
+							);
+						}
 					}
 				}
 			} else {
@@ -237,7 +254,7 @@ const useDiscussion = () => {
 					newDiscussionVote.groupId = discussionData.discussion.groupId;
 				}
 
-				const { discussionVoteState: voteSuccess } = await axios
+				const { voteSuccess } = await axios
 					.post(apiConfig.apiEndpoint + "discussion/vote/", {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionVoteData: newDiscussionVote,

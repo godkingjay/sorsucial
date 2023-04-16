@@ -1858,6 +1858,70 @@
 		}
 	}
 
+	.discussion-vote-reply-details-wrapper {
+		@apply px-4 flex flex-row justify-between py-2;
+
+		.discussion-vote-details-container {
+			@apply flex flex-row flex-1 flex-wrap gap-x-6 gap-y-2;
+
+			.discussion-vote {
+				@apply flex flex-row items-center gap-x-1;
+
+				.icon-container {
+					@apply h-4 w-4 aspect-square grid place-items-center text-gray-500;
+
+					.icon {
+						@apply h-full w-full;
+					}
+				}
+
+				.label {
+					@apply text-gray-500 truncate text-sm;
+				}
+			}
+
+			.total-votes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-green-500;
+					}
+				}
+			}
+
+			.total-upvotes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-blue-500;
+					}
+				}
+			}
+
+			.total-downvotes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-red-500;
+					}
+				}
+			}
+		}
+
+		.discussion-reply {
+			@apply flex flex-row items-center gap-x-1;
+
+			.icon-container {
+				@apply h-4 w-4 aspect-square text-gray-500;
+
+				.icon {
+					@apply h-full w-full;
+				}
+			}
+
+			.label {
+				@apply text-gray-500 truncate text-sm;
+			}
+		}
+	}
+
 	.discussion-footer-wrapper {
 		@apply flex flex-row items-center h-10 rounded-b-lg p-1 relative;
 

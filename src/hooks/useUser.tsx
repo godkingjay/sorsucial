@@ -34,13 +34,14 @@ const useUser = () => {
 		setLoadingUser(true);
 		try {
 			if (user) {
-				const userData = await axios
+				const { userData, userAPI } = await axios
 					.get(apiConfig.apiEndpoint + "user/user", {
 						params: {
+							getPrivateKey: apiConfig.privateKey,
 							getUserId: user.uid,
 						},
 					})
-					.then((res) => res.data.userData)
+					.then((res) => res.data)
 					.catch((error) => {
 						console.log("API: Get User Error: ", error.message);
 					});
@@ -49,6 +50,7 @@ const useUser = () => {
 					setUserStateValue((prev) => ({
 						...prev,
 						user: userData,
+						api: userAPI,
 					}));
 				} else {
 					console.log("Mongo: User does not exist in the database!");
@@ -128,9 +130,7 @@ const useUser = () => {
 			};
 
 			if (userData.profilePhoto?.url) {
-				const imageDocRef = doc(
-					collection(clientDb, `users/${user?.uid}/images`)
-				);
+				const imageDocRef = doc(collection(clientDb, `users/${user?.uid}/images`));
 
 				const userProfilePhoto = await uploadProfilePhoto(
 					userData.profilePhoto,
@@ -171,30 +171,22 @@ const useUser = () => {
 		imageId: string
 	) => {
 		try {
-			const storageRef = ref(
-				clientStorage,
-				`users/${user?.uid}/images/${imageId}`
-			);
+			const storageRef = ref(clientStorage, `users/${user?.uid}/images/${imageId}`);
 			const response = await fetch(image?.url as string);
 			const blob = await response.blob();
 
 			await uploadBytes(storageRef, blob).catch((error: any) => {
+				console.log("Firebase Storage: Uploading Profile Photo Error: ", error.message);
+				throw error;
+			});
+
+			const downloadURL = await getDownloadURL(storageRef).catch((error: any) => {
 				console.log(
-					"Firebase Storage: Uploading Profile Photo Error: ",
+					"Firebase Storage: Getting Profile Photo Download URL Error: ",
 					error.message
 				);
 				throw error;
 			});
-
-			const downloadURL = await getDownloadURL(storageRef).catch(
-				(error: any) => {
-					console.log(
-						"Firebase Storage: Getting Profile Photo Download URL Error: ",
-						error.message
-					);
-					throw error;
-				}
-			);
 
 			const newImage: UserImage = {
 				id: imageId,
@@ -248,12 +240,7 @@ const useUser = () => {
 	};
 
 	useEffect(() => {
-		if (
-			!user &&
-			!loading &&
-			!loadingUser &&
-			!router.pathname.match(/\/auth\//)
-		) {
+		if (!user && !loading && !loadingUser && !router.pathname.match(/\/auth\//)) {
 			router.push("/auth/signin");
 		} else if (user && !loading && !currentUserMounted.current) {
 			currentUserMounted.current = true;

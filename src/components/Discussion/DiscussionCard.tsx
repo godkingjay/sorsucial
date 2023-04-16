@@ -6,11 +6,6 @@ import { SetterOrUpdater } from "recoil";
 import DiscussionVote from "./DiscussionCard/DiscussionVote";
 import DiscussionHead from "./DiscussionCard/DiscussionHead";
 import DiscussionTextContent from "./DiscussionCard/DiscussionTextContent";
-import { GoCommentDiscussion } from "react-icons/go";
-import { AiFillLike } from "react-icons/ai";
-import { RiArrowUpDownFill, RiShareForwardLine } from "react-icons/ri";
-import { FaLongArrowAltUp } from "react-icons/fa";
-import { TbArrowBigDownLinesFilled, TbArrowBigUpLinesFilled } from "react-icons/tb";
 import DiscussionVoteAndReplyDetails from "./DiscussionCard/DiscussionVoteAndReplyDetails";
 import DiscussionFooter from "./DiscussionCard/DiscussionFooter";
 import { siteDetails } from "@/lib/host";
@@ -18,9 +13,13 @@ import { siteDetails } from "@/lib/host";
 type DiscussionCardProps = {
 	userStateValue: UserState;
 	userMounted?: boolean;
+	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
 	setDiscussionOptionsStateValue: SetterOrUpdater<DiscussionOptionsState>;
-	discussionData: DiscussionData;
+	onDiscussionVote: (
+		discussionData: DiscussionData,
+		voteType: "upVote" | "downVote"
+	) => void;
 	router: NextRouter;
 };
 
@@ -29,9 +28,10 @@ export type discussionShareType = "facebook" | "copy";
 const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	userStateValue,
 	userMounted,
+	discussionData,
 	discussionOptionsStateValue,
 	setDiscussionOptionsStateValue,
-	discussionData,
+	onDiscussionVote,
 	router,
 }) => {
 	const [discussionBody, setDiscussionBody] = useState(
@@ -68,6 +68,18 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			await Promise.all([]);
 		} catch (error: any) {
 			console.log("Hook: Discussion Deletion Error: ", error.message);
+		}
+	};
+
+	const handleDiscussionVote = (voteType: "upVote" | "downVote") => {
+		try {
+			if (!userStateValue.user.uid) {
+				throw new Error("You have to be logged in to vote in a discussion.");
+			}
+
+			onDiscussionVote(discussionData, voteType);
+		} catch (error: any) {
+			console.log("Hook: Discussion Vote Error: ", error.message);
 		}
 	};
 
@@ -166,9 +178,13 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
+		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative entrance-animation-slide-from-right">
 			<div className="flex flex-row">
-				<DiscussionVote discussionData={discussionData} />
+				<DiscussionVote
+					discussionData={discussionData}
+					handleDiscussionVote={handleDiscussionVote}
+					formatWithSuffix={formatNumberWithSuffix}
+				/>
 				<div className="flex flex-col flex-1">
 					<DiscussionHead
 						userStateValue={userStateValue}

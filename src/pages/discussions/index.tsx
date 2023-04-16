@@ -19,6 +19,7 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 		discussionOptionsStateValue,
 		setDiscussionOptionsStateValue,
 		fetchDiscussions,
+		onDiscussionVote,
 	} = useDiscussion();
 	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
 	const [loadingDiscussions, setLoadingDiscussions] = useState(false);
@@ -94,6 +95,7 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 												discussionData={discussion}
 												discussionOptionsStateValue={discussionOptionsStateValue}
 												setDiscussionOptionsStateValue={setDiscussionOptionsStateValue}
+												onDiscussionVote={onDiscussionVote}
 												router={router}
 											/>
 										</React.Fragment>

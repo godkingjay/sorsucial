@@ -29,7 +29,11 @@ const DiscussionShareMenu: React.FC<DiscussionShareMenuProps> = ({
 					type="button"
 					title="Share to Facebook"
 					className="rounded-full bg-gray-100 text-blue-500 h-10 w-10 aspect-square hover:text-blue-600 focus-within:text-blue-600"
-					onClick={() => handleFooterShareClick("facebook")}
+					onClick={() =>
+						discussionOptionsStateValue.share === discussionData.discussion.id &&
+						handleFooterShareClick("facebook")
+					}
+					disabled={discussionOptionsStateValue.share !== discussionData.discussion.id}
 				>
 					<BsFacebook className="h-full w-full" />
 				</button>
@@ -37,7 +41,11 @@ const DiscussionShareMenu: React.FC<DiscussionShareMenuProps> = ({
 					type="button"
 					title="Copy Link"
 					className="rounded-full bg-gray-100 text-gray-500 h-10 w-10 aspect-square p-2 hover:bg-gray-200 focus-within:bg-gray-200"
-					onClick={() => handleFooterShareClick("copy")}
+					onClick={() =>
+						discussionOptionsStateValue.share === discussionData.discussion.id &&
+						handleFooterShareClick("copy")
+					}
+					disabled={discussionOptionsStateValue.share !== discussionData.discussion.id}
 				>
 					<IoLinkOutline className="h-full w-full" />
 				</button>

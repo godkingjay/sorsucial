@@ -1812,4 +1812,10 @@
 		animation: entrance-animation-float-up 0.25s ease-in-out;
 		@apply w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto;
 	}
+
+	.content-fade {
+		&::after {
+			@apply absolute content-[""] bottom-0 w-full h-full left-0 bg-gradient-to-t from-[rgba(255,255,255,_1)_20%] to-[rgba(255,255,255,_0)_80%] pointer-events-none;
+		}
+	}
 }

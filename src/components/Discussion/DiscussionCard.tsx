@@ -183,7 +183,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative">
+		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative entrance-animation-slide-from-right">
 			<div className="flex flex-row">
 				<DiscussionVote
 					discussionData={discussionData}

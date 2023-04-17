@@ -1,6 +1,7 @@
 import { DiscussionData, DiscussionState } from "@/atoms/discussionAtom";
 import DiscussionCard from "@/components/Discussion/DiscussionCard";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import DiscussionCardSkeleton from "@/components/Skeleton/Discussion/DiscussionCardSkeleton";
 import useDiscussion from "@/hooks/useDiscussion";
 import useUser from "@/hooks/useUser";
 import discussionDb from "@/lib/db/discussionDb";
@@ -116,7 +117,7 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 					<section className="flex flex-col gap-y-4">
 						{loadingPage || fetchingDiscussionUserData || !userMounted ? (
 							<>
-								<p>Loading</p>
+								<DiscussionCardSkeleton />
 							</>
 						) : (
 							<>

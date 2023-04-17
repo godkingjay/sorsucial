@@ -133,6 +133,35 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		}
 	};
 
+	const handleFooterReplyClick = () => {
+		if (isSingleDiscussionPage()) {
+			console.log("Single Discussion Page");
+			// replyBoxRef.current?.scrollIntoView({
+			// 	behavior: "smooth",
+			// 	block: "center",
+			// });
+			// replyBoxRef.current?.focus({ preventScroll: true });
+		} else {
+			switch (discussionData.discussion.discussionType) {
+				case "discussion": {
+					router.push(`/discussions/${discussionData.discussion.id}`);
+					break;
+				}
+
+				case "group": {
+					router.push(
+						`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
+					);
+					break;
+				}
+
+				default: {
+					break;
+				}
+			}
+		}
+	};
+
 	const isSingleDiscussionPage = () => {
 		const { asPath } = router;
 		const { id: discussionId } = discussionData.discussion;
@@ -205,6 +234,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 							discussionData={discussionData}
 							discussionOptionsStateValue={discussionOptionsStateValue}
 							handleDiscussionOptions={handleDiscussionOptions}
+							handleFooterReplyClick={handleFooterReplyClick}
 							handleFooterShareClick={handleFooterShareClick}
 						/>
 					</div>

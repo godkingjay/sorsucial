@@ -535,11 +535,12 @@ const useDiscussion = () => {
 			const discussions: DiscussionData[] = await axios
 				.get(apiConfig.apiEndpoint + "discussion/discussions", {
 					params: {
-						getUserId: authUser?.uid,
-						getDiscussionType: discussionType,
-						getPrivacy: privacy,
-						getIsOpen: isOpen,
-						getFromDate: lastDiscussion?.discussion.createdAt,
+						apiKey: userStateValue.api?.keys[0].key,
+						userId: authUser?.uid,
+						discussionType: discussionType,
+						privacy: privacy,
+						isOpen,
+						fromDate: lastDiscussion?.discussion.createdAt,
 					},
 				})
 				.then((response) => response.data.discussions)

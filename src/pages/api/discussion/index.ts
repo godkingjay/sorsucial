@@ -11,7 +11,7 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const { apiKeysCollection } = await userDb();
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const { discussionsCollection, discussionVotesCollection } =
 			await discussionDb();
 		const {
@@ -34,6 +34,10 @@ export default async function handler(
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
 		if (!discussionsCollection || !discussionVotesCollection) {
 			res
 				.status(500)
@@ -48,6 +52,10 @@ export default async function handler(
 			res.status(500).json({ error: "Invalid API key" });
 			return;
 		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
 
 		switch (req.method) {
 			case "POST": {
@@ -93,6 +101,7 @@ export default async function handler(
 			}
 
 			case "DELETE": {
+				break;
 			}
 
 			default: {

@@ -4,6 +4,7 @@ import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import userDb from "@/lib/db/userDb";
+import { DiscussionData } from "@/atoms/discussionAtom";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -56,7 +57,7 @@ export default async function handler(
 							.limit(10)
 							.toArray();
 
-				const discussionsData = await Promise.all(
+				const discussionsData: Partial<DiscussionData>[] = await Promise.all(
 					discussions.map(async (discussionDoc) => {
 						const discussion = discussionDoc as unknown as SiteDiscussion;
 						const creatorData = (await usersCollection.findOne({
@@ -71,6 +72,7 @@ export default async function handler(
 							discussion,
 							creator: creatorData,
 							userVote: userVoteData,
+							inAction: "none",
 						};
 					})
 				);

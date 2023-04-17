@@ -16,6 +16,7 @@ type DiscussionCardProps = {
 	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
 	setDiscussionOptionsStateValue: SetterOrUpdater<DiscussionOptionsState>;
+	deleteDiscussion: (discussionData: DiscussionData) => Promise<void>;
 	onDiscussionVote: (
 		discussionData: DiscussionData,
 		voteType: "upVote" | "downVote"
@@ -31,6 +32,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	discussionData,
 	discussionOptionsStateValue,
 	setDiscussionOptionsStateValue,
+	deleteDiscussion,
 	onDiscussionVote,
 	router,
 }) => {
@@ -58,14 +60,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 	const handleDeleteDiscussion = async () => {
 		try {
-			if (
-				userStateValue.user.uid !== discussionData.discussion.creatorId ||
-				userStateValue.user.roles.includes("admin")
-			) {
-				throw new Error("You are not authorized to delete this discussion!");
-			}
-
-			await Promise.all([]);
+			await deleteDiscussion(discussionData);
 		} catch (error: any) {
 			console.log("Hook: Discussion Deletion Error: ", error.message);
 		}

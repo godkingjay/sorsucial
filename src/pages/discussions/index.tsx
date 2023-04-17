@@ -6,7 +6,11 @@ import Head from "next/head";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
-import { TbArrowBigDown, TbArrowBigUp, TbArrowBigUpFilled } from "react-icons/tb";
+import {
+	TbArrowBigDown,
+	TbArrowBigUp,
+	TbArrowBigUpFilled,
+} from "react-icons/tb";
 import DiscussionCard from "@/components/Discussion/DiscussionCard";
 
 type DiscussionsPageProps = {};
@@ -19,6 +23,7 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 		discussionOptionsStateValue,
 		setDiscussionOptionsStateValue,
 		fetchDiscussions,
+		deleteDiscussion,
 		onDiscussionVote,
 	} = useDiscussion();
 	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
@@ -86,7 +91,9 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 									discussionType="discussion"
 								/>
 								{discussionStateValue.discussions
-									.filter((dis) => dis.discussion.discussionType === "discussion")
+									.filter(
+										(dis) => dis.discussion.discussionType === "discussion"
+									)
 									.map((discussion) => (
 										<React.Fragment key={discussion.discussion.id}>
 											<DiscussionCard
@@ -94,7 +101,10 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 												userMounted={userMounted}
 												discussionData={discussion}
 												discussionOptionsStateValue={discussionOptionsStateValue}
-												setDiscussionOptionsStateValue={setDiscussionOptionsStateValue}
+												setDiscussionOptionsStateValue={
+													setDiscussionOptionsStateValue
+												}
+												deleteDiscussion={deleteDiscussion}
 												onDiscussionVote={onDiscussionVote}
 												router={router}
 											/>
@@ -105,12 +115,18 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 										<p>Loading Discussions</p>
 									</>
 								)}
-								{!endReached && discussionsMounted && discussionDiscussionsLength > 0 && (
-									<VisibleInViewPort
-										disabled={endReached || loadingDiscussions || firstLoadingDiscussions}
-										onVisible={handleFetchDiscussions}
-									></VisibleInViewPort>
-								)}
+								{!endReached &&
+									discussionsMounted &&
+									discussionDiscussionsLength > 0 && (
+										<VisibleInViewPort
+											disabled={
+												endReached ||
+												loadingDiscussions ||
+												firstLoadingDiscussions
+											}
+											onVisible={handleFetchDiscussions}
+										></VisibleInViewPort>
+									)}
 								{endReached && (
 									<div className="h-16 flex flex-col items-center justify-center">
 										<div className="flex flex-row items-center w-full gap-x-4">

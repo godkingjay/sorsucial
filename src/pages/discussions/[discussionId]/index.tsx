@@ -67,9 +67,9 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 			<Head>
 				<title>
 					{loadingPage || fetchingDiscussionUserData
-						? "Loading Announcement"
+						? "Loading Discussion"
 						: discussionStateValue.currentDiscussion === null
-						? "Announcement Not Found"
+						? "Discussion Not Found"
 						: discussionStateValue.currentDiscussion.discussion
 								.discussionTitle}{" "}
 					| SorSUcial

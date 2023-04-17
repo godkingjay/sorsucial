@@ -4,6 +4,7 @@ import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
+import { SiteUserAPI } from "@/lib/interfaces/api";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -39,23 +40,33 @@ export default async function handler(
 				.json({ error: "Cannot connect with the Discussions Database!" });
 		}
 
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(500).json({ error: "Invalid API key" });
+			return;
+		}
+
 		switch (req.method) {
 			case "POST": {
 				if (!discussionData) {
 					res.status(400).json({ error: "No discussion data provided!" });
-					break;
 				}
 
 				if (!creator) {
 					res.status(400).json({ error: "No creator data provided!" });
-					break;
+				}
+
+				if (creator.uid !== userAPI.userId) {
+					res.status(400).json({ error: "Creator UID does not match API key!" });
 				}
 
 				if (discussionData.creatorId !== creator.uid) {
 					res
 						.status(400)
 						.json({ error: "Creator ID does not match creator UID!" });
-					break;
 				}
 
 				const objectId = new ObjectId();
@@ -69,11 +80,9 @@ export default async function handler(
 						_id: objectId,
 					})
 					.catch((error: any) => {
-						res
-							.status(500)
-							.json({
-								error: "Mongo: Creating document error: " + error.message,
-							});
+						res.status(500).json({
+							error: "Mongo: Creating document error: " + error.message,
+						});
 					});
 
 				res.status(200).json({

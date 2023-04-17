@@ -86,6 +86,24 @@ const useDiscussion = () => {
 		voteType: "upVote" | "downVote"
 	) => {
 		try {
+			if (discussionData.inAction) {
+				throw new Error(
+					`API(Discussion): Discussion Vote Error:  Already in Action!`
+				);
+			}
+
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: true,
+						  }
+						: discussion
+				),
+			}));
+
 			if (discussionData.userVote) {
 				if (
 					(voteType === "upVote" && discussionData.userVote.voteValue === 1) ||
@@ -123,6 +141,7 @@ const useDiscussion = () => {
 													discussion.discussion.numberOfUpVotes - 1,
 											},
 											userVote: null,
+											inAction: false,
 										};
 									}
 
@@ -145,6 +164,7 @@ const useDiscussion = () => {
 													discussion.discussion.numberOfDownVotes - 1,
 											},
 											userVote: null,
+											inAction: false,
 										};
 									}
 
@@ -200,6 +220,7 @@ const useDiscussion = () => {
 														...discussionData.userVote,
 														...newDiscussionVote,
 													},
+													inAction: false,
 												};
 											}
 
@@ -230,6 +251,7 @@ const useDiscussion = () => {
 														...discussionData.userVote,
 														...newDiscussionVote,
 													},
+													inAction: false,
 												};
 											}
 
@@ -287,6 +309,7 @@ const useDiscussion = () => {
 														discussion.discussion.numberOfUpVotes + 1,
 												},
 												userVote: newDiscussionVote,
+												inAction: false,
 											};
 										}
 
@@ -312,6 +335,7 @@ const useDiscussion = () => {
 														discussion.discussion.numberOfDownVotes + 1,
 												},
 												userVote: newDiscussionVote,
+												inAction: false,
 											};
 										}
 
@@ -324,6 +348,17 @@ const useDiscussion = () => {
 			}
 		} catch (error: any) {
 			console.log("Mongo: Voting Discussion Error: ", error.message);
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: false,
+						  }
+						: discussion
+				),
+			}));
 		}
 	};
 

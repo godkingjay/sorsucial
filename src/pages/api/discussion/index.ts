@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { SiteDiscussion } from "@/lib/interfaces/discussion";
+import { Reply, SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import discussionDb from "@/lib/db/discussionDb";
@@ -12,8 +12,12 @@ export default async function handler(
 ) {
 	try {
 		const { apiKeysCollection, usersCollection } = await userDb();
-		const { discussionsCollection, discussionVotesCollection } =
-			await discussionDb();
+		const {
+			discussionsCollection,
+			discussionVotesCollection,
+			discussionRepliesCollection,
+			discussionReplyVotesCollection,
+		} = await discussionDb();
 		const {
 			apiKey,
 			discussionData,
@@ -101,6 +105,63 @@ export default async function handler(
 			}
 
 			case "DELETE": {
+				if (!discussionData) {
+					res.status(400).json({ error: "No discussion data provided!" });
+				}
+
+				if (userData.uid !== discussionData.creatorId) {
+					if (!userData.roles.includes("admin")) {
+						res.status(400).json({
+							error: "User is not the creator of the discussion or an admin!",
+						});
+					}
+				}
+
+				const deleteReply = async (reply: Reply) => {
+					const deleteReplyState = await discussionRepliesCollection.deleteOne({
+						id: reply.id,
+					});
+
+					const deleteReplyVotesState =
+						await discussionReplyVotesCollection.deleteMany({
+							discussionId: reply.discussionId,
+							replyId: reply.id,
+						});
+
+					const nestedReplies = (await discussionRepliesCollection
+						.find({
+							replyForId: reply.id,
+						})
+						.toArray()) as unknown as Reply[];
+
+					for (const nestedReply of nestedReplies) {
+						await deleteReply(nestedReply);
+					}
+				};
+
+				const discussionReplies = (await discussionRepliesCollection
+					.find({
+						replyForId: discussionData.id,
+					})
+					.toArray()) as unknown as Reply[];
+
+				for (const reply of discussionReplies) {
+				}
+
+				const deleteState = await discussionsCollection.deleteOne({
+					id: discussionData.id,
+				});
+
+				const deleteDiscussionVotesState =
+					await discussionsCollection.deleteMany({
+						discussionId: discussionData.id,
+					});
+
+				res.status(200).json({
+					deleteState,
+					deleteDiscussionVotesState,
+				});
+
 				break;
 			}
 

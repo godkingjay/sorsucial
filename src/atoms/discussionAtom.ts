@@ -28,7 +28,7 @@ export interface DiscussionReplyData {
 	reply: Reply;
 	creator: SiteUser | null;
 	userReplyVote: ReplyVote | null;
-	inAction: "edit" | "delete" | "vote" | "none";
+	inAction: boolean;
 }
 
 export interface DiscussionData {
@@ -36,7 +36,7 @@ export interface DiscussionData {
 	creator: SiteUser | null;
 	userVote: DiscussionVote | null;
 	discussionReplies: DiscussionReplyData[];
-	inAction: "edit" | "delete" | "vote" | "none";
+	inAction: boolean;
 }
 
 export interface DiscussionState {

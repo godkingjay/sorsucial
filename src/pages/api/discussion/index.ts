@@ -149,9 +149,15 @@ export default async function handler(
 					await deleteReply(reply);
 				}
 
-				const deleteState = await discussionsCollection.deleteOne({
-					id: discussionData.id,
-				});
+				const deleteState = await discussionsCollection
+					.deleteOne({
+						id: discussionData.id,
+					})
+					.catch((error: any) => {
+						res.status(500).json({
+							error: "Mongo(API): Deleting document error: " + error.message,
+						});
+					});
 
 				const deleteDiscussionVotesState =
 					await discussionsCollection.deleteMany({
@@ -159,7 +165,7 @@ export default async function handler(
 					});
 
 				res.status(200).json({
-					deleteState,
+					isDeleted: deleteState ? deleteState.acknowledged : false,
 					deleteDiscussionVotesState,
 				});
 

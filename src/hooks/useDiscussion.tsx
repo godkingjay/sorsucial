@@ -381,13 +381,101 @@ const useDiscussion = () => {
 		}
 	};
 
+	const deleteDiscussion = async (discussionData: DiscussionData) => {
+		try {
+			if (discussionData.inAction) {
+				setDiscussionStateValue((prev) => ({
+					...prev,
+					discussions: prev.discussions.map((discussion) =>
+						discussion.discussion.id === discussionData.discussion.id
+							? {
+									...discussion,
+									inAction: false,
+							  }
+							: discussion
+					),
+				}));
+				return;
+			}
+
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: true,
+						  }
+						: discussion
+				),
+			}));
+			if (userStateValue.user.uid !== discussionData.discussion.creatorId) {
+				if (!userStateValue.user.roles.includes("admin")) {
+					throw new Error(
+						"Permission: You are not authorized to delete this discussion!"
+					);
+				}
+			}
+
+			const { isDeleted } = await axios
+				.delete(apiConfig.apiEndpoint + "discussion/", {
+					data: {
+						apiKey: userStateValue.api?.keys[0].key,
+						discussionData: discussionData.discussion,
+					},
+				})
+				.then((response) => response.data)
+				.catch((error) => {
+					throw new Error(
+						`API (DELETE - Discussion): Deleting Discussion Error: ${error.message}`
+					);
+				});
+
+			if (isDeleted) {
+				setDiscussionStateValue((prev) => ({
+					...prev,
+					discussions: prev.discussions.filter(
+						(discussion) =>
+							discussion.discussion.id !== discussionData.discussion.id
+					),
+				}));
+			}
+		} catch (error: any) {
+			console.log("Mongo: Deleting Discussion Error: ", error.message);
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: false,
+						  }
+						: discussion
+				),
+			}));
+		}
+	};
+
 	return {
+		/**
+		 *
+		 */
 		discussionStateValue,
 		setDiscussionStateValue,
+		/**
+		 *
+		 */
 		discussionOptionsStateValue,
 		setDiscussionOptionsStateValue,
+		/**
+		 *
+		 */
 		createDiscussion,
 		fetchDiscussions,
+		deleteDiscussion,
+		/**
+		 *
+		 */
 		onDiscussionVote,
 	};
 };

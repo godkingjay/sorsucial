@@ -72,7 +72,7 @@ export default async function handler(
 							discussion,
 							creator: creatorData,
 							userVote: userVoteData,
-							inAction: "none",
+							inAction: false,
 						};
 					})
 				);

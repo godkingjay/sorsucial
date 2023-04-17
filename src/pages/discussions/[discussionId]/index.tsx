@@ -168,6 +168,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 					id: discussionId,
 					discussionType: "discussion",
 				})) as unknown as DiscussionData["discussion"]) || null,
+			inAction: false,
 		};
 
 		if (discussionPageData.discussion !== null) {

@@ -46,7 +46,8 @@ const useDiscussion = () => {
 
 			const newDiscussionData: SiteDiscussion = await axios
 				.post(apiConfig.apiEndpoint + "discussion/", {
-					newDiscussion,
+					apiKey: userStateValue.api?.keys[0].key,
+					discussionData: newDiscussion,
 					creator: userStateValue.user,
 				})
 				.then((response) => response.data.newDiscussion)

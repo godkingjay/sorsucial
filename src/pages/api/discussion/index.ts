@@ -4,18 +4,26 @@ import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import discussionDb from "@/lib/db/discussionDb";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+) {
 	try {
-		const { discussionsCollection, discussionVotesCollection } = await discussionDb();
+		const { discussionsCollection, discussionVotesCollection } =
+			await discussionDb();
+		const {
+			apiKey,
+			discussionData,
+			creator,
+		}: {
+			apiKey: string;
+			discussionData: SiteDiscussion;
+			creator: SiteUser;
+		} = req.body || req.query;
 
 		switch (req.method) {
 			case "POST": {
-				const {
-					newDiscussion,
-					creator,
-				}: { newDiscussion: SiteDiscussion; creator: SiteUser } = req.body;
-
-				if (!newDiscussion) {
+				if (!discussionData) {
 					res.status(400).json({ error: "No discussion data provided!" });
 					break;
 				}
@@ -25,19 +33,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					break;
 				}
 
-				if (newDiscussion.creatorId !== creator.uid) {
-					res.status(400).json({ error: "Creator ID does not match creator UID!" });
+				if (discussionData.creatorId !== creator.uid) {
+					res
+						.status(400)
+						.json({ error: "Creator ID does not match creator UID!" });
 					break;
 				}
 
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
-				newDiscussion.id = objectIdString;
+				discussionData.id = objectIdString;
 
 				const newDiscussionState = await discussionsCollection
 					.insertOne({
-						...newDiscussion,
+						...discussionData,
 						_id: objectId,
 					})
 					.catch((error: any) => {
@@ -47,9 +57,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				res.status(200).json({
 					newDiscussionState,
-					newDiscussion,
+					newDiscussion: discussionData,
 				});
 				break;
+			}
+
+			case "DELETE": {
 			}
 
 			default: {

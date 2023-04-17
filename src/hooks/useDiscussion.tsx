@@ -135,89 +135,99 @@ const useDiscussion = () => {
 						const deleteVoteDate = new Date();
 
 						if (voteType === "upVote") {
-							setDiscussionStateValue((prev) => ({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes - 1,
-												numberOfUpVotes:
-													discussion.discussion.numberOfUpVotes - 1,
-												updatedAt: deleteVoteDate,
-											},
-											userVote: null,
-											inAction: false,
-										};
-									}
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfVotes:
+															discussion.discussion.numberOfVotes - 1,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes - 1,
+														updatedAt: deleteVoteDate.toISOString(),
+													},
+													userVote: null,
+													inAction: false,
+												};
+											}
 
-									return discussion;
-								}),
-								currentDiscussion:
-									prev.currentDiscussion?.discussion.id ===
-									discussionData.discussion.id
-										? {
-												...prev.currentDiscussion,
-												discussion: {
-													...prev.currentDiscussion.discussion,
-													numberOfVotes:
-														prev.currentDiscussion.discussion.numberOfVotes - 1,
-													numberOfUpVotes:
-														prev.currentDiscussion.discussion.numberOfUpVotes -
-														1,
-													updatedAt: deleteVoteDate,
-												},
-												userVote: null,
-												inAction: false,
-										  }
-										: prev.currentDiscussion,
-							}));
+											return discussion;
+										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfVotes:
+																prev.currentDiscussion.discussion.numberOfVotes -
+																1,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes - 1,
+															updatedAt: deleteVoteDate.toISOString(),
+														},
+														userVote: null,
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
+									} as DiscussionState)
+							);
 						} else if (voteType === "downVote") {
-							setDiscussionStateValue((prev) => ({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes - 1,
-												numberOfDownVotes:
-													discussion.discussion.numberOfDownVotes - 1,
-												updatedAt: deleteVoteDate,
-											},
-											userVote: null,
-											inAction: false,
-										};
-									}
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfVotes:
+															discussion.discussion.numberOfVotes - 1,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes - 1,
+														updatedAt: deleteVoteDate.toISOString(),
+													},
+													userVote: null,
+													inAction: false,
+												};
+											}
 
-									return discussion;
-								}),
-								currentDiscussion:
-									prev.currentDiscussion?.discussion.id ===
-									discussionData.discussion.id
-										? {
-												...prev.currentDiscussion,
-												discussion: {
-													...prev.currentDiscussion.discussion,
-													numberOfVotes:
-														prev.currentDiscussion.discussion.numberOfVotes - 1,
-													numberOfDownVotes:
-														prev.currentDiscussion.discussion.numberOfDownVotes -
-														1,
-													updatedAt: deleteVoteDate,
-												},
-												userVote: null,
-												inAction: false,
-										  }
-										: prev.currentDiscussion,
-							}));
+											return discussion;
+										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfVotes:
+																prev.currentDiscussion.discussion.numberOfVotes -
+																1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes - 1,
+															updatedAt: deleteVoteDate.toISOString(),
+														},
+														userVote: null,
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
+									} as DiscussionState)
+							);
 						}
 					}
 				} else {
@@ -261,7 +271,7 @@ const useDiscussion = () => {
 															discussion.discussion.numberOfUpVotes + 1,
 														numberOfDownVotes:
 															discussion.discussion.numberOfDownVotes - 1,
-														updatedAt: voteDate,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: {
 														...discussionData.userVote,
@@ -286,7 +296,7 @@ const useDiscussion = () => {
 															numberOfDownVotes:
 																prev.currentDiscussion.discussion
 																	.numberOfDownVotes - 1,
-															updatedAt: voteDate,
+															updatedAt: voteDate.toISOString(),
 														},
 														userVote: {
 															...discussionData.userVote,
@@ -314,7 +324,7 @@ const useDiscussion = () => {
 															discussion.discussion.numberOfUpVotes - 1,
 														numberOfDownVotes:
 															discussion.discussion.numberOfDownVotes + 1,
-														updatedAt: voteDate,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: {
 														...discussionData.userVote,
@@ -339,7 +349,7 @@ const useDiscussion = () => {
 															numberOfDownVotes:
 																prev.currentDiscussion.discussion
 																	.numberOfDownVotes + 1,
-															updatedAt: voteDate,
+															updatedAt: voteDate.toISOString(),
 														},
 														userVote: {
 															...discussionData.userVote,
@@ -398,7 +408,7 @@ const useDiscussion = () => {
 													numberOfVotes: discussion.discussion.numberOfVotes + 1,
 													numberOfUpVotes:
 														discussion.discussion.numberOfUpVotes + 1,
-													updatedAt: voteDate,
+													updatedAt: voteDate.toISOString(),
 												},
 												userVote: newDiscussionVote,
 												inAction: false,
@@ -420,7 +430,7 @@ const useDiscussion = () => {
 														numberOfUpVotes:
 															prev.currentDiscussion.discussion.numberOfUpVotes +
 															1,
-														updatedAt: voteDate,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: newDiscussionVote,
 													inAction: false,
@@ -444,6 +454,7 @@ const useDiscussion = () => {
 													numberOfVotes: discussion.discussion.numberOfVotes + 1,
 													numberOfDownVotes:
 														discussion.discussion.numberOfDownVotes + 1,
+													updatedAt: voteDate.toISOString(),
 												},
 												userVote: newDiscussionVote,
 												inAction: false,
@@ -465,7 +476,7 @@ const useDiscussion = () => {
 														numberOfDownVotes:
 															prev.currentDiscussion.discussion
 																.numberOfDownVotes + 1,
-														updatedAt: voteDate,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: newDiscussionVote,
 													inAction: false,

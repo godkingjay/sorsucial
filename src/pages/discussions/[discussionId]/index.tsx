@@ -62,6 +62,8 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 		}
 	}, [userMounted]);
 
+	console.log(discussionStateValue.currentDiscussion?.discussion.updatedAt);
+
 	return (
 		<>
 			<Head>

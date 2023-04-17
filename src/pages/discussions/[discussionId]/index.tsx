@@ -1,9 +1,13 @@
 import { DiscussionData, DiscussionState } from "@/atoms/discussionAtom";
+import DiscussionCard from "@/components/Discussion/DiscussionCard";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useDiscussion from "@/hooks/useDiscussion";
 import useUser from "@/hooks/useUser";
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
+import { siteDetails } from "@/lib/host";
 import { GetServerSidePropsContext } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import safeJsonStringify from "safe-json-stringify";
@@ -58,7 +62,98 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 		}
 	}, [userMounted]);
 
-	return <div>SingleDiscussionPage</div>;
+	return (
+		<>
+			<Head>
+				<title>
+					{loadingPage || fetchingDiscussionUserData
+						? "Loading Announcement"
+						: discussionStateValue.currentDiscussion === null
+						? "Announcement Not Found"
+						: discussionStateValue.currentDiscussion.discussion
+								.discussionTitle}{" "}
+					| SorSUcial
+				</title>
+				<meta
+					name="title"
+					property="og:title"
+					content={
+						discussionStateValue.currentDiscussion?.discussion.discussionTitle ||
+						""
+					}
+				/>
+				<meta
+					name="type"
+					property="og:type"
+					content="article"
+				/>
+				<meta
+					name="description"
+					property="og:description"
+					content={
+						discussionStateValue.currentDiscussion?.discussion.discussionBody?.slice(
+							0,
+							512
+						) || ""
+					}
+				/>
+				<meta
+					name="url"
+					property="og:url"
+					content={siteDetails.host + router.asPath.slice(1)}
+				/>
+				<meta
+					name="updated_time"
+					property="og:updated_time"
+					content={
+						discussionStateValue.currentDiscussion?.discussion.updatedAt?.toString() ||
+						new Date().toString()
+					}
+				/>
+			</Head>
+			<main className="flex flex-col flex-1 py-4 px-4">
+				<LimitedBodyLayout>
+					<section className="flex flex-col gap-y-4">
+						{loadingPage || fetchingDiscussionUserData || !userMounted ? (
+							<>
+								<p>Loading</p>
+							</>
+						) : (
+							<>
+								{!discussionStateValue.currentDiscussion &&
+								!discussionStateValue.discussions.find(
+									(discussion) => discussion.discussion.id === discussionId
+								) ? (
+									<div>Not Found</div>
+								) : (
+									<>
+										<DiscussionCard
+											userStateValue={userStateValue}
+											userMounted={userMounted}
+											discussionData={
+												discussionStateValue.currentDiscussion ||
+												discussionStateValue.discussions.find(
+													(discussion) =>
+														discussion.discussion.id === discussionId
+												)!
+											}
+											discussionOptionsStateValue={discussionOptionsStateValue}
+											setDiscussionOptionsStateValue={
+												setDiscussionOptionsStateValue
+											}
+											deleteDiscussion={deleteDiscussion}
+											onDiscussionVote={onDiscussionVote}
+											router={router}
+										/>
+									</>
+								)}
+							</>
+						)}
+					</section>
+				</LimitedBodyLayout>
+			</main>
+		</>
+	);
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {

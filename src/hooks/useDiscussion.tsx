@@ -102,6 +102,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
 			}));
 
 			if (discussionData.userVote) {
@@ -125,6 +132,8 @@ const useDiscussion = () => {
 						});
 
 					if (voteDeleted) {
+						const deleteVoteDate = new Date();
+
 						if (voteType === "upVote") {
 							setDiscussionStateValue((prev) => ({
 								...prev,
@@ -139,6 +148,7 @@ const useDiscussion = () => {
 												numberOfVotes: discussion.discussion.numberOfVotes - 1,
 												numberOfUpVotes:
 													discussion.discussion.numberOfUpVotes - 1,
+												updatedAt: deleteVoteDate,
 											},
 											userVote: null,
 											inAction: false,
@@ -147,6 +157,24 @@ const useDiscussion = () => {
 
 									return discussion;
 								}),
+								currentDiscussion:
+									prev.currentDiscussion?.discussion.id ===
+									discussionData.discussion.id
+										? {
+												...prev.currentDiscussion,
+												discussion: {
+													...prev.currentDiscussion.discussion,
+													numberOfVotes:
+														prev.currentDiscussion.discussion.numberOfVotes - 1,
+													numberOfUpVotes:
+														prev.currentDiscussion.discussion.numberOfUpVotes -
+														1,
+													updatedAt: deleteVoteDate,
+												},
+												userVote: null,
+												inAction: false,
+										  }
+										: prev.currentDiscussion,
 							}));
 						} else if (voteType === "downVote") {
 							setDiscussionStateValue((prev) => ({
@@ -162,6 +190,7 @@ const useDiscussion = () => {
 												numberOfVotes: discussion.discussion.numberOfVotes - 1,
 												numberOfDownVotes:
 													discussion.discussion.numberOfDownVotes - 1,
+												updatedAt: deleteVoteDate,
 											},
 											userVote: null,
 											inAction: false,
@@ -170,6 +199,24 @@ const useDiscussion = () => {
 
 									return discussion;
 								}),
+								currentDiscussion:
+									prev.currentDiscussion?.discussion.id ===
+									discussionData.discussion.id
+										? {
+												...prev.currentDiscussion,
+												discussion: {
+													...prev.currentDiscussion.discussion,
+													numberOfVotes:
+														prev.currentDiscussion.discussion.numberOfVotes - 1,
+													numberOfDownVotes:
+														prev.currentDiscussion.discussion.numberOfDownVotes -
+														1,
+													updatedAt: deleteVoteDate,
+												},
+												userVote: null,
+												inAction: false,
+										  }
+										: prev.currentDiscussion,
 							}));
 						}
 					}
@@ -226,6 +273,28 @@ const useDiscussion = () => {
 
 											return discussion;
 										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes + 1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes - 1,
+															updatedAt: voteDate,
+														},
+														userVote: {
+															...discussionData.userVote,
+															...newDiscussionVote,
+														},
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
 									} as DiscussionState)
 							);
 						} else {
@@ -241,10 +310,10 @@ const useDiscussion = () => {
 													...discussion,
 													discussion: {
 														...discussion.discussion,
-														numberOfDownVotes:
-															discussion.discussion.numberOfDownVotes + 1,
 														numberOfUpVotes:
 															discussion.discussion.numberOfUpVotes - 1,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes + 1,
 														updatedAt: voteDate,
 													},
 													userVote: {
@@ -257,6 +326,28 @@ const useDiscussion = () => {
 
 											return discussion;
 										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes - 1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes + 1,
+															updatedAt: voteDate,
+														},
+														userVote: {
+															...discussionData.userVote,
+															...newDiscussionVote,
+														},
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
 									} as DiscussionState)
 							);
 						}
@@ -307,6 +398,7 @@ const useDiscussion = () => {
 													numberOfVotes: discussion.discussion.numberOfVotes + 1,
 													numberOfUpVotes:
 														discussion.discussion.numberOfUpVotes + 1,
+													updatedAt: voteDate,
 												},
 												userVote: newDiscussionVote,
 												inAction: false,
@@ -315,6 +407,25 @@ const useDiscussion = () => {
 
 										return discussion;
 									}),
+									currentDiscussion:
+										prev.currentDiscussion?.discussion.id ===
+										discussionData.discussion.id
+											? {
+													...prev.currentDiscussion,
+													discussion: {
+														...prev.currentDiscussion.discussion,
+														numberOfVotes:
+															prev.currentDiscussion.discussion.numberOfVotes +
+															1,
+														numberOfUpVotes:
+															prev.currentDiscussion.discussion.numberOfUpVotes +
+															1,
+														updatedAt: voteDate,
+													},
+													userVote: newDiscussionVote,
+													inAction: false,
+											  }
+											: prev.currentDiscussion,
 								} as DiscussionState)
 						);
 					} else {
@@ -341,6 +452,25 @@ const useDiscussion = () => {
 
 										return discussion;
 									}),
+									currentDiscussion:
+										prev.currentDiscussion?.discussion.id ===
+										discussionData.discussion.id
+											? {
+													...prev.currentDiscussion,
+													discussion: {
+														...prev.currentDiscussion.discussion,
+														numberOfVotes:
+															prev.currentDiscussion.discussion.numberOfVotes +
+															1,
+														numberOfDownVotes:
+															prev.currentDiscussion.discussion
+																.numberOfDownVotes + 1,
+														updatedAt: voteDate,
+													},
+													userVote: newDiscussionVote,
+													inAction: false,
+											  }
+											: prev.currentDiscussion,
 								} as DiscussionState)
 						);
 					}
@@ -358,6 +488,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
 			}));
 		}
 	};
@@ -413,6 +550,38 @@ const useDiscussion = () => {
 			return discussions.length;
 		} catch (error: any) {
 			console.log("Mongo: Fetching Discussions Error: ", error.message);
+		}
+	};
+
+	const fetchUserVote = async (discussion: SiteDiscussion) => {
+		try {
+			if (authUser) {
+				const { userVote }: { userVote: DiscussionVote | null } = await axios
+					.get(apiConfig.apiEndpoint + "discussion/vote/", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser.uid,
+							discussionId: discussion.id,
+						},
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`API (GET - User Vote): Getting User Vote Error: ${error.message}`
+						);
+					});
+
+				if (userVote) {
+					return userVote;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("Mongo: Fetching Discussion User Vote Error: ", error.message);
+			return null;
 		}
 	};
 
@@ -512,6 +681,7 @@ const useDiscussion = () => {
 		 *
 		 */
 		onDiscussionVote,
+		fetchUserVote,
 	};
 };
 

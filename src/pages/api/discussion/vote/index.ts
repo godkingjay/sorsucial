@@ -117,6 +117,25 @@ export default async function handler(
 				break;
 			}
 
+			case "GET": {
+				if (!userId || !discussionId) {
+					res
+						.status(500)
+						.json({ error: "No user ID or discussion ID provided" });
+				}
+
+				const discussionVote = await discussionVotesCollection.findOne({
+					userId,
+					discussionId,
+				});
+
+				res.status(200).json({
+					message: "Discussion vote retrieved",
+					userVote: discussionVote,
+				});
+				break;
+			}
+
 			case "PUT": {
 				if (!discussionVoteData) {
 					res.status(500).json({ error: "No discussion vote data provided" });

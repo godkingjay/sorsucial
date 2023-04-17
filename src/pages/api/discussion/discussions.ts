@@ -5,39 +5,77 @@ import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import userDb from "@/lib/db/userDb";
 import { DiscussionData } from "@/atoms/discussionAtom";
+import { SiteUserAPI } from "@/lib/interfaces/api";
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
 	try {
-		const { usersCollection } = await userDb();
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const { discussionsCollection, discussionVotesCollection } =
 			await discussionDb();
 
+		const {
+			apiKey,
+			userId,
+			discussionType,
+			privacy,
+			isOpen,
+			fromDate,
+		}: {
+			apiKey: string;
+			userId: string;
+			discussionType: SiteDiscussion["discussionType"];
+			privacy: SiteDiscussion["privacy"];
+			isOpen: boolean | string;
+			fromDate: string;
+		} = req.body || req.query;
+
+		if (!apiKey) {
+			res.status(400).json({ error: "No API key provided!" });
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
+		if (!discussionsCollection || !discussionVotesCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the Discussions Database!" });
+		}
+
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(500).json({ error: "Invalid API key" });
+			return;
+		}
+
 		switch (req.method) {
 			case "GET": {
-				const {
-					getUserId,
-					getDiscussionType,
-					getPrivacy,
-					getIsOpen,
-					getFromDate,
-				} = req.query;
-
-				if (!getDiscussionType) {
+				if (!discussionType) {
 					res.status(505).json({ error: "No discussion type provided"! });
 					return;
 				}
 
-				const discussions = getFromDate
+				const discussions = fromDate
 					? await discussionsCollection
 							.find({
-								discussionType: getDiscussionType,
-								privacy: getPrivacy,
-								isOpen: getIsOpen === "true" ? true : false,
+								discussionType: discussionType,
+								privacy: privacy,
+								isOpen: isOpen === "true" ? true : false,
 								createdAt: {
-									$lt: getFromDate,
+									$lt: fromDate,
 								},
 							})
 							.sort({
@@ -47,9 +85,9 @@ export default async function handler(
 							.toArray()
 					: await discussionsCollection
 							.find({
-								discussionType: getDiscussionType,
-								privacy: getPrivacy,
-								isOpen: getIsOpen === "true" ? true : false,
+								discussionType: discussionType,
+								privacy: privacy,
+								isOpen: isOpen === "true" ? true : false,
 							})
 							.sort({
 								createdAt: -1,
@@ -65,7 +103,7 @@ export default async function handler(
 						})) as unknown as SiteUser;
 						const userVoteData = (await discussionVotesCollection.findOne({
 							discussionId: discussion.id,
-							userId: getUserId,
+							userId: userId,
 						})) as unknown as DiscussionVote;
 
 						return {

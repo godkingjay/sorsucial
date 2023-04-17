@@ -86,6 +86,31 @@ const useDiscussion = () => {
 		voteType: "upVote" | "downVote"
 	) => {
 		try {
+			if (discussionData.inAction) {
+				throw new Error(
+					`API(Discussion): Discussion Vote Error:  Already in Action!`
+				);
+			}
+
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: true,
+						  }
+						: discussion
+				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
+			}));
+
 			if (discussionData.userVote) {
 				if (
 					(voteType === "upVote" && discussionData.userVote.voteValue === 1) ||
@@ -107,50 +132,102 @@ const useDiscussion = () => {
 						});
 
 					if (voteDeleted) {
+						const deleteVoteDate = new Date();
+
 						if (voteType === "upVote") {
-							setDiscussionStateValue((prev) => ({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes - 1,
-												numberOfUpVotes:
-													discussion.discussion.numberOfUpVotes - 1,
-											},
-											userVote: null,
-										};
-									}
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfVotes:
+															discussion.discussion.numberOfVotes - 1,
+														numberOfUpVotes:
+															discussion.discussion.numberOfUpVotes - 1,
+														updatedAt: deleteVoteDate.toISOString(),
+													},
+													userVote: null,
+													inAction: false,
+												};
+											}
 
-									return discussion;
-								}),
-							}));
+											return discussion;
+										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfVotes:
+																prev.currentDiscussion.discussion.numberOfVotes -
+																1,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes - 1,
+															updatedAt: deleteVoteDate.toISOString(),
+														},
+														userVote: null,
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
+									} as DiscussionState)
+							);
 						} else if (voteType === "downVote") {
-							setDiscussionStateValue((prev) => ({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes - 1,
-												numberOfDownVotes:
-													discussion.discussion.numberOfDownVotes - 1,
-											},
-											userVote: null,
-										};
-									}
+							setDiscussionStateValue(
+								(prev) =>
+									({
+										...prev,
+										discussions: prev.discussions.map((discussion) => {
+											if (
+												discussion.discussion.id === discussionData.discussion.id
+											) {
+												return {
+													...discussion,
+													discussion: {
+														...discussion.discussion,
+														numberOfVotes:
+															discussion.discussion.numberOfVotes - 1,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes - 1,
+														updatedAt: deleteVoteDate.toISOString(),
+													},
+													userVote: null,
+													inAction: false,
+												};
+											}
 
-									return discussion;
-								}),
-							}));
+											return discussion;
+										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfVotes:
+																prev.currentDiscussion.discussion.numberOfVotes -
+																1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes - 1,
+															updatedAt: deleteVoteDate.toISOString(),
+														},
+														userVote: null,
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
+									} as DiscussionState)
+							);
 						}
 					}
 				} else {
@@ -194,17 +271,40 @@ const useDiscussion = () => {
 															discussion.discussion.numberOfUpVotes + 1,
 														numberOfDownVotes:
 															discussion.discussion.numberOfDownVotes - 1,
-														updatedAt: voteDate,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: {
 														...discussionData.userVote,
 														...newDiscussionVote,
 													},
+													inAction: false,
 												};
 											}
 
 											return discussion;
 										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes + 1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes - 1,
+															updatedAt: voteDate.toISOString(),
+														},
+														userVote: {
+															...discussionData.userVote,
+															...newDiscussionVote,
+														},
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
 									} as DiscussionState)
 							);
 						} else {
@@ -220,21 +320,44 @@ const useDiscussion = () => {
 													...discussion,
 													discussion: {
 														...discussion.discussion,
-														numberOfDownVotes:
-															discussion.discussion.numberOfDownVotes + 1,
 														numberOfUpVotes:
 															discussion.discussion.numberOfUpVotes - 1,
-														updatedAt: voteDate,
+														numberOfDownVotes:
+															discussion.discussion.numberOfDownVotes + 1,
+														updatedAt: voteDate.toISOString(),
 													},
 													userVote: {
 														...discussionData.userVote,
 														...newDiscussionVote,
 													},
+													inAction: false,
 												};
 											}
 
 											return discussion;
 										}),
+										currentDiscussion:
+											prev.currentDiscussion?.discussion.id ===
+											discussionData.discussion.id
+												? {
+														...prev.currentDiscussion,
+														discussion: {
+															...prev.currentDiscussion.discussion,
+															numberOfUpVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfUpVotes - 1,
+															numberOfDownVotes:
+																prev.currentDiscussion.discussion
+																	.numberOfDownVotes + 1,
+															updatedAt: voteDate.toISOString(),
+														},
+														userVote: {
+															...discussionData.userVote,
+															...newDiscussionVote,
+														},
+														inAction: false,
+												  }
+												: prev.currentDiscussion,
 									} as DiscussionState)
 							);
 						}
@@ -285,13 +408,34 @@ const useDiscussion = () => {
 													numberOfVotes: discussion.discussion.numberOfVotes + 1,
 													numberOfUpVotes:
 														discussion.discussion.numberOfUpVotes + 1,
+													updatedAt: voteDate.toISOString(),
 												},
 												userVote: newDiscussionVote,
+												inAction: false,
 											};
 										}
 
 										return discussion;
 									}),
+									currentDiscussion:
+										prev.currentDiscussion?.discussion.id ===
+										discussionData.discussion.id
+											? {
+													...prev.currentDiscussion,
+													discussion: {
+														...prev.currentDiscussion.discussion,
+														numberOfVotes:
+															prev.currentDiscussion.discussion.numberOfVotes +
+															1,
+														numberOfUpVotes:
+															prev.currentDiscussion.discussion.numberOfUpVotes +
+															1,
+														updatedAt: voteDate.toISOString(),
+													},
+													userVote: newDiscussionVote,
+													inAction: false,
+											  }
+											: prev.currentDiscussion,
 								} as DiscussionState)
 						);
 					} else {
@@ -310,13 +454,34 @@ const useDiscussion = () => {
 													numberOfVotes: discussion.discussion.numberOfVotes + 1,
 													numberOfDownVotes:
 														discussion.discussion.numberOfDownVotes + 1,
+													updatedAt: voteDate.toISOString(),
 												},
 												userVote: newDiscussionVote,
+												inAction: false,
 											};
 										}
 
 										return discussion;
 									}),
+									currentDiscussion:
+										prev.currentDiscussion?.discussion.id ===
+										discussionData.discussion.id
+											? {
+													...prev.currentDiscussion,
+													discussion: {
+														...prev.currentDiscussion.discussion,
+														numberOfVotes:
+															prev.currentDiscussion.discussion.numberOfVotes +
+															1,
+														numberOfDownVotes:
+															prev.currentDiscussion.discussion
+																.numberOfDownVotes + 1,
+														updatedAt: voteDate.toISOString(),
+													},
+													userVote: newDiscussionVote,
+													inAction: false,
+											  }
+											: prev.currentDiscussion,
 								} as DiscussionState)
 						);
 					}
@@ -324,6 +489,24 @@ const useDiscussion = () => {
 			}
 		} catch (error: any) {
 			console.log("Mongo: Voting Discussion Error: ", error.message);
+			setDiscussionStateValue((prev) => ({
+				...prev,
+				discussions: prev.discussions.map((discussion) =>
+					discussion.discussion.id === discussionData.discussion.id
+						? {
+								...discussion,
+								inAction: false,
+						  }
+						: discussion
+				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
+			}));
 		}
 	};
 
@@ -352,11 +535,12 @@ const useDiscussion = () => {
 			const discussions: DiscussionData[] = await axios
 				.get(apiConfig.apiEndpoint + "discussion/discussions", {
 					params: {
-						getUserId: authUser?.uid,
-						getDiscussionType: discussionType,
-						getPrivacy: privacy,
-						getIsOpen: isOpen,
-						getFromDate: lastDiscussion?.discussion.createdAt,
+						apiKey: userStateValue.api?.keys[0].key,
+						userId: authUser?.uid,
+						discussionType: discussionType,
+						privacy: privacy,
+						isOpen,
+						fromDate: lastDiscussion?.discussion.createdAt,
 					},
 				})
 				.then((response) => response.data.discussions)
@@ -381,21 +565,42 @@ const useDiscussion = () => {
 		}
 	};
 
+	const fetchUserVote = async (discussion: SiteDiscussion) => {
+		try {
+			if (authUser) {
+				const { userVote }: { userVote: DiscussionVote | null } = await axios
+					.get(apiConfig.apiEndpoint + "discussion/vote/", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser.uid,
+							discussionId: discussion.id,
+						},
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`API (GET - User Vote): Getting User Vote Error: ${error.message}`
+						);
+					});
+
+				if (userVote) {
+					return userVote;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("Mongo: Fetching Discussion User Vote Error: ", error.message);
+			return null;
+		}
+	};
+
 	const deleteDiscussion = async (discussionData: DiscussionData) => {
 		try {
 			if (discussionData.inAction) {
-				setDiscussionStateValue((prev) => ({
-					...prev,
-					discussions: prev.discussions.map((discussion) =>
-						discussion.discussion.id === discussionData.discussion.id
-							? {
-									...discussion,
-									inAction: false,
-							  }
-							: discussion
-					),
-				}));
-				return;
+				throw new Error("Discussion has an unfinished action!");
 			}
 
 			setDiscussionStateValue((prev) => ({
@@ -408,6 +613,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
 			}));
 			if (userStateValue.user.uid !== discussionData.discussion.creatorId) {
 				if (!userStateValue.user.roles.includes("admin")) {
@@ -438,6 +650,11 @@ const useDiscussion = () => {
 						(discussion) =>
 							discussion.discussion.id !== discussionData.discussion.id
 					),
+					currentDiscussion:
+						prev.currentDiscussion?.discussion.id ===
+						discussionData.discussion.id
+							? null
+							: prev.currentDiscussion,
 				}));
 			}
 		} catch (error: any) {
@@ -452,6 +669,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: false,
+						  }
+						: prev.currentDiscussion,
 			}));
 		}
 	};
@@ -477,6 +701,7 @@ const useDiscussion = () => {
 		 *
 		 */
 		onDiscussionVote,
+		fetchUserVote,
 	};
 };
 

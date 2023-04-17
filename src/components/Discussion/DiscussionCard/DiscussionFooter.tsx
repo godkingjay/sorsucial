@@ -9,6 +9,7 @@ type DiscussionFooterProps = {
 	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
 	handleDiscussionOptions: (name: keyof DiscussionOptionsState) => void;
+	handleFooterReplyClick: () => void;
 	handleFooterShareClick: (type: discussionShareType) => void;
 };
 
@@ -16,6 +17,7 @@ const DiscussionFooter: React.FC<DiscussionFooterProps> = ({
 	discussionData,
 	discussionOptionsStateValue,
 	handleDiscussionOptions,
+	handleFooterReplyClick,
 	handleFooterShareClick,
 }) => {
 	return (
@@ -26,6 +28,7 @@ const DiscussionFooter: React.FC<DiscussionFooterProps> = ({
 						type="button"
 						title="Reply"
 						className="discussion-footer-button"
+						onClick={handleFooterReplyClick}
 					>
 						<div className="icon-container">
 							<GoCommentDiscussion className="icon" />

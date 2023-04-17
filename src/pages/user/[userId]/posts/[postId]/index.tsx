@@ -49,22 +49,22 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 					},
 				}));
 
-				if (
-					!postStateValue.posts.find(
-						(post) => post.post.id === postPageData.post.id
-					)
-				) {
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: [
-							...prev.posts,
-							{
-								...postPageData,
-								userLike: userLikeData,
-							},
-						],
-					}));
-				}
+				// if (
+				// 	!postStateValue.posts.find(
+				// 		(post) => post.post.id === postPageData.post.id
+				// 	)
+				// ) {
+				// 	setPostStateValue((prev) => ({
+				// 		...prev,
+				// 		posts: [
+				// 			...prev.posts,
+				// 			{
+				// 				...postPageData,
+				// 				userLike: userLikeData,
+				// 			},
+				// 		],
+				// 	}));
+				// }
 			}
 		} catch (error: any) {
 			console.log("fetchPostUserData: error: ", error.message);
@@ -130,9 +130,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 						) : (
 							<>
 								{!postStateValue.currentPost &&
-								!postStateValue.posts.find(
-									(post) => post.post.id === postId
-								) ? (
+								!postStateValue.posts.find((post) => post.post.id === postId) ? (
 									<div>Not Found</div>
 								) : (
 									<>
@@ -157,9 +155,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 	);
 };
 
-export const getServerSideProps = async (
-	context: GetServerSidePropsContext
-) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");

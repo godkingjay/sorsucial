@@ -27,9 +27,7 @@ const DiscussionTextContent: React.FC<DiscussionTextContentProps> = ({
 							) : (
 								<>
 									{discussionBody.length > 256 ? (
-										<span className="content-fade">
-											{discussionBody.slice(0, 256) + "..."}
-										</span>
+										<span className="content-fade">{discussionBody}</span>
 									) : (
 										<span>{discussionBody}</span>
 									)}

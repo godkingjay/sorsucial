@@ -38,7 +38,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 }) => {
 	const [discussionBody, setDiscussionBody] = useState(
 		discussionData.discussion.discussionBody
-			? discussionData.discussion.discussionBody?.length >= 256
+			? discussionData.discussion.discussionBody?.length < 256
 				? discussionData.discussion.discussionBody
 				: discussionData.discussion.discussionBody?.slice(0, 256) + "..."
 			: ""

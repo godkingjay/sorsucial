@@ -25,21 +25,18 @@ export default async function handler(
 
 		if (!apiKey) {
 			res.status(400).json({ error: "No API key provided!" });
-			return;
 		}
 
 		if (!apiKeysCollection) {
 			res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
-			return;
 		}
 
 		if (!discussionsCollection || !discussionVotesCollection) {
 			res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
-			return;
 		}
 
 		switch (req.method) {
@@ -72,8 +69,11 @@ export default async function handler(
 						_id: objectId,
 					})
 					.catch((error: any) => {
-						res.status(500).json({ error: error.message });
-						throw new Error("Mongo: Creating document error: ", error.message);
+						res
+							.status(500)
+							.json({
+								error: "Mongo: Creating document error: " + error.message,
+							});
 					});
 
 				res.status(200).json({

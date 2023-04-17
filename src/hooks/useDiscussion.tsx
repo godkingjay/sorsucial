@@ -588,18 +588,7 @@ const useDiscussion = () => {
 	const deleteDiscussion = async (discussionData: DiscussionData) => {
 		try {
 			if (discussionData.inAction) {
-				setDiscussionStateValue((prev) => ({
-					...prev,
-					discussions: prev.discussions.map((discussion) =>
-						discussion.discussion.id === discussionData.discussion.id
-							? {
-									...discussion,
-									inAction: false,
-							  }
-							: discussion
-					),
-				}));
-				return;
+				throw new Error("Discussion has an unfinished action!");
 			}
 
 			setDiscussionStateValue((prev) => ({
@@ -612,6 +601,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: true,
+						  }
+						: prev.currentDiscussion,
 			}));
 			if (userStateValue.user.uid !== discussionData.discussion.creatorId) {
 				if (!userStateValue.user.roles.includes("admin")) {
@@ -642,6 +638,11 @@ const useDiscussion = () => {
 						(discussion) =>
 							discussion.discussion.id !== discussionData.discussion.id
 					),
+					currentDiscussion:
+						prev.currentDiscussion?.discussion.id ===
+						discussionData.discussion.id
+							? null
+							: prev.currentDiscussion,
 				}));
 			}
 		} catch (error: any) {
@@ -656,6 +657,13 @@ const useDiscussion = () => {
 						  }
 						: discussion
 				),
+				currentDiscussion:
+					prev.currentDiscussion?.discussion.id === discussionData.discussion.id
+						? {
+								...prev.currentDiscussion,
+								inAction: false,
+						  }
+						: prev.currentDiscussion,
 			}));
 		}
 	};

@@ -160,7 +160,7 @@ export default async function handler(
 					});
 
 				const deleteDiscussionVotesState =
-					await discussionsCollection.deleteMany({
+					await discussionVotesCollection.deleteMany({
 						discussionId: discussionData.id,
 					});
 

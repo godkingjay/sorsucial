@@ -146,6 +146,7 @@ export default async function handler(
 					.toArray()) as unknown as Reply[];
 
 				for (const reply of discussionReplies) {
+					await deleteReply(reply);
 				}
 
 				const deleteState = await discussionsCollection.deleteOne({

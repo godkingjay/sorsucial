@@ -3,12 +3,14 @@ import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import discussionDb from "@/lib/db/discussionDb";
+import userDb from "@/lib/db/userDb";
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
 	try {
+		const { apiKeysCollection } = await userDb();
 		const { discussionsCollection, discussionVotesCollection } =
 			await discussionDb();
 		const {
@@ -20,6 +22,25 @@ export default async function handler(
 			discussionData: SiteDiscussion;
 			creator: SiteUser;
 		} = req.body || req.query;
+
+		if (!apiKey) {
+			res.status(400).json({ error: "No API key provided!" });
+			return;
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+			return;
+		}
+
+		if (!discussionsCollection || !discussionVotesCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the Discussions Database!" });
+			return;
+		}
 
 		switch (req.method) {
 			case "POST": {

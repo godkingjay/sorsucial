@@ -12,6 +12,7 @@ import {
 	TbArrowBigUpFilled,
 } from "react-icons/tb";
 import DiscussionCard from "@/components/Discussion/DiscussionCard";
+import DiscussionCardSkeleton from "@/components/Skeleton/Discussion/DiscussionCardSkeleton";
 
 type DiscussionsPageProps = {};
 
@@ -82,7 +83,8 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 					<section className="flex flex-col gap-y-4">
 						{firstLoadingDiscussions && !userMounted ? (
 							<>
-								<p>Loading</p>
+								<DiscussionCardSkeleton />
+								<DiscussionCardSkeleton />
 							</>
 						) : (
 							<>
@@ -112,7 +114,8 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 									))}
 								{loadingDiscussions && (
 									<>
-										<p>Loading Discussions</p>
+										<DiscussionCardSkeleton />
+										<DiscussionCardSkeleton />
 									</>
 								)}
 								{!endReached &&

@@ -8,7 +8,7 @@
 	}
 
 	.skeleton-color {
-		@apply bg-gray-500 bg-opacity-[15%];
+		@apply bg-gray-500 bg-opacity-[12.5%];
 	}
 
 	.auth-form {
@@ -1854,6 +1854,58 @@
 
 			* {
 				@apply pointer-events-none;
+			}
+		}
+	}
+
+	.discussion-text-content {
+		@apply flex flex-col px-4 py-2 gap-y-2;
+
+		.divider {
+			@apply h-[1px] bg-black bg-opacity-10;
+		}
+
+		.discussion-text-content-title {
+			@apply font-semibold whitespace-pre-wrap break-words w-full;
+		}
+
+		.discussion-text-content-body-container {
+			@apply flex flex-col items-start break-words relative;
+
+			.discussion-text-content-body {
+				@apply inline text-sm text-justify whitespace-pre-wrap break-words w-full;
+
+				.backdrop {
+					@apply opacity-0 duration-200 backdrop-blur-[2px] absolute h-full w-full top-0 left-0;
+				}
+
+				.button-container {
+					@apply flex flex-col items-center justify-end absolute h-full w-full top-0 left-0 p-4;
+
+					.button {
+						@apply opacity-0 px-4 py-1 translate-y-2 duration-200 border-2 border-green-500 font-semibold text-green-500 rounded-full bg-green-50 shadow-around-sm;
+
+						&:hover,
+						&:focus-within {
+							@apply bg-green-100;
+						}
+					}
+				}
+			}
+
+			&:hover,
+			&:focus-within {
+				.discussion-text-content-body {
+					.backdrop {
+						@apply opacity-100 flex;
+					}
+
+					.button-container {
+						.button {
+							@apply opacity-100 translate-y-0;
+						}
+					}
+				}
 			}
 		}
 	}

@@ -43,6 +43,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				: discussionData.discussion.discussionBody?.slice(0, 256) + "..."
 			: ""
 	);
+	const [voting, setVoting] = useState(false);
 
 	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
 		if (discussionOptionsStateValue[name] === discussionData.discussion.id) {
@@ -72,64 +73,32 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				throw new Error("You have to be logged in to vote in a discussion.");
 			}
 
-			onDiscussionVote(discussionData, voteType);
+			if (!voting) {
+				setVoting(true);
+				onDiscussionVote(discussionData, voteType);
+				setVoting(false);
+			} else {
+				throw new Error("You can only vote once.");
+			}
 		} catch (error: any) {
 			console.log("Hook: Discussion Vote Error: ", error.message);
 		}
 	};
 
-	const handleFooterShareClick = async (type: discussionShareType) => {
-		let url = siteDetails.host;
-		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
-
-		const title = `&og_site_title=${encodeURIComponent(
-			discussionData.discussion.discussionTitle
-		)}`;
-
-		const description = `&og_description=${encodeURIComponent(
-			discussionData.discussion.discussionBody?.slice(0, 512) || ""
-		)}`;
-
-		const faviconUrl = document
-			.querySelector("link[rel='icon']")
-			?.getAttribute("href");
-
-		const image = `&og_image=${encodeURIComponent(faviconUrl || "")}`;
-
+	const handleReadMoreClick = () => {
 		switch (discussionData.discussion.discussionType) {
-			case "discussion": {
-				url += `discussions/${discussionData.discussion.id}`;
+			case "discussion":
+				router.push(`/discussions/${discussionData.discussion.id}`);
 				break;
-			}
 
-			case "group": {
-				url += `groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
+			case "group":
+				router.push(
+					`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
+				);
 				break;
-			}
 
-			default: {
+			default:
 				break;
-			}
-		}
-
-		switch (type) {
-			case "copy": {
-				await navigator.clipboard.writeText(url);
-				alert("Post link copied to clipboard!");
-				break;
-			}
-
-			case "facebook": {
-				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-					url
-				)}${siteName}${title}${description}${image}`;
-				window.open(fbSharerUrl, "_blank");
-				break;
-			}
-
-			default: {
-				break;
-			}
 		}
 	};
 
@@ -158,6 +127,63 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				default: {
 					break;
 				}
+			}
+		}
+	};
+
+	const handleFooterShareClick = async (type: discussionShareType) => {
+		let url = siteDetails.host;
+		const ogSiteName = `&og:site_name=${encodeURIComponent("SorSUcial")}`;
+
+		const ogUrl = `&og:url=${encodeURIComponent(window.location.href)}`;
+
+		const ogTitle = `&og:title=${encodeURIComponent(
+			discussionData.discussion.discussionTitle
+		)}`;
+
+		const ogDescription = `&og:description=${encodeURIComponent(
+			discussionData.discussion.discussionBody?.slice(0, 512) || ""
+		)}`;
+
+		const faviconUrl = document
+			.querySelector("link[rel='icon']")
+			?.getAttribute("href");
+
+		const ogImage = `&og:image=${encodeURIComponent(faviconUrl || "")}`;
+
+		switch (discussionData.discussion.discussionType) {
+			case "discussion": {
+				url += `discussions/${discussionData.discussion.id}`;
+				break;
+			}
+
+			case "group": {
+				url += `groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+
+		switch (type) {
+			case "copy": {
+				await navigator.clipboard.writeText(url);
+				alert("Post link copied to clipboard!");
+				break;
+			}
+
+			case "facebook": {
+				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+					url
+				)}${ogUrl}${ogSiteName}${ogTitle}${ogDescription}${ogImage}`;
+				window.open(fbSharerUrl, "_blank");
+				break;
+			}
+
+			default: {
+				break;
 			}
 		}
 	};
@@ -223,6 +249,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						discussionData={discussionData}
 						discussionBody={discussionBody}
 						isSingleDiscussionPage={isSingleDiscussionPage}
+						handleReadMoreClick={handleReadMoreClick}
 					/>
 					<div className="flex flex-col">
 						<DiscussionVoteAndReplyDetails

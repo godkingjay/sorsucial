@@ -73,13 +73,13 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				throw new Error("You have to be logged in to vote in a discussion.");
 			}
 
-			if (voting) {
+			if (!voting) {
+				setVoting(true);
+				onDiscussionVote(discussionData, voteType);
+				setVoting(false);
+			} else {
 				throw new Error("You can only vote once.");
 			}
-
-			setVoting(true);
-			onDiscussionVote(discussionData, voteType);
-			setVoting(false);
 		} catch (error: any) {
 			console.log("Hook: Discussion Vote Error: ", error.message);
 		}
@@ -133,13 +133,15 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 	const handleFooterShareClick = async (type: discussionShareType) => {
 		let url = siteDetails.host;
-		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
+		const ogSiteName = `&og:site_name=${encodeURIComponent("SorSUcial")}`;
 
-		const title = `&og_site_title=${encodeURIComponent(
+		const ogUrl = `&og:url=${encodeURIComponent(window.location.href)}`;
+
+		const ogTitle = `&og:title=${encodeURIComponent(
 			discussionData.discussion.discussionTitle
 		)}`;
 
-		const description = `&og_description=${encodeURIComponent(
+		const ogDescription = `&og:description=${encodeURIComponent(
 			discussionData.discussion.discussionBody?.slice(0, 512) || ""
 		)}`;
 
@@ -147,7 +149,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			.querySelector("link[rel='icon']")
 			?.getAttribute("href");
 
-		const image = `&og_image=${encodeURIComponent(faviconUrl || "")}`;
+		const ogImage = `&og:image=${encodeURIComponent(faviconUrl || "")}`;
 
 		switch (discussionData.discussion.discussionType) {
 			case "discussion": {
@@ -175,7 +177,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			case "facebook": {
 				const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
 					url
-				)}${siteName}${title}${description}${image}`;
+				)}${ogUrl}${ogSiteName}${ogTitle}${ogDescription}${ogImage}`;
 				window.open(fbSharerUrl, "_blank");
 				break;
 			}

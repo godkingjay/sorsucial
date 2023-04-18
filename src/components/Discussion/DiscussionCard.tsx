@@ -43,6 +43,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				: discussionData.discussion.discussionBody?.slice(0, 256) + "..."
 			: ""
 	);
+	const [voting, setVoting] = useState(false);
 
 	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
 		if (discussionOptionsStateValue[name] === discussionData.discussion.id) {
@@ -72,7 +73,13 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				throw new Error("You have to be logged in to vote in a discussion.");
 			}
 
+			if (voting) {
+				throw new Error("You can only vote once.");
+			}
+
+			setVoting(true);
 			onDiscussionVote(discussionData, voteType);
+			setVoting(false);
 		} catch (error: any) {
 			console.log("Hook: Discussion Vote Error: ", error.message);
 		}

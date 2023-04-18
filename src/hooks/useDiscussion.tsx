@@ -36,6 +36,7 @@ const useDiscussion = () => {
 				numberOfDownVotes: 0,
 				numberOfVotes: 0,
 				numberOfReplies: 0,
+				numberOfFirstLevelReplies: 0,
 				updatedAt: discussionDate,
 				createdAt: discussionDate,
 			};

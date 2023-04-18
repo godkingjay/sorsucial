@@ -1802,6 +1802,10 @@
 				}
 			}
 		}
+
+		&[single-page="true"] {
+			@apply rounded-bl-none;
+		}
 	}
 
 	.discussion-menu-button {

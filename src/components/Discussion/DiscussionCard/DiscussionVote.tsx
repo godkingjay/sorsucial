@@ -9,22 +9,31 @@ import {
 
 type DiscussionVoteProps = {
 	discussionData: DiscussionData;
+	isSingleDiscussionPage: () => boolean;
 	handleDiscussionVote: (voteType: "upVote" | "downVote") => void;
 	formatWithSuffix: (number: number) => string;
 };
 
 const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 	discussionData,
+	isSingleDiscussionPage,
 	handleDiscussionVote,
 	formatWithSuffix,
 }) => {
 	return (
-		<div className="discussion-vote-section">
+		<div
+			className="discussion-vote-section"
+			single-page={isSingleDiscussionPage() ? "true" : "false"}
+		>
 			<div className="discussion-vote-buttons-wrapper">
 				<div className="discussion-vote-buttons-container">
 					<button
 						type="button"
-						title={discussionData.userVote?.voteValue === 1 ? "Remove Upvote" : "Upvote"}
+						title={
+							discussionData.userVote?.voteValue === 1
+								? "Remove Upvote"
+								: "Upvote"
+						}
 						onClick={() => handleDiscussionVote("upVote")}
 						className="vote-button upvote-button"
 						data-voted={discussionData.userVote?.voteValue === 1}
@@ -54,7 +63,9 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 					<button
 						type="button"
 						title={
-							discussionData.userVote?.voteValue === -1 ? "Remove Downvote" : "Downvote"
+							discussionData.userVote?.voteValue === -1
+								? "Remove Downvote"
+								: "Downvote"
 						}
 						onClick={() => handleDiscussionVote("downVote")}
 						className="vote-button downvote-button"

@@ -149,9 +149,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											<AiFillLike className="h-full w-full" />
 										</div>
 										<p className="text-xs text-gray-500">
-											{formatNumberWithSuffix(
-												commentData.comment.numberOfLikes
-											)}
+											{formatNumberWithSuffix(commentData.comment.numberOfLikes)}
 										</p>
 									</div>
 								</div>
@@ -201,7 +199,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								</button>
 							)}
 							<p className="font-normal text-2xs w-max">
-								{moment(commentData.comment.createdAt).fromNow()}
+								{moment(commentData.comment.createdAt).diff(moment(), "days") >
+								-7
+									? moment(commentData.comment.createdAt).fromNow()
+									: moment(commentData.comment.createdAt).format(
+											"MMMM DD, YYYY"
+									  )}
 							</p>
 						</div>
 						{(showComments || showCommentBox) && (

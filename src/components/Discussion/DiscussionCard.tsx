@@ -85,6 +85,52 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		}
 	};
 
+	const handleReadMoreClick = () => {
+		switch (discussionData.discussion.discussionType) {
+			case "discussion":
+				router.push(`/discussions/${discussionData.discussion.id}`);
+				break;
+
+			case "group":
+				router.push(
+					`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
+				);
+				break;
+
+			default:
+				break;
+		}
+	};
+
+	const handleFooterReplyClick = () => {
+		if (isSingleDiscussionPage()) {
+			console.log("Single Discussion Page");
+			// replyBoxRef.current?.scrollIntoView({
+			// 	behavior: "smooth",
+			// 	block: "center",
+			// });
+			// replyBoxRef.current?.focus({ preventScroll: true });
+		} else {
+			switch (discussionData.discussion.discussionType) {
+				case "discussion": {
+					router.push(`/discussions/${discussionData.discussion.id}`);
+					break;
+				}
+
+				case "group": {
+					router.push(
+						`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
+					);
+					break;
+				}
+
+				default: {
+					break;
+				}
+			}
+		}
+	};
+
 	const handleFooterShareClick = async (type: discussionShareType) => {
 		let url = siteDetails.host;
 		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
@@ -136,35 +182,6 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 			default: {
 				break;
-			}
-		}
-	};
-
-	const handleFooterReplyClick = () => {
-		if (isSingleDiscussionPage()) {
-			console.log("Single Discussion Page");
-			// replyBoxRef.current?.scrollIntoView({
-			// 	behavior: "smooth",
-			// 	block: "center",
-			// });
-			// replyBoxRef.current?.focus({ preventScroll: true });
-		} else {
-			switch (discussionData.discussion.discussionType) {
-				case "discussion": {
-					router.push(`/discussions/${discussionData.discussion.id}`);
-					break;
-				}
-
-				case "group": {
-					router.push(
-						`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
-					);
-					break;
-				}
-
-				default: {
-					break;
-				}
 			}
 		}
 	};
@@ -230,6 +247,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						discussionData={discussionData}
 						discussionBody={discussionBody}
 						isSingleDiscussionPage={isSingleDiscussionPage}
+						handleReadMoreClick={handleReadMoreClick}
 					/>
 					<div className="flex flex-col">
 						<DiscussionVoteAndReplyDetails

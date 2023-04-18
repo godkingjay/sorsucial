@@ -75,7 +75,9 @@ const PostHead: React.FC<PostHeadProps> = ({
 				</div>
 				<div className="flex flex-row items-center truncate">
 					<p className="text-2xs text-gray-500 truncate">
-						{moment(postData.post.createdAt).fromNow()}
+						{moment(postData.post.createdAt).diff(moment(), "days") > -7
+							? moment(postData.post.createdAt).fromNow()
+							: moment(postData.post.createdAt).format("MMMM DD, YYYY")}
 					</p>
 				</div>
 			</div>

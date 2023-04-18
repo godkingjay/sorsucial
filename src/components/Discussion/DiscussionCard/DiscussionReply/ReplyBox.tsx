@@ -45,7 +45,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ userStateValue }) => {
 					></textarea>
 					<div className="flex flex-row items-center justify-end flex-wrap p-2">
 						<button
-							type="submit"
+							type="button"
 							title="Create Reply"
 							className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
 							// disabled={

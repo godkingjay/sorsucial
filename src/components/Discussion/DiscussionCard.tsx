@@ -1,7 +1,7 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
 import { UserState } from "@/atoms/userAtom";
 import { NextRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { SetterOrUpdater } from "recoil";
 import DiscussionVote from "./DiscussionCard/DiscussionVote";
 import DiscussionHead from "./DiscussionCard/DiscussionHead";
@@ -16,7 +16,7 @@ import DiscussionReplies from "./DiscussionCard/DiscussionReply/DiscussionReplie
 
 type DiscussionCardProps = {
 	userStateValue: UserState;
-	userMounted?: boolean;
+	userMounted: boolean;
 	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
 	setDiscussionOptionsStateValue: SetterOrUpdater<DiscussionOptionsState>;
@@ -48,6 +48,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			: ""
 	);
 	const [voting, setVoting] = useState(false);
+	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
 		if (discussionOptionsStateValue[name] === discussionData.discussion.id) {
@@ -109,11 +110,11 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	const handleFooterReplyClick = () => {
 		if (isSingleDiscussionPage()) {
 			console.log("Single Discussion Page");
-			// replyBoxRef.current?.scrollIntoView({
-			// 	behavior: "smooth",
-			// 	block: "center",
-			// });
-			// replyBoxRef.current?.focus({ preventScroll: true });
+			replyBoxRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+			});
+			replyBoxRef.current?.focus({ preventScroll: true });
 		} else {
 			switch (discussionData.discussion.discussionType) {
 				case "discussion": {
@@ -273,7 +274,13 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 				</div>
 			</div>
 			{isSingleDiscussionPage() && (
-				<DiscussionReplies userStateValue={userStateValue} />
+				<DiscussionReplies
+					userStateValue={userStateValue}
+					userMounted={userMounted}
+					currentDiscussion={discussionData}
+					replyBoxRef={replyBoxRef}
+					formatNumberWithSuffix={formatNumberWithSuffix}
+				/>
 			)}
 		</div>
 	);

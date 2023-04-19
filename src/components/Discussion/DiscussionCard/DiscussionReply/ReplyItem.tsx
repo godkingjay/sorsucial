@@ -140,7 +140,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											<span>Unknown User</span>
 										)}
 									</h2>
-									<p className="font-normal text-2xs text-gray-500 my-2">
+									<p className="font-normal text-2xs text-gray-500 my-1">
 										{moment(replyData.reply.createdAt).diff(moment(), "days") >
 										-7
 											? moment(replyData.reply.createdAt).fromNow()
@@ -149,7 +149,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											  )}
 									</p>
 								</div>
-								<div className="flex flex-col my-1">
+								<div className="flex flex-col my-2">
 									<p className="break-words text-sm">
 										{replyData.reply.replyText}
 									</p>

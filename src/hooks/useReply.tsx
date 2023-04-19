@@ -7,6 +7,11 @@ import { Reply } from "@/lib/interfaces/discussion";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 
+export type fetchReplyParamsType = {
+	discussionId: string;
+	replyForId: string;
+};
+
 const useReply = () => {
 	const { authUser, userStateValue } = useUser();
 	const { discussionStateValue, setDiscussionStateValue } = useDiscussion();
@@ -132,7 +137,69 @@ const useReply = () => {
 	 *
 	 *
 	 */
-	const fetchReplies = async () => {};
+	const fetchReplies = async ({
+		discussionId,
+		replyForId,
+	}: fetchReplyParamsType) => {
+		try {
+			if (discussionStateValue.currentDiscussion !== null) {
+				const lastIndex =
+					discussionStateValue.currentDiscussion.discussionReplies.reduceRight(
+						(acc, reply, index) => {
+							if (reply.reply.replyForId === replyForId && acc === -1) {
+								return index;
+							}
+							return acc;
+						},
+						-1
+					);
+
+				const lastReply =
+					discussionStateValue.currentDiscussion.discussionReplies[lastIndex];
+
+				const { repliesData }: { repliesData: DiscussionReplyData[] } =
+					await axios
+						.get(apiConfig.apiEndpoint + "/discussions/replies/replies", {
+							params: {
+								apiKey: userStateValue.api?.keys[0].key,
+								discussionId: discussionId,
+								replyForId: replyForId,
+								fromVotes: lastReply
+									? lastReply.reply.numberOfVotes + 1
+									: Number.MAX_SAFE_INTEGER,
+								fromDate: lastReply?.reply.createdAt,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(`
+							API (GET - Replies): Fetch replies failed:
+							${error.message}
+							`);
+						});
+
+				if (repliesData.length > 0) {
+					setDiscussionStateValue((prev) => ({
+						...prev,
+						currentDiscussion: {
+							...prev.currentDiscussion!,
+							discussionReplies: [
+								...prev.currentDiscussion!.discussionReplies,
+								...repliesData,
+							],
+						},
+					}));
+				} else {
+					console.log("Mongo: No more replies");
+				}
+			}
+		} catch (error: any) {
+			console.log(`
+				MONGO: Fetch Replies Error:
+				${error.message}
+			`);
+		}
+	};
 
 	/**
 	 * ^ ██████╗        ██╗   ██╗ ██████╗ ████████╗███████╗

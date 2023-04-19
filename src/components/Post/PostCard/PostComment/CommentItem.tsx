@@ -1,13 +1,11 @@
 import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
-import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
-import { AiFillLike } from "react-icons/ai";
 import CommentItemCard from "./CommentItem/CommentItemCard";
 
 type CommentItemProps = {

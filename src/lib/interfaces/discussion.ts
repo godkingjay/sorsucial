@@ -127,6 +127,8 @@ export interface Reply {
 	replyText: string;
 	replyLevel: number;
 	numberOfVotes: number;
+	numberOfUpVotes: number;
+	numberOfDownVotes: number;
 	numberOfReplies: number;
 	isHidden: boolean;
 	replyStatus: "reply" | "approved" | "disapproved";

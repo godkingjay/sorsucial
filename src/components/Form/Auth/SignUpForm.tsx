@@ -67,7 +67,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 					await sendSignInLinkToEmail(clientAuth, signUpForm.email, {
 						url:
 							siteDetails.host +
-							`auth/create-account?email=${signUpForm.email}`,
+							`/auth/create-account?email=${signUpForm.email}`,
 						handleCodeInApp: true,
 					}).catch((error) => {
 						throw error;

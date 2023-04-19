@@ -109,7 +109,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 				<meta
 					name="url"
 					property="og:url"
-					content={siteDetails.host + router.asPath.slice(1)}
+					content={siteDetails.host + `/${router.asPath.slice(1)}`}
 				/>
 				<meta
 					name="updated_time"

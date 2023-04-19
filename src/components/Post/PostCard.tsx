@@ -179,13 +179,11 @@ const PostCard: React.FC<PostCardProps> = ({
 
 	const handleFooterShareClick = async (type: postShareType) => {
 		let url = siteDetails.host;
-		const siteName = `&og_site_name=${encodeURIComponent("SorSUcial")}`;
+		const siteName = `&og:site_name=${encodeURIComponent("SorSUcial")}`;
 
-		const title = `&og_site_title=${encodeURIComponent(
-			postData.post.postTitle
-		)}`;
+		const title = `&og:title=${encodeURIComponent(postData.post.postTitle)}`;
 
-		const description = `&og_description=${encodeURIComponent(
+		const description = `&og:description=${encodeURIComponent(
 			postData.post.postBody?.slice(0, 512) || ""
 		)}`;
 
@@ -193,7 +191,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			.querySelector("link[rel='icon']")
 			?.getAttribute("href");
 
-		const image = `&og_image=${encodeURIComponent(
+		const image = `&og:image=${encodeURIComponent(
 			postData.post.postImagesOrVideos.length
 				? postData.post.postImagesOrVideos[0].fileUrl
 				: faviconUrl || ""
@@ -201,17 +199,17 @@ const PostCard: React.FC<PostCardProps> = ({
 
 		switch (postData.post.postType) {
 			case "announcement": {
-				url += `announcements/${postData.post.id}`;
+				url += `/announcements/${postData.post.id}`;
 				break;
 			}
 
 			case "feed": {
-				url += `user/${postData.post.creatorId}/posts/${postData.post.id}`;
+				url += `/user/${postData.post.creatorId}/posts/${postData.post.id}`;
 				break;
 			}
 
 			case "group": {
-				url += `groups/${postData.post.groupId}/posts/${postData.post.id}`;
+				url += `/groups/${postData.post.groupId}/posts/${postData.post.id}`;
 				break;
 			}
 

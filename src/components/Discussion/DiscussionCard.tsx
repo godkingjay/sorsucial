@@ -157,12 +157,12 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 		switch (discussionData.discussion.discussionType) {
 			case "discussion": {
-				url += `discussions/${discussionData.discussion.id}`;
+				url += `/discussions/${discussionData.discussion.id}`;
 				break;
 			}
 
 			case "group": {
-				url += `groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
+				url += `/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
 				break;
 			}
 

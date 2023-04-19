@@ -8,6 +8,7 @@ import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 import { AiFillLike } from "react-icons/ai";
+import CommentItemCard from "./CommentItem/CommentItemCard";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -120,46 +121,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 				</div>
 				<div className="flex-1 flex flex-col gap-y-2">
 					<div className="flex-1 flex flex-col gap-y-1 relative">
-						<div className="w-full flex-1 flex flex-row gap-x-2 relative">
-							<div className="flex flex-row">
-								<div className="bg-gray-100 py-2 rounded-[20px] px-4 flex flex-col gap-y-1 relative min-w-[128px]">
-									<h2 className="font-semibold text-xs truncate">
-										{commentData.creator ? (
-											<Link
-												href={`/user/${commentData.creator.uid}`}
-												className="inline hover:underline focus:underline"
-											>
-												{`${commentData.creator.firstName} ${commentData.creator.lastName}`}
-											</Link>
-										) : (
-											<span>Unknown User</span>
-										)}
-									</h2>
-									<p className="break-words text-sm">
-										{commentData.comment.commentText}
-									</p>
-									<div
-										className="absolute shadow-around-sm flex flex-row items-center gap-x-1 rounded-full -bottom-1 bg-white right-0 p-0.5 pr-1"
-										style={{
-											display:
-												commentData.comment.numberOfLikes > 0 ? "flex" : "none",
-										}}
-									>
-										<div className="h-4 w-4 aspect-square text-white p-0.5 rounded-full bg-blue-500">
-											<AiFillLike className="h-full w-full" />
-										</div>
-										<p className="text-xs text-gray-500">
-											{formatNumberWithSuffix(commentData.comment.numberOfLikes)}
-										</p>
-									</div>
-								</div>
-							</div>
-							{/* <div className="flex-shrink-0 w-8 h-full flex flex-col items-center justify-center">
-								  <button type="button" title="Comment Menu" className="w-8 h-8 bg-gray-100 rounded-full p-2">
-										<BsThreeDots className="h-full w-full" />
-									</button>
-								</div> */}
-						</div>
+						<CommentItemCard
+							commentData={commentData}
+							formatNumberWithSuffix={formatNumberWithSuffix}
+						/>
 						<div className="flex flex-row items-center gap-x-4 gap-y-2 text-xs font-semibold px-4 text-gray-500 flex-wrap">
 							<button
 								type="button"

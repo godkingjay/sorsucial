@@ -1573,7 +1573,8 @@
 		}
 	}
 
-	.comment-item {
+	.comment-item,
+	.reply-item {
 		&:last-child {
 			& > .left {
 				& > .deco-lines {
@@ -2019,6 +2020,50 @@
 
 			* {
 				@apply pointer-events-none;
+			}
+		}
+	}
+
+	.reply-footer-container {
+		@apply w-full flex flex-row items-center gap-x-4 gap-y-2 flex-wrap;
+
+		.reply-vote-buttons-container {
+			@apply flex flex-row items-center gap-x-1;
+
+			.vote-button {
+				.icon-container {
+					@apply h-6 w-6 aspect-square;
+
+					.icon {
+						@apply h-full w-full stroke-1;
+					}
+				}
+			}
+
+			.upvote-button {
+				&[data-voted="true"] {
+					@apply text-blue-500;
+				}
+
+				&:hover {
+					@apply text-blue-500;
+				}
+			}
+
+			.downvote-button {
+				&[data-voted="true"] {
+					@apply text-red-500;
+				}
+
+				&:hover {
+					@apply text-red-500;
+				}
+			}
+
+			.vote-count-container {
+				.vote-count {
+					@apply text-sm font-semibold;
+				}
 			}
 		}
 	}

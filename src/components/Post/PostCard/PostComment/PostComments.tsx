@@ -178,7 +178,7 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			{currentPost && (
 				<>
 					<div className="h-[1px] bg-gray-200"></div>
-					<div className="p-4 flex flex-col gap-y-4">
+					<div className="p-4 flex flex-col gap-y-2">
 						{firstLoadingComments || !userMounted ? (
 							<>
 								<PostCommentItemSkeleton
@@ -193,59 +193,57 @@ const PostComments: React.FC<PostCommentsProps> = ({
 							</>
 						) : (
 							<>
-								<div className="flex flex-col gap-y-2">
-									{currentPost?.postComments
-										.filter(
-											(comment) =>
-												comment.comment.commentLevel === 0 &&
-												comment.comment.commentForId === currentPost?.post.id
-										)
-										.map((comment) => (
-											<React.Fragment key={comment.comment.id}>
-												<CommentItem
-													currentPost={currentPost}
-													userStateValue={userStateValue}
-													submitting={creatingComment}
-													commentData={comment}
-													parentShowCommentBox={true}
-													fetchPostComments={fetchPostComments}
-													handleCommentLike={handleCommentLike}
-													handleCommentDelete={handleCommentDelete}
-													onChange={handleInputChange}
-													onSubmit={handleCommentSubmit}
-													formatNumberWithSuffix={formatNumberWithSuffix}
-												/>
-											</React.Fragment>
-										))}
-									{loadingComments && (
-										<>
-											<PostCommentItemSkeleton
-												commentLevel={0}
+								{currentPost?.postComments
+									.filter(
+										(comment) =>
+											comment.comment.commentLevel === 0 &&
+											comment.comment.commentForId === currentPost?.post.id
+									)
+									.map((comment) => (
+										<React.Fragment key={comment.comment.id}>
+											<CommentItem
+												currentPost={currentPost}
+												userStateValue={userStateValue}
+												submitting={creatingComment}
+												commentData={comment}
 												parentShowCommentBox={true}
+												fetchPostComments={fetchPostComments}
+												handleCommentLike={handleCommentLike}
+												handleCommentDelete={handleCommentDelete}
+												onChange={handleInputChange}
+												onSubmit={handleCommentSubmit}
+												formatNumberWithSuffix={formatNumberWithSuffix}
 											/>
-											<PostCommentItemSkeleton
-												commentLevel={0}
-												parentShowCommentBox={true}
-											/>
-										</>
-									)}
-									{currentPost.post.numberOfFirstLevelComments >
-										currentPost.postComments.filter(
-											(comment) =>
-												comment.comment.commentForId === currentPost.post.id
-										).length && (
-										<div className="flex flex-col w-full justify-start">
-											<button
-												type="button"
-												title="View More Comments"
-												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-												onClick={handleFetchComments}
-											>
-												View More Comments
-											</button>
-										</div>
-									)}
-								</div>
+										</React.Fragment>
+									))}
+								{loadingComments && (
+									<>
+										<PostCommentItemSkeleton
+											commentLevel={0}
+											parentShowCommentBox={true}
+										/>
+										<PostCommentItemSkeleton
+											commentLevel={0}
+											parentShowCommentBox={true}
+										/>
+									</>
+								)}
+								{currentPost.post.numberOfFirstLevelComments >
+									currentPost.postComments.filter(
+										(comment) =>
+											comment.comment.commentForId === currentPost.post.id
+									).length && (
+									<div className="flex flex-col w-full justify-start">
+										<button
+											type="button"
+											title="View More Comments"
+											className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+											onClick={handleFetchComments}
+										>
+											View More Comments
+										</button>
+									</div>
+								)}
 								<CommentBox
 									userStateValue={userStateValue}
 									commentForm={postCommentForm}

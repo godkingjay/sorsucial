@@ -1,5 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
-import React from "react";
+import React, { useEffect } from "react";
 import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
 import { DiscussionState } from "@/atoms/discussionAtom";
@@ -42,6 +42,40 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	const [loadingReplies, setLoadingReplies] = React.useState(true);
 	const componentDidMount = React.useRef(false);
 
+	const firstFetchReplies = async () => {
+		setFirstLoadingReplies(true);
+		if (currentDiscussion) {
+			await fetchDiscussionReplies(
+				currentDiscussion?.discussion.id,
+				currentDiscussion?.discussion.id,
+				setLoadingReplies
+			);
+		}
+		setFirstLoadingReplies(false);
+	};
+
+	const fetchDiscussionReplies = async (
+		discussionId: string,
+		replyForId: string,
+		setFetchingReplies: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		setFetchingReplies(true);
+		try {
+			if (currentDiscussion) {
+				await fetchReplies({
+					discussionId,
+					replyForId,
+				});
+			}
+		} catch (error: any) {
+			console.log(`
+				Hook: Error while fetching replies for discussion:
+				${error.message}
+			`);
+		}
+		setFetchingReplies(false);
+	};
+
 	const handleReplySubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
@@ -81,6 +115,13 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 			replyText: event.target.value,
 		}));
 	};
+
+	useEffect(() => {
+		if (userMounted && !componentDidMount.current) {
+			componentDidMount.current = true;
+			firstFetchReplies();
+		}
+	}, [userMounted, componentDidMount.current]);
 
 	return (
 		<>

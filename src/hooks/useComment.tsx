@@ -16,6 +16,20 @@ const useComment = () => {
 	const { authUser, userStateValue } = useUser();
 	const { postStateValue, setPostStateValue } = usePost();
 
+	/**
+	 * *  ██████╗        ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
+	 * * ██╔════╝██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	 * * ██║     ╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
+	 * * ██║     ██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║
+	 * * ╚██████╗╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║
+	 * *  ╚═════╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostCommentFormType} commentForm
+	 * @param {SiteUser} creator
+	 */
 	const createComment = async (
 		commentForm: PostCommentFormType,
 		creator: SiteUser
@@ -147,91 +161,22 @@ const useComment = () => {
 		}
 	};
 
-	const deleteComment = async (comment: PostComment) => {
-		try {
-			if (
-				authUser?.uid === comment.creatorId ||
-				userStateValue.user.roles.includes("admin")
-			) {
-				const deleteState = await axios
-					.delete(apiConfig.apiEndpoint + "/posts/comments/", {
-						data: {
-							deletedComment: comment,
-						},
-					})
-					.then((response) => {
-						return {
-							isDeleted: response.data.isDeleted,
-							deletedCount: response.data.deletedCount,
-						};
-					})
-					.catch((error) => {
-						throw new Error(
-							"API: Error while deleting comment: ",
-							error.message
-						);
-					});
-
-				if (deleteState.deletedCount > 0) {
-					setPostStateValue((prev) => ({
-						...prev,
-						posts: prev.posts?.map((post) => {
-							if (post.post.id === comment.postId) {
-								return {
-									...post,
-									post: {
-										...post.post,
-										numberOfComments:
-											post.post.numberOfComments - deleteState.deletedCount,
-										numberOfFirstLevelComments:
-											comment.commentLevel === 0
-												? post.post.numberOfFirstLevelComments - 1
-												: post.post.numberOfFirstLevelComments,
-									},
-								};
-							}
-							return post;
-						}),
-						currentPost: {
-							...prev.currentPost!,
-							post: {
-								...prev.currentPost!.post,
-								numberOfComments:
-									prev.currentPost!.post.numberOfComments -
-									deleteState.deletedCount,
-								numberOfFirstLevelComments:
-									comment.commentLevel === 0
-										? prev.currentPost!.post.numberOfFirstLevelComments - 1
-										: prev.currentPost!.post.numberOfFirstLevelComments,
-							},
-							postComments: prev
-								.currentPost!.postComments.map((commentData) => {
-									if (commentData.comment.id === comment.commentForId) {
-										return {
-											...commentData,
-											comment: {
-												...commentData.comment,
-												numberOfReplies: commentData.comment.numberOfReplies - 1,
-											},
-										};
-									}
-
-									return commentData;
-								})
-								.filter((commentData) => commentData.comment.id !== comment.id),
-						},
-					}));
-				} else {
-					throw new Error("Comment was not deleted!");
-				}
-			} else {
-				throw new Error("You are not authorized to delete this comment!");
-			}
-		} catch (error: any) {
-			console.log("MONGO: Error while deleting comment: ", error.message);
-		}
-	};
-
+	/**
+	 * ^ ██████╗         ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
+	 * ^ ██╔══██╗██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	 * ^ ██████╔╝╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
+	 * ^ ██╔══██╗██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║
+	 * ^ ██║  ██║╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║
+	 * ^ ╚═╝  ╚═╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {fetchCommentsParamsType} {
+	 * 		postId,
+	 * 		commentForId,
+	 * 	}
+	 */
 	const fetchComments = async ({
 		postId,
 		commentForId,
@@ -292,6 +237,20 @@ const useComment = () => {
 		}
 	};
 
+	/**
+	 * ^ ██████╗        ██╗     ██╗██╗  ██╗███████╗
+	 * ^ ██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * ^ ██████╔╝╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ^ ██╔══██╗██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ^ ██║  ██║╚═╝    ███████╗██║██║  ██╗███████╗
+	 * ^ ╚═╝  ╚═╝       ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostComment} comment
+	 * @return {*}
+	 */
 	const fetchUserCommentLike = async (comment: PostComment) => {
 		try {
 			if (authUser) {
@@ -328,6 +287,19 @@ const useComment = () => {
 		}
 	};
 
+	/**
+	 * *  ██████╗██████╗        ██╗     ██╗██╗  ██╗███████╗
+	 * * ██╔════╝██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * * ██║     ██║  ██║╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ! ██║     ██║  ██║██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ! ╚██████╗██████╔╝╚═╝    ███████╗██║██║  ██╗███████╗
+	 * !  ╚═════╝╚═════╝        ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostCommentData} commentData
+	 */
 	const onCommentLike = async (commentData: PostCommentData) => {
 		try {
 			if (authUser) {
@@ -416,6 +388,104 @@ const useComment = () => {
 			}
 		} catch (error: any) {
 			console.log("MONGO: Error while liking comment: ", error.message);
+		}
+	};
+
+	/**
+	 * ! ██████╗         ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
+	 * ! ██╔══██╗██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	 * ! ██║  ██║╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
+	 * ! ██║  ██║██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║
+	 * ! ██████╔╝╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║
+	 * ! ╚═════╝         ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostComment} comment
+	 */
+	const deleteComment = async (comment: PostComment) => {
+		try {
+			if (
+				authUser?.uid === comment.creatorId ||
+				userStateValue.user.roles.includes("admin")
+			) {
+				const deleteState = await axios
+					.delete(apiConfig.apiEndpoint + "/posts/comments/", {
+						data: {
+							deletedComment: comment,
+						},
+					})
+					.then((response) => {
+						return {
+							isDeleted: response.data.isDeleted,
+							deletedCount: response.data.deletedCount,
+						};
+					})
+					.catch((error) => {
+						throw new Error(
+							"API: Error while deleting comment: ",
+							error.message
+						);
+					});
+
+				if (deleteState.deletedCount > 0) {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts?.map((post) => {
+							if (post.post.id === comment.postId) {
+								return {
+									...post,
+									post: {
+										...post.post,
+										numberOfComments:
+											post.post.numberOfComments - deleteState.deletedCount,
+										numberOfFirstLevelComments:
+											comment.commentLevel === 0
+												? post.post.numberOfFirstLevelComments - 1
+												: post.post.numberOfFirstLevelComments,
+									},
+								};
+							}
+							return post;
+						}),
+						currentPost: {
+							...prev.currentPost!,
+							post: {
+								...prev.currentPost!.post,
+								numberOfComments:
+									prev.currentPost!.post.numberOfComments -
+									deleteState.deletedCount,
+								numberOfFirstLevelComments:
+									comment.commentLevel === 0
+										? prev.currentPost!.post.numberOfFirstLevelComments - 1
+										: prev.currentPost!.post.numberOfFirstLevelComments,
+							},
+							postComments: prev
+								.currentPost!.postComments.map((commentData) => {
+									if (commentData.comment.id === comment.commentForId) {
+										return {
+											...commentData,
+											comment: {
+												...commentData.comment,
+												numberOfReplies: commentData.comment.numberOfReplies - 1,
+											},
+										};
+									}
+
+									return commentData;
+								})
+								.filter((commentData) => commentData.comment.id !== comment.id),
+						},
+					}));
+				} else {
+					throw new Error("Comment was not deleted!");
+				}
+			} else {
+				throw new Error("You are not authorized to delete this comment!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while deleting comment: ", error.message);
 		}
 	};
 

@@ -46,7 +46,7 @@ const useDiscussion = () => {
 			}
 
 			const newDiscussionData: SiteDiscussion = await axios
-				.post(apiConfig.apiEndpoint + "discussion/", {
+				.post(apiConfig.apiEndpoint + "/discussions/", {
 					apiKey: userStateValue.api?.keys[0].key,
 					discussionData: newDiscussion,
 					creator: userStateValue.user,
@@ -103,7 +103,7 @@ const useDiscussion = () => {
 
 				if (isDeleteVote) {
 					const { voteDeleted } = await axios
-						.delete(apiConfig.apiEndpoint + "discussion/vote/", {
+						.delete(apiConfig.apiEndpoint + "/discussions/votes/", {
 							data: {
 								apiKey: userStateValue.api?.keys[0].key,
 								discussionId: discussionData.discussion.id,
@@ -118,7 +118,7 @@ const useDiscussion = () => {
 						});
 				} else {
 					const { voteChanged } = await axios
-						.put(apiConfig.apiEndpoint + "discussion/vote/", {
+						.put(apiConfig.apiEndpoint + "/discussions/votes/", {
 							apiKey: userStateValue.api?.keys[0].key,
 							discussionVoteData: newDiscussionVote,
 							voteType,
@@ -218,7 +218,7 @@ const useDiscussion = () => {
 				}
 
 				const { voteSuccess } = await axios
-					.post(apiConfig.apiEndpoint + "discussion/vote/", {
+					.post(apiConfig.apiEndpoint + "/discussion/vote/", {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionVoteData: newDiscussionVote,
 						voteType,
@@ -318,7 +318,7 @@ const useDiscussion = () => {
 			const lastDiscussion = discussionStateValue.discussions[lastIndex] || null;
 
 			const discussions: DiscussionData[] = await axios
-				.get(apiConfig.apiEndpoint + "discussion/discussions", {
+				.get(apiConfig.apiEndpoint + "/discussions/discussions", {
 					params: {
 						apiKey: userStateValue.api?.keys[0].key,
 						userId: authUser?.uid,
@@ -354,7 +354,7 @@ const useDiscussion = () => {
 		try {
 			if (authUser) {
 				const { userVote }: { userVote: DiscussionVote | null } = await axios
-					.get(apiConfig.apiEndpoint + "discussion/vote/", {
+					.get(apiConfig.apiEndpoint + "/discussions/votes/", {
 						params: {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser.uid,
@@ -393,7 +393,7 @@ const useDiscussion = () => {
 			}
 
 			const { isDeleted } = await axios
-				.delete(apiConfig.apiEndpoint + "discussion/", {
+				.delete(apiConfig.apiEndpoint + "/discussions/", {
 					data: {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionData: discussionData.discussion,

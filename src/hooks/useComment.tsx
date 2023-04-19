@@ -162,6 +162,110 @@ const useComment = () => {
 	};
 
 	/**
+	 * *  ██████╗██████╗        ██╗     ██╗██╗  ██╗███████╗
+	 * * ██╔════╝██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * * ██║     ██║  ██║╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ! ██║     ██║  ██║██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ! ╚██████╗██████╔╝╚═╝    ███████╗██║██║  ██╗███████╗
+	 * !  ╚═════╝╚═════╝        ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostCommentData} commentData
+	 */
+	const onCommentLike = async (commentData: PostCommentData) => {
+		try {
+			if (authUser) {
+				if (commentData.userCommentLike) {
+					await axios
+						.delete(apiConfig.apiEndpoint + "/posts/comments/likes/", {
+							data: {
+								deletePostId: commentData.userCommentLike.postId,
+								deleteCommentId: commentData.userCommentLike.commentId,
+								deleteUserId: commentData.userCommentLike.userId,
+							},
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while deleting comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes - 1,
+										},
+										userCommentLike: null,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				} else {
+					// Create new comment like
+
+					const userCommentLike: CommentLike = {
+						userId: authUser.uid,
+						postId: commentData.comment.postId,
+						commentId: commentData.comment.id,
+						createdAt: new Date(),
+					};
+
+					if (commentData.comment.groupId) {
+						userCommentLike.groupId = commentData.comment.groupId;
+					}
+
+					await axios
+						.post(apiConfig.apiEndpoint + "/posts/comments/likes/", {
+							newUserCommentLike: userCommentLike,
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while creating comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes + 1,
+										},
+										userCommentLike,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while liking comment: ", error.message);
+		}
+	};
+
+	/**
 	 * ^ ██████╗         ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
 	 * ^ ██╔══██╗██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
 	 * ^ ██████╔╝╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
@@ -284,110 +388,6 @@ const useComment = () => {
 				error.message
 			);
 			return null;
-		}
-	};
-
-	/**
-	 * *  ██████╗██████╗        ██╗     ██╗██╗  ██╗███████╗
-	 * * ██╔════╝██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
-	 * * ██║     ██║  ██║╚═╝    ██║     ██║█████╔╝ █████╗
-	 * ! ██║     ██║  ██║██╗    ██║     ██║██╔═██╗ ██╔══╝
-	 * ! ╚██████╗██████╔╝╚═╝    ███████╗██║██║  ██╗███████╗
-	 * !  ╚═════╝╚═════╝        ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
-	 */
-	/**
-	 *
-	 *
-	 * @param {PostCommentData} commentData
-	 */
-	const onCommentLike = async (commentData: PostCommentData) => {
-		try {
-			if (authUser) {
-				if (commentData.userCommentLike) {
-					await axios
-						.delete(apiConfig.apiEndpoint + "/posts/comments/likes/", {
-							data: {
-								deletePostId: commentData.userCommentLike.postId,
-								deleteCommentId: commentData.userCommentLike.commentId,
-								deleteUserId: commentData.userCommentLike.userId,
-							},
-						})
-						.catch((error) => {
-							throw new Error(
-								"API: Error while deleting comment like: ",
-								error.message
-							);
-						});
-
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.map((comment) => {
-								if (comment.comment.id === commentData.comment.id) {
-									return {
-										...comment,
-										comment: {
-											...comment.comment,
-											numberOfLikes: comment.comment.numberOfLikes - 1,
-										},
-										userCommentLike: null,
-									};
-								}
-								return comment;
-							}),
-						},
-					}));
-				} else {
-					// Create new comment like
-
-					const userCommentLike: CommentLike = {
-						userId: authUser.uid,
-						postId: commentData.comment.postId,
-						commentId: commentData.comment.id,
-						createdAt: new Date(),
-					};
-
-					if (commentData.comment.groupId) {
-						userCommentLike.groupId = commentData.comment.groupId;
-					}
-
-					await axios
-						.post(apiConfig.apiEndpoint + "/posts/comments/likes/", {
-							newUserCommentLike: userCommentLike,
-						})
-						.catch((error) => {
-							throw new Error(
-								"API: Error while creating comment like: ",
-								error.message
-							);
-						});
-
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.map((comment) => {
-								if (comment.comment.id === commentData.comment.id) {
-									return {
-										...comment,
-										comment: {
-											...comment.comment,
-											numberOfLikes: comment.comment.numberOfLikes + 1,
-										},
-										userCommentLike,
-									};
-								}
-								return comment;
-							}),
-						},
-					}));
-				}
-			} else {
-				throw new Error("User not logged in!");
-			}
-		} catch (error: any) {
-			console.log("MONGO: Error while liking comment: ", error.message);
 		}
 	};
 

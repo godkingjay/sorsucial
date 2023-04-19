@@ -1573,7 +1573,8 @@
 		}
 	}
 
-	.comment-item {
+	.comment-item,
+	.reply-item {
 		&:last-child {
 			& > .left {
 				& > .deco-lines {
@@ -1583,7 +1584,8 @@
 				}
 			}
 
-			&[show-comment-box="true"] {
+			&[show-comment-box="true"],
+			&[show-reply-box="true"] {
 				& > .left {
 					& > .deco-lines {
 						& > .straight {
@@ -1802,6 +1804,10 @@
 				}
 			}
 		}
+
+		&[single-page="true"] {
+			@apply rounded-bl-none;
+		}
 	}
 
 	.discussion-menu-button {
@@ -2015,6 +2021,75 @@
 
 			* {
 				@apply pointer-events-none;
+			}
+		}
+	}
+
+	.reply-footer-container {
+		@apply w-full flex flex-row items-center gap-y-2 flex-wrap;
+
+		.reply-vote-buttons-container {
+			@apply flex flex-row items-center gap-x-1;
+
+			.vote-button {
+				.icon-container {
+					@apply h-6 w-6 aspect-square;
+
+					.icon {
+						@apply h-full w-full stroke-1;
+					}
+				}
+			}
+
+			.upvote-button {
+				&[data-voted="true"] {
+					@apply text-blue-500;
+				}
+
+				&:hover {
+					@apply text-blue-500;
+				}
+			}
+
+			.downvote-button {
+				&[data-voted="true"] {
+					@apply text-red-500;
+				}
+
+				&:hover {
+					@apply text-red-500;
+				}
+			}
+
+			.vote-count-container {
+				.vote-count {
+					@apply text-xs font-semibold;
+				}
+			}
+		}
+		.reply-buttons-container {
+			@apply flex flex-row items-center;
+
+			.button {
+				@apply flex flex-row gap-x-1 items-center px-2 py-1 duration-200;
+
+				.icon-container {
+					@apply h-5 w-5 text-gray-700;
+
+					.icon {
+						@apply h-full w-full;
+					}
+				}
+
+				.label-container {
+					.label {
+						@apply text-xs font-semibold text-gray-700;
+					}
+				}
+
+				&:hover {
+					@apply bg-gray-100 rounded-md;
+				}
 			}
 		}
 	}

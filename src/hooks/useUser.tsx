@@ -35,7 +35,7 @@ const useUser = () => {
 		try {
 			if (user) {
 				const { userData, userAPI } = await axios
-					.get(apiConfig.apiEndpoint + "user/user", {
+					.get(apiConfig.apiEndpoint + "/users/", {
 						params: {
 							privateKey: apiConfig.privateKey,
 							getUserId: user.uid,
@@ -86,7 +86,7 @@ const useUser = () => {
 						};
 
 						const newUserData = await axios
-							.post(apiConfig.apiEndpoint + "user/user", {
+							.post(apiConfig.apiEndpoint + "/users/", {
 								newUser,
 							})
 							.then((res) => res.data.newUser)
@@ -130,7 +130,9 @@ const useUser = () => {
 			};
 
 			if (userData.profilePhoto?.url) {
-				const imageDocRef = doc(collection(clientDb, `users/${user?.uid}/images`));
+				const imageDocRef = doc(
+					collection(clientDb, `users/${user?.uid}/images`)
+				);
 
 				const userProfilePhoto = await uploadProfilePhoto(
 					userData.profilePhoto,
@@ -145,7 +147,7 @@ const useUser = () => {
 			}
 
 			const newUserData = await axios
-				.put(apiConfig.apiEndpoint + "user/user", {
+				.put(apiConfig.apiEndpoint + "/users/", {
 					updatedUserData: newUser,
 					updateUserId: user?.uid,
 				})
@@ -171,22 +173,30 @@ const useUser = () => {
 		imageId: string
 	) => {
 		try {
-			const storageRef = ref(clientStorage, `users/${user?.uid}/images/${imageId}`);
+			const storageRef = ref(
+				clientStorage,
+				`users/${user?.uid}/images/${imageId}`
+			);
 			const response = await fetch(image?.url as string);
 			const blob = await response.blob();
 
 			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log("Firebase Storage: Uploading Profile Photo Error: ", error.message);
-				throw error;
-			});
-
-			const downloadURL = await getDownloadURL(storageRef).catch((error: any) => {
 				console.log(
-					"Firebase Storage: Getting Profile Photo Download URL Error: ",
+					"Firebase Storage: Uploading Profile Photo Error: ",
 					error.message
 				);
 				throw error;
 			});
+
+			const downloadURL = await getDownloadURL(storageRef).catch(
+				(error: any) => {
+					console.log(
+						"Firebase Storage: Getting Profile Photo Download URL Error: ",
+						error.message
+					);
+					throw error;
+				}
+			);
 
 			const newImage: UserImage = {
 				id: imageId,
@@ -202,7 +212,7 @@ const useUser = () => {
 				createdAt: new Date(),
 			};
 
-			await axios.post(apiConfig.apiEndpoint + "user/image/profile-photo", {
+			await axios.post(apiConfig.apiEndpoint + "/users/images/", {
 				newImage,
 			});
 
@@ -240,7 +250,12 @@ const useUser = () => {
 	};
 
 	useEffect(() => {
-		if (!user && !loading && !loadingUser && !router.pathname.match(/\/auth\//)) {
+		if (
+			!user &&
+			!loading &&
+			!loadingUser &&
+			!router.pathname.match(/\/auth\//)
+		) {
 			router.push("/auth/signin");
 		} else if (user && !loading && !currentUserMounted.current) {
 			currentUserMounted.current = true;

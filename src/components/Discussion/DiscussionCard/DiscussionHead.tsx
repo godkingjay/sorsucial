@@ -35,7 +35,12 @@ const DiscussionHead: React.FC<DiscussionHeadProps> = ({
 				</div>
 				<div className="flex flex-row items-center truncate">
 					<p className="text-2xs text-gray-500 truncate">
-						{moment(discussionData.discussion.createdAt).fromNow()}
+						{moment(discussionData.discussion.createdAt).diff(moment(), "days") >
+						-7
+							? moment(discussionData.discussion.createdAt).fromNow()
+							: moment(discussionData.discussion.createdAt).format(
+									"MMMM DD, YYYY"
+							  )}
 					</p>
 				</div>
 			</div>

@@ -19,6 +19,19 @@ const useDiscussion = () => {
 		useRecoilState(discussionOptionsState);
 	const { authUser, userStateValue } = useUser();
 
+	/**
+	 * *  ██████╗       ██████╗ ██╗███████╗ ██████╗██╗   ██╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
+	 * * ██╔════╝██╗    ██╔══██╗██║██╔════╝██╔════╝██║   ██║██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
+	 * * ██║     ╚═╝    ██║  ██║██║███████╗██║     ██║   ██║███████╗███████╗██║██║   ██║██╔██╗ ██║
+	 * * ██║     ██╗    ██║  ██║██║╚════██║██║     ██║   ██║╚════██║╚════██║██║██║   ██║██║╚██╗██║
+	 * * ╚██████╗╚═╝    ██████╔╝██║███████║╚██████╗╚██████╔╝███████║███████║██║╚██████╔╝██║ ╚████║
+	 * *  ╚═════╝       ╚═════╝ ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {CreateDiscussionType} discussionForm
+	 */
 	const createDiscussion = async (discussionForm: CreateDiscussionType) => {
 		try {
 			const discussionDate = new Date();
@@ -36,6 +49,7 @@ const useDiscussion = () => {
 				numberOfDownVotes: 0,
 				numberOfVotes: 0,
 				numberOfReplies: 0,
+				numberOfFirstLevelReplies: 0,
 				updatedAt: discussionDate,
 				createdAt: discussionDate,
 			};
@@ -45,7 +59,7 @@ const useDiscussion = () => {
 			}
 
 			const newDiscussionData: SiteDiscussion = await axios
-				.post(apiConfig.apiEndpoint + "discussion/", {
+				.post(apiConfig.apiEndpoint + "/discussions/", {
 					apiKey: userStateValue.api?.keys[0].key,
 					discussionData: newDiscussion,
 					creator: userStateValue.user,
@@ -81,6 +95,20 @@ const useDiscussion = () => {
 		}
 	};
 
+	/**
+	 * *  ██████╗██████╗        ██╗   ██╗ ██████╗ ████████╗███████╗
+	 * * ██╔════╝██╔══██╗██╗    ██║   ██║██╔═══██╗╚══██╔══╝██╔════╝
+	 * * ██║     ██║  ██║╚═╝    ██║   ██║██║   ██║   ██║   █████╗
+	 * ! ██║     ██║  ██║██╗    ╚██╗ ██╔╝██║   ██║   ██║   ██╔══╝
+	 * ! ╚██████╗██████╔╝╚═╝     ╚████╔╝ ╚██████╔╝   ██║   ███████╗
+	 * !  ╚═════╝╚═════╝          ╚═══╝   ╚═════╝    ╚═╝   ╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {DiscussionData} discussionData
+	 * @param {("upVote" | "downVote")} voteType
+	 */
 	const onDiscussionVote = async (
 		discussionData: DiscussionData,
 		voteType: "upVote" | "downVote"
@@ -102,7 +130,7 @@ const useDiscussion = () => {
 
 				if (isDeleteVote) {
 					const { voteDeleted } = await axios
-						.delete(apiConfig.apiEndpoint + "discussion/vote/", {
+						.delete(apiConfig.apiEndpoint + "/discussions/votes/", {
 							data: {
 								apiKey: userStateValue.api?.keys[0].key,
 								discussionId: discussionData.discussion.id,
@@ -117,7 +145,7 @@ const useDiscussion = () => {
 						});
 				} else {
 					const { voteChanged } = await axios
-						.put(apiConfig.apiEndpoint + "discussion/vote/", {
+						.put(apiConfig.apiEndpoint + "/discussions/votes/", {
 							apiKey: userStateValue.api?.keys[0].key,
 							discussionVoteData: newDiscussionVote,
 							voteType,
@@ -217,7 +245,7 @@ const useDiscussion = () => {
 				}
 
 				const { voteSuccess } = await axios
-					.post(apiConfig.apiEndpoint + "discussion/vote/", {
+					.post(apiConfig.apiEndpoint + "/discussions/votes/", {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionVoteData: newDiscussionVote,
 						voteType,
@@ -294,6 +322,22 @@ const useDiscussion = () => {
 		}
 	};
 
+	/**
+	 * ^ ██████╗        ██████╗ ██╗███████╗ ██████╗██╗   ██╗███████╗███████╗██╗ ██████╗ ███╗   ██╗███████╗
+	 * ^ ██╔══██╗██╗    ██╔══██╗██║██╔════╝██╔════╝██║   ██║██╔════╝██╔════╝██║██╔═══██╗████╗  ██║██╔════╝
+	 * ^ ██████╔╝╚═╝    ██║  ██║██║███████╗██║     ██║   ██║███████╗███████╗██║██║   ██║██╔██╗ ██║███████╗
+	 * ^ ██╔══██╗██╗    ██║  ██║██║╚════██║██║     ██║   ██║╚════██║╚════██║██║██║   ██║██║╚██╗██║╚════██║
+	 * ^ ██║  ██║╚═╝    ██████╔╝██║███████║╚██████╗╚██████╔╝███████║███████║██║╚██████╔╝██║ ╚████║███████║
+	 * ^ ╚═╝  ╚═╝       ╚═════╝ ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {SiteDiscussion["discussionType"]} discussionType
+	 * @param {SiteDiscussion["privacy"]} privacy
+	 * @param {SiteDiscussion["isOpen"]} isOpen
+	 * @return {*}
+	 */
 	const fetchDiscussions = async (
 		discussionType: SiteDiscussion["discussionType"],
 		privacy: SiteDiscussion["privacy"],
@@ -317,7 +361,7 @@ const useDiscussion = () => {
 			const lastDiscussion = discussionStateValue.discussions[lastIndex] || null;
 
 			const discussions: DiscussionData[] = await axios
-				.get(apiConfig.apiEndpoint + "discussion/discussions", {
+				.get(apiConfig.apiEndpoint + "/discussions/discussions", {
 					params: {
 						apiKey: userStateValue.api?.keys[0].key,
 						userId: authUser?.uid,
@@ -349,11 +393,25 @@ const useDiscussion = () => {
 		}
 	};
 
+	/**
+	 * ^ ██████╗        ██╗   ██╗ ██████╗ ████████╗███████╗
+	 * ^ ██╔══██╗██╗    ██║   ██║██╔═══██╗╚══██╔══╝██╔════╝
+	 * ^ ██████╔╝╚═╝    ██║   ██║██║   ██║   ██║   █████╗
+	 * ^ ██╔══██╗██╗    ╚██╗ ██╔╝██║   ██║   ██║   ██╔══╝
+	 * ^ ██║  ██║╚═╝     ╚████╔╝ ╚██████╔╝   ██║   ███████╗
+	 * ^ ╚═╝  ╚═╝         ╚═══╝   ╚═════╝    ╚═╝   ╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {SiteDiscussion} discussion
+	 * @return {*}
+	 */
 	const fetchUserVote = async (discussion: SiteDiscussion) => {
 		try {
 			if (authUser) {
 				const { userVote }: { userVote: DiscussionVote | null } = await axios
-					.get(apiConfig.apiEndpoint + "discussion/vote/", {
+					.get(apiConfig.apiEndpoint + "/discussions/votes/", {
 						params: {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser.uid,
@@ -381,6 +439,19 @@ const useDiscussion = () => {
 		}
 	};
 
+	/**
+	 * ! ██████╗        ██████╗ ██╗███████╗ ██████╗██╗   ██╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
+	 * ! ██╔══██╗██╗    ██╔══██╗██║██╔════╝██╔════╝██║   ██║██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
+	 * ! ██║  ██║╚═╝    ██║  ██║██║███████╗██║     ██║   ██║███████╗███████╗██║██║   ██║██╔██╗ ██║
+	 * ! ██║  ██║██╗    ██║  ██║██║╚════██║██║     ██║   ██║╚════██║╚════██║██║██║   ██║██║╚██╗██║
+	 * ! ██████╔╝╚═╝    ██████╔╝██║███████║╚██████╗╚██████╔╝███████║███████║██║╚██████╔╝██║ ╚████║
+	 * ! ╚═════╝        ╚═════╝ ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {DiscussionData} discussionData
+	 */
 	const deleteDiscussion = async (discussionData: DiscussionData) => {
 		try {
 			if (userStateValue.user.uid !== discussionData.discussion.creatorId) {
@@ -392,7 +463,7 @@ const useDiscussion = () => {
 			}
 
 			const { isDeleted } = await axios
-				.delete(apiConfig.apiEndpoint + "discussion/", {
+				.delete(apiConfig.apiEndpoint + "/discussions/", {
 					data: {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionData: discussionData.discussion,

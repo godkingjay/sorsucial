@@ -22,6 +22,7 @@
  * @property {"public" | "restricted" | "private"} privacy - The privacy type of the discussion.
  * @property {number} numberOfVotes - The number of votes of the discussion.
  * @property {number} numberOfReplies - The number of replies of the discussion.
+ * @property {number} numberOfFirstLevelReplies - The number of first level replies of the discussion.
  * @property {number} numberOfUpVotes - The number of upvotes of the discussion.
  * @property {number} numberOfDownVotes - The number of downvotes of the discussion.
  * @property {Date} updatedAt - The date and time when the discussion was last changed.
@@ -44,6 +45,7 @@ export interface SiteDiscussion {
 	privacy: "public" | "restricted" | "private";
 	numberOfVotes: number;
 	numberOfReplies: number;
+	numberOfFirstLevelReplies: number;
 	numberOfUpVotes: number;
 	numberOfDownVotes: number;
 	updatedAt: Date;
@@ -125,6 +127,8 @@ export interface Reply {
 	replyText: string;
 	replyLevel: number;
 	numberOfVotes: number;
+	numberOfUpVotes: number;
+	numberOfDownVotes: number;
 	numberOfReplies: number;
 	isHidden: boolean;
 	replyStatus: "reply" | "approved" | "disapproved";

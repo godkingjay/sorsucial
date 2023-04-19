@@ -16,6 +16,20 @@ const useComment = () => {
 	const { authUser, userStateValue } = useUser();
 	const { postStateValue, setPostStateValue } = usePost();
 
+	/**
+	 * *  ██████╗        ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
+	 * * ██╔════╝██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	 * * ██║     ╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
+	 * * ██║     ██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║
+	 * * ╚██████╗╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║
+	 * *  ╚═════╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostCommentFormType} commentForm
+	 * @param {SiteUser} creator
+	 */
 	const createComment = async (
 		commentForm: PostCommentFormType,
 		creator: SiteUser
@@ -42,7 +56,7 @@ const useComment = () => {
 			}
 
 			const newCommentData: PostComment = await axios
-				.post(apiConfig.apiEndpoint + "post/comment/", {
+				.post(apiConfig.apiEndpoint + "/posts/comments/", {
 					newComment,
 				})
 				.then((res) => res.data.newComment)
@@ -61,7 +75,7 @@ const useComment = () => {
 					};
 
 					const isUpdated = await axios
-						.put(apiConfig.apiEndpoint + "post/comment/", {
+						.put(apiConfig.apiEndpoint + "/posts/comments/", {
 							updatedComment,
 						})
 						.then((response) => response.data.isUpdated)
@@ -147,6 +161,249 @@ const useComment = () => {
 		}
 	};
 
+	/**
+	 * *  ██████╗██████╗        ██╗     ██╗██╗  ██╗███████╗
+	 * * ██╔════╝██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * * ██║     ██║  ██║╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ! ██║     ██║  ██║██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ! ╚██████╗██████╔╝╚═╝    ███████╗██║██║  ██╗███████╗
+	 * !  ╚═════╝╚═════╝        ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostCommentData} commentData
+	 */
+	const onCommentLike = async (commentData: PostCommentData) => {
+		try {
+			if (authUser) {
+				if (commentData.userCommentLike) {
+					await axios
+						.delete(apiConfig.apiEndpoint + "/posts/comments/likes/", {
+							data: {
+								deletePostId: commentData.userCommentLike.postId,
+								deleteCommentId: commentData.userCommentLike.commentId,
+								deleteUserId: commentData.userCommentLike.userId,
+							},
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while deleting comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes - 1,
+										},
+										userCommentLike: null,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				} else {
+					// Create new comment like
+
+					const userCommentLike: CommentLike = {
+						userId: authUser.uid,
+						postId: commentData.comment.postId,
+						commentId: commentData.comment.id,
+						createdAt: new Date(),
+					};
+
+					if (commentData.comment.groupId) {
+						userCommentLike.groupId = commentData.comment.groupId;
+					}
+
+					await axios
+						.post(apiConfig.apiEndpoint + "/posts/comments/likes/", {
+							newUserCommentLike: userCommentLike,
+						})
+						.catch((error) => {
+							throw new Error(
+								"API: Error while creating comment like: ",
+								error.message
+							);
+						});
+
+					setPostStateValue((prev) => ({
+						...prev,
+						currentPost: {
+							...prev.currentPost!,
+							postComments: prev.currentPost!.postComments.map((comment) => {
+								if (comment.comment.id === commentData.comment.id) {
+									return {
+										...comment,
+										comment: {
+											...comment.comment,
+											numberOfLikes: comment.comment.numberOfLikes + 1,
+										},
+										userCommentLike,
+									};
+								}
+								return comment;
+							}),
+						},
+					}));
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while liking comment: ", error.message);
+		}
+	};
+
+	/**
+	 * ^ ██████╗         ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗███████╗
+	 * ^ ██╔══██╗██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+	 * ^ ██████╔╝╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+	 * ^ ██╔══██╗██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+	 * ^ ██║  ██║╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   ███████║
+	 * ^ ╚═╝  ╚═╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {fetchCommentsParamsType} {
+	 * 		postId,
+	 * 		commentForId,
+	 * 	}
+	 */
+	const fetchComments = async ({
+		postId,
+		commentForId,
+	}: fetchCommentsParamsType) => {
+		try {
+			if (postStateValue.currentPost !== null) {
+				const lastIndex = postStateValue.currentPost.postComments.reduceRight(
+					(acc, comment, index) => {
+						if (comment.comment.commentForId === commentForId && acc === -1) {
+							return index;
+						}
+						return acc;
+					},
+					-1
+				);
+
+				const oldestComment = postStateValue.currentPost.postComments[lastIndex];
+
+				const commentsData: PostCommentData[] = await axios
+					.get(apiConfig.apiEndpoint + "/posts/comments/comments", {
+						params: {
+							getUserId: authUser?.uid,
+							getCommentPostId: postId,
+							getCommentForId: commentForId,
+							getFromLikes: oldestComment
+								? oldestComment.comment.numberOfLikes + 1
+								: Number.MAX_SAFE_INTEGER,
+							getFromDate: oldestComment?.comment.createdAt,
+						},
+					})
+					.then((response) => {
+						return response.data.comments;
+					})
+					.catch((error) => {
+						console.log("API: Error while fetching comments: ", error.message);
+					});
+
+				if (commentsData.length) {
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								currentPost: {
+									...prev.currentPost!,
+									postComments: [
+										...prev.currentPost!.postComments,
+										...commentsData,
+									],
+								},
+							} as PostState)
+					);
+				} else {
+					console.log("MONGO: No comments found!");
+				}
+			}
+		} catch (error: any) {
+			console.log("MONGO: Error while fetching comments: ", error.message);
+		}
+	};
+
+	/**
+	 * ^ ██████╗        ██╗     ██╗██╗  ██╗███████╗
+	 * ^ ██╔══██╗██╗    ██║     ██║██║ ██╔╝██╔════╝
+	 * ^ ██████╔╝╚═╝    ██║     ██║█████╔╝ █████╗
+	 * ^ ██╔══██╗██╗    ██║     ██║██╔═██╗ ██╔══╝
+	 * ^ ██║  ██║╚═╝    ███████╗██║██║  ██╗███████╗
+	 * ^ ╚═╝  ╚═╝       ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostComment} comment
+	 * @return {*}
+	 */
+	const fetchUserCommentLike = async (comment: PostComment) => {
+		try {
+			if (authUser) {
+				const userCommentLikeData = await axios
+					.get(apiConfig.apiEndpoint + "/posts/comments/likes/", {
+						params: {
+							getPostId: comment.postId,
+							getCommentId: comment.id,
+							getUserId: authUser.uid,
+						},
+					})
+					.then((response) => response.data.userCommentLike)
+					.catch((error) => {
+						throw new Error(
+							"API: Error while fetching user comment like: ",
+							error.message
+						);
+					});
+
+				if (userCommentLikeData) {
+					return userCommentLikeData;
+				} else {
+					return null;
+				}
+			} else {
+				throw new Error("User not logged in!");
+			}
+		} catch (error: any) {
+			console.log(
+				"MONGO: Error while fetching user comment like: ",
+				error.message
+			);
+			return null;
+		}
+	};
+
+	/**
+	 * ! ██████╗         ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗
+	 * ! ██╔══██╗██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	 * ! ██║  ██║╚═╝    ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║
+	 * ! ██║  ██║██╗    ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║
+	 * ! ██████╔╝╚═╝    ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║
+	 * ! ╚═════╝         ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {PostComment} comment
+	 */
 	const deleteComment = async (comment: PostComment) => {
 		try {
 			if (
@@ -154,7 +411,7 @@ const useComment = () => {
 				userStateValue.user.roles.includes("admin")
 			) {
 				const deleteState = await axios
-					.delete(apiConfig.apiEndpoint + "post/comment/", {
+					.delete(apiConfig.apiEndpoint + "/posts/comments/", {
 						data: {
 							deletedComment: comment,
 						},
@@ -211,8 +468,7 @@ const useComment = () => {
 											...commentData,
 											comment: {
 												...commentData.comment,
-												numberOfReplies:
-													commentData.comment.numberOfReplies - 1,
+												numberOfReplies: commentData.comment.numberOfReplies - 1,
 											},
 										};
 									}
@@ -233,198 +489,11 @@ const useComment = () => {
 		}
 	};
 
-	const fetchComments = async ({
-		postId,
-		commentForId,
-	}: fetchCommentsParamsType) => {
-		try {
-			if (postStateValue.currentPost !== null) {
-				const lastIndex = postStateValue.currentPost.postComments.reduceRight(
-					(acc, comment, index) => {
-						if (comment.comment.commentForId === commentForId && acc === -1) {
-							return index;
-						}
-						return acc;
-					},
-					-1
-				);
-
-				const oldestComment =
-					postStateValue.currentPost.postComments[lastIndex];
-
-				const commentsData: PostCommentData[] = await axios
-					.get(apiConfig.apiEndpoint + "post/comment/comments", {
-						params: {
-							getUserId: authUser?.uid,
-							getCommentPostId: postId,
-							getCommentForId: commentForId,
-							getFromLikes: oldestComment
-								? oldestComment.comment.numberOfLikes + 1
-								: Number.MAX_SAFE_INTEGER,
-							getFromDate: oldestComment?.comment.createdAt,
-						},
-					})
-					.then((response) => {
-						return response.data.comments;
-					})
-					.catch((error) => {
-						console.log("API: Error while fetching comments: ", error.message);
-					});
-
-				if (commentsData.length) {
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								currentPost: {
-									...prev.currentPost!,
-									postComments: [
-										...prev.currentPost!.postComments,
-										...commentsData,
-									],
-								},
-							} as PostState)
-					);
-				} else {
-					console.log("MONGO: No comments found!");
-				}
-			}
-		} catch (error: any) {
-			console.log("MONGO: Error while fetching comments: ", error.message);
-		}
-	};
-
-	const fetchUserCommentLike = async (comment: PostComment) => {
-		try {
-			if (authUser) {
-				const userCommentLikeData = await axios
-					.get(apiConfig.apiEndpoint + "post/comment/like/", {
-						params: {
-							getPostId: comment.postId,
-							getCommentId: comment.id,
-							getUserId: authUser.uid,
-						},
-					})
-					.then((response) => response.data.userCommentLike)
-					.catch((error) => {
-						throw new Error(
-							"API: Error while fetching user comment like: ",
-							error.message
-						);
-					});
-
-				if (userCommentLikeData) {
-					return userCommentLikeData;
-				} else {
-					return null;
-				}
-			} else {
-				throw new Error("User not logged in!");
-			}
-		} catch (error: any) {
-			console.log(
-				"MONGO: Error while fetching user comment like: ",
-				error.message
-			);
-			return null;
-		}
-	};
-
-	const onCommentLike = async (commentData: PostCommentData) => {
-		try {
-			if (authUser) {
-				if (commentData.userCommentLike) {
-					await axios
-						.delete(apiConfig.apiEndpoint + "post/comment/like/", {
-							data: {
-								deletePostId: commentData.userCommentLike.postId,
-								deleteCommentId: commentData.userCommentLike.commentId,
-								deleteUserId: commentData.userCommentLike.userId,
-							},
-						})
-						.catch((error) => {
-							throw new Error(
-								"API: Error while deleting comment like: ",
-								error.message
-							);
-						});
-
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.map((comment) => {
-								if (comment.comment.id === commentData.comment.id) {
-									return {
-										...comment,
-										comment: {
-											...comment.comment,
-											numberOfLikes: comment.comment.numberOfLikes - 1,
-										},
-										userCommentLike: null,
-									};
-								}
-								return comment;
-							}),
-						},
-					}));
-				} else {
-					// Create new comment like
-
-					const userCommentLike: CommentLike = {
-						userId: authUser.uid,
-						postId: commentData.comment.postId,
-						commentId: commentData.comment.id,
-						createdAt: new Date(),
-					};
-
-					if (commentData.comment.groupId) {
-						userCommentLike.groupId = commentData.comment.groupId;
-					}
-
-					await axios
-						.post(apiConfig.apiEndpoint + "post/comment/like/", {
-							newUserCommentLike: userCommentLike,
-						})
-						.catch((error) => {
-							throw new Error(
-								"API: Error while creating comment like: ",
-								error.message
-							);
-						});
-
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							postComments: prev.currentPost!.postComments.map((comment) => {
-								if (comment.comment.id === commentData.comment.id) {
-									return {
-										...comment,
-										comment: {
-											...comment.comment,
-											numberOfLikes: comment.comment.numberOfLikes + 1,
-										},
-										userCommentLike,
-									};
-								}
-								return comment;
-							}),
-						},
-					}));
-				}
-			} else {
-				throw new Error("User not logged in!");
-			}
-		} catch (error: any) {
-			console.log("MONGO: Error while liking comment: ", error.message);
-		}
-	};
-
 	return {
 		createComment,
 		fetchComments,
 		onCommentLike,
+		fetchUserCommentLike,
 		deleteComment,
 	};
 };

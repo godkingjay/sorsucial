@@ -1,7 +1,7 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
 import { UserState } from "@/atoms/userAtom";
 import { NextRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { SetterOrUpdater } from "recoil";
 import DiscussionVote from "./DiscussionCard/DiscussionVote";
 import DiscussionHead from "./DiscussionCard/DiscussionHead";
@@ -9,10 +9,14 @@ import DiscussionTextContent from "./DiscussionCard/DiscussionTextContent";
 import DiscussionVoteAndReplyDetails from "./DiscussionCard/DiscussionVoteAndReplyDetails";
 import DiscussionFooter from "./DiscussionCard/DiscussionFooter";
 import { siteDetails } from "@/lib/host";
+import { BiCommentDetail } from "react-icons/bi";
+import UserIcon from "../Icons/UserIcon";
+import ReplyBox from "./DiscussionCard/DiscussionReply/ReplyBox";
+import DiscussionReplies from "./DiscussionCard/DiscussionReply/DiscussionReplies";
 
 type DiscussionCardProps = {
 	userStateValue: UserState;
-	userMounted?: boolean;
+	userMounted: boolean;
 	discussionData: DiscussionData;
 	discussionOptionsStateValue: DiscussionOptionsState;
 	setDiscussionOptionsStateValue: SetterOrUpdater<DiscussionOptionsState>;
@@ -44,6 +48,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			: ""
 	);
 	const [voting, setVoting] = useState(false);
+	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
 		if (discussionOptionsStateValue[name] === discussionData.discussion.id) {
@@ -105,11 +110,11 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 	const handleFooterReplyClick = () => {
 		if (isSingleDiscussionPage()) {
 			console.log("Single Discussion Page");
-			// replyBoxRef.current?.scrollIntoView({
-			// 	behavior: "smooth",
-			// 	block: "center",
-			// });
-			// replyBoxRef.current?.focus({ preventScroll: true });
+			replyBoxRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+			});
+			replyBoxRef.current?.focus({ preventScroll: true });
 		} else {
 			switch (discussionData.discussion.discussionType) {
 				case "discussion": {
@@ -153,12 +158,12 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 		switch (discussionData.discussion.discussionType) {
 			case "discussion": {
-				url += `discussions/${discussionData.discussion.id}`;
+				url += `/discussions/${discussionData.discussion.id}`;
 				break;
 			}
 
 			case "group": {
-				url += `groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
+				url += `/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`;
 				break;
 			}
 
@@ -234,6 +239,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			<div className="flex flex-row">
 				<DiscussionVote
 					discussionData={discussionData}
+					isSingleDiscussionPage={isSingleDiscussionPage}
 					handleDiscussionVote={handleDiscussionVote}
 					formatWithSuffix={formatNumberWithSuffix}
 				/>
@@ -267,6 +273,15 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 					</div>
 				</div>
 			</div>
+			{isSingleDiscussionPage() && (
+				<DiscussionReplies
+					userStateValue={userStateValue}
+					userMounted={userMounted}
+					currentDiscussion={discussionData}
+					replyBoxRef={replyBoxRef}
+					formatNumberWithSuffix={formatNumberWithSuffix}
+				/>
+			)}
 		</div>
 	);
 };

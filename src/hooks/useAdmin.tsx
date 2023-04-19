@@ -107,7 +107,7 @@ const useAdmin = () => {
 							 * If the request is successful, it will get the user id of the new user returned by the request sent.
 							 */
 							await axios
-								.post(apiConfig.apiEndpoint + "admin/manage/account/account", {
+								.post(apiConfig.apiEndpoint + "/admin/manage/accounts/", {
 									newUserEmail: email,
 									newUserPassword: password,
 									postPrivateKey: apiConfig.privateKey,
@@ -163,7 +163,7 @@ const useAdmin = () => {
 										 * If the request is not successful, it will log an error to the console.
 										 */
 										const newUserData = await axios
-											.post(apiConfig.apiEndpoint + "user/user", {
+											.post(apiConfig.apiEndpoint + "/users/", {
 												newUser: newUserDoc,
 											})
 											.then((response) => response.data.newUser)
@@ -250,7 +250,7 @@ const useAdmin = () => {
 				 * If the request is not successful, it will log an error to the console.
 				 */
 				await axios
-					.delete(apiConfig.apiEndpoint + "admin/manage/account/account", {
+					.delete(apiConfig.apiEndpoint + "/admin/manage/accounts/", {
 						data: {
 							deleteUserId: userId,
 							deletePrivateKey: apiConfig.privateKey,
@@ -271,7 +271,7 @@ const useAdmin = () => {
 							/**
 							 * This will send another request to the API to delete the user document in the database.
 							 */
-							await axios.delete(apiConfig.apiEndpoint + "user/user", {
+							await axios.delete(apiConfig.apiEndpoint + "/users/", {
 								data: {
 									userId,
 								},
@@ -281,7 +281,7 @@ const useAdmin = () => {
 							 * This will send another request to the API to delete the user's profile photo.
 							 */
 							await axios.delete(
-								apiConfig.apiEndpoint + "user/image/profile-photos",
+								apiConfig.apiEndpoint + "/user/images/profile-photos",
 								{
 									data: {
 										deleteUserId: userId,
@@ -328,11 +328,7 @@ const useAdmin = () => {
 	 *
 	 * @param userLimit - The number of users to fetch from the database.
 	 */
-	const adminFetchUsers = async ({
-		userLimit = 25,
-	}: {
-		userLimit?: number;
-	}) => {
+	const adminFetchUsers = async ({ userLimit = 25 }: { userLimit?: number }) => {
 		/**
 		 * Try to fetch the users from the database.
 		 *
@@ -358,7 +354,7 @@ const useAdmin = () => {
 			 * If the request is not successful, it will log an error to the console.
 			 */
 			const usersData: SiteUser[] = await axios
-				.get(apiConfig.apiEndpoint + "admin/manage/user/users", {
+				.get(apiConfig.apiEndpoint + "/admin/manage/users/users", {
 					params: {
 						getFromDate: lastUser?.createdAt,
 						getPrivateKey: apiConfig.privateKey,

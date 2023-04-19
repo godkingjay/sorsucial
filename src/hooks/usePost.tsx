@@ -131,7 +131,7 @@ const usePost = () => {
 			 * Try creating the post in the database.
 			 */
 			const newPostData: SitePost = await axios
-				.post(apiConfig.apiEndpoint + "post/post", {
+				.post(apiConfig.apiEndpoint + "/posts/", {
 					newPost,
 					creator: userStateValue.user,
 				})
@@ -197,7 +197,7 @@ const usePost = () => {
 						 * After all the images or videos are uploaded, then update the postImagesOrVideos array in the database.
 						 */
 						await axios
-							.put(apiConfig.apiEndpoint + "post/post", {
+							.put(apiConfig.apiEndpoint + "/posts/", {
 								updatedPost: {
 									...newPostData,
 									updatedAt: new Date(),
@@ -256,7 +256,7 @@ const usePost = () => {
 						 * After all the files are uploaded, then update the postFiles array in the database.
 						 */
 						await axios
-							.put(apiConfig.apiEndpoint + "post/post", {
+							.put(apiConfig.apiEndpoint + "/posts/", {
 								updatedPost: {
 									...newPostData,
 									updatedAt: new Date(),
@@ -312,7 +312,7 @@ const usePost = () => {
 					 * After all the links are added, then update the postLinks array in the database.
 					 */
 					await axios
-						.put(apiConfig.apiEndpoint + "post/post", {
+						.put(apiConfig.apiEndpoint + "/posts/", {
 							updatedPost: {
 								...newPostData,
 								updatedAt: new Date(),
@@ -637,7 +637,7 @@ const usePost = () => {
 				 */
 				if (postData.userLike) {
 					await axios
-						.delete(apiConfig.apiEndpoint + "post/like/like", {
+						.delete(apiConfig.apiEndpoint + "/posts/likes/", {
 							data: {
 								deleteUserLikePostId: postData.userLike.postId,
 								deleteUserLikeUserId: postData.userLike.userId,
@@ -697,7 +697,7 @@ const usePost = () => {
 						userLike.groupId = postData.post.groupId;
 					}
 
-					await axios.post(apiConfig.apiEndpoint + "post/like/like", {
+					await axios.post(apiConfig.apiEndpoint + "/posts/likes/", {
 						newUserLike: userLike,
 					});
 
@@ -780,7 +780,7 @@ const usePost = () => {
 			const oldestPost = postStateValue.posts[lastIndex];
 
 			const posts: PostData[] = await axios
-				.get(apiConfig.apiEndpoint + "post/posts", {
+				.get(apiConfig.apiEndpoint + "/posts/posts", {
 					params: {
 						getUserId: authUser?.uid,
 						getPostType: postType,
@@ -823,7 +823,7 @@ const usePost = () => {
 		try {
 			if (authUser) {
 				const userLikeData = await axios
-					.get(apiConfig.apiEndpoint + "post/like/like", {
+					.get(apiConfig.apiEndpoint + "/posts/likes/", {
 						params: {
 							getPostId: post.id,
 							getUserId: authUser.uid,
@@ -908,7 +908,7 @@ const usePost = () => {
 				});
 			}
 
-			await axios.delete(apiConfig.apiEndpoint + "post/post", {
+			await axios.delete(apiConfig.apiEndpoint + "/posts/", {
 				data: {
 					deletedPost: postData.post,
 				},

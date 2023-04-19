@@ -218,7 +218,7 @@ const useDiscussion = () => {
 				}
 
 				const { voteSuccess } = await axios
-					.post(apiConfig.apiEndpoint + "/discussion/vote/", {
+					.post(apiConfig.apiEndpoint + "/discussions/votes/", {
 						apiKey: userStateValue.api?.keys[0].key,
 						discussionVoteData: newDiscussionVote,
 						voteType,

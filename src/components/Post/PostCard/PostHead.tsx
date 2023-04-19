@@ -81,7 +81,8 @@ const PostHead: React.FC<PostHeadProps> = ({
 					</p>
 				</div>
 			</div>
-			{postData.post.creatorId === userStateValue.user.uid && (
+			{(postData.post.creatorId === userStateValue.user.uid ||
+				userStateValue.user.roles.includes("admin")) && (
 				<PostMenuDropdown
 					postData={postData}
 					postOptionsStateValue={postOptionsStateValue}

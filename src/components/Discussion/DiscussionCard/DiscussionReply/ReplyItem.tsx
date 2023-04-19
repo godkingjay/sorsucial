@@ -1,14 +1,10 @@
-import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { UserState } from "@/atoms/userAtom";
 import moment from "moment";
-import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
-import { AiFillLike } from "react-icons/ai";
 import { DiscussionData, DiscussionReplyData } from "@/atoms/discussionAtom";
 import { DiscussionReplyFormType } from "./DiscussionReplies";
-import { Reply } from "@/lib/interfaces/discussion";
 import ReplyBox from "./ReplyBox";
 import {
 	TbArrowBigDown,
@@ -18,7 +14,6 @@ import {
 	TbShare3,
 } from "react-icons/tb";
 import { GoComment } from "react-icons/go";
-import { FaShare } from "react-icons/fa";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;

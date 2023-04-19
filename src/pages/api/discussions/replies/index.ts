@@ -121,6 +121,37 @@ export default async function handler(
 				break;
 			}
 
+			case "PUT": {
+				if (!replyData) {
+					res.status(400).json({ error: "No reply data provided!" });
+				}
+
+				const updatedReplyState = await discussionRepliesCollection
+					.updateOne(
+						{ id: replyData.id },
+						{
+							$set: {
+								...replyData,
+							},
+						}
+					)
+					.catch((error: any) => {
+						res.status(500).json({
+							error: `Mongo (API):\nUpdating reply error:\n${error.message}`,
+						});
+					});
+
+				res
+					.status(200)
+					.json({
+						isUpdated: updatedReplyState
+							? updatedReplyState.acknowledged
+							: false,
+					});
+
+				break;
+			}
+
 			default: {
 				res.status(400).json({ error: "Invalid request method" });
 				break;

@@ -65,6 +65,52 @@ const useReply = () => {
 				});
 
 			if (newReplyData) {
+				if (newReplyData.discussionId !== newReplyData.replyForId) {
+					const updatedReply: Partial<Reply> = {
+						id: newReplyData.replyForId,
+						numberOfReplies:
+							discussionStateValue.currentDiscussion?.discussionReplies.find(
+								(reply) => reply.reply.id === newReplyData.replyForId
+							)?.reply.numberOfReplies! + 1,
+					};
+
+					const { isUpdated } = await axios
+						.put(apiConfig.apiEndpoint + "/discussions/replies/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							replyData: updatedReply,
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API (PUT - Reply): Update reply failed:\n${error.message}`
+							);
+						});
+
+					if (isUpdated) {
+						setDiscussionStateValue((prev) => ({
+							...prev,
+							currentDiscussion: {
+								...prev.currentDiscussion!,
+								discussionReplies: prev.currentDiscussion!.discussionReplies.map(
+									(reply) => {
+										if (reply.reply.id === newReplyData.replyForId) {
+											return {
+												...reply,
+												reply: {
+													...reply.reply,
+													numberOfReplies: reply.reply.numberOfReplies + 1,
+												},
+											};
+										} else {
+											return reply;
+										}
+									}
+								),
+							},
+						}));
+					}
+				}
+
 				setDiscussionStateValue((prev) => ({
 					...prev,
 					discussions: prev.discussions.map((discussion) => {

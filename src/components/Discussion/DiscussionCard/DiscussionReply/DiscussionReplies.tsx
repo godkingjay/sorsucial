@@ -3,6 +3,7 @@ import React from "react";
 import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
 import { DiscussionState } from "@/atoms/discussionAtom";
+import useReply from "@/hooks/useReply";
 
 type DiscussionRepliesProps = {
 	userStateValue: UserState;
@@ -27,6 +28,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	replyBoxRef,
 	formatNumberWithSuffix,
 }) => {
+	const { createReply, onReplyVote, fetchReplies, deleteReply } = useReply();
 	const [discussionReplyForm, setDiscussionReplyForm] =
 		React.useState<DiscussionReplyFormType>({
 			discussionId: currentDiscussion?.discussion.id!,
@@ -54,14 +56,11 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 		setCreatingReply(true);
 
 		try {
-			// await createComment(
-			// 	{
-			// 		...replyForm,
-			// 		replyForId,
-			// 		replyLevel,
-			// 	},
-			// 	userStateValue.user
-			// );
+			await createReply({
+				...replyForm,
+				replyForId,
+				replyLevel,
+			});
 			setReplyForm((prev) => ({
 				...prev,
 				replyText: "",

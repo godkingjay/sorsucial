@@ -20,7 +20,7 @@ export default async function handler(
 			userId,
 			discussionId,
 			replyForId,
-			fromVotes,
+			fromVote = Number.MAX_SAFE_INTEGER.toString(),
 			fromDate,
 			limit = "10",
 		} = req.body || req.query;
@@ -87,7 +87,7 @@ export default async function handler(
 									discussionId,
 									replyForId,
 									numberOfVotes: {
-										$lt: parseInt(fromVotes as string) | Number.MIN_SAFE_INTEGER,
+										$lt: parseInt(fromVote as string),
 									},
 									createdAt: {
 										$lt: fromDate,
@@ -105,7 +105,7 @@ export default async function handler(
 									discussionId,
 									replyForId,
 									numberOfVotes: {
-										$lt: parseInt(fromVotes as string) | Number.MIN_SAFE_INTEGER,
+										$lt: parseInt(fromVote as string),
 									},
 								})
 								.sort({

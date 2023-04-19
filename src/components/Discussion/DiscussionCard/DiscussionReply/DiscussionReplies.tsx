@@ -135,6 +135,15 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 							</>
 						) : (
 							<>
+								{currentDiscussion.discussionReplies
+									.filter(
+										(reply) =>
+											reply.reply.replyLevel === 0 &&
+											reply.reply.replyForId === currentDiscussion.discussion.id
+									)
+									.map((reply) => (
+										<React.Fragment key={reply.reply.id}></React.Fragment>
+									))}
 								{currentDiscussion.discussion.isOpen && (
 									<ReplyBox
 										userStateValue={userStateValue}

@@ -71,11 +71,14 @@ const useReply = () => {
 						if (discussion.discussion.id === newReplyData.discussionId) {
 							return {
 								...discussion,
-								numberOfReplies: discussion.discussion.numberOfReplies + 1,
-								numberOfFirstLevelReplies:
-									newReplyData.replyLevel === 0
-										? discussion.discussion.numberOfFirstLevelReplies
-										: discussion.discussion.numberOfFirstLevelReplies + 1,
+								discussion: {
+									...discussion.discussion,
+									numberOfReplies: discussion.discussion.numberOfReplies + 1,
+									numberOfFirstLevelReplies:
+										newReplyData.replyForId === newReplyData.discussionId
+											? discussion.discussion.numberOfFirstLevelReplies
+											: discussion.discussion.numberOfFirstLevelReplies + 1,
+								},
 							};
 						} else {
 							return discussion;
@@ -88,7 +91,7 @@ const useReply = () => {
 							numberOfReplies:
 								prev.currentDiscussion!.discussion.numberOfReplies + 1,
 							numberOfFirstLevelReplies:
-								newReplyData.replyLevel === 0
+								newReplyData.replyForId === newReplyData.discussionId
 									? prev.currentDiscussion?.discussion.numberOfFirstLevelReplies!
 									: prev.currentDiscussion?.discussion
 											.numberOfFirstLevelReplies! + 1,
@@ -162,9 +165,10 @@ const useReply = () => {
 						.get(apiConfig.apiEndpoint + "/discussions/replies/replies", {
 							params: {
 								apiKey: userStateValue.api?.keys[0].key,
+								userId: authUser?.uid,
 								discussionId: discussionId,
 								replyForId: replyForId,
-								fromVotes: lastReply
+								fromVote: lastReply
 									? lastReply.reply.numberOfVotes + 1
 									: Number.MAX_SAFE_INTEGER,
 								fromDate: lastReply?.reply.createdAt,
@@ -172,10 +176,9 @@ const useReply = () => {
 						})
 						.then((response) => response.data)
 						.catch((error) => {
-							throw new Error(`
-							API (GET - Replies): Fetch replies failed:
-							${error.message}
-							`);
+							throw new Error(
+								`API (GET - Replies): Fetch replies failed:\n${error.message}`
+							);
 						});
 
 				if (repliesData.length > 0) {
@@ -194,10 +197,7 @@ const useReply = () => {
 				}
 			}
 		} catch (error: any) {
-			console.log(`
-				MONGO: Fetch Replies Error:
-				${error.message}
-			`);
+			console.log(`MONGO: Fetch Replies Error:\n${error.message}`);
 		}
 	};
 

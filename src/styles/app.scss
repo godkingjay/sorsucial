@@ -1584,7 +1584,8 @@
 				}
 			}
 
-			&[show-comment-box="true"] {
+			&[show-comment-box="true"],
+			&[show-reply-box="true"] {
 				& > .left {
 					& > .deco-lines {
 						& > .straight {
@@ -2025,7 +2026,7 @@
 	}
 
 	.reply-footer-container {
-		@apply w-full flex flex-row items-center gap-x-4 gap-y-2 flex-wrap;
+		@apply w-full flex flex-row items-center gap-y-2 flex-wrap;
 
 		.reply-vote-buttons-container {
 			@apply flex flex-row items-center gap-x-1;
@@ -2062,7 +2063,28 @@
 
 			.vote-count-container {
 				.vote-count {
-					@apply text-sm font-semibold;
+					@apply text-xs font-semibold;
+				}
+			}
+		}
+		.reply-buttons-container {
+			@apply flex flex-row items-center;
+
+			.button {
+				@apply flex flex-row gap-x-1 items-center px-2 py-1;
+
+				.icon-container {
+					@apply h-5 w-5 text-gray-700;
+
+					.icon {
+						@apply h-full w-full;
+					}
+				}
+
+				.label-container {
+					.label {
+						@apply text-xs font-semibold text-gray-700;
+					}
 				}
 			}
 		}

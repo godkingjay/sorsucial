@@ -4,6 +4,7 @@ import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
 import { DiscussionState } from "@/atoms/discussionAtom";
 import useReply from "@/hooks/useReply";
+import ReplyItem from "./ReplyItem";
 
 type DiscussionRepliesProps = {
 	userStateValue: UserState;
@@ -76,6 +77,16 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 		setFetchingReplies(false);
 	};
 
+	const handleFetchReplies = () => {
+		if (currentDiscussion) {
+			fetchDiscussionReplies(
+				currentDiscussion.discussion.id,
+				currentDiscussion.discussion.id,
+				setLoadingReplies
+			);
+		}
+	};
+
 	const handleReplySubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
@@ -142,8 +153,36 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											reply.reply.replyForId === currentDiscussion.discussion.id
 									)
 									.map((reply) => (
-										<React.Fragment key={reply.reply.id}></React.Fragment>
+										<React.Fragment key={reply.reply.id}>
+											<ReplyItem
+												userStateValue={userStateValue}
+												currentDiscussion={currentDiscussion}
+												replyData={reply}
+												submitting={creatingReply}
+												fetchDiscussionReplies={fetchDiscussionReplies}
+												parentShowReplyBox={true}
+												onSubmit={handleReplySubmit}
+												onChange={handleInputChange}
+												formatNumberWithSuffix={formatNumberWithSuffix}
+											/>
+										</React.Fragment>
 									))}
+								{currentDiscussion.discussion.numberOfFirstLevelReplies >
+									currentDiscussion.discussionReplies.filter(
+										(reply) =>
+											reply.reply.replyForId === currentDiscussion.discussion.id
+									).length && (
+									<div className="flex flex-col w-full justify-start">
+										<button
+											type="button"
+											title="View More Replies"
+											className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+											onClick={handleFetchReplies}
+										>
+											View More Replies
+										</button>
+									</div>
+								)}
 								{currentDiscussion.discussion.isOpen && (
 									<ReplyBox
 										userStateValue={userStateValue}

@@ -248,38 +248,46 @@ const useReply = () => {
 						} as DiscussionState)
 				);
 			} else {
-				setDiscussionStateValue(
-					(prev) =>
-						({
-							...prev,
-							currentDiscussion: {
-								...prev.currentDiscussion!,
-								discussionReplies: prev.currentDiscussion!.discussionReplies.map(
-									(reply) => {
-										if (reply.reply.id === replyData.reply.id) {
-											return {
-												...reply,
-												reply: {
-													...reply.reply,
-													numberOfVotes: reply.reply.numberOfVotes + 1,
-													numberOfUpVotes:
-														reply.reply.numberOfUpVotes +
-														(voteType === "upVote" ? 1 : 0),
-													numberOfDownVotes:
-														reply.reply.numberOfDownVotes +
-														(voteType === "downVote" ? 1 : 0),
-													updatedAt: voteDate.toISOString(),
-												},
-												userReplyVote: newReplyVote as ReplyVote,
-											};
-										} else {
-											return reply;
-										}
-									}
-								),
-							},
-						} as DiscussionState)
-				);
+				const { voteSuccess } = await axios
+					.post(apiConfig.apiEndpoint + "/discussions/replies/votes", {
+						apiKey: userStateValue.api?.keys[0].key,
+						replyVoteData: newReplyVote,
+					})
+					.then((response) => response.data);
+
+				if (voteSuccess) {
+					setDiscussionStateValue(
+						(prev) =>
+							({
+								...prev,
+								currentDiscussion: {
+									...prev.currentDiscussion!,
+									discussionReplies:
+										prev.currentDiscussion!.discussionReplies.map((reply) => {
+											if (reply.reply.id === replyData.reply.id) {
+												return {
+													...reply,
+													reply: {
+														...reply.reply,
+														numberOfVotes: reply.reply.numberOfVotes + 1,
+														numberOfUpVotes:
+															reply.reply.numberOfUpVotes +
+															(voteType === "upVote" ? 1 : 0),
+														numberOfDownVotes:
+															reply.reply.numberOfDownVotes +
+															(voteType === "downVote" ? 1 : 0),
+														updatedAt: voteDate.toISOString(),
+													},
+													userReplyVote: newReplyVote as ReplyVote,
+												};
+											} else {
+												return reply;
+											}
+										}),
+								},
+							} as DiscussionState)
+					);
+				}
 			}
 		} catch (error: any) {
 			console.log(`MONGO: Reply Vote Error:\n${error.message}\n`);

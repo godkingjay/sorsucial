@@ -2,8 +2,8 @@ import React from "react";
 import useUser from "./useUser";
 import useDiscussion from "./useDiscussion";
 import { DiscussionReplyFormType } from "@/components/Discussion/DiscussionCard/DiscussionReply/DiscussionReplies";
-import { DiscussionReplyData } from "@/atoms/discussionAtom";
-import { Reply } from "@/lib/interfaces/discussion";
+import { DiscussionReplyData, DiscussionState } from "@/atoms/discussionAtom";
+import { Reply, ReplyVote } from "@/lib/interfaces/discussion";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 
@@ -172,7 +172,151 @@ const useReply = () => {
 	/**
 	 *
 	 */
-	const onReplyVote = async () => {};
+	const onReplyVote = async (
+		replyData: DiscussionReplyData,
+		voteType: "upVote" | "downVote"
+	) => {
+		try {
+			const voteDate = new Date();
+
+			const newReplyVote: Partial<ReplyVote> = {
+				userId: userStateValue.user?.uid!,
+				discussionId: replyData.reply.discussionId,
+				replyId: replyData.reply.id,
+				voteValue: voteType === "upVote" ? 1 : -1,
+				updatedAt: voteDate,
+				createdAt: replyData.userReplyVote
+					? replyData.userReplyVote.createdAt
+					: voteDate,
+			};
+
+			if (replyData.reply.groupId) {
+				newReplyVote.groupId = replyData.reply.groupId;
+			}
+
+			if (replyData.userReplyVote) {
+				const isDeleteVote =
+					(voteType === "upVote" && replyData.userReplyVote!.voteValue === 1) ||
+					(voteType === "downVote" && replyData.userReplyVote!.voteValue === -1);
+
+				if (isDeleteVote) {
+					const { voteDeleted } = await axios
+						.delete(apiConfig.apiEndpoint + "/discussions/replies/votes/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								replyVoteData: newReplyVote,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API (DELETE - Reply Vote): Delete reply vote failed:\n${error.message}`
+							);
+						});
+				} else {
+					const { voteChanged } = await axios
+						.put(apiConfig.apiEndpoint + "/discussions/replies/votes/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							replyVoteData: newReplyVote,
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API (PUT - Reply Vote): Update reply vote failed:\n${error.message}`
+							);
+						});
+				}
+
+				setDiscussionStateValue(
+					(prev) =>
+						({
+							...prev,
+							currentDiscussion: {
+								...prev.currentDiscussion!,
+								discussionReplies: prev.currentDiscussion!.discussionReplies.map(
+									(reply) => {
+										if (reply.reply.id === replyData.reply.id) {
+											return {
+												...reply,
+												reply: {
+													...reply.reply,
+													numberOfVotes: isDeleteVote
+														? reply.reply.numberOfVotes - 1
+														: reply.reply.numberOfVotes,
+													numberOfUpVotes: isDeleteVote
+														? voteType === "upVote"
+															? reply.reply.numberOfUpVotes - 1
+															: reply.reply.numberOfUpVotes
+														: voteType === "upVote"
+														? reply.reply.numberOfUpVotes + 1
+														: reply.reply.numberOfUpVotes - 1,
+													numberOfDownVotes: isDeleteVote
+														? voteType === "downVote"
+															? reply.reply.numberOfDownVotes - 1
+															: reply.reply.numberOfDownVotes
+														: voteType === "downVote"
+														? reply.reply.numberOfDownVotes + 1
+														: reply.reply.numberOfDownVotes - 1,
+													updatedAt: voteDate.toISOString(),
+												},
+												userReplyVote: isDeleteVote
+													? null
+													: (newReplyVote as ReplyVote),
+											};
+										} else {
+											return reply;
+										}
+									}
+								),
+							},
+						} as DiscussionState)
+				);
+			} else {
+				const { voteSuccess } = await axios
+					.post(apiConfig.apiEndpoint + "/discussions/replies/votes", {
+						apiKey: userStateValue.api?.keys[0].key,
+						replyVoteData: newReplyVote,
+					})
+					.then((response) => response.data);
+
+				if (voteSuccess) {
+					setDiscussionStateValue(
+						(prev) =>
+							({
+								...prev,
+								currentDiscussion: {
+									...prev.currentDiscussion!,
+									discussionReplies:
+										prev.currentDiscussion!.discussionReplies.map((reply) => {
+											if (reply.reply.id === replyData.reply.id) {
+												return {
+													...reply,
+													reply: {
+														...reply.reply,
+														numberOfVotes: reply.reply.numberOfVotes + 1,
+														numberOfUpVotes:
+															reply.reply.numberOfUpVotes +
+															(voteType === "upVote" ? 1 : 0),
+														numberOfDownVotes:
+															reply.reply.numberOfDownVotes +
+															(voteType === "downVote" ? 1 : 0),
+														updatedAt: voteDate.toISOString(),
+													},
+													userReplyVote: newReplyVote as ReplyVote,
+												};
+											} else {
+												return reply;
+											}
+										}),
+								},
+							} as DiscussionState)
+					);
+				}
+			}
+		} catch (error: any) {
+			console.log(`MONGO: Reply Vote Error:\n${error.message}\n`);
+		}
+	};
 
 	/**
 	 * ^ ██████╗        ██████╗ ███████╗██████╗ ██╗     ██╗███████╗███████╗

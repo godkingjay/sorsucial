@@ -138,15 +138,15 @@ export default async function handler(
 
 			case "PUT": {
 				if (!discussionVoteData) {
-					res.status(500).json({ error: "No discussion vote data provided" });
+					res.status(400).json({ error: "No discussion vote data provided" });
 				}
 
 				if (discussionVoteData.userId !== userAPI.userId) {
-					res.status(500).json({ error: "User ID does not match API key" });
+					res.status(401).json({ error: "User ID does not match API key" });
 				}
 
 				if (voteType !== "upVote" && voteType !== "downVote") {
-					res.status(500).json({ error: "Invalid vote type" });
+					res.status(400).json({ error: "Invalid vote type" });
 				}
 
 				const updateDiscussionVoteState =

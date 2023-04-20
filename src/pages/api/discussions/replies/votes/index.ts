@@ -173,6 +173,57 @@ export default async function handler(
 				break;
 			}
 
+			case "DELETE": {
+				if (!replyVoteData) {
+					res.status(400).json({ error: "No reply vote data provided!" });
+				}
+
+				if (userAPI.userId !== replyVoteData.userId) {
+					res.status(401).json({ error: "Unauthorized" });
+				}
+
+				const deletedReplyVoteState = await discussionReplyVotesCollection
+					.deleteOne({
+						userId: replyVoteData.userId,
+						replyId: replyVoteData.replyId,
+						discussionId: replyVoteData.discussionId,
+					})
+					.catch((error) => {
+						res.status(500).json({
+							error: "Mongo(API): Deleting reply vote error\n" + error.message,
+						});
+					});
+
+				const updatedDiscussionReplyStateVoted =
+					await discussionRepliesCollection
+						.updateOne(
+							{ id: replyVoteData.replyId },
+							{
+								$inc: {
+									numberOfVotes: -1,
+									numberOfUpVotes: replyVoteData.voteValue === 1 ? -1 : 0,
+									numberOfDownVotes: replyVoteData.voteValue === -1 ? -1 : 0,
+								},
+							}
+						)
+						.catch((error) => {
+							res.status(500).json({
+								error:
+									"Mongo(API): Updating discussion reply error\n" +
+									error.message,
+							});
+						});
+
+				res.status(200).json({
+					message: deletedReplyVoteState ? "Vote Deleted" : "Vote Not deleted",
+					voteDeleted: deletedReplyVoteState
+						? deletedReplyVoteState.acknowledged
+						: false,
+				});
+
+				break;
+			}
+
 			default: {
 				res.status(400).json({ error: "Invalid request method" });
 				break;

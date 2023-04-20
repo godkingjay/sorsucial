@@ -200,6 +200,19 @@ const useReply = () => {
 					(voteType === "downVote" && replyData.userReplyVote!.voteValue === -1);
 
 				if (isDeleteVote) {
+					const { voteDeleted } = await axios
+						.delete(apiConfig.apiEndpoint + "/discussions/replies/votes/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								replyVoteData: newReplyVote,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API (DELETE - Reply Vote): Delete reply vote failed:\n${error.message}`
+							);
+						});
 				} else {
 					const { voteChanged } = await axios
 						.put(apiConfig.apiEndpoint + "/discussions/replies/votes/", {

@@ -2,7 +2,7 @@ import { UserState } from "@/atoms/userAtom";
 import React, { useEffect } from "react";
 import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
-import { DiscussionState } from "@/atoms/discussionAtom";
+import { DiscussionReplyData, DiscussionState } from "@/atoms/discussionAtom";
 import useReply from "@/hooks/useReply";
 import ReplyItem from "./ReplyItem";
 
@@ -87,6 +87,25 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 		}
 	};
 
+	const handleReplyVote = async (
+		replyData: DiscussionReplyData,
+		voteType: "upVote" | "downVote"
+	) => {
+		if (!replyData) {
+			return;
+		}
+
+		try {
+			if (!userStateValue.user.uid) {
+				return;
+			}
+
+			await onReplyVote(replyData, voteType);
+		} catch (error: any) {
+			console.log("Hook: Error while voting for reply:\n", error.message);
+		}
+	};
+
 	const handleReplySubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
@@ -161,6 +180,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 												submitting={creatingReply}
 												fetchDiscussionReplies={fetchDiscussionReplies}
 												parentShowReplyBox={true}
+												handleReplyVote={handleReplyVote}
 												onSubmit={handleReplySubmit}
 												onChange={handleInputChange}
 												formatNumberWithSuffix={formatNumberWithSuffix}

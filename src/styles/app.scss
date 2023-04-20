@@ -2025,6 +2025,70 @@
 		}
 	}
 
+	.reply-vote-reply-details-wrapper {
+		@apply px-1 flex flex-row justify-between mb-auto;
+
+		.reply-vote-details-container {
+			@apply flex flex-row flex-1 flex-wrap gap-x-2 gap-y-2;
+
+			.reply-vote {
+				@apply flex flex-row items-center gap-x-1;
+
+				.icon-container {
+					@apply h-3 w-3 aspect-square grid place-items-center text-gray-500;
+
+					.icon {
+						@apply h-full w-full;
+					}
+				}
+
+				.label {
+					@apply text-gray-500 truncate text-xs;
+				}
+			}
+
+			.total-votes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-green-500;
+					}
+				}
+			}
+
+			.total-upvotes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-blue-500;
+					}
+				}
+			}
+
+			.total-downvotes {
+				&[has-vote="true"] {
+					.icon-container {
+						@apply text-red-500;
+					}
+				}
+			}
+		}
+
+		.discussion-reply {
+			@apply flex flex-row items-center gap-x-1;
+
+			.icon-container {
+				@apply h-4 w-4 aspect-square text-gray-500;
+
+				.icon {
+					@apply h-full w-full;
+				}
+			}
+
+			.label {
+				@apply text-gray-500 truncate text-sm;
+			}
+		}
+	}
+
 	.reply-footer-container {
 		@apply w-full flex flex-row items-center gap-y-2 flex-wrap;
 

@@ -9,11 +9,14 @@ import ReplyBox from "./ReplyBox";
 import {
 	TbArrowBigDown,
 	TbArrowBigDownFilled,
+	TbArrowBigDownLinesFilled,
 	TbArrowBigUp,
 	TbArrowBigUpFilled,
+	TbArrowBigUpLinesFilled,
 	TbShare3,
 } from "react-icons/tb";
 import { GoComment } from "react-icons/go";
+import { RiArrowUpDownFill } from "react-icons/ri";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
@@ -25,6 +28,10 @@ type ReplyItemProps = {
 		discussionId: string,
 		replyForId: string,
 		setFetchingReplies: React.Dispatch<React.SetStateAction<boolean>>
+	) => Promise<void>;
+	handleReplyVote: (
+		replyData: DiscussionReplyData,
+		voteType: "upVote" | "downVote"
 	) => Promise<void>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
@@ -49,6 +56,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	replyData,
 	parentShowReplyBox,
 	fetchDiscussionReplies,
+	handleReplyVote,
 	onSubmit,
 	onChange,
 	formatNumberWithSuffix,
@@ -122,32 +130,80 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 					<div className="flex-1 flex flex-col gap-y-1 relative">
 						<div className="w-full flex flex-col gap-x-2 relative">
 							<div className="flex flex-col">
-								<div className="flex flex-col">
-									<h2 className="font-semibold text-xs truncate">
-										{replyData.creator ? (
-											<Link
-												href={`/user/${replyData.creator.uid}`}
-												className="inline hover:underline focus:underline"
-											>
-												{`${replyData.creator.firstName} ${replyData.creator.lastName}`}
-											</Link>
-										) : (
-											<span>Unknown User</span>
-										)}
-									</h2>
-									<p className="font-normal text-2xs text-gray-500 my-1">
-										{moment(replyData.reply.createdAt).diff(moment(), "days") >
-										-7
-											? moment(replyData.reply.createdAt).fromNow()
-											: moment(replyData.reply.createdAt).format(
-													"MMMM DD, YYYY"
-											  )}
-									</p>
+								<div className="flex flex-row justify-between">
+									<div className="flex flex-col">
+										<h2 className="font-semibold text-xs truncate">
+											{replyData.creator ? (
+												<Link
+													href={`/user/${replyData.creator.uid}`}
+													className="inline hover:underline focus:underline"
+												>
+													{`${replyData.creator.firstName} ${replyData.creator.lastName}`}
+												</Link>
+											) : (
+												<span>Unknown User</span>
+											)}
+										</h2>
+										<p className="font-normal text-2xs text-gray-500 my-1">
+											{moment(replyData.reply.createdAt).diff(moment(), "days") >
+											-7
+												? moment(replyData.reply.createdAt).fromNow()
+												: moment(replyData.reply.createdAt).format(
+														"MMMM DD, YYYY"
+												  )}
+										</p>
+									</div>
 								</div>
 								<div className="flex flex-col my-2">
 									<p className="break-words text-sm">
 										{replyData.reply.replyText}
 									</p>
+								</div>
+							</div>
+							<div className="reply-vote-reply-details-wrapper">
+								<div className="reply-vote-details-container">
+									<div
+										className="reply-vote total-votes"
+										title="Votes"
+										has-vote={
+											replyData.reply.numberOfVotes !== 0 ? "true" : "false"
+										}
+									>
+										<div className="icon-container">
+											<RiArrowUpDownFill className="icon" />
+										</div>
+										<p className="label">
+											{formatNumberWithSuffix(replyData.reply.numberOfVotes)}
+										</p>
+									</div>
+									<div
+										className="reply-vote total-upvotes"
+										title="Upvotes"
+										has-vote={
+											replyData.reply.numberOfUpVotes !== 0 ? "true" : "false"
+										}
+									>
+										<div className="icon-container">
+											<TbArrowBigUpLinesFilled className="icon" />
+										</div>
+										<p className="label">
+											{formatNumberWithSuffix(replyData.reply.numberOfUpVotes)}
+										</p>
+									</div>
+									<div
+										className="reply-vote total-downvotes"
+										title="Downvotes"
+										has-vote={
+											replyData.reply.numberOfDownVotes !== 0 ? "true" : "false"
+										}
+									>
+										<div className="icon-container">
+											<TbArrowBigDownLinesFilled className="icon" />
+										</div>
+										<p className="label">
+											{formatNumberWithSuffix(replyData.reply.numberOfDownVotes)}
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -160,7 +216,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											? "Remove Upvote"
 											: "Upvote"
 									}
-									// onClick={() => handleDiscussionVote("upVote")}
+									onClick={() => handleReplyVote(replyData, "upVote")}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
 								>
@@ -193,7 +249,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											? "Remove Downvote"
 											: "Downvote"
 									}
-									// onClick={() => handleDiscussionVote("downVote")}
+									onClick={() => handleReplyVote(replyData, "downVote")}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
 								>
@@ -259,6 +315,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											replyData={reply}
 											parentShowReplyBox={showReplyBox}
 											fetchDiscussionReplies={fetchDiscussionReplies}
+											handleReplyVote={handleReplyVote}
 											onSubmit={onSubmit}
 											onChange={onChange}
 											formatNumberWithSuffix={formatNumberWithSuffix}

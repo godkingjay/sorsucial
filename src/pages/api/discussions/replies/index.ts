@@ -18,8 +18,13 @@ export default async function handler(
 			discussionVotesCollection,
 		} = await discussionDb();
 
-		const { apiKey, replyData }: { apiKey: string; replyData: Reply } =
-			req.body || req.query;
+		const {
+			apiKey,
+			replyData: rawReplyData,
+		}: { apiKey: string; replyData: string | Reply } = req.body || req.query;
+
+		const replyData: Reply =
+			typeof rawReplyData === "string" ? JSON.parse(rawReplyData) : rawReplyData;
 
 		if (!apiKey) {
 			res.status(400).json({ error: "No API key provided!" });
@@ -141,13 +146,9 @@ export default async function handler(
 						});
 					});
 
-				res
-					.status(200)
-					.json({
-						isUpdated: updatedReplyState
-							? updatedReplyState.acknowledged
-							: false,
-					});
+				res.status(200).json({
+					isUpdated: updatedReplyState ? updatedReplyState.acknowledged : false,
+				});
 
 				break;
 			}

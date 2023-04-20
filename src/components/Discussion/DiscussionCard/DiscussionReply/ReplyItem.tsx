@@ -17,6 +17,8 @@ import {
 } from "react-icons/tb";
 import { GoComment } from "react-icons/go";
 import { RiArrowUpDownFill } from "react-icons/ri";
+import { Reply } from "@/lib/interfaces/discussion";
+import { MdDeleteOutline } from "react-icons/md";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
@@ -32,6 +34,10 @@ type ReplyItemProps = {
 	handleReplyVote: (
 		replyData: DiscussionReplyData,
 		voteType: "upVote" | "downVote"
+	) => Promise<void>;
+	handleReplyDelete: (
+		reply: Reply,
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
 	) => Promise<void>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
@@ -57,6 +63,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	parentShowReplyBox,
 	fetchDiscussionReplies,
 	handleReplyVote,
+	handleReplyDelete,
 	onSubmit,
 	onChange,
 	formatNumberWithSuffix,
@@ -87,9 +94,9 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 		);
 	};
 
-	// const handleDeleteComment = () => {
-	// 	handleCommentDelete(replyData.reply, setDeletingReply);
-	// };
+	const handleDeleteReply = () => {
+		handleReplyDelete(replyData.reply, setDeletingReply);
+	};
 
 	const handleShowReplyBox = () => {
 		setShowReplyBox((prev) => !prev);
@@ -280,7 +287,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 										</div>
 									</button>
 								)}
-								<button
+								{/* <button
 									type="button"
 									title="Share"
 									className="button"
@@ -291,7 +298,24 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									<div className="label-container">
 										<p className="label">Share</p>
 									</div>
-								</button>
+								</button> */}
+								{userStateValue.user?.uid === replyData.reply.creatorId ||
+									(userStateValue.user.roles.includes("admin") && (
+										<button
+											type="button"
+											title="Delete"
+											className="button delete-button"
+											onClick={() => !deletingReply && handleDeleteReply()}
+											disabled={deletingReply}
+										>
+											<div className="icon-container">
+												<MdDeleteOutline className="icon" />
+											</div>
+											<div className="label-container">
+												<p className="label">Delete</p>
+											</div>
+										</button>
+									))}
 							</div>
 						</div>
 						<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">
@@ -316,6 +340,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											parentShowReplyBox={showReplyBox}
 											fetchDiscussionReplies={fetchDiscussionReplies}
 											handleReplyVote={handleReplyVote}
+											handleReplyDelete={handleReplyDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
 											formatNumberWithSuffix={formatNumberWithSuffix}

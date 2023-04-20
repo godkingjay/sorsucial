@@ -14,8 +14,9 @@ export default async function handler(
 		const { apiKeysCollection, usersCollection } = await userDb();
 		const {
 			discussionsCollection,
-			discussionRepliesCollection,
 			discussionVotesCollection,
+			discussionRepliesCollection,
+			discussionReplyVotesCollection,
 		} = await discussionDb();
 
 		const {
@@ -148,6 +149,100 @@ export default async function handler(
 
 				res.status(200).json({
 					isUpdated: updatedReplyState ? updatedReplyState.acknowledged : false,
+				});
+
+				break;
+			}
+
+			case "DELETE": {
+				if (!replyData) {
+					res.status(400).json({ error: "No reply data provided!" });
+				}
+
+				if (userAPI.userId !== replyData.creatorId) {
+					if (!userData.roles.includes("admin")) {
+						res.status(401).json({ error: "Unauthorized!" });
+					}
+				}
+
+				let deleteCount = 0;
+
+				const deleteReply = async (reply: Reply) => {
+					const deleteReplyState = await discussionRepliesCollection.deleteOne({
+						id: reply.id,
+					});
+
+					deleteCount += deleteReplyState.deletedCount;
+
+					const deleteReplyVotesState =
+						await discussionReplyVotesCollection.deleteMany({
+							discussionId: reply.discussionId,
+							replyId: reply.id,
+						});
+
+					if (replyData.replyLevel === 0) {
+						await discussionsCollection
+							.updateOne(
+								{ id: replyData.discussionId },
+								{
+									$inc: {
+										numberOfFirstLevelReplies: -1,
+									},
+								}
+							)
+							.catch((error: any) => {
+								res.status(500).json({
+									error: `Mongo (API): Updating discussion error:\n${error.message}`,
+								});
+							});
+					} else {
+						await discussionRepliesCollection
+							.updateOne(
+								{ id: reply.replyForId },
+								{
+									$inc: {
+										numberOfReplies: -1,
+									},
+								}
+							)
+							.catch((error: any) => {
+								res.status(500).json({
+									error: `Mongo (API): Updating reply error:\n${error.message}`,
+								});
+							});
+					}
+
+					const nestedReplies = (await discussionRepliesCollection
+						.find({
+							replyForId: reply.id,
+						})
+						.toArray()) as unknown as Reply[];
+
+					for (const nestedReply of nestedReplies) {
+						await deleteReply(nestedReply);
+					}
+				};
+
+				await deleteReply(replyData);
+
+				await discussionsCollection
+					.updateOne(
+						{ id: replyData.discussionId },
+						{
+							$inc: {
+								numberOfReplies: -deleteCount,
+							},
+						}
+					)
+					.catch((error) => {
+						res.status(500).json({
+							error: `Mongo (API): Updating discussion error:\n${error.message}`,
+						});
+					});
+
+				res.status(200).json({
+					isDeleted: deleteCount > 0,
+					deleteCount: deleteCount,
 				});
 
 				break;

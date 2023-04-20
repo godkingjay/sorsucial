@@ -417,7 +417,86 @@ const useReply = () => {
 	 *
 	 *
 	 */
-	const deleteReply = async () => {};
+	const deleteReply = async (reply: Reply) => {
+		try {
+			if (
+				authUser?.uid === reply.creatorId ||
+				userStateValue.user.roles.includes("admin")
+			) {
+				const { isDeleted, deleteCount } = await axios
+					.delete(apiConfig.apiEndpoint + "/discussions/replies/", {
+						data: {
+							apiKey: userStateValue.api?.keys[0].key,
+							replyData: reply,
+						},
+					})
+					.then((response) => response.data)
+					.catch((error) => {
+						throw new Error(
+							`API (DELETE - Replies): Delete reply failed:\n${error.message}`
+						);
+					});
+
+				if (isDeleted) {
+					setDiscussionStateValue((prev) => ({
+						...prev,
+						discussions: prev.discussions.map((discussion) => {
+							if (discussion.discussion.id === reply.discussionId) {
+								return {
+									...discussion,
+									discussion: {
+										...discussion.discussion,
+										numberOfReplies:
+											discussion.discussion.numberOfReplies - deleteCount,
+										numberOfFirstLevelReplies:
+											reply.replyLevel === 0
+												? discussion.discussion.numberOfFirstLevelReplies - 1
+												: discussion.discussion.numberOfFirstLevelReplies,
+									},
+								};
+							}
+							return discussion;
+						}),
+						currentDiscussion: {
+							...prev.currentDiscussion!,
+							discussion: {
+								...prev.currentDiscussion!.discussion,
+								numberOfReplies:
+									prev.currentDiscussion!.discussion.numberOfReplies -
+									deleteCount,
+								numberOfFirstLevelReplies:
+									reply.replyLevel === 0
+										? prev.currentDiscussion!.discussion
+												.numberOfFirstLevelReplies - 1
+										: prev.currentDiscussion!.discussion
+												.numberOfFirstLevelReplies,
+							},
+							discussionReplies: prev
+								.currentDiscussion!.discussionReplies.map((replyData) => {
+									if (replyData.reply.id === reply.replyForId) {
+										return {
+											...replyData,
+											reply: {
+												...replyData.reply,
+												numberOfReplies: replyData.reply.numberOfReplies - 1,
+											},
+										};
+									}
+									return replyData;
+								})
+								.filter((replyData) => replyData.reply.id !== reply.id),
+						},
+					}));
+				} else {
+					throw new Error("Delete reply failed");
+				}
+			} else {
+				throw new Error("You are not authorized to delete this reply");
+			}
+		} catch (error: any) {
+			console.log(`MONGO: Delete Reply Error:\n${error.message}`);
+		}
+	};
 
 	return {
 		createReply,

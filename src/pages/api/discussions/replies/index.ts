@@ -51,7 +51,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(500).json({ error: "Invalid API key" });
+			res.status(401).json({ error: "Invalid API key" });
 			return;
 		}
 
@@ -60,7 +60,7 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(500).json({ error: "Invalid user" });
+			res.status(401).json({ error: "Invalid user" });
 			return;
 		}
 

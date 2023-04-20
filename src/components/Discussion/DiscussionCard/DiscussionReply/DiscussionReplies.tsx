@@ -106,6 +106,23 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 		}
 	};
 
+	const handleReplyDelete = async (
+		reply: Reply,
+		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		if (!reply) {
+			return;
+		}
+
+		setDeleting(true);
+		try {
+			await deleteReply(reply);
+		} catch (error: any) {
+			console.log("Hook: Error while deleting reply:\n", error.message);
+		}
+		setDeleting(false);
+	};
+
 	const handleReplySubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
@@ -181,6 +198,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 												fetchDiscussionReplies={fetchDiscussionReplies}
 												parentShowReplyBox={true}
 												handleReplyVote={handleReplyVote}
+												handleReplyDelete={handleReplyDelete}
 												onSubmit={handleReplySubmit}
 												onChange={handleInputChange}
 												formatNumberWithSuffix={formatNumberWithSuffix}

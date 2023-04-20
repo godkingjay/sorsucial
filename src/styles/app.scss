@@ -2131,14 +2131,15 @@
 				}
 			}
 		}
+
 		.reply-buttons-container {
 			@apply flex flex-row items-center;
 
 			.button {
-				@apply flex flex-row gap-x-1 items-center px-2 py-1 duration-200;
+				@apply flex flex-row gap-x-1 items-center px-2 py-1 duration-200 text-gray-700;
 
 				.icon-container {
-					@apply h-5 w-5 text-gray-700;
+					@apply h-5 w-5;
 
 					.icon {
 						@apply h-full w-full;
@@ -2147,12 +2148,19 @@
 
 				.label-container {
 					.label {
-						@apply text-xs font-semibold text-gray-700;
+						@apply text-xs font-semibold;
 					}
 				}
 
 				&:hover {
 					@apply bg-gray-100 rounded-md;
+				}
+			}
+
+			.delete-button {
+				&:hover,
+				&:focus {
+					@apply bg-red-100 text-red-500;
 				}
 			}
 		}

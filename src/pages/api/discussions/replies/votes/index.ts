@@ -115,6 +115,64 @@ export default async function handler(
 				break;
 			}
 
+			case "PUT": {
+				if (!replyVoteData) {
+					res.status(400).json({ error: "No reply vote data provided!" });
+				}
+
+				if (replyVoteData.userId !== userData.uid) {
+					res.status(401).json({ error: "Unauthorized" });
+				}
+
+				if (replyVoteData.voteValue !== 1 && replyVoteData.voteValue !== -1) {
+					res.status(400).json({ error: "Invalid vote value" });
+				}
+
+				const newReplyVoteState = await discussionReplyVotesCollection
+					.updateOne(
+						{
+							userId: replyVoteData.userId,
+							replyId: replyVoteData.replyId,
+							discussionId: replyVoteData.discussionId,
+						},
+						{ $set: replyVoteData }
+					)
+					.catch((error) => {
+						res.status(500).json({
+							error: "Mongo(API): Updating reply vote error\n" + error.message,
+						});
+					});
+
+				const newDiscussionReplyStateVoted = await discussionRepliesCollection
+					.updateOne(
+						{ id: replyVoteData.replyId },
+
+						{
+							$set: {
+								updatedAt: replyVoteData.updatedAt,
+							},
+							$inc: {
+								numberOfUpVotes: replyVoteData.voteValue === 1 ? 1 : -1,
+								numberOfDownVotes: replyVoteData.voteValue === -1 ? 1 : -1,
+							},
+						}
+					)
+					.catch((error) => {
+						res.status(500).json({
+							error:
+								"Mongo(API): Updating discussion reply error\n" + error.message,
+						});
+					});
+
+				res.status(200).json({
+					voteChanged: newReplyVoteState
+						? newReplyVoteState.acknowledged
+						: false,
+				});
+
+				break;
+			}
+
 			default: {
 				res.status(400).json({ error: "Invalid request method" });
 				break;

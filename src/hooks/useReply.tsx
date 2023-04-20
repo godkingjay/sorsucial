@@ -201,6 +201,17 @@ const useReply = () => {
 
 				if (isDeleteVote) {
 				} else {
+					const { voteChanged } = await axios
+						.put(apiConfig.apiEndpoint + "/discussions/replies/votes/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							replyVoteData: newReplyVote,
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API (PUT - Reply Vote): Update reply vote failed:\n${error.message}`
+							);
+						});
 				}
 
 				setDiscussionStateValue(

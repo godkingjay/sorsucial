@@ -132,7 +132,8 @@ const usePost = () => {
 			 */
 			const newPostData: SitePost = await axios
 				.post(apiConfig.apiEndpoint + "/posts/", {
-					newPost,
+					apiKey: userStateValue.api?.keys[0].key,
+					postData: newPost,
 					creator: userStateValue.user,
 				})
 				.then((res) => res.data.newPost)
@@ -150,7 +151,7 @@ const usePost = () => {
 				 *
 				 * The postImagesOrVideos is the array of images or videos to be uploaded.
 				 */
-				if (postForm.imagesOrVideos) {
+				if (postForm.imagesOrVideos.length) {
 					await Promise.all(
 						/**
 						 * Map through the postImagesOrVideos array.
@@ -198,7 +199,8 @@ const usePost = () => {
 						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "/posts/", {
-								updatedPost: {
+								apiKey: userStateValue.api?.keys[0].key,
+								postData: {
 									...newPostData,
 									updatedAt: new Date(),
 								},
@@ -219,7 +221,7 @@ const usePost = () => {
 				 *
 				 * The postFiles array is of the PostFile interface.
 				 */
-				if (postForm.files) {
+				if (postForm.files.length) {
 					await Promise.all(
 						postForm.files.map(async (file) => {
 							/**
@@ -257,7 +259,8 @@ const usePost = () => {
 						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "/posts/", {
-								updatedPost: {
+								apiKey: userStateValue.api?.keys[0].key,
+								postData: {
 									...newPostData,
 									updatedAt: new Date(),
 								},
@@ -273,7 +276,7 @@ const usePost = () => {
 				 *
 				 * The postLinks is the array of links to be added.
 				 */
-				if (postForm.links) {
+				if (postForm.links.length) {
 					postForm.links.map((link) => {
 						/**
 						 * The postLinkId is the reference to the link in the database.
@@ -313,7 +316,8 @@ const usePost = () => {
 					 */
 					await axios
 						.put(apiConfig.apiEndpoint + "/posts/", {
-							updatedPost: {
+							apiKey: userStateValue.api?.keys[0].key,
+							postData: {
 								...newPostData,
 								updatedAt: new Date(),
 							},
@@ -339,7 +343,10 @@ const usePost = () => {
 							...prev,
 							posts: [
 								{
-									post: newPostData,
+									post: {
+										...newPostData,
+										updatedAt: new Date().toISOString(),
+									},
 									creator: userStateValue.user,
 								},
 								...prev.posts,
@@ -639,8 +646,9 @@ const usePost = () => {
 					await axios
 						.delete(apiConfig.apiEndpoint + "/posts/likes/", {
 							data: {
-								deleteUserLikePostId: postData.userLike.postId,
-								deleteUserLikeUserId: postData.userLike.userId,
+								apiKey: userStateValue.api?.keys[0].key,
+								postId: postData.userLike.postId,
+								userId: postData.userLike.userId,
 							},
 						})
 						.catch((error) => {
@@ -698,7 +706,8 @@ const usePost = () => {
 					}
 
 					await axios.post(apiConfig.apiEndpoint + "/posts/likes/", {
-						newUserLike: userLike,
+						apiKey: userStateValue.api?.keys[0].key,
+						userLikeData: userLike,
 					});
 
 					if (postStateValue.currentPost?.post) {
@@ -782,10 +791,11 @@ const usePost = () => {
 			const posts: PostData[] = await axios
 				.get(apiConfig.apiEndpoint + "/posts/posts", {
 					params: {
-						getUserId: authUser?.uid,
-						getPostType: postType,
-						getPrivacy: privacy,
-						getFromDate: oldestPost?.post.createdAt,
+						apiKey: userStateValue.api?.keys[0].key,
+						userId: authUser?.uid,
+						postType: postType,
+						privacy: privacy,
+						fromDate: oldestPost?.post.createdAt,
 					},
 				})
 				.then((res) => res.data.posts)
@@ -825,8 +835,9 @@ const usePost = () => {
 				const userLikeData = await axios
 					.get(apiConfig.apiEndpoint + "/posts/likes/", {
 						params: {
-							getPostId: post.id,
-							getUserId: authUser.uid,
+							apiKey: userStateValue.api?.keys[0].key,
+							postId: post.id,
+							userId: authUser.uid,
 						},
 					})
 					.then((res) => res.data.userLike)
@@ -910,7 +921,8 @@ const usePost = () => {
 
 			await axios.delete(apiConfig.apiEndpoint + "/posts/", {
 				data: {
-					deletedPost: postData.post,
+					apiKey: userStateValue.api?.keys[0].key,
+					postData: postData.post,
 				},
 			});
 

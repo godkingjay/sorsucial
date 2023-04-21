@@ -1,10 +1,8 @@
-import { apiConfig } from "@/lib/api/apiConfig";
 import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
+import { SiteUserAPI } from "@/lib/interfaces/api";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
-import clientPromise from "@/lib/mongodb";
-import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**--------------------------------------------------------------------------------------------------------------------
@@ -38,6 +36,42 @@ export default async function handler(
 
 		const { apiKey, userId, postType, privacy, fromDate } =
 			req.body || req.query;
+
+		if (!apiKey) {
+			res.status(400).json({ error: "No API key provided!" });
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
+		if (!postsCollection || !postLikesCollection) {
+			res.status(500).json({ error: "Cannot connect with the Posts Database!" });
+		}
+
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(401).json({ error: "Invalid API key" });
+			return;
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			res.status(401).json({ error: "Invalid user" });
+			return;
+		}
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------------------------------
@@ -79,10 +113,14 @@ export default async function handler(
 								.sort({ createdAt: -1 })
 								.limit(10)
 								.toArray()
-				);
+				).catch((error: any) => {
+					res
+						.status(500)
+						.json({ error: "Error getting posts:\n" + error.message });
+				});
 
 				const postsData = await Promise.all(
-					posts.map(async (postDoc) => {
+					posts!.map(async (postDoc) => {
 						const post = postDoc as unknown as SitePost;
 
 						const userLikeData = (await postLikesCollection.findOne({

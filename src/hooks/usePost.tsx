@@ -151,7 +151,7 @@ const usePost = () => {
 				 *
 				 * The postImagesOrVideos is the array of images or videos to be uploaded.
 				 */
-				if (postForm.imagesOrVideos) {
+				if (postForm.imagesOrVideos.length) {
 					await Promise.all(
 						/**
 						 * Map through the postImagesOrVideos array.
@@ -221,7 +221,7 @@ const usePost = () => {
 				 *
 				 * The postFiles array is of the PostFile interface.
 				 */
-				if (postForm.files) {
+				if (postForm.files.length) {
 					await Promise.all(
 						postForm.files.map(async (file) => {
 							/**
@@ -276,7 +276,7 @@ const usePost = () => {
 				 *
 				 * The postLinks is the array of links to be added.
 				 */
-				if (postForm.links) {
+				if (postForm.links.length) {
 					postForm.links.map((link) => {
 						/**
 						 * The postLinkId is the reference to the link in the database.
@@ -316,7 +316,8 @@ const usePost = () => {
 					 */
 					await axios
 						.put(apiConfig.apiEndpoint + "/posts/", {
-							updatedPost: {
+							apiKey: userStateValue.api?.keys[0].key,
+							postData: {
 								...newPostData,
 								updatedAt: new Date(),
 							},

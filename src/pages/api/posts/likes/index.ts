@@ -1,4 +1,5 @@
-import clientPromise from "@/lib/mongodb";
+import postDb from "@/lib/db/postDb";
+import userDb from "@/lib/db/userDb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**--------------------------------------------------------------------------------------------------------------------
@@ -27,10 +28,8 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const postsCollection = db.collection("posts");
-		const postLikesCollection = db.collection("post-likes");
+		const { apiKeysCollection } = await userDb();
+		const { postsCollection, postLikesCollection } = await postDb();
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------------------------------

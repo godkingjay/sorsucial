@@ -1,5 +1,8 @@
 import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
+import { SiteUserAPI } from "@/lib/interfaces/api";
+import { PostLike } from "@/lib/interfaces/post";
+import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**--------------------------------------------------------------------------------------------------------------------
@@ -28,8 +31,56 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const { apiKeysCollection } = await userDb();
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const { postsCollection, postLikesCollection } = await postDb();
+
+		const {
+			apiKey,
+			userLikeData: rawUserLikeData,
+			postId,
+			userId,
+		} = req.body || req.query;
+
+		const userLikeData: PostLike =
+			typeof rawUserLikeData === "string"
+				? JSON.parse(rawUserLikeData)
+				: rawUserLikeData;
+
+		if (!apiKey) {
+			res.status(400).json({ error: "No API key provided!" });
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
+		if (!postsCollection || !postLikesCollection) {
+			res.status(500).json({ error: "Cannot connect with the Posts Database!" });
+		}
+
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(401).json({ error: "Invalid API key" });
+			return;
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			res.status(401).json({ error: "Invalid user" });
+			return;
+		}
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------------------------------
@@ -48,17 +99,14 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			case "POST": {
-				const { newUserLike } = req.body;
-
-				if (!newUserLike) {
-					res.status(500).json({ error: "No user like provided" });
-					return;
+				if (!userLikeData) {
+					res.status(400).json({ error: "No user like data provided" });
 				}
 
-				const newLikeState = await postLikesCollection.insertOne(newUserLike);
+				const newLikeState = await postLikesCollection.insertOne(userLikeData);
 				const newPostStateLiked = await postsCollection.updateOne(
 					{
-						id: newUserLike.postId,
+						id: userLikeData.postId,
 					},
 					{
 						$inc: {
@@ -87,15 +135,13 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getPostId, getUserId } = req.query;
-
-				if (!getPostId || !getUserId) {
-					res.status(500).json({ error: "No post id or user id provided" });
+				if (!postId || !userId) {
+					res.status(400).json({ error: "No post id or user id provided" });
 				}
 
 				const like = await postLikesCollection.findOne({
-					postId: getPostId,
-					userId: getUserId,
+					postId: postId,
+					userId: userId,
 				});
 
 				res.status(200).json({ userLike: like });
@@ -118,21 +164,18 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			case "DELETE": {
-				const { deleteUserLikePostId, deleteUserLikeUserId } = req.body;
-
-				if (!deleteUserLikePostId || !deleteUserLikeUserId) {
-					res.status(500).json({ error: "No post id or user id provided" });
-					return;
+				if (!postId || !userId) {
+					res.status(400).json({ error: "No post id or user id provided" });
 				}
 
 				const deleteLikeState = await postLikesCollection.deleteOne({
-					postId: deleteUserLikePostId,
-					userId: deleteUserLikeUserId,
+					postId: postId,
+					userId: userId,
 				});
 
 				const newPostStateUnliked = await postsCollection.updateOne(
 					{
-						id: deleteUserLikePostId,
+						id: postId,
 					},
 					{
 						$inc: {

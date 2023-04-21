@@ -645,8 +645,9 @@ const usePost = () => {
 					await axios
 						.delete(apiConfig.apiEndpoint + "/posts/likes/", {
 							data: {
-								deleteUserLikePostId: postData.userLike.postId,
-								deleteUserLikeUserId: postData.userLike.userId,
+								apiKey: userStateValue.api?.keys[0].key,
+								postId: postData.userLike.postId,
+								userId: postData.userLike.userId,
 							},
 						})
 						.catch((error) => {
@@ -704,7 +705,8 @@ const usePost = () => {
 					}
 
 					await axios.post(apiConfig.apiEndpoint + "/posts/likes/", {
-						newUserLike: userLike,
+						apiKey: userStateValue.api?.keys[0].key,
+						userLikeData: userLike,
 					});
 
 					if (postStateValue.currentPost?.post) {
@@ -831,8 +833,9 @@ const usePost = () => {
 				const userLikeData = await axios
 					.get(apiConfig.apiEndpoint + "/posts/likes/", {
 						params: {
-							getPostId: post.id,
-							getUserId: authUser.uid,
+							apiKey: userStateValue.api?.keys[0].key,
+							postId: post.id,
+							userId: authUser.uid,
 						},
 					})
 					.then((res) => res.data.userLike)

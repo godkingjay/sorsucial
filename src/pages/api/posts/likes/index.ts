@@ -103,17 +103,30 @@ export default async function handler(
 					res.status(400).json({ error: "No user like data provided" });
 				}
 
-				const newLikeState = await postLikesCollection.insertOne(userLikeData);
-				const newPostStateLiked = await postsCollection.updateOne(
-					{
-						id: userLikeData.postId,
-					},
-					{
-						$inc: {
-							numberOfLikes: 1,
+				const newLikeState = await postLikesCollection
+					.insertOne(userLikeData)
+					.catch((error: any) => {
+						res
+							.status(500)
+							.json({ error: "Error inserting like data:\n" + error.message });
+					});
+
+				const newPostStateLiked = await postsCollection
+					.updateOne(
+						{
+							id: userLikeData.postId,
 						},
-					}
-				);
+						{
+							$inc: {
+								numberOfLikes: 1,
+							},
+						}
+					)
+					.catch((error: any) => {
+						res
+							.status(500)
+							.json({ error: "Error updating post data:\n" + error.message });
+					});
 
 				res.status(200).json({ newLikeState, newPostStateLiked });
 				break;
@@ -139,10 +152,16 @@ export default async function handler(
 					res.status(400).json({ error: "No post id or user id provided" });
 				}
 
-				const like = await postLikesCollection.findOne({
-					postId: postId,
-					userId: userId,
-				});
+				const like = await postLikesCollection
+					.findOne({
+						postId: postId,
+						userId: userId,
+					})
+					.catch((error: any) => {
+						res
+							.status(500)
+							.json({ error: "Error getting like data:\n" + error.message });
+					});
 
 				res.status(200).json({ userLike: like });
 				break;
@@ -168,21 +187,33 @@ export default async function handler(
 					res.status(400).json({ error: "No post id or user id provided" });
 				}
 
-				const deleteLikeState = await postLikesCollection.deleteOne({
-					postId: postId,
-					userId: userId,
-				});
+				const deleteLikeState = await postLikesCollection
+					.deleteOne({
+						postId: postId,
+						userId: userId,
+					})
+					.catch((error: any) => {
+						res
+							.status(500)
+							.json({ error: "Error deleting like data:\n" + error.message });
+					});
 
-				const newPostStateUnliked = await postsCollection.updateOne(
-					{
-						id: postId,
-					},
-					{
-						$inc: {
-							numberOfLikes: -1,
+				const newPostStateUnliked = await postsCollection
+					.updateOne(
+						{
+							id: postId,
 						},
-					}
-				);
+						{
+							$inc: {
+								numberOfLikes: -1,
+							},
+						}
+					)
+					.catch((error: any) => {
+						res
+							.status(500)
+							.json({ error: "Error updating post data:\n" + error.message });
+					});
 
 				res.status(200).json({ deleteLikeState, newPostStateUnliked });
 				break;

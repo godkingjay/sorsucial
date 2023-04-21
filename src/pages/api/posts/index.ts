@@ -182,7 +182,7 @@ export default async function handler(
 					return;
 				}
 
-				if (postData.creatorId !== creator.uid) {
+				if (postData.creatorId !== userData.uid) {
 					if (!userData.roles.includes("admin")) {
 						res.status(400).json({
 							error: "User is not the creator of the post or an admin!",

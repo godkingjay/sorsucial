@@ -790,10 +790,11 @@ const usePost = () => {
 			const posts: PostData[] = await axios
 				.get(apiConfig.apiEndpoint + "/posts/posts", {
 					params: {
-						getUserId: authUser?.uid,
-						getPostType: postType,
-						getPrivacy: privacy,
-						getFromDate: oldestPost?.post.createdAt,
+						apiKey: userStateValue.api?.keys[0].key,
+						userId: authUser?.uid,
+						postType: postType,
+						privacy: privacy,
+						fromDate: oldestPost?.post.createdAt,
 					},
 				})
 				.then((res) => res.data.posts)

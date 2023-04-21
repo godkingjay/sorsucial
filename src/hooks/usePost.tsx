@@ -138,8 +138,7 @@ const usePost = () => {
 				})
 				.then((res) => res.data.newPost)
 				.catch((error) => {
-					console.log("API: Post Creation Error: ", error.message);
-					throw error;
+					throw new Error("API: Post Creation Error:\n" + error.message);
 				});
 
 			/**
@@ -178,9 +177,8 @@ const usePost = () => {
 								imageOrVideo,
 								postImageOrVideoRef.id
 							).catch((error: any) => {
-								console.log(
-									"Hook: Upload Image Or Video Error: ",
-									error.message
+								throw new Error(
+									"Hook: Upload Image Or Video Error:\n" + error.message
 								);
 							});
 
@@ -206,9 +204,8 @@ const usePost = () => {
 								},
 							})
 							.catch((error) => {
-								console.log(
-									"API: Post Update Images Or Videos Error: ",
-									error.message
+								throw new Error(
+									"API: Post Update Images Or Videos Error:\n" + error.message
 								);
 							});
 					});
@@ -241,7 +238,7 @@ const usePost = () => {
 								file,
 								postFileRef.id
 							).catch((error: any) => {
-								console.log("Hook: Upload File Error: ", error.message);
+								throw new Error("Hook: Upload File Error:\n" + error.message);
 							});
 
 							/**
@@ -266,7 +263,7 @@ const usePost = () => {
 								},
 							})
 							.catch((error) => {
-								console.log("API: Post Files Error: ", error.message);
+								throw new Error("API: Post Files Error:\n" + error.message);
 							});
 					});
 				}
@@ -323,7 +320,7 @@ const usePost = () => {
 							},
 						})
 						.catch((error) => {
-							console.log("API: Post Links Error: ", error.message);
+							throw new Error("API: Post Links Error:\n" + error.message);
 						});
 				}
 
@@ -436,8 +433,7 @@ const usePost = () => {
 			 */
 			await uploadBytes(storageRef, blob).catch((error: any) => {
 				throw new Error(
-					"Firebase Storage: Image Or Video Upload Error: ",
-					error.message
+					"Firebase Storage: Image Or Video Upload Error:\n" + error.message
 				);
 			});
 
@@ -451,8 +447,8 @@ const usePost = () => {
 			const downloadURL = await getDownloadURL(storageRef).catch(
 				(error: any) => {
 					throw new Error(
-						"Firebase Storage: Image Or Video Download URL Error: ",
-						error.message
+						"Firebase Storage: Image Or Video Download URL Error:\n" +
+							error.message
 					);
 				}
 			);
@@ -500,7 +496,7 @@ const usePost = () => {
 			 */
 			return newPostImageOrVideo;
 		} catch (error: any) {
-			console.log("Firebase: Image Or Video Upload Error", error.message);
+			console.log("Firebase: Image Or Video Upload Error:\n", error.message);
 		}
 	};
 

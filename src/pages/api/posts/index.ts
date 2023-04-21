@@ -1,5 +1,5 @@
+import postDb from "@/lib/db/postDb";
 import { PostComment } from "@/lib/interfaces/post";
-import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -29,12 +29,12 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const postsCollection = db.collection("posts");
-		const postLikesCollection = db.collection("post-likes");
-		const postCommentsCollection = db.collection("post-comments");
-		const postCommentLikesCollection = db.collection("post-comment-likes");
+		const {
+			postsCollection,
+			postLikesCollection,
+			postCommentsCollection,
+			postCommentLikesCollection,
+		} = await postDb();
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------

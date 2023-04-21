@@ -132,7 +132,8 @@ const usePost = () => {
 			 */
 			const newPostData: SitePost = await axios
 				.post(apiConfig.apiEndpoint + "/posts/", {
-					newPost,
+					apiKey: userStateValue.api?.keys[0].key,
+					postData: newPost,
 					creator: userStateValue.user,
 				})
 				.then((res) => res.data.newPost)
@@ -198,7 +199,8 @@ const usePost = () => {
 						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "/posts/", {
-								updatedPost: {
+								apiKey: userStateValue.api?.keys[0].key,
+								postData: {
 									...newPostData,
 									updatedAt: new Date(),
 								},
@@ -257,7 +259,8 @@ const usePost = () => {
 						 */
 						await axios
 							.put(apiConfig.apiEndpoint + "/posts/", {
-								updatedPost: {
+								apiKey: userStateValue.api?.keys[0].key,
+								postData: {
 									...newPostData,
 									updatedAt: new Date(),
 								},
@@ -339,7 +342,10 @@ const usePost = () => {
 							...prev,
 							posts: [
 								{
-									post: newPostData,
+									post: {
+										...newPostData,
+										updatedAt: new Date().toISOString(),
+									},
 									creator: userStateValue.user,
 								},
 								...prev.posts,
@@ -910,7 +916,8 @@ const usePost = () => {
 
 			await axios.delete(apiConfig.apiEndpoint + "/posts/", {
 				data: {
-					deletedPost: postData.post,
+					apiKey: userStateValue.api?.keys[0].key,
+					postData: postData.post,
 				},
 			});
 

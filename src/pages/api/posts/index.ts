@@ -1,5 +1,8 @@
 import postDb from "@/lib/db/postDb";
-import { PostComment } from "@/lib/interfaces/post";
+import userDb from "@/lib/db/userDb";
+import { SiteUserAPI } from "@/lib/interfaces/api";
+import { PostComment, SitePost } from "@/lib/interfaces/post";
+import { SiteUser } from "@/lib/interfaces/user";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -29,12 +32,60 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const {
 			postsCollection,
 			postLikesCollection,
 			postCommentsCollection,
 			postCommentLikesCollection,
 		} = await postDb();
+
+		const {
+			apiKey,
+			postData: rawPostData,
+			creator: rawCreator,
+		} = req.body || req.query;
+
+		const postData: SitePost =
+			typeof rawPostData === "string" ? JSON.parse(rawPostData) : rawPostData;
+		const creator: SiteUser =
+			typeof rawCreator === "string" ? JSON.parse(rawCreator) : rawCreator;
+
+		if (!apiKey) {
+			res.status(400).json({ error: "No API key provided!" });
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
+		if (
+			!postsCollection ||
+			!postLikesCollection ||
+			!postCommentsCollection ||
+			!postCommentLikesCollection
+		) {
+			res.status(500).json({ error: "Cannot connect with the Post Database!" });
+		}
+
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(500).json({ error: "Invalid API key" });
+			return;
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------
@@ -55,9 +106,7 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			case "POST": {
-				const { newPost, creator } = req.body;
-
-				if (!newPost) {
+				if (!postData) {
 					res.status(500).json({ error: "No post provided" });
 					return;
 				}
@@ -67,7 +116,7 @@ export default async function handler(
 					return;
 				}
 
-				if (newPost.creatorId !== creator.uid) {
+				if (postData.creatorId !== creator.uid) {
 					res.status(500).json({ error: "Creator id does not match creator" });
 					return;
 				}
@@ -75,17 +124,17 @@ export default async function handler(
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
-				newPost.id = objectIdString;
+				postData.id = objectIdString;
 
 				const newPostState = await postsCollection.insertOne({
-					...newPost,
+					...postData,
 					_id: objectId,
 				});
 
 				res.status(200).json({
 					newPostState,
 					newPost: {
-						...newPost,
+						...postData,
 					},
 				});
 				break;
@@ -128,18 +177,24 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			case "PUT": {
-				const { updatedPost } = req.body;
-
-				if (!updatedPost) {
+				if (!postData) {
 					res.status(500).json({ error: "No post provided" });
 					return;
 				}
 
+				if (postData.creatorId !== creator.uid) {
+					if (!userData.roles.includes("admin")) {
+						res.status(400).json({
+							error: "User is not the creator of the post or an admin!",
+						});
+					}
+				}
+
 				const updateState = await postsCollection.updateOne(
-					{ id: updatedPost.id },
+					{ id: postData.id },
 					{
 						$set: {
-							...updatedPost,
+							...postData,
 						},
 					}
 				);
@@ -164,19 +219,25 @@ export default async function handler(
 			 * --------------------------------------------------------------------------------------------
 			 */
 			case "DELETE": {
-				const { deletedPost } = req.body;
-
-				if (!deletedPost) {
+				if (!postData) {
 					res.status(500).json({ error: "No post provided" });
 					return;
 				}
 
+				if (postData.creatorId !== userData.uid) {
+					if (!userData.roles.includes("admin")) {
+						res.status(400).json({
+							error: "User is not the creator of the post or an admin!",
+						});
+					}
+				}
+
 				const deleteState = await postsCollection.deleteOne({
-					id: deletedPost.id,
+					id: postData.id,
 				});
 
 				const deletePostLikesState = await postLikesCollection.deleteMany({
-					postId: deletedPost.id,
+					postId: postData.id,
 				});
 
 				const deleteComment = async (comment: PostComment) => {
@@ -203,7 +264,7 @@ export default async function handler(
 
 				const postComments = await postCommentsCollection
 					.find({
-						commentForId: deletedPost.id,
+						commentForId: postData.id,
 					})
 					.toArray();
 

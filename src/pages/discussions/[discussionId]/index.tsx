@@ -42,8 +42,28 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 		try {
 			if (discussionPageData) {
 				const userVoteData = await fetchUserVote(discussionPageData.discussion);
+
+				const currentDiscussion = discussionStateValue.discussions.find(
+					(discussion) =>
+						discussion.discussion.id === discussionPageData.discussion.id
+				);
+
 				setDiscussionStateValue((prev) => ({
 					...prev,
+					discussions: currentDiscussion
+						? prev.discussions.map((discussion) => {
+								if (
+									discussion.discussion.id === currentDiscussion.discussion.id
+								) {
+									return {
+										...discussionPageData,
+										userVote: userVoteData,
+									};
+								} else {
+									return discussion;
+								}
+						  })
+						: [...prev.discussions, discussionPageData],
 					currentDiscussion: {
 						...discussionPageData,
 						userVote: userVoteData,

@@ -151,17 +151,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									Reply
 								</button>
 							)}
-							{userStateValue.user.uid === commentData.comment.creatorId ||
-								(userStateValue.user.roles.includes("admin") && (
-									<button
-										type="button"
-										title="Delete"
-										className="btn-text hover:text-red-500"
-										onClick={handleDeleteComment}
-									>
-										Delete
-									</button>
-								))}
+							{(userStateValue.user.uid === commentData.comment.creatorId ||
+								userStateValue.user.roles.includes("admin")) && (
+								<button
+									type="button"
+									title="Delete"
+									className="btn-text hover:text-red-500"
+									onClick={handleDeleteComment}
+								>
+									Delete
+								</button>
+							)}
 							<p className="font-normal text-2xs w-max">
 								{moment(commentData.comment.createdAt).diff(moment(), "days") >
 								-7

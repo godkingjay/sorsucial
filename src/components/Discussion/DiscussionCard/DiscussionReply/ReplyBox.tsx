@@ -91,7 +91,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 							<div className="h-4 w-4 aspect-square">
 								<BiCommentDetail className="h-full w-full" />
 							</div>
-							<div className="hidden sm:flex h-full flex-row items-center">
+							<div className="hidden xs:flex h-full flex-row items-center">
 								<p>Create Reply</p>
 							</div>
 						</button>

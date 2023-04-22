@@ -299,23 +299,23 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 										<p className="label">Share</p>
 									</div>
 								</button> */}
-								{userStateValue.user?.uid === replyData.reply.creatorId ||
-									(userStateValue.user.roles.includes("admin") && (
-										<button
-											type="button"
-											title="Delete"
-											className="button delete-button"
-											onClick={() => !deletingReply && handleDeleteReply()}
-											disabled={deletingReply}
-										>
-											<div className="icon-container">
-												<MdDeleteOutline className="icon" />
-											</div>
-											<div className="label-container">
-												<p className="label">Delete</p>
-											</div>
-										</button>
-									))}
+								{(userStateValue.user?.uid === replyData.reply.creatorId ||
+									userStateValue.user.roles.includes("admin")) && (
+									<button
+										type="button"
+										title="Delete"
+										className="button delete-button"
+										onClick={() => !deletingReply && handleDeleteReply()}
+										disabled={deletingReply}
+									>
+										<div className="icon-container">
+											<MdDeleteOutline className="icon" />
+										</div>
+										<div className="label-container">
+											<p className="label">Delete</p>
+										</div>
+									</button>
+								)}
 							</div>
 						</div>
 						<div className="absolute top-0 -left-8 h-full w-max pt-12 translate-x-[2px]">

@@ -26,10 +26,45 @@ import { NextApiRequest, NextApiResponse } from "next";
  * @param {NextApiResponse} res
  *
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+) {
 	try {
 		const { usersCollection, apiKeysCollection } = await userDb();
-		const { privateKey } = req.body || req.query;
+		const {
+			apiKey,
+			privateKey,
+			userId,
+			userData: rawUserData,
+		} = req.body || req.query;
+
+		const userData: SiteUser =
+			typeof rawUserData === "string" ? JSON.parse(rawUserData) : rawUserData;
+
+		if (!apiKey && !privateKey) {
+			res.status(400).json({ error: "No API Key or Private key provided!" });
+		}
+
+		if (!apiKeysCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		}
+
+		const userAPI =
+			((await apiKeysCollection.findOne({
+				"keys.key": apiKey || "",
+			})) as unknown as SiteUserAPI) || null;
+
+		const currentUser =
+			((await usersCollection.findOne({
+				uid: userAPI?.userId || "",
+			})) as unknown as SiteUser) || null;
 
 		switch (req.method) {
 			/**------------------------------------------------------------------------------------------
@@ -48,21 +83,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "POST": {
-				const { newUser }: { newUser: SiteUser } = req.body;
-
-				if (!newUser) {
-					res.status(500).json({ error: "No user provided" });
+				if (!userData) {
+					res.status(400).json({ error: "No user provided" });
 					return;
 				}
 
-				const newUserState = await usersCollection.insertOne(newUser);
+				if (!privateKey || privateKey !== apiConfig.privateKey) {
+					res.status(401).json({ error: "Unauthorized" });
+				}
+
+				const newUserState = await usersCollection.insertOne(userData);
 
 				const newAPIDate = new Date();
 
 				const apiId = new ObjectId();
 
 				const newUserAPIKey: Partial<SiteUserAPI> = {
-					userId: newUser.uid,
+					userId: userData.uid,
 					keys: [
 						{
 							id: apiId.toHexString(),
@@ -80,7 +117,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				const newUserAPIState = await apiKeysCollection.insertOne(newUserAPIKey);
 
-				res.status(200).json({ newUserState, newUser });
+				res.status(200).json({ newUserState, newUser: userData });
 				break;
 			}
 
@@ -100,24 +137,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				const { getUserId } = req.query;
-
 				if (!privateKey || privateKey !== apiConfig.privateKey) {
 					res.status(401).json({ message: "Unauthorized" });
-					return;
 				}
 
-				if (!getUserId) {
-					res.status(500).json({ error: "No user id provided" });
-					return;
+				if (!userId) {
+					res.status(400).json({ error: "No user id provided" });
 				}
 
 				const userData = await usersCollection.findOne({
-					uid: getUserId,
+					uid: userId,
 				});
 
 				const userAPI = await apiKeysCollection.findOne({
-					userId: getUserId,
+					userId,
 				});
 
 				res.status(200).json({ userData, userAPI });
@@ -140,21 +173,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "PUT": {
-				const { updatedUserData, updateUserId } = req.body;
+				if (!userData || !userId) {
+					res.status(400).json({ error: "No user data provided" });
+				}
 
-				if (!updatedUserData || !updateUserId) {
-					res.status(500).json({ error: "No user data provided" });
-					return;
+				if (currentUser.uid !== userId) {
+					if (!currentUser.roles.includes("admin")) {
+						res.status(401).json({ error: "Unauthorized!" });
+					}
 				}
 
 				const updatedUserState = await usersCollection.updateOne(
-					{ uid: updateUserId },
-					{ $set: updatedUserData }
+					{ uid: userId },
+					{ $set: userData }
 				);
 
 				res
 					.status(200)
-					.json({ newUserState: updatedUserState, newUser: updatedUserData });
+					.json({ newUserState: updatedUserState, newUser: userData });
 				break;
 			}
 
@@ -174,11 +210,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "DELETE": {
-				const { userId } = req.body;
-
 				if (!userId) {
 					res.status(500).json({ error: "No user id provided" });
 					return;
+				}
+
+				if (currentUser?.uid !== userId) {
+					if (
+						!currentUser.roles.includes("admin") ||
+						!privateKey ||
+						privateKey !== apiConfig.privateKey
+					) {
+						res.status(401).json({ error: "Unauthorized!" });
+					}
 				}
 
 				const deleteState = await usersCollection.deleteOne({

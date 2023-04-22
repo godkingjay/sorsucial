@@ -1,5 +1,5 @@
 import { clientStorage } from "@/firebase/clientApp";
-import clientPromise from "@/lib/mongodb";
+import userDb from "@/lib/db/userDb";
 import { deleteObject, ref } from "firebase/storage";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -30,9 +30,7 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const userProfilePhotosCollection = db.collection("user-profile-photos");
+		const { userProfilePhotosCollection } = await userDb();
 
 		switch (req.method) {
 			/**----------------------------------------------------------------------------------------------------------------------------------------------------------------

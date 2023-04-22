@@ -38,7 +38,7 @@ const useUser = () => {
 					.get(apiConfig.apiEndpoint + "/users/", {
 						params: {
 							privateKey: apiConfig.privateKey,
-							getUserId: user.uid,
+							userId: user.uid,
 						},
 					})
 					.then((res) => res.data)
@@ -87,7 +87,8 @@ const useUser = () => {
 
 						const newUserData = await axios
 							.post(apiConfig.apiEndpoint + "/users/", {
-								newUser,
+								privateKey: apiConfig.privateKey,
+								userData: newUser,
 							})
 							.then((res) => res.data.newUser)
 							.catch((error) => {
@@ -148,8 +149,9 @@ const useUser = () => {
 
 			const newUserData = await axios
 				.put(apiConfig.apiEndpoint + "/users/", {
-					updatedUserData: newUser,
-					updateUserId: user?.uid,
+					apiKey: userStateValue.api?.keys[0].key,
+					userData: newUser,
+					userId: user?.uid,
 				})
 				.then((res) => res.data.newUser)
 				.catch((error) => {

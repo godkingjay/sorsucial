@@ -5,6 +5,7 @@ import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
+import useUser from "./useUser";
 
 /**
  * useAdmin
@@ -45,6 +46,8 @@ const useAdmin = () => {
 	 */
 	const [adminModalStateValue, setAdminModalStateValue] =
 		useRecoilState(adminModalState);
+
+	const { userStateValue } = useUser();
 
 	/**
 	 * createNewUsers
@@ -108,9 +111,9 @@ const useAdmin = () => {
 							 */
 							await axios
 								.post(apiConfig.apiEndpoint + "/admin/manage/accounts/", {
-									newUserEmail: email,
-									newUserPassword: password,
-									postPrivateKey: apiConfig.privateKey,
+									email: email,
+									password: password,
+									privateKey: apiConfig.privateKey,
 								})
 								.then(async (res) => {
 									/**
@@ -164,7 +167,9 @@ const useAdmin = () => {
 										 */
 										const newUserData = await axios
 											.post(apiConfig.apiEndpoint + "/users/", {
-												newUser: newUserDoc,
+												apiKey: userStateValue.api?.keys[0].key,
+												privateKey: apiConfig.privateKey,
+												userData: newUserDoc,
 											})
 											.then((response) => response.data.newUser)
 											.catch((error: any) => {
@@ -252,8 +257,8 @@ const useAdmin = () => {
 				await axios
 					.delete(apiConfig.apiEndpoint + "/admin/manage/accounts/", {
 						data: {
-							deleteUserId: userId,
-							deletePrivateKey: apiConfig.privateKey,
+							privateKey: apiConfig.privateKey,
+							userId: userId,
 						},
 					})
 					.then(async (res) => {
@@ -273,6 +278,8 @@ const useAdmin = () => {
 							 */
 							await axios.delete(apiConfig.apiEndpoint + "/users/", {
 								data: {
+									apiKey: userStateValue.api?.keys[0].key,
+									privateKey: apiConfig.privateKey,
 									userId,
 								},
 							});
@@ -281,7 +288,7 @@ const useAdmin = () => {
 							 * This will send another request to the API to delete the user's profile photo.
 							 */
 							await axios.delete(
-								apiConfig.apiEndpoint + "/user/images/profile-photos",
+								apiConfig.apiEndpoint + "/users/images/profile-photos",
 								{
 									data: {
 										deleteUserId: userId,

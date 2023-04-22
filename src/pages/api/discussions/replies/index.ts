@@ -53,7 +53,6 @@ export default async function handler(
 
 		if (!userAPI) {
 			res.status(401).json({ error: "Invalid API key" });
-			return;
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -62,7 +61,6 @@ export default async function handler(
 
 		if (!userData) {
 			res.status(401).json({ error: "Invalid user" });
-			return;
 		}
 
 		switch (req.method) {

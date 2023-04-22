@@ -28,6 +28,12 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
+		const { email, password, privateKey, userId } = req.body || req.query;
+
+		if (!privateKey || privateKey !== apiConfig.privateKey) {
+			res.status(401).json({ error: "Unauthorized!" });
+		}
+
 		switch (req.method) {
 			/**-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 *
@@ -46,22 +52,16 @@ export default async function handler(
 			 */
 			case "POST": {
 				// Create a new user in the Firebase Authentication service.
-				const { newUserEmail, newUserPassword, postPrivateKey } = req.body;
 
-				if (!newUserEmail || !newUserPassword) {
+				if (!email || !password) {
 					res.status(400).json({ message: "Email and password are required" });
-					return;
-				}
-
-				if (!postPrivateKey || postPrivateKey !== apiConfig.privateKey) {
-					res.status(401).json({ message: "Unauthorized" });
 					return;
 				}
 
 				await authAdmin
 					.createUser({
-						email: newUserEmail,
-						password: newUserPassword,
+						email: email,
+						password: password,
 					})
 					.then((user) => {
 						res.status(200).json({
@@ -96,33 +96,26 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				// Delete a user from the Firebase Authentication service.
-				const { deleteUserId, deletePrivateKey } = req.body;
 
-				if (!deleteUserId) {
+				if (!userId) {
 					res.status(400).json({ message: "User ID is required" });
 					return;
 				}
 
-				if (!deletePrivateKey || deletePrivateKey !== apiConfig.privateKey) {
-					res.status(401).json({ message: "Unauthorized" });
-					return;
-				}
-
-				authAdmin
-					.deleteUser(deleteUserId)
-					.then(() => {
-						res.status(200).json({
-							message: "Account deleted successfully",
-							isDeleted: true,
-						});
-					})
-					.catch((error) => {
-						res.status(500).json({
-							message: "Error deleting account",
-							error: error.message,
-						});
-						return;
+				authAdmin.deleteUser(userId).catch((error) => {
+					res.status(500).json({
+						message: "Error deleting account",
+						error: error.message,
+						isDeleted: false,
 					});
+					return;
+				});
+
+				res.status(200).json({
+					message: "Account deleted successfully",
+					isDeleted: true,
+				});
+
 				break;
 			}
 

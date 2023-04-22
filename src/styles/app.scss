@@ -250,7 +250,7 @@
 				}
 
 				.icon-container {
-					@apply h-8 w-8 aspect-square text-white grid place-items-center p-1;
+					@apply h-8 w-8 aspect-square text-white grid place-items-center p-1.5;
 
 					.icon {
 						@apply h-full w-full;
@@ -292,7 +292,7 @@
 			}
 
 			&[data-open="true"] {
-				@apply w-64;
+				@apply w-56;
 
 				.open-close-button {
 					.label-container {

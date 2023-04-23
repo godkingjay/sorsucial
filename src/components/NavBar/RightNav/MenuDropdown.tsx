@@ -1,14 +1,9 @@
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { UserState } from "@/atoms/userAtom";
 import React from "react";
-import {
-	BsFileEarmarkText,
-	BsFileEarmarkTextFill,
-	BsFillFileEarmarkTextFill,
-} from "react-icons/bs";
+import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { CgMenuGridO } from "react-icons/cg";
 import { CiBullhorn } from "react-icons/ci";
-import { FaBullhorn } from "react-icons/fa";
 import { GoCommentDiscussion } from "react-icons/go";
 import { HiUserGroup } from "react-icons/hi";
 

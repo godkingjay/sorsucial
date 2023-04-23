@@ -9,6 +9,7 @@ import {
 	postCreationModalState,
 } from "@/atoms/modalAtom";
 import { useRouter } from "next/router";
+import NotificationDropdown from "./RightNav/NotificationDropdown";
 
 type RightNavProps = {
 	userStateValue: UserState;
@@ -16,7 +17,17 @@ type RightNavProps = {
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 	logOutUser: () => void;
 };
-
+/**
+ *
+ *
+ * @param {*} {
+ * 	userStateValue,
+ * 	navigationBarStateValue,
+ * 	setNavigationBarStateValue,
+ * 	logOutUser,
+ * }
+ * @return {*}
+ */
 const RightNav: React.FC<RightNavProps> = ({
 	userStateValue,
 	navigationBarStateValue,
@@ -43,6 +54,32 @@ const RightNav: React.FC<RightNavProps> = ({
 				...prev.menuDropdown,
 				open: !prev.menuDropdown.open,
 			},
+			notificationDropdown: {
+				...prev.notificationDropdown,
+				open: false,
+			},
+			userDropdown: {
+				...prev.userDropdown,
+				open: false,
+			},
+		}));
+	};
+
+	const handleNotificationDropdown = () => {
+		setNavigationBarStateValue((prev) => ({
+			...prev,
+			directoryDropdown: {
+				...prev.directoryDropdown,
+				open: false,
+			},
+			menuDropdown: {
+				...prev.menuDropdown,
+				open: false,
+			},
+			notificationDropdown: {
+				...prev.notificationDropdown,
+				open: !prev.notificationDropdown.open,
+			},
 			userDropdown: {
 				...prev.userDropdown,
 				open: false,
@@ -59,6 +96,10 @@ const RightNav: React.FC<RightNavProps> = ({
 			},
 			menuDropdown: {
 				...prev.menuDropdown,
+				open: false,
+			},
+			notificationDropdown: {
+				...prev.notificationDropdown,
 				open: false,
 			},
 			userDropdown: {
@@ -139,6 +180,11 @@ const RightNav: React.FC<RightNavProps> = ({
 					navigationBarStateValue={navigationBarStateValue}
 					handleMenuDropdown={handleMenuDropdown}
 					handleMenuCreateClick={handleMenuCreateClick}
+				/>
+				<NotificationDropdown
+					userStateValue={userStateValue}
+					navigationBarStateValue={navigationBarStateValue}
+					handleNotificationDropdown={handleNotificationDropdown}
 				/>
 				<UserDropdown
 					userStateValue={userStateValue}

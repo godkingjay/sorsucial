@@ -42,10 +42,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 				)}
 			</button>
 			<div
-				className="user-dropdown-wrapper"
+				className="user-dropdown-wrapper !max-w-sm"
 				data-open={navigationBarStateValue.userDropdown.open}
 			>
-				<div className="user-dropdown !max-h-[384px]">
+				<div className="user-dropdown">
 					<div className="flex flex-col gap-y-2">
 						<Link
 							href={`/user/${userStateValue.user.uid}`}

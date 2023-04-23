@@ -1,3 +1,4 @@
+import PageFilter from "@/components/Controls/PageFilter";
 import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
@@ -83,6 +84,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 									useStateValue={userStateValue}
 									postType="feed"
 								/>
+								<PageFilter />
 								{postStateValue.posts
 									.filter((allPost) => allPost.post.postType === "feed")
 									.map((feed) => (

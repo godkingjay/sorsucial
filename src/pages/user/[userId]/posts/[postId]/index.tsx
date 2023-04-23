@@ -40,8 +40,31 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 		try {
 			if (postPageData) {
 				const userLikeData = await fetchUserLike(postPageData.post);
+
+				const currentPost = postStateValue.posts.find(
+					(post) => post.post.id === postPageData.post.id
+				);
+
 				setPostStateValue((prev) => ({
 					...prev,
+					posts: currentPost
+						? prev.posts.map((post) => {
+								if (post.post.id === currentPost.post.id) {
+									return {
+										...postPageData,
+										userLike: userLikeData,
+									};
+								} else {
+									return post;
+								}
+						  })
+						: [
+								...prev.posts,
+								{
+									...postPageData,
+									userLike: userLikeData,
+								},
+						  ],
 					currentPost: {
 						...postPageData,
 						userLike: userLikeData,

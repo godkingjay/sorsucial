@@ -48,6 +48,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 											title="Announcement"
 											className="flex flex-row items-center gap-x-4 px-3 py-2 rounded-md hover:bg-gray-100"
 											onClick={() => handleMenuCreateClick("announcement")}
+											disabled={!navigationBarStateValue.menuDropdown.open}
 										>
 											<div className="h-10 w-10 p-2.5 bg-gray-300 rounded-full">
 												<CiBullhorn className="h-full w-full text-black" />
@@ -62,6 +63,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 										title="Post"
 										className="flex flex-row items-center gap-x-4 px-3 py-2 rounded-md hover:bg-gray-100"
 										onClick={() => handleMenuCreateClick("post")}
+										disabled={!navigationBarStateValue.menuDropdown.open}
 									>
 										<div className="h-10 w-10 p-2.5 bg-gray-300 rounded-full">
 											<BsFileEarmarkTextFill className="h-full w-full text-black" />
@@ -75,6 +77,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 										title="Discussion"
 										className="flex flex-row items-center gap-x-4 px-3 py-2 rounded-md hover:bg-gray-100"
 										onClick={() => handleMenuCreateClick("discussion")}
+										disabled={!navigationBarStateValue.menuDropdown.open}
 									>
 										<div className="h-10 w-10 p-2.5 bg-gray-300 rounded-full">
 											<GoCommentDiscussion className="h-full w-full text-black" />
@@ -88,6 +91,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 										title="Group"
 										className="flex flex-row items-center gap-x-4 px-3 py-2 rounded-md hover:bg-gray-100"
 										onClick={() => handleMenuCreateClick("group")}
+										disabled={!navigationBarStateValue.menuDropdown.open}
 									>
 										<div className="h-10 w-10 p-2.5 bg-gray-300 rounded-full">
 											<HiUserGroup className="h-full w-full text-black" />

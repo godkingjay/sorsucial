@@ -15,7 +15,19 @@ const AddTags: React.FC<AddTagsProps> = ({ items, setItems }) => {
 
 	const handleAddItem = () => {
 		if (inputItem.trim() !== "") {
-			setItems([...items, inputItem.trim()]);
+			const formattedInput = inputItem
+				.toLowerCase()
+				.replace(/[^\w.,_-\s]/g, "")
+				.replace(/[^a-zA-Z0-9]+/g, "-")
+				.replace(/-+/g, "-")
+				.replace(/(^-|-$)/g, "")
+				.trim();
+
+			if (formattedInput === "") {
+				return;
+			}
+
+			setItems([...items, formattedInput]);
 			setInputItem("");
 		}
 	};

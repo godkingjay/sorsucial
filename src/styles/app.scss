@@ -133,8 +133,24 @@
 		@apply h-12 w-full bg-logo-300 rounded-full font-bold text-white border-2 border-logo-300 justify-center items-center grid disabled:bg-gray-500 disabled:border-gray-500 disabled:pointer-events-none;
 	}
 
+	.menu-dropdown-wrapper {
+		@apply absolute w-full top-0 px-4 max-w-lg right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none;
+
+		&[data-open="false"] {
+			@apply translate-y-[-8px] opacity-0 [&_*]:pointer-events-none;
+		}
+	}
+
 	.menu-dropdown {
 		@apply bg-white w-full p-4 shadow-around-xl rounded-lg flex-1 overflow-y-auto scroll-y-style pointer-events-auto;
+	}
+
+	.user-dropdown-wrapper {
+		@apply absolute w-full top-0 px-4 max-w-sm right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none;
+
+		&[data-open="false"] {
+			@apply translate-y-[-8px] opacity-0 [&_*]:pointer-events-none;
+		}
 	}
 
 	.user-dropdown {

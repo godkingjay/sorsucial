@@ -25,14 +25,8 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 				<CgMenuGridO className="h-full w-full" />
 			</button>
 			<div
-				className={`
-						absolute w-full top-0 px-4 max-w-lg right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
-						${
-							navigationBarStateValue.menuDropdown.open
-								? " "
-								: " translate-y-[-8px] opacity-0 [&_*]:pointer-events-none"
-						}
-					`}
+				className="menu-dropdown-wrapper"
+				data-open={navigationBarStateValue.menuDropdown.open}
 			>
 				<div className="menu-dropdown !max-h-[384px]"></div>
 			</div>

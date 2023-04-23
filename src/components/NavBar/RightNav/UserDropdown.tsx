@@ -42,14 +42,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 				)}
 			</button>
 			<div
-				className={`
-						absolute w-full top-0 px-4 max-w-sm right-0 duration-150 max-h-screen pt-14 pb-4 flex flex-col pointer-events-none
-						${
-							navigationBarStateValue.userDropdown.open
-								? " "
-								: " translate-y-[-8px] opacity-0 [&_*]:pointer-events-none"
-						}
-					`}
+				className="user-dropdown-wrapper"
+				data-open={navigationBarStateValue.userDropdown.open}
 			>
 				<div className="user-dropdown !max-h-[384px]">
 					<div className="flex flex-col gap-y-2">

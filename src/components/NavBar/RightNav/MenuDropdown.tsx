@@ -42,7 +42,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({
 				data-open={navigationBarStateValue.menuDropdown.open}
 			>
 				<div className="menu-dropdown !max-h-[384px]">
-					<div className="flex flex-col overflow-y-auto scroll-y-style p-4 bg-gray-50">
+					<div className="flex flex-col overflow-y-auto scroll-y-style p-4 bg-gray-50 gap-y-4">
 						<div className="p-4 bg-white shadow-page-box-1 rounded-lg flex row">
 							<div className="flex-1 flex flex-col">
 								<h2 className="font-bold text-lg">Create</h2>

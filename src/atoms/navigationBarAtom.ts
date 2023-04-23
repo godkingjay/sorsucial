@@ -7,6 +7,9 @@ export interface NavigationBarState {
 	menuDropdown: {
 		open: boolean;
 	};
+	notificationDropdown: {
+		open: boolean;
+	};
 	userDropdown: {
 		open: boolean;
 	};
@@ -24,6 +27,9 @@ export const defaultNavigationBarState: NavigationBarState = {
 		open: false,
 	},
 	menuDropdown: {
+		open: false,
+	},
+	notificationDropdown: {
 		open: false,
 	},
 	userDropdown: {

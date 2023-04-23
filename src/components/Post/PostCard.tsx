@@ -45,6 +45,7 @@ const PostCard: React.FC<PostCardProps> = ({
 			: ""
 	);
 	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
+	const [liking, setLiking] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
@@ -88,10 +89,15 @@ const PostCard: React.FC<PostCardProps> = ({
 				throw new Error("You have to be logged in to like a post.");
 			}
 
-			onPostLike(postData);
+			if (!liking) {
+				setLiking(true);
+				await onPostLike(postData);
+			}
 		} catch (error: any) {
 			console.log("Hook: Post Like Error: ", error.message);
 		}
+
+		setLiking(false);
 	};
 
 	const handleImageOrVideoNav = (direction: "previous" | "next") => {

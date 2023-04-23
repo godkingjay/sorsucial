@@ -178,7 +178,7 @@ export default async function handler(
 							replyId: reply.id,
 						});
 
-					if (replyData.replyLevel === 0) {
+					if (reply.replyLevel === 0) {
 						await discussionsCollection
 							.updateOne(
 								{ id: replyData.discussionId },

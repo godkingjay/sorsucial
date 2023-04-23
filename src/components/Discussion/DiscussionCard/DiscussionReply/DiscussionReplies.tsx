@@ -88,6 +88,8 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	};
 
 	const handleReplyVote = async (
+		voting: boolean,
+		setVoting: React.Dispatch<React.SetStateAction<boolean>>,
 		replyData: DiscussionReplyData,
 		voteType: "upVote" | "downVote"
 	) => {
@@ -100,10 +102,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 				return;
 			}
 
-			await onReplyVote(replyData, voteType);
+			if (!voting) {
+				setVoting(true);
+				await onReplyVote(replyData, voteType);
+			}
 		} catch (error: any) {
 			console.log("Hook: Error while voting for reply:\n", error.message);
 		}
+		setVoting(false);
 	};
 
 	const handleReplyDelete = async (

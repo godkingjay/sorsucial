@@ -32,6 +32,8 @@ type ReplyItemProps = {
 		setFetchingReplies: React.Dispatch<React.SetStateAction<boolean>>
 	) => Promise<void>;
 	handleReplyVote: (
+		voting: boolean,
+		setVoting: React.Dispatch<React.SetStateAction<boolean>>,
 		replyData: DiscussionReplyData,
 		voteType: "upVote" | "downVote"
 	) => Promise<void>;
@@ -83,6 +85,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	const remainingReplies = currentDiscussion.discussionReplies.filter(
 		(reply) => reply.reply.replyForId === replyData.reply.id
 	).length;
+	const [voting, setVoting] = useState(false);
 	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleFetchReplies = () => {
@@ -223,7 +226,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											? "Remove Upvote"
 											: "Upvote"
 									}
-									onClick={() => handleReplyVote(replyData, "upVote")}
+									onClick={() =>
+										!voting &&
+										handleReplyVote(voting, setVoting, replyData, "upVote")
+									}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
 								>
@@ -256,7 +262,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											? "Remove Downvote"
 											: "Downvote"
 									}
-									onClick={() => handleReplyVote(replyData, "downVote")}
+									onClick={() =>
+										!voting &&
+										handleReplyVote(voting, setVoting, replyData, "downVote")
+									}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
 								>

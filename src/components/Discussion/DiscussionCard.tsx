@@ -81,13 +81,13 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			if (!voting) {
 				setVoting(true);
 				onDiscussionVote(discussionData, voteType);
-				setVoting(false);
 			} else {
 				throw new Error("You can only vote once.");
 			}
 		} catch (error: any) {
 			console.log("Hook: Discussion Vote Error: ", error.message);
 		}
+		setVoting(false);
 	};
 
 	const handleReadMoreClick = () => {

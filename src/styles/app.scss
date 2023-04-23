@@ -142,7 +142,7 @@
 	}
 
 	.menu-dropdown {
-		@apply bg-white w-full p-4 shadow-around-xl rounded-lg flex-1 overflow-y-auto scroll-y-style pointer-events-auto;
+		@apply bg-white w-full shadow-around-xl rounded-lg flex-1 overflow-y-auto scroll-y-style pointer-events-auto;
 	}
 
 	.user-dropdown-wrapper {

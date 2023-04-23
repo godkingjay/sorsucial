@@ -76,19 +76,19 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 				</button>
 				{activeTab.open === "top" && (
 					<div className="absolute w-max top-[110%] left-0 p-1 border border-gray-50 shadow-around-lg bg-white rounded-lg flex flex-col entrance-animation-float-down">
-						<div className="px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
+						<div className="cursor-pointer px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
 							Today
 						</div>
-						<div className="px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
+						<div className="cursor-pointer px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
 							Week
 						</div>
-						<div className="px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
+						<div className="cursor-pointer px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
 							Month
 						</div>
-						<div className="px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
+						<div className="cursor-pointer px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
 							Year
 						</div>
-						<div className="px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
+						<div className="cursor-pointer px-4 py-1 text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-100 rounded-md">
 							All Time
 						</div>
 					</div>

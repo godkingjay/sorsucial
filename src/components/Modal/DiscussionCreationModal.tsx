@@ -12,6 +12,7 @@ import { MdPublic } from "react-icons/md";
 import { FaEye, FaLock } from "react-icons/fa";
 import DiscussionCreationModalFormHead from "./DiscussionCreationModal/DiscussionCreationModalFormHead";
 import useDiscussion from "@/hooks/useDiscussion";
+import AddTags from "../Form/Tag/AddTags";
 
 type DiscussionCreationModalProps = {
 	discussionCreationModalStateValue: DiscussionCreationModalState;
@@ -62,18 +63,21 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 		privacy: "public",
 		isOpen: true,
 	};
+	const [discussionTags, setDiscussionTags] = useState<string[]>([]);
 
 	const [creatingDiscussion, setCreatingDiscussion] = useState(false);
-	const [createDiscussionForm, setCreateDiscussionForm] = useState<CreateDiscussionType>(
-		defaultCreateDiscussionForm
-	);
+	const [createDiscussionForm, setCreateDiscussionForm] =
+		useState<CreateDiscussionType>(defaultCreateDiscussionForm);
 	const handleCreateDiscussionSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
 		setCreatingDiscussion(true);
 		try {
-			await createDiscussion(createDiscussionForm)
+			await createDiscussion({
+				...createDiscussionForm,
+				discussionTags: discussionTags,
+			})
 				.then(() => {
 					setCreateDiscussionForm(defaultCreateDiscussionForm);
 					setDiscussionCreationModalStateValue((prev) => ({
@@ -166,7 +170,8 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 								onChange={(e) => {
 									handleTextChange(e);
 									e.currentTarget.style.height = "0px";
-									e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+									e.currentTarget.style.height =
+										e.currentTarget.scrollHeight + "px";
 								}}
 								rows={1}
 								value={createDiscussionForm.discussionTitle}
@@ -201,9 +206,15 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 							</div>
 							<DiscussionCreationTabs
 								handleFormTabChange={handleFormTabChange}
-								discussionCreationModalStateValue={discussionCreationModalStateValue}
+								discussionCreationModalStateValue={
+									discussionCreationModalStateValue
+								}
 							/>
 						</div>
+						<AddTags
+							items={discussionTags}
+							setItems={setDiscussionTags}
+						/>
 					</div>
 					<div>
 						<button
@@ -215,15 +226,16 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 							}`}
 							className="page-button h-max py-2 px-4 text-sm bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
 							disabled={
-								!createDiscussionForm.discussionTitle.trim() || creatingDiscussion
+								!createDiscussionForm.discussionTitle.trim() ||
+								creatingDiscussion
 							}
 						>
 							{!creatingDiscussion ? (
 								<>
-									{discussionCreationModalStateValue.discussionType === "discussion" &&
-										"Create Discussion"}
-									{discussionCreationModalStateValue.discussionType === "group" &&
-										"Create Group Discussion"}
+									{discussionCreationModalStateValue.discussionType ===
+										"discussion" && "Create Discussion"}
+									{discussionCreationModalStateValue.discussionType ===
+										"group" && "Create Group Discussion"}
 								</>
 							) : (
 								<FiLoader className="h-5 w-5 text-white animate-spin" />

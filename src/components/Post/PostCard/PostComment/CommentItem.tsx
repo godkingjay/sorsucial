@@ -19,7 +19,11 @@ type CommentItemProps = {
 		commentForId: string,
 		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
 	) => void;
-	handleCommentLike: (commentData: PostCommentData) => Promise<void>;
+	handleCommentLike: (
+		liking: boolean,
+		setLiking: React.Dispatch<React.SetStateAction<boolean>>,
+		commentData: PostCommentData
+	) => Promise<void>;
 	handleCommentDelete: (
 		comment: PostCommentData["comment"],
 		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
@@ -67,6 +71,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const remainingReplies = currentPost.postComments.filter(
 		(comment) => comment.comment.commentForId === commentData.comment.id
 	).length;
+	const [liking, setLiking] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleFetchComments = () => {
@@ -128,7 +133,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								type="button"
 								title="Like"
 								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
-								onClick={() => handleCommentLike(commentData)}
+								onClick={() => handleCommentLike(liking, setLiking, commentData)}
 								comment-liked={
 									commentData.userCommentLike?.commentId ===
 									commentData.comment.id

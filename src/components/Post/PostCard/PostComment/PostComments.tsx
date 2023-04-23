@@ -86,7 +86,11 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		}
 	};
 
-	const handleCommentLike = async (commentData: PostCommentData) => {
+	const handleCommentLike = async (
+		liking: boolean,
+		setLiking: React.Dispatch<React.SetStateAction<boolean>>,
+		commentData: PostCommentData
+	) => {
 		if (!commentData) {
 			return;
 		}
@@ -96,13 +100,18 @@ const PostComments: React.FC<PostCommentsProps> = ({
 				return;
 			}
 
-			onCommentLike(commentData);
+			if (!liking) {
+				setLiking(true);
+				await onCommentLike(commentData);
+			}
 		} catch (error: any) {
 			console.log(
 				"Hook: Error while liking or unliking comment: ",
 				error.message
 			);
 		}
+
+		setLiking(false);
 	};
 
 	const handleCommentDelete = async (

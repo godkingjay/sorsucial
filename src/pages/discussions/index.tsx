@@ -13,6 +13,7 @@ import {
 } from "react-icons/tb";
 import DiscussionCard from "@/components/Discussion/DiscussionCard";
 import DiscussionCardSkeleton from "@/components/Skeleton/Discussion/DiscussionCardSkeleton";
+import PageFilter from "@/components/Controls/PageFilter";
 
 type DiscussionsPageProps = {};
 
@@ -92,6 +93,7 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 									useStateValue={userStateValue}
 									discussionType="discussion"
 								/>
+								<PageFilter />
 								{discussionStateValue.discussions
 									.filter(
 										(dis) => dis.discussion.discussionType === "discussion"

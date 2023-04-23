@@ -56,9 +56,8 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 										<Image
 											src={userStateValue.userPage.user.coverImageURL}
 											alt="User Cover Image"
+											className="w-full bg-center object-cover"
 											fill
-											objectFit="cover"
-											className="w-full bg-center"
 										/>
 									) : (
 										<div>Add Image</div>
@@ -71,9 +70,8 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 												<Image
 													src={userStateValue.userPage.user.imageURL}
 													alt="User Profile Image"
+													className="w-full bg-center object-cover"
 													fill
-													objectFit="cover"
-													className="w-full bg-center"
 												/>
 											) : (
 												<FaUserCircle className="h-full w-full text-gray-200" />

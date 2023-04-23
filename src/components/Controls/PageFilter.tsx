@@ -28,7 +28,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 	};
 
 	return (
-		<div className="z-[10] shadow-page-box-1 bg-white rounded-lg flex flex-row items-center h-12 p-1">
+		<div className="z-[10] shadow-page-box-1 bg-white rounded-lg flex flex-row items-center h-12 p-1 entrance-animation-slide-from-right">
 			<button
 				type="button"
 				title="Recent"
@@ -64,7 +64,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 					<div className="h-6 w-6 aspect-square p-1">
 						<GoGraph className="h-full w-full" />
 					</div>
-					<div>
+					<div className="hidden 2xs:block">
 						<p className="font-semibold text-sm">Top</p>
 					</div>
 					<div
@@ -94,7 +94,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 					</div>
 				)}
 			</div>
-			<div className="relative h-full">
+			<div className="ml-auto relative h-full">
 				<button
 					type="button"
 					title="Filter"
@@ -115,7 +115,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 					<div className="h-6 w-6 aspect-square">
 						<BiFilter className="h-full w-full" />
 					</div>
-					<div>
+					<div className="hidden 2xs:block">
 						<p className="font-semibold text-sm">Filter</p>
 					</div>
 					<div
@@ -126,7 +126,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 					</div>
 				</button>
 				{activeTab.open === "filter" && (
-					<div className="absolute w-max top-[110%] left-0 p-1 border border-gray-50 shadow-around-lg bg-white rounded-lg flex flex-col entrance-animation-float-down data-[active='true']:bg-blue-100">
+					<div className="absolute w-max top-[110%] right-0 p-1 border border-gray-50 shadow-around-lg bg-white rounded-lg flex flex-col entrance-animation-float-down data-[active='true']:bg-blue-100">
 						<div className="p-2">
 							<div className="relative">
 								<label

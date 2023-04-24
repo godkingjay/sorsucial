@@ -837,16 +837,28 @@ const usePost = () => {
 	 */
 
 	/**
+	 * Fetches posts from the backend API based on the given post type and privacy,
+	 * and appends them to the current list of posts in the postStateValue.
 	 *
+	 * @param {SitePost["postType"]} postType - The type of post to fetch.
 	 *
-	 * @param {SitePost["postType"]} postType
-	 * @param {SitePost["privacy"]} privacy
+	 * @param {SitePost["privacy"]} privacy - The privacy level of the post to fetch.
+	 *
+	 * @returns {Promise<number>} - A promise that resolves with the number of posts fetched.
 	 */
 	const fetchPosts = async (
 		postType: SitePost["postType"],
 		privacy: SitePost["privacy"]
 	) => {
+		/**
+		 * Try to fetch posts from the backend API.
+		 *
+		 * If there is an error, then throw an error.
+		 */
 		try {
+			/**
+			 * Find the index of the last post with the given postType in the current list of posts.
+			 */
 			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
 				if (post.post.postType === postType && acc === -1) {
 					return index;
@@ -855,9 +867,42 @@ const usePost = () => {
 				return acc;
 			}, -1);
 
+			/**
+			 * Get the oldest post with the given postType from the current list of posts.
+			 */
 			const oldestPost = postStateValue.posts[lastIndex];
 
-			const posts: PostData[] = await axios
+			/**
+			 * Fetch posts from the backend API using axios.
+			 *
+			 * This API Call will fetch posts from the backend API.
+			 * After fetching posts, assign the posts to the temporary posts variable.
+			 *
+			 * Method: GET
+			 * Endpoint: "/posts/posts"
+			 * Parameters: {
+			 * 	apiKey: string,
+			 * 		- The API Key of the user.
+			 * 	userId: string,
+			 * 		- The user id of the user.
+			 * 	postType: SitePost["postType"],
+			 * 		- The type of post to fetch.
+			 * 	privacy: SitePost["privacy"],
+			 * 		- The privacy level of the post to fetch.
+			 * 	fromDate: Date,
+			 * 		- The date to fetch posts from.
+			 * }
+			 * Response: {
+			 * 	posts: PostData[],
+			 * }
+			 *
+			 * If there is an error, then throw an error.
+			 */
+			const {
+				posts,
+			}: {
+				posts: PostData[];
+			} = await axios
 				.get(apiConfig.apiEndpoint + "/posts/posts", {
 					params: {
 						apiKey: userStateValue.api?.keys[0].key,
@@ -867,11 +912,14 @@ const usePost = () => {
 						fromDate: oldestPost?.post.createdAt,
 					},
 				})
-				.then((res) => res.data.posts)
+				.then((res) => res.data)
 				.catch((err) => {
-					console.log("API (GET): Getting posts  error: ", err.message);
+					throw new Error(`API (GET): Getting posts error:\n ${err.message}`);
 				});
 
+			/**
+			 * If there are fetcher posts, append them to the current list of posts in postStateValue.
+			 */
 			if (posts.length) {
 				setPostStateValue(
 					(prev) =>
@@ -884,6 +932,11 @@ const usePost = () => {
 				console.log("Mongo: No posts found!");
 			}
 
+			/**
+			 * Get the number of posts fetched.
+			 *
+			 * @returns {number} - The number of posts fetched.
+			 */
 			return posts.length;
 		} catch (error: any) {
 			console.log("Mongo: Fetching Posts Error", error.message);
@@ -897,6 +950,12 @@ const usePost = () => {
 	 * ^ ██╔══██╗    ██╗    ██║     ██║██╔═██╗ ██╔══╝
 	 * ^ ██║  ██║    ╚═╝    ███████╗██║██║  ██╗███████╗
 	 * ^ ╚═╝  ╚═╝           ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {SitePost} post
+	 * @return {*}
 	 */
 	const fetchUserLike = async (post: SitePost) => {
 		try {

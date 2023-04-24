@@ -15,7 +15,7 @@
  * @property {string} [description] - The description of the group.
  * @property {string[]} [groupTags] - The tags of the group.
  * @property {string} creatorId - The unique identifier of the group creator.
- * @property {"public" | "restricted" | "private"} privacyType - The privacy type of the group.
+ * @property {"public" | "restricted" | "private"} privacy - The privacy type of the group.
  * @property {number} numberOfMembers - The number of members in the group.
  * @property {string} [imageURL] - The URL of the group's image.
  * @property {string} [coverImageURL] - The URL of the group's cover image.
@@ -34,7 +34,7 @@ export interface SiteGroup {
 	description?: string;
 	groupTags?: string[];
 	creatorId: string;
-	privacyType: "public" | "restricted" | "private";
+	privacy: "public" | "restricted" | "private";
 	numberOfMembers: number;
 	imageURL?: string;
 	coverImageURL?: string;

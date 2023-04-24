@@ -4,22 +4,29 @@ import { useRecoilState } from "recoil";
 import {
 	discussionCreationModalState,
 	errorModalState,
+	groupCreationModalState,
 	postCreationModalState,
 } from "@/atoms/modalAtom";
 import PostCreationModal from "./PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
 import DiscussionCreationModal from "./DiscussionCreationModal";
+import GroupCreationModal from "./GroupCreationModal";
 
 type ModalsProps = {
 	userStateValue: UserState;
 };
 
 const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
-	const [errorModalStateValue, setErrorModalStateValue] = useRecoilState(errorModalState);
+	const [errorModalStateValue, setErrorModalStateValue] =
+		useRecoilState(errorModalState);
 	const [postCreationModalStateValue, setPostCreationModalStateValue] =
 		useRecoilState(postCreationModalState);
-	const [discussionCreationModalStateValue, setDiscussionCreationModalStateValue] =
-		useRecoilState(discussionCreationModalState);
+	const [
+		discussionCreationModalStateValue,
+		setDiscussionCreationModalStateValue,
+	] = useRecoilState(discussionCreationModalState);
+	const [groupCreationModalStateValue, setGroupCreationModalStateValue] =
+		useRecoilState(groupCreationModalState);
 
 	return (
 		<>
@@ -39,8 +46,17 @@ const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
 			{discussionCreationModalStateValue.open && (
 				<DiscussionCreationModal
 					discussionCreationModalStateValue={discussionCreationModalStateValue}
-					setDiscussionCreationModalStateValue={setDiscussionCreationModalStateValue}
+					setDiscussionCreationModalStateValue={
+						setDiscussionCreationModalStateValue
+					}
 					userStateValue={userStateValue}
+				/>
+			)}
+			{groupCreationModalStateValue.open && (
+				<GroupCreationModal
+					userStateValue={userStateValue}
+					groupCreationModalStateValue={groupCreationModalStateValue}
+					setGroupCreationModalStateValue={setGroupCreationModalStateValue}
 				/>
 			)}
 		</>

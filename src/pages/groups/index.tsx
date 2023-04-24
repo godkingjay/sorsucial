@@ -1,8 +1,11 @@
+import GroupCreationListener from "@/components/Group/GroupCreationListener";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
+import { AiFillPlusSquare } from "react-icons/ai";
+import { BiPlus } from "react-icons/bi";
 
 type GroupsPageProps = {};
 
@@ -29,7 +32,17 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 			</Head>
 			<main className="flex flex-col flex-1 p-4">
 				<LimitedBodyLayout>
-					<p>GroupsPage</p>
+					<section className="flex flex-col gap-y-4">
+						{!userMounted ? (
+							<>
+								<p>Loading</p>
+							</>
+						) : (
+							<>
+								<GroupCreationListener />
+							</>
+						)}
+					</section>
 				</LimitedBodyLayout>
 			</main>
 		</>

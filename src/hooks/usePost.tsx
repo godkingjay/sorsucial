@@ -1054,16 +1054,6 @@ const usePost = () => {
 				},
 			});
 
-			if (postStateValue.currentPost?.post.id === postData.post.id) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							currentPost: null,
-						} as PostState)
-				);
-			}
-
 			setPostStateValue(
 				(prev) =>
 					({
@@ -1071,6 +1061,10 @@ const usePost = () => {
 						posts: prev.posts.filter(
 							(post) => post.post.id !== postData.post.id
 						),
+						currentPost:
+							prev.currentPost?.post.id === postData.post.id
+								? null
+								: prev.currentPost,
 					} as PostState)
 			);
 		} catch (error: any) {

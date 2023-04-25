@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
+import tagDb from "@/lib/db/tagDb";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -18,6 +19,8 @@ export default async function handler(
 			discussionRepliesCollection,
 			discussionReplyVotesCollection,
 		} = await discussionDb();
+		const { tagsCollection } = await tagDb();
+
 		const {
 			apiKey,
 			discussionData,
@@ -97,6 +100,26 @@ export default async function handler(
 						});
 					});
 
+				discussionData.discussionTags.map(async (tag) => {
+					await tagsCollection.updateOne(
+						{
+							name: tag,
+						},
+						{
+							$inc: {
+								total: 1,
+								discussions: 1,
+							},
+							$setOnInsert: {
+								createdAt: new Date(),
+							},
+						},
+						{
+							upsert: true,
+						}
+					);
+				});
+
 				res.status(200).json({
 					newDiscussionState,
 					newDiscussion: discussionData,
@@ -163,6 +186,23 @@ export default async function handler(
 					await discussionVotesCollection.deleteMany({
 						discussionId: discussionData.id,
 					});
+
+				discussionData.discussionTags.map(async (tag) => {
+					await tagsCollection.updateOne(
+						{
+							name: tag,
+						},
+						{
+							$inc: {
+								total: -1,
+								discussions: -1,
+							},
+							$set: {
+								updatedAt: new Date(),
+							},
+						}
+					);
+				});
 
 				res.status(200).json({
 					isDeleted: deleteState ? deleteState.acknowledged : false,

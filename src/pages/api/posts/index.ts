@@ -1,4 +1,5 @@
 import postDb from "@/lib/db/postDb";
+import tagDb from "@/lib/db/tagDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { PostComment, SitePost } from "@/lib/interfaces/post";
@@ -39,6 +40,7 @@ export default async function handler(
 			postCommentsCollection,
 			postCommentLikesCollection,
 		} = await postDb();
+		const { tagsCollection } = await tagDb();
 
 		const {
 			apiKey,
@@ -129,6 +131,26 @@ export default async function handler(
 				const newPostState = await postsCollection.insertOne({
 					...postData,
 					_id: objectId,
+				});
+
+				postData.postTags?.map(async (tag) => {
+					await tagsCollection.updateOne(
+						{
+							name: tag,
+						},
+						{
+							$inc: {
+								total: 1,
+								posts: 1,
+							},
+							$setOnInsert: {
+								createdAt: new Date(),
+							},
+						},
+						{
+							upsert: true,
+						}
+					);
 				});
 
 				res.status(200).json({
@@ -271,6 +293,23 @@ export default async function handler(
 				for (const postComment of postComments) {
 					await deleteComment(postComment as unknown as PostComment);
 				}
+
+				postData.postTags?.map(async (tag) => {
+					await tagsCollection.updateOne(
+						{
+							name: tag,
+						},
+						{
+							$inc: {
+								total: -1,
+								posts: -1,
+							},
+							$set: {
+								updatedAt: new Date(),
+							},
+						}
+					);
+				});
 
 				res.status(200).json({ deleteState, deletePostLikesState });
 				break;

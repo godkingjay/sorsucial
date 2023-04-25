@@ -61,13 +61,29 @@ export type DiscussionCreationModalState = {
 	tab: "discussion" | "settings";
 };
 
-export const defaultDiscussionCreationModalState: DiscussionCreationModalState = {
-	open: false,
-	discussionType: "discussion",
-	tab: "discussion",
-};
+export const defaultDiscussionCreationModalState: DiscussionCreationModalState =
+	{
+		open: false,
+		discussionType: "discussion",
+		tab: "discussion",
+	};
 
 export const discussionCreationModalState = atom<DiscussionCreationModalState>({
 	key: "discussionCreationModalState",
 	default: defaultDiscussionCreationModalState,
+});
+
+export interface GroupCreationModalState {
+	open: boolean;
+	tab: "group" | "settings" | "review";
+}
+
+export const defaultGroupCreationModalState: GroupCreationModalState = {
+	open: false,
+	tab: "group",
+};
+
+export const groupCreationModalState = atom<GroupCreationModalState>({
+	key: "groupCreationModalState",
+	default: defaultGroupCreationModalState,
 });

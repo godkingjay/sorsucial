@@ -18,7 +18,6 @@ import {
 	PostLink,
 	SitePost,
 } from "@/lib/interfaces/post";
-import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
@@ -631,7 +630,35 @@ const usePost = () => {
 	 * ! ╚██████╗██████╔╝    ╚═╝    ███████╗██║██║  ██╗███████╗
 	 * !  ╚═════╝╚═════╝            ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
 	 */
+	/**
+	 * The onPostLike function is used to like or unlike posts.
+	 *
+	 * This function will do two things depending on the sceneraio:
+	 *
+	 * @scenario01 - New Like
+	 *
+	 * If the user likes the post, then this function will create a new like.
+	 * A new post-like document will be created in the database and the following will be updated:
+	 * - The post document will be updated with the new like.
+	 *
+	 * Consequently, the recoil state postStateValue will also be updated with the new like.
+	 *
+	 * @scenario02 - Unlike
+	 *
+	 * If the user has an existing like, then this function will delete the like.
+	 * The post-like document will be deleted from the database and the following will be updated:
+	 * - The post document will be updated with the deleted like.
+	 *
+	 * Consequently, the recoil state postStateValue will also be updated with the deleted like.
+	 *
+	 * @param {PostData} postData - This is the data of the post being liked.
+	 */
 	const onPostLike = async (postData: PostData) => {
+		/**
+		 * Try liking or unliking the post.
+		 *
+		 * If there is an error, then log the error.
+		 */
 		try {
 			if (authUser) {
 				/**
@@ -639,6 +666,22 @@ const usePost = () => {
 				 * Else, like the post.
 				 */
 				if (postData.userLike) {
+					/**
+					 * API Call to delete the post like.
+					 *
+					 * This API Call will delete the post like document from the database.
+					 * This API Call will also update the post document in the database with the new like.
+					 *
+					 * Method: DELETE
+					 * Endpoint: "/posts/likes/"
+					 * Parameters: {
+					 * 	apiKey: string,
+					 *  postId: string,
+					 * 	userId: string,
+					 * }
+					 *
+					 * If there is an error, then throw an error.
+					 */
 					await axios
 						.delete(apiConfig.apiEndpoint + "/posts/likes/", {
 							data: {
@@ -648,28 +691,16 @@ const usePost = () => {
 							},
 						})
 						.catch((error) => {
-							console.log("API: Post Like Error: ", error.message);
+							throw new Error(`API: Post Like Error:\n${error.message}`);
 						});
 
-					if (postStateValue.currentPost?.post) {
-						if (postData.post.id === postStateValue.currentPost.post.id) {
-							setPostStateValue(
-								(prev) =>
-									({
-										...prev,
-										currentPost: {
-											...prev.currentPost,
-											post: {
-												...prev.currentPost?.post,
-												numberOfLikes: prev.currentPost?.post.numberOfLikes! - 1,
-											},
-											userLike: null,
-										},
-									} as PostState)
-							);
-						}
-					}
-
+					/**
+					 * Update the post state value.
+					 *
+					 * Find the respective post and update the post and userLike properties.
+					 *
+					 * If the post being unliked is the current post, then update the current post.
+					 */
 					setPostStateValue(
 						(prev) =>
 							({
@@ -688,43 +719,73 @@ const usePost = () => {
 
 									return post;
 								}),
+								currentPost:
+									prev.currentPost?.post.id === postData.post.id
+										? {
+												...prev.currentPost,
+												post: {
+													...prev.currentPost?.post,
+													numberOfLikes:
+														prev.currentPost?.post.numberOfLikes! - 1,
+												},
+												userLike: null,
+										  }
+										: prev.currentPost,
 							} as PostState)
 					);
 				} else {
+					/**
+					 * If there is no current user like, then like the post.
+					 */
+					/**
+					 * This is the user like data that will be used to create a new post like document.
+					 *
+					 * This data will be sent to the API to create a new post like document.
+					 */
 					const userLike: PostLike = {
 						userId: authUser.uid,
 						postId: postData.post.id,
 						createdAt: new Date(),
 					};
 
+					/**
+					 * If the post is in a group, then add the group id to the user like data.
+					 */
 					if (postData.post.groupId) {
 						userLike.groupId = postData.post.groupId;
 					}
 
-					await axios.post(apiConfig.apiEndpoint + "/posts/likes/", {
-						apiKey: userStateValue.api?.keys[0].key,
-						userLikeData: userLike,
-					});
+					/**
+					 * API Call to create a new post like document.
+					 *
+					 * This API Call will create a new post like document in the database.
+					 * As well as update the post document with the new like.
+					 *
+					 * Method: POST
+					 * Endpoint: "/posts/likes/"
+					 * Parameters: {
+					 * 	apiKey: string,
+					 * 	userLikeData: PostLike,
+					 * }
+					 *
+					 * If there is an error, then throw an error.
+					 */
+					await axios
+						.post(apiConfig.apiEndpoint + "/posts/likes/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							userLikeData: userLike,
+						})
+						.catch((error) => {
+							throw new Error(`API: Post Like Error:\n${error.message}`);
+						});
 
-					if (postStateValue.currentPost?.post) {
-						if (postData.post.id === postStateValue.currentPost.post.id) {
-							setPostStateValue(
-								(prev) =>
-									({
-										...prev,
-										currentPost: {
-											...prev.currentPost,
-											post: {
-												...prev.currentPost?.post,
-												numberOfLikes: prev.currentPost?.post.numberOfLikes! + 1,
-											},
-											userLike,
-										},
-									} as PostState)
-							);
-						}
-					}
-
+					/**
+					 * Update the post state value.
+					 *
+					 * Finds the respective post and updates the post and userLike properties.
+					 *
+					 * If the post being liked is the current post, then update the current post.
+					 */
 					setPostStateValue(
 						(prev) =>
 							({
@@ -743,6 +804,18 @@ const usePost = () => {
 
 									return post;
 								}),
+								currentPost:
+									prev.currentPost?.post.id === postData.post.id
+										? {
+												...prev.currentPost,
+												post: {
+													...prev.currentPost?.post,
+													numberOfLikes:
+														prev.currentPost?.post.numberOfLikes! + 1,
+												},
+												userLike: null,
+										  }
+										: prev.currentPost,
 							} as PostState)
 					);
 				}
@@ -764,16 +837,28 @@ const usePost = () => {
 	 */
 
 	/**
+	 * Fetches posts from the backend API based on the given post type and privacy,
+	 * and appends them to the current list of posts in the postStateValue.
 	 *
+	 * @param {SitePost["postType"]} postType - The type of post to fetch.
 	 *
-	 * @param {SitePost["postType"]} postType
-	 * @param {SitePost["privacy"]} privacy
+	 * @param {SitePost["privacy"]} privacy - The privacy level of the post to fetch.
+	 *
+	 * @returns {Promise<number>} - A promise that resolves with the number of posts fetched.
 	 */
 	const fetchPosts = async (
 		postType: SitePost["postType"],
 		privacy: SitePost["privacy"]
 	) => {
+		/**
+		 * Try to fetch posts from the backend API.
+		 *
+		 * If there is an error, then throw an error.
+		 */
 		try {
+			/**
+			 * Find the index of the last post with the given postType in the current list of posts.
+			 */
 			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
 				if (post.post.postType === postType && acc === -1) {
 					return index;
@@ -782,9 +867,42 @@ const usePost = () => {
 				return acc;
 			}, -1);
 
+			/**
+			 * Get the oldest post with the given postType from the current list of posts.
+			 */
 			const oldestPost = postStateValue.posts[lastIndex];
 
-			const posts: PostData[] = await axios
+			/**
+			 * Fetch posts from the backend API using axios.
+			 *
+			 * This API Call will fetch posts from the backend API.
+			 * After fetching posts, assign the posts to the temporary posts variable.
+			 *
+			 * Method: GET
+			 * Endpoint: "/posts/posts"
+			 * Parameters: {
+			 * 	apiKey: string,
+			 * 		- The API Key of the user.
+			 * 	userId: string,
+			 * 		- The user id of the user.
+			 * 	postType: SitePost["postType"],
+			 * 		- The type of post to fetch.
+			 * 	privacy: SitePost["privacy"],
+			 * 		- The privacy level of the post to fetch.
+			 * 	fromDate: Date,
+			 * 		- The date to fetch posts from.
+			 * }
+			 * Response: {
+			 * 	posts: PostData[],
+			 * }
+			 *
+			 * If there is an error, then throw an error.
+			 */
+			const {
+				posts,
+			}: {
+				posts: PostData[];
+			} = await axios
 				.get(apiConfig.apiEndpoint + "/posts/posts", {
 					params: {
 						apiKey: userStateValue.api?.keys[0].key,
@@ -794,11 +912,14 @@ const usePost = () => {
 						fromDate: oldestPost?.post.createdAt,
 					},
 				})
-				.then((res) => res.data.posts)
+				.then((res) => res.data)
 				.catch((err) => {
-					console.log("API (GET): Getting posts  error: ", err.message);
+					throw new Error(`API (GET): Getting posts error:\n ${err.message}`);
 				});
 
+			/**
+			 * If there are fetcher posts, append them to the current list of posts in postStateValue.
+			 */
 			if (posts.length) {
 				setPostStateValue(
 					(prev) =>
@@ -811,6 +932,11 @@ const usePost = () => {
 				console.log("Mongo: No posts found!");
 			}
 
+			/**
+			 * Get the number of posts fetched.
+			 *
+			 * @returns {number} - The number of posts fetched.
+			 */
 			return posts.length;
 		} catch (error: any) {
 			console.log("Mongo: Fetching Posts Error", error.message);
@@ -824,6 +950,12 @@ const usePost = () => {
 	 * ^ ██╔══██╗    ██╗    ██║     ██║██╔═██╗ ██╔══╝
 	 * ^ ██║  ██║    ╚═╝    ███████╗██║██║  ██╗███████╗
 	 * ^ ╚═╝  ╚═╝           ╚══════╝╚═╝╚═╝  ╚═╝╚══════╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {SitePost} post
+	 * @return {*}
 	 */
 	const fetchUserLike = async (post: SitePost) => {
 		try {
@@ -922,16 +1054,6 @@ const usePost = () => {
 				},
 			});
 
-			if (postStateValue.currentPost?.post.id === postData.post.id) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							currentPost: null,
-						} as PostState)
-				);
-			}
-
 			setPostStateValue(
 				(prev) =>
 					({
@@ -939,6 +1061,10 @@ const usePost = () => {
 						posts: prev.posts.filter(
 							(post) => post.post.id !== postData.post.id
 						),
+						currentPost:
+							prev.currentPost?.post.id === postData.post.id
+								? null
+								: prev.currentPost,
 					} as PostState)
 			);
 		} catch (error: any) {

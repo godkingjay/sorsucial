@@ -1,4 +1,5 @@
 import { PostState } from "@/atoms/postAtom";
+import PostDiscussionNotFound from "@/components/Error/PostDiscussionNotFound";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCard from "@/components/Post/PostCard";
 import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
@@ -154,7 +155,7 @@ const AnnouncementView: React.FC<Props> = ({
 							<>
 								{!postStateValue.currentPost &&
 								!postStateValue.posts.find((post) => post.post.id === postId) ? (
-									<div>Not Found</div>
+									<PostDiscussionNotFound type="announcement" />
 								) : (
 									<>
 										<PostCard

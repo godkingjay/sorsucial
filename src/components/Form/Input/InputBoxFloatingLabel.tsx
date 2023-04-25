@@ -39,11 +39,6 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 		}
 	};
 
-	console.log({
-		value,
-		infoHidden,
-	});
-
 	return (
 		<div
 			className="input-box-with-label"

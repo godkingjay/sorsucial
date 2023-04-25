@@ -8,6 +8,7 @@ import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import { FaEye, FaLock } from "react-icons/fa";
 import AddTags from "../Form/Tag/AddTags";
+import InputBoxFloatingLabel from "../Form/Input/InputBoxFloatingLabel";
 import { SiteGroup } from "@/lib/interfaces/group";
 
 type GroupCreationModalProps = {
@@ -15,7 +16,6 @@ type GroupCreationModalProps = {
 	setGroupCreationModalStateValue: SetterOrUpdater<GroupCreationModalState>;
 	userStateValue: UserState;
 };
-
 export type CreateGroupType = {
 	name: string;
 	description?: string;
@@ -61,12 +61,20 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 		privacy: "public",
 		image: null,
 	};
+
 	const [groupTags, setGroupTags] = useState<string[]>([]);
 
 	const [creatingGroup, setCreatingGroup] = useState(false);
 	const [createGroupForm, setCreateGroupForm] = useState<CreateGroupType>(
 		defaultCreateGroupForm
 	);
+
+	const setGroupName = (name: string) => {
+		setCreateGroupForm((prev) => ({
+			...prev,
+			name,
+		}));
+	};
 
 	const handleCreateGroupSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
@@ -131,6 +139,25 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 					className="post-creation-modal-form"
 					onSubmit={handleCreateGroupSubmit}
 				>
+					<div className="flex flex-col pb-4">
+						<InputBoxFloatingLabel
+							name="name"
+							label="Group Name"
+							placeholder="Group Name"
+							required={true}
+							info={`
+								Group name must be between 3 and 128 characters long.
+							`}
+							infoHidden={
+								createGroupForm.name.trim().length >= 3 &&
+								createGroupForm.name.trim().length < 128
+							}
+							value={createGroupForm.name}
+							minLength={3}
+							maxLength={128}
+							setValue={handleTextChange}
+						/>
+					</div>
 					<div>
 						<button
 							type="submit"

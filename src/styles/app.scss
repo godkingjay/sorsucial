@@ -15,7 +15,7 @@
 		@apply w-full h-14 flex flex-row bg-gray-100 px-2 pb-2 rounded-md border border-transparent items-center gap-x-2 relative cursor-text;
 
 		.label {
-			@apply absolute transition-all px-1 pointer-events-none font-bold uppercase duration-300 text-gray-500 top-[50%] translate-y-[-50%] text-xs;
+			@apply absolute transition-all left-1 px-1 pointer-events-none font-bold uppercase duration-300 text-gray-500 top-[50%] translate-y-[-50%] text-xs;
 		}
 
 		.input-box {

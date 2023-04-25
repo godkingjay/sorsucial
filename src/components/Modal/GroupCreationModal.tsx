@@ -150,7 +150,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							`}
 							infoHidden={
 								createGroupForm.name.trim().length >= 3 &&
-								createGroupForm.name.trim().length < 128
+								createGroupForm.name.trim().length <= 128
 							}
 							value={createGroupForm.name}
 							minLength={3}

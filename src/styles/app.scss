@@ -12,7 +12,7 @@
 	}
 
 	.input-box-with-label {
-		@apply w-full h-14 flex flex-row bg-gray-100 px-2 pb-2 rounded-md border border-transparent items-center gap-x-2 relative cursor-text;
+		@apply w-full h-14 flex flex-row bg-gray-100 px-2 py-2 rounded-md border border-transparent items-center gap-x-2 relative cursor-text;
 
 		.label {
 			@apply absolute transition-all left-1 px-1 pointer-events-none font-bold uppercase duration-300 text-gray-500 top-[50%] translate-y-[-50%] text-xs;
@@ -20,6 +20,19 @@
 
 		.input-box {
 			@apply flex-1 outline-none duration-300 px-1 origin-bottom mt-auto;
+		}
+
+		.show-button {
+			@apply aspect-square h-5 w-5 text-gray-500 text-opacity-50;
+
+			.icon {
+				@apply h-full w-full;
+			}
+
+			&:hover,
+			&:focus {
+				@apply text-logo-300;
+			}
 		}
 
 		.input-info {

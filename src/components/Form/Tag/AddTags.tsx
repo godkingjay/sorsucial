@@ -4,9 +4,10 @@ import { IoAddCircleOutline, IoRemoveCircleOutline } from "react-icons/io5";
 interface AddTagsProps {
 	items: string[];
 	setItems: React.Dispatch<React.SetStateAction<string[]>>;
+	itemName: string;
 }
 
-const AddTags: React.FC<AddTagsProps> = ({ items, setItems }) => {
+const AddTags: React.FC<AddTagsProps> = ({ items, setItems, itemName }) => {
 	const [inputItem, setInputItem] = useState<string>("");
 
 	const handleItemInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +47,7 @@ const AddTags: React.FC<AddTagsProps> = ({ items, setItems }) => {
 					<span className="text-sm px-1">{item}</span>
 					<button
 						type="button"
-						title="Remove"
+						title={`Remove ${itemName}`}
 						className="text-gray-500 hover:text-red-500 focus:text-red-500"
 						onClick={() => handleRemoveItem(item)}
 					>
@@ -58,8 +59,9 @@ const AddTags: React.FC<AddTagsProps> = ({ items, setItems }) => {
 			))}
 			<div className="relative">
 				<input
+					name={`add-${itemName}`}
 					type="text"
-					placeholder="Add a item"
+					placeholder={`Add ${itemName}`}
 					value={inputItem}
 					onChange={handleItemInputChange}
 					className="border border-gray-400 rounded-full px-4 pr-16 py-2 w-40 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

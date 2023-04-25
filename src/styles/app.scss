@@ -505,7 +505,8 @@
 		}
 	}
 
-	.post-creation-modal-form {
+	.post-creation-modal-form,
+	.group-creation-modal-form {
 		@apply p-4 flex flex-col;
 	}
 

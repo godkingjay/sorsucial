@@ -13,7 +13,7 @@ type InputBoxFloatingLabelProps = {
 	minLength?: number;
 	maxLength?: number;
 	type?: HTMLInputElement["type"];
-	setValue: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	style?: React.CSSProperties;
 };
 
@@ -29,14 +29,14 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 	minLength,
 	maxLength,
 	type,
-	setValue,
+	onChange,
 	style,
 }) => {
 	const inputBoxRef = useRef<HTMLInputElement>(null);
 	const [show, setShow] = useState(false);
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValue(event);
+		onChange(event);
 	};
 
 	const handleContainerClick = (event: React.MouseEvent<HTMLDivElement>) => {

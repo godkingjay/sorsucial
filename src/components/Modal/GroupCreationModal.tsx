@@ -136,10 +136,10 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 				</div>
 				<div className="h-[1px] bg-black bg-opacity-10"></div>
 				<form
-					className="post-creation-modal-form"
+					className="group-creation-modal-form"
 					onSubmit={handleCreateGroupSubmit}
 				>
-					<div className="flex flex-col pb-4">
+					<div className="flex flex-col pb-4 gap-y-2">
 						<InputBoxFloatingLabel
 							name="name"
 							label="Group Name"
@@ -155,8 +155,10 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							value={createGroupForm.name}
 							minLength={3}
 							maxLength={128}
-							setValue={handleTextChange}
+							onChange={handleTextChange}
 						/>
+
+						<div className="h-[1px] w-full bg-gray-500 bg-opacity-10"></div>
 					</div>
 					<div>
 						<button

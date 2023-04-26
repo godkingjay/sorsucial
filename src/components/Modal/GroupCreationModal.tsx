@@ -66,7 +66,6 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 	const [createGroupForm, setCreateGroupForm] = useState<CreateGroupType>(
 		defaultCreateGroupForm
 	);
-	const uploadGroupImageRef = useRef<HTMLInputElement>(null);
 
 	const handleCreateGroupSubmit = async (
 		event: React.FormEvent<HTMLFormElement>

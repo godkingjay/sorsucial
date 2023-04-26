@@ -12,7 +12,7 @@
 	}
 
 	.input-box-with-label {
-		@apply w-full h-14 flex flex-row bg-gray-100 px-2 pb-2 rounded-md border border-transparent items-center gap-x-2 relative cursor-text;
+		@apply w-full h-14 flex flex-row bg-gray-100 px-2 py-2 rounded-md border border-transparent items-center gap-x-2 relative cursor-text;
 
 		.label {
 			@apply absolute transition-all left-1 px-1 pointer-events-none font-bold uppercase duration-300 text-gray-500 top-[50%] translate-y-[-50%] text-xs;
@@ -22,8 +22,21 @@
 			@apply flex-1 outline-none duration-300 px-1 origin-bottom mt-auto;
 		}
 
+		.show-button {
+			@apply aspect-square h-5 w-5 text-gray-500 text-opacity-50;
+
+			.icon {
+				@apply h-full w-full;
+			}
+
+			&:hover,
+			&:focus {
+				@apply text-logo-300;
+			}
+		}
+
 		.input-info {
-			@apply opacity-0 duration-200 pointer-events-none absolute p-4 top-[105%] rounded-lg bg-slate-700 left-0 w-full -translate-y-1;
+			@apply z-[200] opacity-0 duration-200 pointer-events-none absolute p-4 top-[105%] rounded-lg bg-slate-700 left-0 w-full -translate-y-1;
 
 			.text {
 				@apply text-xs text-white;
@@ -40,6 +53,8 @@
 		}
 
 		&:focus-within {
+			@apply bg-white;
+
 			.input-info {
 				@apply opacity-100 translate-y-0;
 			}
@@ -74,6 +89,57 @@
 
 			.input-box {
 				@apply text-red-500;
+			}
+		}
+	}
+
+	.input-text-area {
+		@apply flex flex-col;
+
+		.label-container {
+			@apply flex flex-row items-center gap-x-2 my-2;
+
+			.label {
+				@apply text-gray-700 font-semibold text-sm relative;
+			}
+		}
+
+		.text-area-container {
+			@apply relative h-full flex-1 flex flex-col border gap-x-2 rounded-lg border-gray-200;
+
+			.text-area {
+				@apply min-w-0 outline-none text-sm bg-transparent break-words flex-grow px-2 py-2 pb-4 resize-none;
+			}
+
+			.limit-container {
+				@apply absolute bottom-0 right-1;
+
+				.text {
+					@apply text-2xs font-semibold text-gray-500;
+
+					&[data-limit="true"] {
+						@apply text-red-500;
+					}
+				}
+			}
+
+			&:hover {
+				@apply border-gray-500 bg-gray-100;
+			}
+
+			&:focus-within {
+				@apply border-blue-500 bg-white;
+			}
+		}
+
+		&[data-required="true"] {
+			.label-container {
+				.label {
+					&:after {
+						content: "*";
+						@apply absolute h-full w-full text-red-500 top-[50%] translate-y-[-50%] left-[105%] duration-300;
+					}
+				}
 			}
 		}
 	}
@@ -492,7 +558,8 @@
 		}
 	}
 
-	.post-creation-modal-form {
+	.post-creation-modal-form,
+	.group-creation-modal-form {
 		@apply p-4 flex flex-col;
 	}
 
@@ -558,7 +625,7 @@
 	}
 
 	.post-creation-form-post-tab {
-		@apply relative h-full flex-1 flex flex-col border gap-x-2 border-transparent rounded-lg border-gray-200;
+		@apply relative h-full flex-1 flex flex-col border gap-x-2 rounded-lg border-gray-200;
 
 		.post-creation-form-body-input-field {
 			@apply min-w-0 outline-none text-sm bg-transparent break-words flex-grow px-2 py-2 resize-none;

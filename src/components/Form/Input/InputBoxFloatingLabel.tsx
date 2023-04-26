@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 type InputBoxFloatingLabelProps = {
 	name: string;
@@ -11,7 +12,9 @@ type InputBoxFloatingLabelProps = {
 	value: string;
 	minLength?: number;
 	maxLength?: number;
-	setValue: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	type?: HTMLInputElement["type"];
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	style?: React.CSSProperties;
 };
 
 const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
@@ -25,12 +28,15 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 	value,
 	minLength,
 	maxLength,
-	setValue,
+	type,
+	onChange,
+	style,
 }) => {
 	const inputBoxRef = useRef<HTMLInputElement>(null);
+	const [show, setShow] = useState(false);
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValue(event);
+		onChange(event);
 	};
 
 	const handleContainerClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -38,11 +44,6 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 			inputBoxRef.current.focus();
 		}
 	};
-
-	console.log({
-		value,
-		infoHidden,
-	});
 
 	return (
 		<div
@@ -58,6 +59,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 					: false || false
 			}
 			onClick={handleContainerClick}
+			style={style}
 		>
 			<label
 				className="label"
@@ -70,7 +72,13 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 				required={required || false}
 				title={placeholder}
 				className="input-box"
-				type="text"
+				type={
+					type === "password"
+						? show
+							? "text"
+							: "password"
+						: type || type || "text"
+				}
 				value={value}
 				onChange={handleInputChange}
 				ref={inputBoxRef}
@@ -79,6 +87,20 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 				max={maxLength || 256}
 				maxLength={maxLength || 256}
 			/>
+			{type === "password" && (
+				<button
+					type="button"
+					title={show ? `Hide ${label}` : `Show ${label}`}
+					className="show-button"
+					onClick={() => setShow((prev) => !prev)}
+				>
+					{show ? (
+						<AiFillEye className="icon" />
+					) : (
+						<AiFillEyeInvisible className="icon" />
+					)}
+				</button>
+			)}
 			{info && !infoHidden && (
 				<div
 					className="input-info"

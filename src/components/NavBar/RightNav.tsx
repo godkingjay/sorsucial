@@ -6,6 +6,7 @@ import UserDropdown from "./RightNav/UserDropdown";
 import MenuDropdown from "./RightNav/MenuDropdown";
 import {
 	discussionCreationModalState,
+	groupCreationModalState,
 	postCreationModalState,
 } from "@/atoms/modalAtom";
 import { useRouter } from "next/router";
@@ -39,8 +40,13 @@ const RightNav: React.FC<RightNavProps> = ({
 	const setPostCreationModalStateValue = useSetRecoilState(
 		postCreationModalState
 	);
+
 	const setDiscussionCreationModalStateValue = useSetRecoilState(
 		discussionCreationModalState
+	);
+
+	const setGroupCreationModalStateValue = useSetRecoilState(
+		groupCreationModalState
 	);
 
 	const handleMenuDropdown = () => {
@@ -122,40 +128,49 @@ const RightNav: React.FC<RightNavProps> = ({
 	) => {
 		switch (type) {
 			case "announcement": {
-				router.push("/");
-				setPostCreationModalStateValue((prev) => ({
-					...prev,
-					open: true,
-					postType: "announcement",
-					tab: "post",
-				}));
+				router.push("/").then(() => {
+					setPostCreationModalStateValue((prev) => ({
+						...prev,
+						open: true,
+						postType: "announcement",
+						tab: "post",
+					}));
+				});
 				break;
 			}
 
 			case "post": {
-				router.push("/feeds");
-				setPostCreationModalStateValue((prev) => ({
-					...prev,
-					open: true,
-					postType: "feed",
-					tab: "post",
-				}));
+				router.push("/feeds").then(() => {
+					setPostCreationModalStateValue((prev) => ({
+						...prev,
+						open: true,
+						postType: "feed",
+						tab: "post",
+					}));
+				});
 				break;
 			}
 
 			case "discussion": {
-				router.push("/discussions");
-				setDiscussionCreationModalStateValue((prev) => ({
-					...prev,
-					open: true,
-					discussionType: "discussion",
-					tab: "discussion",
-				}));
+				router.push("/discussions").then(() => {
+					setDiscussionCreationModalStateValue((prev) => ({
+						...prev,
+						open: true,
+						discussionType: "discussion",
+						tab: "discussion",
+					}));
+				});
 				break;
 			}
 
 			case "group": {
-				router.push("/groups");
+				router.push("/groups").then(() => {
+					setGroupCreationModalStateValue((prev) => ({
+						...prev,
+						open: true,
+						tab: "group",
+					}));
+				});
 				break;
 			}
 

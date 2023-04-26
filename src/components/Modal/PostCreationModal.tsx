@@ -749,6 +749,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 							/>
 						</div>
 						<AddTags
+							title="Post Tags"
 							items={postTags}
 							setItems={setPostTags}
 							itemName="Tag"

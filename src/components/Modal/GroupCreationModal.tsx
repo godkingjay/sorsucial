@@ -4,13 +4,15 @@ import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 import { FiLoader } from "react-icons/fi";
-import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import { FaEye, FaLock } from "react-icons/fa";
 import AddTags from "../Form/Tag/AddTags";
 import InputBoxFloatingLabel from "../Form/Input/InputBoxFloatingLabel";
 import { SiteGroup } from "@/lib/interfaces/group";
 import TextArea from "../Form/Input/TextArea";
+import RadioSelection, {
+	RadioSelectionOption,
+} from "../Form/Input/RadioSelection";
 
 type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
@@ -32,7 +34,7 @@ export type CreateGroupType = {
 	} | null;
 };
 
-export const groupPrivacyOptions: DropdownOption[] = [
+export const groupPrivacyOptions: RadioSelectionOption[] = [
 	{
 		label: "Public",
 		value: "public",
@@ -170,16 +172,18 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 								minHeight: "128px",
 							}}
 						/>
-						<div className="flex w-full flex-col gap-y-2 p-2 relative border border-gray-200 bg-gray-50 rounded-lg">
-							<div>
-								<p className="font-semibold text-sm text-gray-500">Group Tags</p>
-							</div>
-							<AddTags
-								itemName="Group Tag"
-								items={groupTags}
-								setItems={setGroupTags}
-							/>
-						</div>
+						<RadioSelection
+							title="Group Privacy"
+							options={groupPrivacyOptions}
+							selected={createGroupForm.privacy}
+							onChange={handleSelectPrivacy}
+						/>
+						<AddTags
+							title="Group Tags"
+							itemName="Group "
+							items={groupTags}
+							setItems={setGroupTags}
+						/>
 					</div>
 					<div>
 						<button

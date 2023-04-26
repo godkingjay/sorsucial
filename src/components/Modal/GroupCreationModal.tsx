@@ -10,6 +10,7 @@ import { FaEye, FaLock } from "react-icons/fa";
 import AddTags from "../Form/Tag/AddTags";
 import InputBoxFloatingLabel from "../Form/Input/InputBoxFloatingLabel";
 import { SiteGroup } from "@/lib/interfaces/group";
+import TextArea from "../Form/Input/TextArea";
 
 type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
@@ -139,7 +140,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 					className="group-creation-modal-form"
 					onSubmit={handleCreateGroupSubmit}
 				>
-					<div className="flex flex-col pb-4 gap-y-2">
+					<div className="z-100 flex flex-col pb-4 gap-y-2">
 						<InputBoxFloatingLabel
 							name="name"
 							label="Group Name"
@@ -157,8 +158,19 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							maxLength={128}
 							onChange={handleTextChange}
 						/>
-
 						<div className="h-[1px] w-full bg-gray-500 bg-opacity-10"></div>
+						<TextArea
+							name="description"
+							title="Group Description"
+							showLabel={true}
+							placeholder="Description(Optional)"
+							value={createGroupForm.description || ""}
+							maxLength={1500}
+							onChange={handleTextChange}
+							textBoxStyle={{
+								minHeight: "128px",
+							}}
+						/>
 					</div>
 					<div>
 						<button

@@ -4,8 +4,6 @@ import useUser from "@/hooks/useUser";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
-import { AiFillPlusSquare } from "react-icons/ai";
-import { BiPlus } from "react-icons/bi";
 
 type GroupsPageProps = {};
 

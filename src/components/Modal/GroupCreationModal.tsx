@@ -20,7 +20,9 @@ type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
 	setGroupCreationModalStateValue: SetterOrUpdater<GroupCreationModalState>;
 	userStateValue: UserState;
+	uploadImageOrVideo: (file: File) => Promise<ImageOrVideoType | null>;
 };
+
 export type CreateGroupType = {
 	name: string;
 	description?: string;
@@ -51,9 +53,8 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 	groupCreationModalStateValue,
 	setGroupCreationModalStateValue,
 	userStateValue,
+	uploadImageOrVideo,
 }) => {
-	const { uploadImageOrVideo } = useInput();
-
 	const defaultCreateGroupForm: CreateGroupType = {
 		name: "",
 		description: "",

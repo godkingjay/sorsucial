@@ -180,7 +180,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 						/>
 						<AddTags
 							title="Group Tags"
-							itemName="Group "
+							itemName="Group Tag"
 							items={groupTags}
 							setItems={setGroupTags}
 						/>

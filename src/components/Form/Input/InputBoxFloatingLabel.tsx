@@ -86,6 +86,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 				minLength={minLength || 0}
 				max={maxLength || 256}
 				maxLength={maxLength || 256}
+				role="textbox"
 			/>
 			{type === "password" && (
 				<button
@@ -93,6 +94,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 					title={show ? `Hide ${label}` : `Show ${label}`}
 					className="show-button"
 					onClick={() => setShow((prev) => !prev)}
+					role="button"
 				>
 					{show ? (
 						<AiFillEye className="icon" />
@@ -105,6 +107,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 				<div
 					className="input-info"
 					data-error={infoHidden || !infoHidden}
+					role="tooltip"
 				>
 					<p className="text">{info}</p>
 				</div>

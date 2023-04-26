@@ -69,6 +69,7 @@ const TextArea = ({
 							event.currentTarget.scrollHeight + "px";
 					}}
 					style={textBoxStyle}
+					role="textbox"
 				/>
 				{maxLength && (
 					<div className="limit-container">

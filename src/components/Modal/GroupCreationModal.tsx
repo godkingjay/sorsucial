@@ -1,16 +1,20 @@
 import { GroupCreationModalState } from "@/atoms/modalAtom";
 import { UserState } from "@/atoms/userAtom";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { SetterOrUpdater } from "recoil";
 import { FiLoader } from "react-icons/fi";
-import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import { FaEye, FaLock } from "react-icons/fa";
 import AddTags from "../Form/Tag/AddTags";
 import InputBoxFloatingLabel from "../Form/Input/InputBoxFloatingLabel";
 import { SiteGroup } from "@/lib/interfaces/group";
 import TextArea from "../Form/Input/TextArea";
+import RadioSelection, {
+	RadioSelectionOption,
+} from "../Form/Input/RadioSelection";
+import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import UploadImageSingle from "../Form/Input/UploadImageSingle";
 
 type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
@@ -22,17 +26,10 @@ export type CreateGroupType = {
 	description?: string;
 	groupTags?: string[];
 	privacy: SiteGroup["privacy"];
-	image: {
-		name: string;
-		url: string;
-		size: number;
-		type: string;
-		height: number;
-		width: number;
-	} | null;
+	image: ImageOrVideoType | null;
 };
 
-export const groupPrivacyOptions: DropdownOption[] = [
+export const groupPrivacyOptions: RadioSelectionOption[] = [
 	{
 		label: "Public",
 		value: "public",
@@ -55,6 +52,8 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 	setGroupCreationModalStateValue,
 	userStateValue,
 }) => {
+	const { uploadImageOrVideo } = useInput();
+
 	const defaultCreateGroupForm: CreateGroupType = {
 		name: "",
 		description: "",
@@ -62,20 +61,11 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 		privacy: "public",
 		image: null,
 	};
-
 	const [groupTags, setGroupTags] = useState<string[]>([]);
-
 	const [creatingGroup, setCreatingGroup] = useState(false);
 	const [createGroupForm, setCreateGroupForm] = useState<CreateGroupType>(
 		defaultCreateGroupForm
 	);
-
-	const setGroupName = (name: string) => {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			name,
-		}));
-	};
 
 	const handleCreateGroupSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
@@ -96,18 +86,30 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 		}));
 	};
 
-	const handleSelectPrivacy = (value: string) => {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			privacy: value as CreateGroupType["privacy"],
-		}));
-	};
-
 	const handleFormTabChange = (tab: GroupCreationModalState["tab"]) => {
 		setGroupCreationModalStateValue((prev) => ({
 			...prev,
 			tab,
 		}));
+	};
+
+	const handleUploadImage = async (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const file = event.target.files?.[0];
+
+		if (file) {
+			const imageFile = await uploadImageOrVideo(file);
+
+			if (imageFile) {
+				setCreateGroupForm((prev) => ({
+					...prev,
+					image: imageFile,
+				}));
+			}
+		}
+
+		event.target.value = "";
 	};
 
 	const handleTextChange = (
@@ -117,6 +119,13 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 		setCreateGroupForm((prev) => ({
 			...prev,
 			[name]: value,
+		}));
+	};
+
+	const handleSelectPrivacy = (value: string) => {
+		setCreateGroupForm((prev) => ({
+			...prev,
+			privacy: value as CreateGroupType["privacy"],
 		}));
 	};
 
@@ -140,7 +149,13 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 					className="group-creation-modal-form"
 					onSubmit={handleCreateGroupSubmit}
 				>
-					<div className="z-100 flex flex-col pb-4 gap-y-2">
+					<div className="z-100 flex flex-col pb-4 gap-y-4">
+						<div className="flex flex-col items-center p-2 rounded-lg">
+							<UploadImageSingle
+								image={createGroupForm.image}
+								onChange={handleUploadImage}
+							/>
+						</div>
 						<InputBoxFloatingLabel
 							name="name"
 							label="Group Name"
@@ -162,7 +177,6 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 						<TextArea
 							name="description"
 							title="Group Description"
-							showLabel={true}
 							placeholder="Description(Optional)"
 							value={createGroupForm.description || ""}
 							maxLength={1500}
@@ -170,6 +184,18 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							textBoxStyle={{
 								minHeight: "128px",
 							}}
+						/>
+						<RadioSelection
+							title="Group Privacy"
+							options={groupPrivacyOptions}
+							selected={createGroupForm.privacy}
+							onChange={handleSelectPrivacy}
+						/>
+						<AddTags
+							title="Group Tags"
+							itemName="Group Tag"
+							items={groupTags}
+							setItems={setGroupTags}
 						/>
 					</div>
 					<div>

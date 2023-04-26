@@ -212,6 +212,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 							/>
 						</div>
 						<AddTags
+							title="Discussion Tags"
 							items={discussionTags}
 							setItems={setDiscussionTags}
 							itemName="Tag"

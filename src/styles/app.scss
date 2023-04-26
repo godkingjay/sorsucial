@@ -144,6 +144,52 @@
 		}
 	}
 
+	.radio-selection {
+		@apply flex w-full flex-col gap-y-4 p-2 relative border border-gray-200 bg-gray-50 rounded-lg;
+
+		.title-container {
+			.title {
+				@apply font-semibold text-sm text-gray-500;
+			}
+		}
+
+		.selection-container {
+			@apply flex flex-col gap-y-3;
+
+			.selection-item {
+				@apply flex flex-row gap-x-2 items-center cursor-pointer;
+
+				.radio-button {
+					@apply h-5 w-5 text-gray-600;
+				}
+
+				.icon-container {
+					@apply h-4 w-4 aspect-square text-gray-600;
+				}
+
+				.label {
+					@apply text-gray-600 mr-2 font-semibold text-sm;
+				}
+
+				&[data-selected="true"] {
+					@apply text-blue-500;
+
+					.radio-button {
+						@apply text-blue-500;
+					}
+
+					.icon-container {
+						@apply text-blue-500;
+					}
+
+					.label {
+						@apply text-blue-500;
+					}
+				}
+			}
+		}
+	}
+
 	.auth-form {
 		@apply w-full h-full flex flex-col;
 

@@ -53,6 +53,8 @@
 		}
 
 		&:focus-within {
+			@apply bg-white;
+
 			.input-info {
 				@apply opacity-100 translate-y-0;
 			}

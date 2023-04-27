@@ -78,6 +78,8 @@ export default async function handler(
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
+				groupData.id = objectIdString;
+
 				const newGroupState = await groupsCollection
 					.insertOne({
 						...groupData,

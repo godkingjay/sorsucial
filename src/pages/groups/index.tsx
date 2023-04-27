@@ -1,5 +1,6 @@
 import GroupCreationListener from "@/components/Group/GroupCreationListener";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -9,6 +10,7 @@ type GroupsPageProps = {};
 
 const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const { userStateValue, userMounted } = useUser();
+	const { groupStateValue } = useGroup();
 	const groupsMounted = useRef(false);
 	const router = useRouter();
 

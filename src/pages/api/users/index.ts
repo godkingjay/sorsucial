@@ -137,23 +137,19 @@ export default async function handler(
 			 * ------------------------------------------------------------------------------------------
 			 */
 			case "GET": {
-				if (!privateKey || privateKey !== apiConfig.privateKey) {
-					res.status(401).json({ message: "Unauthorized" });
-				}
-
 				if (!userId) {
 					res.status(400).json({ error: "No user id provided" });
+				}
+
+				if (!userAPI) {
+					res.status(401).json({ error: "Unauthorized" });
 				}
 
 				const userData = await usersCollection.findOne({
 					uid: userId,
 				});
 
-				const userAPI = await apiKeysCollection.findOne({
-					userId,
-				});
-
-				res.status(200).json({ userData, userAPI });
+				res.status(200).json({ userData });
 				break;
 			}
 

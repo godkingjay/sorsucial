@@ -70,9 +70,18 @@ export interface SiteGroup {
 export interface GroupMember {
 	userId: string;
 	groupId: string;
-	role: "owner" | "admin" | "moderator" | "member";
+	role:
+		| "owner"
+		| "admin"
+		| "moderator"
+		| "member"
+		| "banned"
+		| "pending"
+		| "rejected";
 	updatedAt: Date;
-	joinedAt: Date;
+	acceptedAt: Date;
+	rejectedAt: Date;
+	requestedAt: Date;
 }
 
 /**

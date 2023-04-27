@@ -2,7 +2,7 @@ import groupDb from "@/lib/db/groupDb";
 import tagDb from "@/lib/db/tagDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { SiteGroup } from "@/lib/interfaces/group";
+import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { Tag } from "@/lib/interfaces/tag";
 import { SiteUser } from "@/lib/interfaces/user";
 import { ObjectId } from "mongodb";
@@ -112,12 +112,27 @@ export default async function handler(
 					);
 				});
 
+				const newGroupMember: Partial<GroupMember> = {
+					userId: groupData.creatorId,
+					groupId: objectIdString,
+					role: "owner",
+					acceptedAt: groupData.createdAt,
+					updatedAt: groupData.createdAt,
+					requestedAt: groupData.createdAt,
+				};
+
+				const newGroupMemberState = await groupMembersCollection
+					.insertOne(newGroupMember)
+					.catch((error: any) => {
+						res.status(500).json({
+							error: `Mongo: Creating group member document ${objectIdString} failed:\n${error.message}`,
+						});
+					});
+
 				res.status(200).json({
 					message: "Group created successfully!",
 					newGroupState,
-					newGroup: {
-						...groupData,
-					},
+					groupData,
 				});
 
 				break;

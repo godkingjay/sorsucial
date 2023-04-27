@@ -167,6 +167,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 								image={createGroupForm.image}
 								onChange={handleUploadImage}
 								disabled={creatingGroup}
+								required={false}
 							/>
 						</div>
 						<InputBoxFloatingLabel

@@ -35,15 +35,15 @@ const useGroup = () => {
 				createdAt: groupDate,
 			};
 
-			// const { groupData }: { groupData: SiteGroup } = await axios
-			// 	.post(apiConfig.apiEndpoint + "/groups/", {
-			// 		apiKey: userStateValue.api?.keys[0].key,
-			// 		groupData: newGroup,
-			// 	})
-			// 	.then((response) => response.data)
-			// 	.catch((error) => {
-			// 		throw new Error(`API: Group Creation Error:\n${error.message}`);
-			// 	});
+			const { groupData }: { groupData: SiteGroup } = await axios
+				.post(apiConfig.apiEndpoint + "/groups/", {
+					apiKey: userStateValue.api?.keys[0].key,
+					groupData: newGroup,
+				})
+				.then((response) => response.data)
+				.catch((error) => {
+					throw new Error(`API: Group Creation Error:\n${error.message}`);
+				});
 		} catch (error: any) {
 			console.log(`Mongo: Create Group Error:\n${error.message}`);
 		}

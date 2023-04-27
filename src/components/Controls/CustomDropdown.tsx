@@ -9,14 +9,16 @@ export type DropdownOption = {
 
 type CustomDropdownProps = {
 	options: DropdownOption[];
-	onSelect: (value: string) => void;
 	defaultValue?: DropdownOption;
+	disabled?: boolean;
+	onSelect: (value: string) => void;
 };
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
 	options,
-	onSelect,
 	defaultValue,
+	disabled = false,
+	onSelect,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [selectedOption, setSelectedOption] = useState<DropdownOption | null>(
@@ -36,6 +38,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 					type="button"
 					className="flex flex-row items-center gap-x-2 w-full h-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-gray-50 text-xs font-semibold text-gray-700 hover:bg-gray-100 focus-within:bg-gray-100 focus:outline-1 focus:outline focus:outline-indigo-500"
 					onClick={() => setIsOpen(!isOpen)}
+					disabled={disabled}
 				>
 					<div className="h-4 w-4 aspect-square">{selectedOption?.icon}</div>
 					<div className="flex-1 flex-row flex items-center truncate">
@@ -67,6 +70,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 								className="flex flex-row items-center w-full gap-x-4 h-full p-2 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 								role="menuitem"
 								onClick={() => handleOptionSelect(option)}
+								disabled={disabled}
 							>
 								<div className="h-5 w-5 aspect-square">{option.icon}</div>
 								<div className="flex-1 flex-row flex items-center truncate">

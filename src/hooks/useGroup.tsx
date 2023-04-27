@@ -271,6 +271,7 @@ const useGroup = () => {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
 		createGroup,
+		fetchGroups,
 	};
 };
 

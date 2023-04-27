@@ -23,13 +23,21 @@ export default async function handler(
 
 		const {
 			apiKey,
-			discussionData,
-			creator,
+			discussionData: rawDiscussionData,
+			creator: rawCreator,
 		}: {
 			apiKey: string;
-			discussionData: SiteDiscussion;
-			creator: SiteUser;
+			discussionData: SiteDiscussion | string;
+			creator: SiteUser | string;
 		} = req.body || req.query;
+
+		const discussionData: SiteDiscussion =
+			typeof rawDiscussionData === "string"
+				? JSON.parse(rawDiscussionData)
+				: rawDiscussionData;
+
+		const creator: SiteUser =
+			typeof rawCreator === "string" ? JSON.parse(rawCreator) : rawCreator;
 
 		if (!apiKey) {
 			res.status(400).json({ error: "No API key provided!" });

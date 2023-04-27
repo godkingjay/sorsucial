@@ -23,7 +23,7 @@ const TextArea = ({
 	title,
 	showLabel,
 	placeholder,
-	required,
+	required = false,
 	error,
 	info,
 	infoHidden,

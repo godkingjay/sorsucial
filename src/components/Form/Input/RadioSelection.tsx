@@ -11,6 +11,7 @@ type RadioSelectionProps = {
 	options: RadioSelectionOption[];
 	selected: string;
 	disabled?: boolean;
+	required?: boolean;
 	onChange: (value: string) => void;
 };
 
@@ -19,6 +20,7 @@ const RadioSelection: React.FC<RadioSelectionProps> = ({
 	options,
 	selected,
 	disabled = false,
+	required = false,
 	onChange,
 }) => {
 	const handleOptionChange = (value: string) => {
@@ -43,6 +45,7 @@ const RadioSelection: React.FC<RadioSelectionProps> = ({
 						data-selected={selected === option.value}
 					>
 						<input
+							required={required}
 							type="radio"
 							className="radio-button"
 							value={option.value}

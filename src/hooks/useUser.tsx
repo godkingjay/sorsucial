@@ -249,11 +249,9 @@ const useUser = () => {
 		try {
 			if (user) {
 				const { userData, userAPI } = await axios
-					.get(apiConfig.apiEndpoint + "/users/", {
-						params: {
-							privateKey: apiConfig.privateKey,
-							userId: user.uid,
-						},
+					.post(apiConfig.apiEndpoint + "/auth/signin", {
+						privateKey: apiConfig.privateKey,
+						userId: user.uid,
 					})
 					.then((res) => res.data)
 					.catch((error) => {

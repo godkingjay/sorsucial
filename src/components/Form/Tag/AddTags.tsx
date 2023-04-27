@@ -32,7 +32,10 @@ const AddTags: React.FC<AddTagsProps> = ({
 				.replace(/(^-|-$)/g, "")
 				.trim();
 
-			if (formattedInput === "") {
+			if (
+				formattedInput === "" ||
+				items.find((item) => item === formattedInput)
+			) {
 				return;
 			}
 

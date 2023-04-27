@@ -13,8 +13,9 @@ import TextArea from "../Form/Input/TextArea";
 import RadioSelection, {
 	RadioSelectionOption,
 } from "../Form/Input/RadioSelection";
-import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import { ImageOrVideoType } from "@/hooks/useInput";
 import UploadImageSingle from "../Form/Input/UploadImageSingle";
+import useGroup from "@/hooks/useGroup";
 
 type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
@@ -55,6 +56,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 	userStateValue,
 	uploadImageOrVideo,
 }) => {
+	const { createGroup } = useGroup();
 	const defaultCreateGroupForm: CreateGroupType = {
 		name: "",
 		description: "",
@@ -74,6 +76,17 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 		event.preventDefault();
 		setCreatingGroup(true);
 		try {
+			await createGroup({
+				...createGroupForm,
+				groupTags: groupTags,
+			}).then(() => {
+				setCreateGroupForm(defaultCreateGroupForm);
+				setGroupCreationModalStateValue((prev) => ({
+					...prev,
+					open: false,
+					tab: "group",
+				}));
+			});
 		} catch (error: any) {
 			console.log("Hook: Group Creation Error", error.message);
 		}
@@ -109,8 +122,6 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 				}));
 			}
 		}
-
-		event.target.value = "";
 	};
 
 	const handleTextChange = (
@@ -156,6 +167,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 								image={createGroupForm.image}
 								onChange={handleUploadImage}
 								disabled={creatingGroup}
+								required={false}
 							/>
 						</div>
 						<InputBoxFloatingLabel
@@ -188,8 +200,10 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							textBoxStyle={{
 								minHeight: "128px",
 							}}
+							required={false}
 						/>
 						<RadioSelection
+							required={true}
 							title="Group Privacy"
 							options={groupPrivacyOptions}
 							selected={createGroupForm.privacy}
@@ -204,7 +218,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							disabled={creatingGroup}
 						/>
 					</div>
-					<div>
+					<div className="z-[110]">
 						<button
 							type="submit"
 							title="Create a Group"

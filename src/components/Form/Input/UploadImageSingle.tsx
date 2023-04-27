@@ -7,12 +7,14 @@ import { validImageTypes } from "@/lib/types/validFiles";
 type UploadImageSingleProps = {
 	image: ImageOrVideoType | null;
 	disabled?: boolean;
+	required?: boolean;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const UploadImageSingle: React.FC<UploadImageSingleProps> = ({
 	image,
 	disabled = false,
+	required = false,
 	onChange,
 }) => {
 	const uploadImageRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,7 @@ const UploadImageSingle: React.FC<UploadImageSingleProps> = ({
 				)}
 			</button>
 			<input
-				required
+				required={required}
 				type="file"
 				title="Profile Photo"
 				ref={uploadImageRef}

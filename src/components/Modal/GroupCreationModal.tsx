@@ -20,7 +20,9 @@ type GroupCreationModalProps = {
 	groupCreationModalStateValue: GroupCreationModalState;
 	setGroupCreationModalStateValue: SetterOrUpdater<GroupCreationModalState>;
 	userStateValue: UserState;
+	uploadImageOrVideo: (file: File) => Promise<ImageOrVideoType | null>;
 };
+
 export type CreateGroupType = {
 	name: string;
 	description?: string;
@@ -51,9 +53,8 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 	groupCreationModalStateValue,
 	setGroupCreationModalStateValue,
 	userStateValue,
+	uploadImageOrVideo,
 }) => {
-	const { uploadImageOrVideo } = useInput();
-
 	const defaultCreateGroupForm: CreateGroupType = {
 		name: "",
 		description: "",
@@ -154,6 +155,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							<UploadImageSingle
 								image={createGroupForm.image}
 								onChange={handleUploadImage}
+								disabled={creatingGroup}
 							/>
 						</div>
 						<InputBoxFloatingLabel
@@ -171,6 +173,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							value={createGroupForm.name}
 							minLength={3}
 							maxLength={128}
+							disabled={creatingGroup}
 							onChange={handleTextChange}
 						/>
 						<div className="h-[1px] w-full bg-gray-500 bg-opacity-10"></div>
@@ -180,6 +183,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							placeholder="Description(Optional)"
 							value={createGroupForm.description || ""}
 							maxLength={1500}
+							disabled={creatingGroup}
 							onChange={handleTextChange}
 							textBoxStyle={{
 								minHeight: "128px",
@@ -190,12 +194,14 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 							options={groupPrivacyOptions}
 							selected={createGroupForm.privacy}
 							onChange={handleSelectPrivacy}
+							disabled={creatingGroup}
 						/>
 						<AddTags
 							title="Group Tags"
 							itemName="Group Tag"
 							items={groupTags}
 							setItems={setGroupTags}
+							disabled={creatingGroup}
 						/>
 					</div>
 					<div>

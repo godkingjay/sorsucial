@@ -10,13 +10,17 @@ import { discussionPrivacyOptions } from "../DiscussionCreationModal";
 type DiscussionCreationModalFormHeadProps = {
 	userStateValue: UserState;
 	discussionType: SiteDiscussion["discussionType"];
+	disabled?: boolean;
 	handleClose: () => void;
 	handleSelectPrivacy: (value: string) => void;
 };
 
-const DiscussionCreationModalFormHead: React.FC<DiscussionCreationModalFormHeadProps> = ({
+const DiscussionCreationModalFormHead: React.FC<
+	DiscussionCreationModalFormHeadProps
+> = ({
 	userStateValue,
 	discussionType,
+	disabled = false,
 	handleClose,
 	handleSelectPrivacy,
 }) => {
@@ -56,6 +60,7 @@ const DiscussionCreationModalFormHead: React.FC<DiscussionCreationModalFormHeadP
 						}
 						onSelect={handleSelectPrivacy}
 						defaultValue={discussionPrivacyOptions[0]}
+						disabled={disabled}
 					/>
 				</div>
 			</div>

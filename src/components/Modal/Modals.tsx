@@ -11,12 +11,14 @@ import PostCreationModal from "./PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
 import DiscussionCreationModal from "./DiscussionCreationModal";
 import GroupCreationModal from "./GroupCreationModal";
+import useInput from "@/hooks/useInput";
 
 type ModalsProps = {
 	userStateValue: UserState;
 };
 
 const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
+	const { uploadImageOrVideo } = useInput();
 	const [errorModalStateValue, setErrorModalStateValue] =
 		useRecoilState(errorModalState);
 	const [postCreationModalStateValue, setPostCreationModalStateValue] =
@@ -57,6 +59,7 @@ const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
 					userStateValue={userStateValue}
 					groupCreationModalStateValue={groupCreationModalStateValue}
 					setGroupCreationModalStateValue={setGroupCreationModalStateValue}
+					uploadImageOrVideo={uploadImageOrVideo}
 				/>
 			)}
 		</>

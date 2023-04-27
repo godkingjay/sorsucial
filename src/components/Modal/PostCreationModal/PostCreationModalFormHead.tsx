@@ -9,16 +9,18 @@ import { SitePost } from "@/lib/interfaces/post";
 
 type PostCreationModalFormHeadProps = {
 	userStateValue: UserState;
+	postType: SitePost["postType"];
+	disabled?: boolean;
 	handleClose: () => void;
 	handleSelectPrivacy: (value: string) => void;
-	postType: SitePost["postType"];
 };
 
 const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 	userStateValue,
+	postType,
+	disabled = false,
 	handleClose,
 	handleSelectPrivacy,
-	postType,
 }) => {
 	return (
 		<div className="post-creation-modal-form-head">
@@ -54,8 +56,9 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 								? postPrivacyOptions.slice(0, 1)
 								: postPrivacyOptions
 						}
-						onSelect={handleSelectPrivacy}
 						defaultValue={postPrivacyOptions[0]}
+						disabled={disabled}
+						onSelect={handleSelectPrivacy}
 					/>
 				</div>
 			</div>

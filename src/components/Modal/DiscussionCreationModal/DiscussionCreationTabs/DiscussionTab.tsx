@@ -2,14 +2,14 @@ import React from "react";
 import { CreateDiscussionType } from "../../DiscussionCreationModal";
 
 type DiscussionTabProps = {
-	creatingDiscussion: boolean;
 	createDiscussionForm: CreateDiscussionType;
+	disabled?: boolean;
 	handleTextChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
 const DiscussionTab: React.FC<DiscussionTabProps> = ({
-	creatingDiscussion,
 	createDiscussionForm,
+	disabled = false,
 	handleTextChange,
 }) => {
 	return (
@@ -30,7 +30,7 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({
 				minLength={0}
 				maxLength={40000}
 				value={createDiscussionForm.discussionBody}
-				disabled={creatingDiscussion}
+				disabled={disabled}
 			/>
 		</div>
 	);

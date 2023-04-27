@@ -630,9 +630,10 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				>
 					<PostCreationModalFormHead
 						userStateValue={userStateValue}
+						postType={postCreationModalStateValue.postType}
+						disabled={creatingPost}
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
-						postType={postCreationModalStateValue.postType}
 					/>
 					<div className="post-creation-modal-form-content">
 						<div className="post-creation-form-title-container">
@@ -673,7 +674,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									<PostTab
 										handleTextChange={handleTextChange}
 										createPostForm={createPostForm}
-										creatingPost={creatingPost}
+										disabled={creatingPost}
 									/>
 								</div>
 								<div
@@ -685,6 +686,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									<PostImagesOrVideosTab
 										createPostForm={createPostForm}
 										uploadImageOrVideoRef={uploadImageOrVideoRef}
+										disabled={creatingPost}
 										handleImageOrVideoUpload={handleImageOrVideoUpload}
 										handleRemoveImageOrVideo={handleRemoveImageOrVideo}
 									/>
@@ -698,6 +700,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									<PostFilesTab
 										createPostForm={createPostForm}
 										uploadFileRef={uploadFileRef}
+										disabled={creatingPost}
 										handleFileUpload={handleFileUpload}
 										handleFileDetailsChange={handleFileDetailsChange}
 										handleRemoveFile={handleRemoveFile}
@@ -712,6 +715,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 									<PostLinksTab
 										createPostForm={createPostForm}
 										currentLink={currentLink}
+										disabled={creatingPost}
 										handleLinkChange={handleLinkChange}
 										// handleLinkPreview={handleLinkPreview}
 										handleLinkAdd={handleLinkAdd}
@@ -753,6 +757,7 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 							items={postTags}
 							setItems={setPostTags}
 							itemName="Tag"
+							disabled={creatingPost}
 						/>
 					</div>
 					<div>

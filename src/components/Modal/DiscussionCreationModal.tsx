@@ -156,6 +156,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 						handleClose={handleClose}
 						handleSelectPrivacy={handleSelectPrivacy}
 						discussionType={discussionCreationModalStateValue.discussionType}
+						disabled={creatingDiscussion}
 					/>
 					<div className="discussion-creation-modal-form-content">
 						<div className="discussion-creation-form-title-container">
@@ -200,7 +201,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 									<DiscussionTab
 										handleTextChange={handleTextChange}
 										createDiscussionForm={createDiscussionForm}
-										creatingDiscussion={creatingDiscussion}
+										disabled={creatingDiscussion}
 									/>
 								</div>
 							</div>
@@ -216,6 +217,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 							items={discussionTags}
 							setItems={setDiscussionTags}
 							itemName="Tag"
+							disabled={creatingDiscussion}
 						/>
 					</div>
 					<div>

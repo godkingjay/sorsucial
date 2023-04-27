@@ -10,15 +10,15 @@ import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 type PostImagesOrVideosTabProps = {
 	createPostForm: CreatePostType;
 	uploadImageOrVideoRef: React.RefObject<HTMLInputElement>;
-	handleImageOrVideoUpload: (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => void;
+	disabled: boolean;
+	handleImageOrVideoUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handleRemoveImageOrVideo: (index: number) => void;
 };
 
 const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 	createPostForm,
 	uploadImageOrVideoRef,
+	disabled = false,
 	handleImageOrVideoUpload,
 	handleRemoveImageOrVideo,
 }) => {
@@ -52,7 +52,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 						}
 						disabled={
 							createPostForm.imagesOrVideos.length >=
-							maxPostItems.imagesOrVideos
+								maxPostItems.imagesOrVideos || disabled
 						}
 					>
 						Upload
@@ -107,6 +107,7 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 										title="Remove Image or Video"
 										className="remove-button"
 										onClick={() => handleRemoveImageOrVideo(imageOrVideo.index)}
+										disabled={disabled}
 									>
 										<IoClose className="icon" />
 									</button>
@@ -134,7 +135,8 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 					event.currentTarget.disabled ? null : handleImageOrVideoUpload(event)
 				}
 				disabled={
-					createPostForm.imagesOrVideos.length >= maxPostItems.imagesOrVideos
+					createPostForm.imagesOrVideos.length >= maxPostItems.imagesOrVideos ||
+					disabled
 				}
 				max={maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length}
 				hidden

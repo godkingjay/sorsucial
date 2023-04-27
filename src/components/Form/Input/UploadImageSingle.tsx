@@ -6,11 +6,13 @@ import { validImageTypes } from "@/lib/types/validFiles";
 
 type UploadImageSingleProps = {
 	image: ImageOrVideoType | null;
+	disabled?: boolean;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const UploadImageSingle: React.FC<UploadImageSingleProps> = ({
 	image,
+	disabled = false,
 	onChange,
 }) => {
 	const uploadImageRef = useRef<HTMLInputElement>(null);
@@ -25,6 +27,7 @@ const UploadImageSingle: React.FC<UploadImageSingleProps> = ({
           ${image ? " border-solid" : " border-dashed"}
         `}
 				onClick={() => uploadImageRef.current?.click()}
+				disabled={disabled}
 			>
 				{image ? (
 					<div className="-z-0 absolute right-0 top-[50%] translate-y-[-50%] h-full w-full grid place-items-center rounded-full overflow-hidden bg-gray-300">
@@ -52,6 +55,7 @@ const UploadImageSingle: React.FC<UploadImageSingleProps> = ({
 				ref={uploadImageRef}
 				accept={validImageTypes.ext.join(",")}
 				onChange={onChange}
+				disabled={disabled}
 				hidden
 			/>
 		</div>

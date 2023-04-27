@@ -12,6 +12,7 @@ type InputBoxFloatingLabelProps = {
 	value: string;
 	minLength?: number;
 	maxLength?: number;
+	disabled?: boolean;
 	type?: HTMLInputElement["type"];
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	style?: React.CSSProperties;
@@ -28,6 +29,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 	value,
 	minLength,
 	maxLength,
+	disabled = false,
 	type,
 	onChange,
 	style,
@@ -36,7 +38,9 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 	const [show, setShow] = useState(false);
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		onChange(event);
+		if (!disabled) {
+			onChange(event);
+		}
 	};
 
 	const handleContainerClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -86,6 +90,7 @@ const InputBoxFloatingLabel: React.FC<InputBoxFloatingLabelProps> = ({
 				minLength={minLength || 0}
 				max={maxLength || 256}
 				maxLength={maxLength || 256}
+				disabled={disabled}
 				role="textbox"
 			/>
 			{type === "password" && (

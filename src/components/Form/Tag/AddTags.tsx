@@ -6,6 +6,7 @@ interface AddTagsProps {
 	items: string[];
 	setItems: React.Dispatch<React.SetStateAction<string[]>>;
 	itemName: string;
+	disabled?: boolean;
 }
 
 const AddTags: React.FC<AddTagsProps> = ({
@@ -13,6 +14,7 @@ const AddTags: React.FC<AddTagsProps> = ({
 	items,
 	setItems,
 	itemName,
+	disabled = false,
 }) => {
 	const [inputItem, setInputItem] = useState<string>("");
 
@@ -62,6 +64,7 @@ const AddTags: React.FC<AddTagsProps> = ({
 							title={`Remove ${itemName}`}
 							className="text-gray-500 hover:text-red-500 focus:text-red-500"
 							onClick={() => handleRemoveItem(item)}
+							disabled={disabled}
 						>
 							<div className="h-6 w-6 aspect-square">
 								<IoRemoveCircleOutline className="h-full w-full" />
@@ -77,12 +80,14 @@ const AddTags: React.FC<AddTagsProps> = ({
 						value={inputItem}
 						onChange={handleItemInputChange}
 						className="border border-gray-400 rounded-full px-4 pr-8 py-2 w-40 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+						disabled={disabled}
 					/>
 					<button
 						title="Add"
 						type="button"
 						className="absolute right-2 top-[50%] translate-y-[-50%] text-gray-300 rounded-full text-sm font-medium hover:text-blue-500 focus:text-blue-500"
 						onClick={handleAddItem}
+						disabled={disabled}
 					>
 						<div className="h-6 w-6 aspect-square">
 							<IoAddCircleOutline className="h-full w-full" />

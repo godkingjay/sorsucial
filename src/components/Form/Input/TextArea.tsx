@@ -12,6 +12,7 @@ type TextAreaProps = {
 	minLength?: number;
 	maxLength?: number;
 	value: string;
+	disabled?: boolean;
 	onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 	style?: React.CSSProperties;
 	textBoxStyle?: React.CSSProperties;
@@ -29,10 +30,19 @@ const TextArea = ({
 	value,
 	minLength,
 	maxLength,
+	disabled = false,
 	onChange,
 	style,
 	textBoxStyle,
 }: TextAreaProps) => {
+	const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+		if (!disabled) {
+			onChange(event);
+			event.currentTarget.style.height = "0px";
+			event.currentTarget.style.height = event.currentTarget.scrollHeight + "px";
+		}
+	};
+
 	return (
 		<div
 			className="input-text-area"
@@ -62,12 +72,8 @@ const TextArea = ({
 					title={title}
 					minLength={minLength || 0}
 					maxLength={maxLength || Number.MAX_SAFE_INTEGER}
-					onChange={(event) => {
-						onChange(event);
-						event.currentTarget.style.height = "0px";
-						event.currentTarget.style.height =
-							event.currentTarget.scrollHeight + "px";
-					}}
+					disabled={disabled}
+					onChange={handleTextChange}
 					style={textBoxStyle}
 					role="textbox"
 				/>

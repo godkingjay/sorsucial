@@ -19,6 +19,14 @@
 	font-family: "Open Sans", sans-serif;
 }
 
+button,
+input,
+textarea {
+	&[disabled="true"] {
+		@apply cursor-none pointer-events-none;
+	}
+}
+
 @layer components {
 	.limit-width {
 		max-width: 1536px;

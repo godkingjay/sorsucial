@@ -10,6 +10,7 @@ type RadioSelectionProps = {
 	title?: string;
 	options: RadioSelectionOption[];
 	selected: string;
+	disabled?: boolean;
 	onChange: (value: string) => void;
 };
 
@@ -17,10 +18,13 @@ const RadioSelection: React.FC<RadioSelectionProps> = ({
 	title,
 	options,
 	selected,
+	disabled = false,
 	onChange,
 }) => {
 	const handleOptionChange = (value: string) => {
-		onChange(value);
+		if (!disabled) {
+			onChange(value);
+		}
 	};
 
 	return (
@@ -43,6 +47,7 @@ const RadioSelection: React.FC<RadioSelectionProps> = ({
 							className="radio-button"
 							value={option.value}
 							checked={selected === option.value}
+							disabled={disabled}
 							onChange={() => handleOptionChange(option.value)}
 						/>
 						{option.icon && <div className="icon-container">{option.icon}</div>}

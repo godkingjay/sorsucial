@@ -17,9 +17,12 @@
  * @property {string} creatorId - The unique identifier of the group creator.
  * @property {"public" | "restricted" | "private"} privacy - The privacy type of the group.
  * @property {number} numberOfMembers - The number of members in the group.
+ * @property {number} numberOfPosts - The number of posts in the group.
+ * @property {number} numberOfDiscussions - The number of discussions in the group.
  * @property {string} [imageURL] - The URL of the group's image.
  * @property {string} [coverImageURL] - The URL of the group's cover image.
  * @property {Date} [lastPostAt] - The date and time when the group last posted.
+ * @property {Date} [lastDiscussionAt] - The date and time when the group last discussed.
  * @property {Date} updatedAt - The date and time when the group was last changed.
  * @property {Date} createdAt - The date and time when the group was created.
  *
@@ -36,9 +39,12 @@ export interface SiteGroup {
 	creatorId: string;
 	privacy: "public" | "restricted" | "private";
 	numberOfMembers: number;
+	numberOfPosts: number;
+	numberOfDiscussions: number;
 	imageURL?: string;
 	coverImageURL?: string;
 	lastPostAt?: Date;
+	lastDiscussionAt?: Date;
 	updatedAt: Date;
 	createdAt: Date;
 }

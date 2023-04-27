@@ -241,8 +241,8 @@ const useGroup = () => {
 							userId: authUser?.uid,
 							privacy: privacy,
 							fromMember:
-								oldestGroup.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
-							fromDate: oldestGroup?.group.createdAt,
+								oldestGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+							fromDate: oldestGroup?.group.createdAt || null,
 						},
 					})
 					.then((res) => res.data)

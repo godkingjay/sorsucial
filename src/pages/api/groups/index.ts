@@ -134,6 +134,7 @@ export default async function handler(
 				res.status(200).json({
 					message: "Group created successfully!",
 					newGroupState,
+					groupMemberData: newGroupMember,
 					groupData,
 				});
 

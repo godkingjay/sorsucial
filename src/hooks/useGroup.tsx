@@ -3,7 +3,7 @@ import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
 import React, { useCallback, useMemo } from "react";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
-import { GroupImage, SiteGroup } from "@/lib/interfaces/group";
+import { GroupImage, GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { collection, doc } from "firebase/firestore";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -37,7 +37,10 @@ const useGroup = () => {
 				createdAt: groupDate,
 			};
 
-			const { groupData }: { groupData: SiteGroup } = await axios
+			const {
+				groupData,
+				groupMemberData,
+			}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
 				.post(apiConfig.apiEndpoint + "/groups/", {
 					apiKey: userStateValue.api?.keys[0].key,
 					groupData: newGroup,
@@ -71,7 +74,13 @@ const useGroup = () => {
 					(prev) =>
 						({
 							...prev,
-							groups: [groupData, ...prev.groups],
+							groups: [
+								{
+									group: groupData,
+									userJoin: groupMemberData,
+								},
+								...prev.groups,
+							],
 						} as GroupState)
 				);
 			}

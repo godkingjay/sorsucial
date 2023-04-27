@@ -699,7 +699,7 @@
 		}
 
 		.image-or-video-tab-output-container {
-			@apply w-full rounded-lg  p-2 border border-gray-200 text-sm flex flex-row flex-grow h-max gap-y-2 gap-x-2 flex-wrap justify-center;
+			@apply w-full rounded-lg p-2 border border-gray-200 text-sm grid grid-cols-1 2xs:grid-cols-2 xs:grid-cols-3 h-max gap-y-2 gap-x-2 flex-wrap justify-center;
 
 			.image-or-video-item {
 				@apply flex-1 max-w-[144px] max-h-[144px] aspect-square rounded-lg border-2 border-transparent bg-gray-100;

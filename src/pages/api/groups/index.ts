@@ -125,6 +125,7 @@ export default async function handler(
 
 			default: {
 				res.status(405).json({
+					message: `Method ${req.method} Not Allowed`,
 					error: `Method ${req.method} Not Allowed`,
 				});
 
@@ -133,6 +134,7 @@ export default async function handler(
 		}
 	} catch (error: any) {
 		res.status(500).json({
+			message: "Internal Server Error",
 			error: error.message,
 		});
 	}

@@ -38,7 +38,7 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 			console.log("First Fetch: fetching groups Error: ", error.message);
 		}
 		setFirstLoadingGroups(false);
-	}, []);
+	}, [handleFetchGroups]);
 
 	useEffect(() => {
 		if (userMounted) {

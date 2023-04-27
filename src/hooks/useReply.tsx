@@ -122,8 +122,8 @@ const useReply = () => {
 									numberOfReplies: discussion.discussion.numberOfReplies + 1,
 									numberOfFirstLevelReplies:
 										newReplyData.replyForId === newReplyData.discussionId
-											? discussion.discussion.numberOfFirstLevelReplies
-											: discussion.discussion.numberOfFirstLevelReplies + 1,
+											? discussion.discussion.numberOfFirstLevelReplies + 1
+											: discussion.discussion.numberOfFirstLevelReplies,
 								},
 							};
 						} else {
@@ -138,9 +138,10 @@ const useReply = () => {
 								prev.currentDiscussion!.discussion.numberOfReplies + 1,
 							numberOfFirstLevelReplies:
 								newReplyData.replyForId === newReplyData.discussionId
-									? prev.currentDiscussion?.discussion.numberOfFirstLevelReplies!
+									? prev.currentDiscussion?.discussion
+											.numberOfFirstLevelReplies! + 1
 									: prev.currentDiscussion?.discussion
-											.numberOfFirstLevelReplies! + 1,
+											.numberOfFirstLevelReplies!,
 						},
 						discussionReplies: [
 							{

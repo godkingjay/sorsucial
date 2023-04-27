@@ -3,6 +3,7 @@ import tagDb from "@/lib/db/tagDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { PostComment, SitePost } from "@/lib/interfaces/post";
+import { Tag } from "@/lib/interfaces/tag";
 import { SiteUser } from "@/lib/interfaces/user";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -142,10 +143,13 @@ export default async function handler(
 							$inc: {
 								total: 1,
 								posts: 1,
-							},
+							} as Partial<Tag>,
+							$set: {
+								updatedAt: postData.createdAt,
+							} as Partial<Tag>,
 							$setOnInsert: {
-								createdAt: new Date(),
-							},
+								createdAt: postData.createdAt,
+							} as Partial<Tag>,
 						},
 						{
 							upsert: true,
@@ -303,10 +307,10 @@ export default async function handler(
 							$inc: {
 								total: -1,
 								posts: -1,
-							},
+							} as Partial<Tag>,
 							$set: {
 								updatedAt: new Date(),
-							},
+							} as Partial<Tag>,
 						}
 					);
 				});

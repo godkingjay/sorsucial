@@ -4,13 +4,13 @@ import { CreatePostType } from "../../PostCreationModal";
 type PostTabProps = {
 	handleTextChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 	createPostForm: CreatePostType;
-	creatingPost: boolean;
+	disabled: boolean;
 };
 
 const PostTab: React.FC<PostTabProps> = ({
 	handleTextChange,
 	createPostForm,
-	creatingPost,
+	disabled = false,
 }) => {
 	return (
 		<div className="post-creation-form-post-tab">
@@ -30,7 +30,7 @@ const PostTab: React.FC<PostTabProps> = ({
 				minLength={0}
 				maxLength={40000}
 				value={createPostForm.postBody}
-				disabled={creatingPost}
+				disabled={(disabled = false)}
 			/>
 		</div>
 	);

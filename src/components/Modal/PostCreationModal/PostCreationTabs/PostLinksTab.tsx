@@ -10,6 +10,7 @@ import PostLinkCard from "@/components/Post/PostCard/PostBody/PostCards/PostLink
 type PostLinksTabProps = {
 	createPostForm: CreatePostType;
 	currentLink: currentLinkType;
+	disabled?: boolean;
 	handleLinkChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	// handleLinkPreview: () => void;
 	handleLinkAdd: () => void;
@@ -19,6 +20,7 @@ type PostLinksTabProps = {
 const PostLinksTab: React.FC<PostLinksTabProps> = ({
 	createPostForm,
 	currentLink,
+	disabled = false,
 	handleLinkChange,
 	// handleLinkPreview,
 	handleLinkAdd,
@@ -39,6 +41,7 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 								title="Remove Link"
 								className="absolute top-0 right-0 h-6 w-6 p-1 bg-red-400 shadow-md translate-x-1 -translate-y-1 rounded-full text-white hover:bg-red-500 hover:text-red-800 focus:bg-red-500 focus:text-red-800"
 								onClick={() => handleLinkRemove(link.index)}
+								disabled={disabled}
 							>
 								<IoClose className="h-full w-full" />
 							</button>
@@ -69,7 +72,9 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						className="link-input-field"
 						value={currentLink.link}
 						onChange={handleLinkChange}
-						disabled={createPostForm.links.length >= maxPostItems.links}
+						disabled={
+							createPostForm.links.length >= maxPostItems.links || disabled
+						}
 					/>
 				</div>
 				<div className="link-input-buttons-container">
@@ -103,7 +108,8 @@ const PostLinksTab: React.FC<PostLinksTabProps> = ({
 						}
 						disabled={
 							!currentLink.isValidLink ||
-							createPostForm.links.length >= maxPostItems.links
+							createPostForm.links.length >= maxPostItems.links ||
+							disabled
 						}
 					>
 						<div className="icon-container">

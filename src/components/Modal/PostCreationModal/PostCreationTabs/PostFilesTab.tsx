@@ -8,6 +8,7 @@ import { MdDelete } from "react-icons/md";
 type PostFilesTabProps = {
 	createPostForm: CreatePostType;
 	uploadFileRef: React.RefObject<HTMLInputElement>;
+	disabled?: boolean;
 	handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handleFileDetailsChange: (
 		index: number,
@@ -19,6 +20,7 @@ type PostFilesTabProps = {
 const PostFilesTab: React.FC<PostFilesTabProps> = ({
 	createPostForm,
 	uploadFileRef,
+	disabled = false,
 	handleFileUpload,
 	handleFileDetailsChange,
 	handleRemoveFile,
@@ -29,8 +31,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 				<div className="post-file-tab-output-container">
 					{createPostForm.files.map((file) => {
 						const fileDetails =
-							validAllTypes.find((type) => type.ext.includes(file.type)) ||
-							null;
+							validAllTypes.find((type) => type.ext.includes(file.type)) || null;
 
 						return (
 							<div
@@ -53,6 +54,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 											handleFileDetailsChange(file.index, event)
 										}
 										maxLength={128}
+										disabled={disabled}
 									/>
 									<div className="buttons-container">
 										<button
@@ -60,6 +62,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 											title="Remove File"
 											className="button remove"
 											onClick={() => handleRemoveFile(file.index)}
+											disabled={disabled}
 										>
 											<MdDelete className="icon" />
 										</button>
@@ -77,7 +80,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 				onClick={(event) =>
 					event.currentTarget.disabled ? null : uploadFileRef.current?.click()
 				}
-				disabled={createPostForm.files.length >= maxPostItems.files}
+				disabled={createPostForm.files.length >= maxPostItems.files || disabled}
 			>
 				<div className="deco -z-10 absolute h-full w-0 duration-500 ease-in-out top-0 left-0 bg-purple-100 rounded-r-full"></div>
 				<div className="h-6 w-6">
@@ -96,7 +99,7 @@ const PostFilesTab: React.FC<PostFilesTabProps> = ({
 					event.currentTarget.disabled ? null : handleFileUpload(event)
 				}
 				max={maxPostItems.files - createPostForm.files.length}
-				disabled={createPostForm.files.length >= maxPostItems.files}
+				disabled={createPostForm.files.length >= maxPostItems.files || disabled}
 				hidden
 				multiple
 			/>

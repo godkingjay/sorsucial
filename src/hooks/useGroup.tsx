@@ -1,9 +1,9 @@
-import { GroupState, groupState } from "@/atoms/groupAtom";
+import { GroupData, GroupState, groupState } from "@/atoms/groupAtom";
 import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
 import React, { useCallback, useMemo } from "react";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
-import { GroupImage, SiteGroup } from "@/lib/interfaces/group";
+import { GroupImage, GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { collection, doc } from "firebase/firestore";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -37,7 +37,10 @@ const useGroup = () => {
 				createdAt: groupDate,
 			};
 
-			const { groupData }: { groupData: SiteGroup } = await axios
+			const {
+				groupData,
+				groupMemberData,
+			}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
 				.post(apiConfig.apiEndpoint + "/groups/", {
 					apiKey: userStateValue.api?.keys[0].key,
 					groupData: newGroup,
@@ -71,7 +74,13 @@ const useGroup = () => {
 					(prev) =>
 						({
 							...prev,
-							groups: [groupData, ...prev.groups],
+							groups: [
+								{
+									group: groupData,
+									userJoin: groupMemberData,
+								},
+								...prev.groups,
+							],
 						} as GroupState)
 				);
 			}
@@ -219,10 +228,50 @@ const useGroup = () => {
 		[]
 	);
 
+	const fetchGroups = useCallback(
+		async (privacy: SiteGroup["privacy"] = "public") => {
+			try {
+				const oldestGroup =
+					groupStateValueMemo.groups[groupStateValue.groups.length - 1] || null;
+
+				const { groups }: { groups: GroupData[] } = await axios
+					.get(apiConfig.apiEndpoint + "/groups/groups", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser?.uid,
+							privacy: privacy,
+							fromMember:
+								oldestGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+							fromDate: oldestGroup?.group.createdAt || null,
+						},
+					})
+					.then((res) => res.data)
+					.catch((err) => {
+						throw new Error(`API (GET): Getting Groups error:\n ${err.message}`);
+					});
+
+				if (groups.length) {
+					setGroupStateValueMemo((prev) => ({
+						...prev,
+						groups: [...prev.groups, ...groups],
+					}));
+				} else {
+					console.log("Mongo: No groups found!");
+				}
+
+				return groups.length;
+			} catch (error: any) {
+				console.log(`MONGO: Error while fetching groups:\n${error.message}`);
+			}
+		},
+		[]
+	);
+
 	return {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
 		createGroup,
+		fetchGroups,
 	};
 };
 

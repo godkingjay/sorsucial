@@ -7,6 +7,7 @@ export interface GroupData {
 	creator: SiteUser | null;
 	members: GroupMember[];
 	images: GroupImage[];
+	userJoin: GroupMember | null;
 }
 
 export interface GroupState {

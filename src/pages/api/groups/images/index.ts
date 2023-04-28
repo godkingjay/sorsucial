@@ -97,7 +97,7 @@ export default async function handler(
 						{
 							$set: {
 								[type as string]: groupImageData,
-								updateAt: groupImageData.updatedAt,
+								updatedAt: groupImageData.updatedAt,
 							},
 						}
 					)

@@ -1,4 +1,6 @@
+import PageFilter from "@/components/Controls/PageFilter";
 import GroupCreationListener from "@/components/Group/GroupCreationListener";
+import GroupsFilter from "@/components/Group/GroupsFilter";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
@@ -20,7 +22,10 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const handleFetchGroups = useCallback(async () => {
 		setLoadingGroups(true);
 		try {
-			const fetchedGroupLength = await fetchGroups("public");
+			const fetchedGroupLength = await fetchGroups({
+				privacy: "public",
+				sortBy: "latest",
+			});
 			if (fetchedGroupLength !== undefined) {
 				setEndReached(fetchedGroupLength < 10 ? true : false);
 			}
@@ -38,7 +43,7 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 			console.log("First Fetch: fetching groups Error: ", error.message);
 		}
 		setFirstLoadingGroups(false);
-	}, []);
+	}, [handleFetchGroups]);
 
 	useEffect(() => {
 		if (userMounted) {
@@ -66,6 +71,11 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 						) : (
 							<>
 								<GroupCreationListener />
+								<PageFilter />
+								<GroupsFilter
+									sortBy="latest"
+									privacy="public"
+								/>
 							</>
 						)}
 					</section>

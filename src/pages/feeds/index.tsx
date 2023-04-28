@@ -52,7 +52,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 			console.log("First Fetch: fetching feeds Error: ", error.message);
 		}
 		setFirstLoadingFeeds(false);
-	}, []);
+	}, [handleFetchFeeds]);
 
 	useEffect(() => {
 		if (userMounted) {

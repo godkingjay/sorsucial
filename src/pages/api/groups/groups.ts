@@ -1,8 +1,11 @@
+import { GroupData } from "@/atoms/groupAtom";
+import { QueryGroupsSortBy } from "./../../../lib/types/api";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
+import { Collection, Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -17,9 +20,11 @@ export default async function handler(
 		const {
 			apiKey,
 			userId,
-			privacy = "public",
+			privacy = "public" as SiteGroup["privacy"],
+			lastIndex = "-1",
 			fromMember = Number.MAX_SAFE_INTEGER.toString(),
-			fromDate,
+			fromDate = new Date().toISOString(),
+			sortBy = "latest" as QueryGroupsSortBy,
 			limit = "10",
 		} = req.body || req.query;
 
@@ -61,43 +66,36 @@ export default async function handler(
 
 		switch (req.method) {
 			case "GET": {
-				const groups =
-					(await Promise.all(
-						fromDate
-							? await groupsCollection
-									.find({
-										privacy: privacy,
-										numberOfMembers: {
-											$lt: parseInt(fromMember as string),
-										},
-										createdAt: {
-											$lt: fromDate,
-										},
-									})
-									.sort({
-										numberOfMembers: -1,
-										createdAt: -1,
-									})
-									.limit(parseInt(limit as string))
-									.toArray()
-							: await groupsCollection
-									.find({
-										privacy: privacy,
-										numberOfMembers: {
-											$lt: parseInt(fromMember as string),
-										},
-									})
-									.sort({
-										numberOfMembers: -1,
-										createdAt: -1,
-									})
-									.limit(parseInt(limit as string))
-									.toArray()
-					).catch((error: any) => {
-						res
-							.status(500)
-							.json({ error: "Error getting groups:\n" + error.message });
-					})) || [];
+				let groups: WithId<Document>[] = [];
+				try {
+					switch (sortBy) {
+						case "latest": {
+							groups = await getSortByLatest({
+								privacy: privacy,
+								fromDate:
+									typeof fromDate === "string"
+										? fromDate
+										: ((typeof fromDate as string) || Date) === Date
+										? fromDate.toISOString()
+										: new Date().toISOString(),
+								limit: limit,
+							});
+							break;
+						}
+
+						default: {
+							res.status(400).json({ error: "Invalid sort by!" });
+							break;
+						}
+					}
+				} catch (error: any) {
+					res
+						.status(500)
+						.json({ error: "Error getting groups:\n" + error.message });
+					return;
+				}
+
+				groups = groups || [];
 
 				const groupsData = await Promise.all(
 					groups.map(async (groupDoc) => {
@@ -114,7 +112,10 @@ export default async function handler(
 							group,
 							creator: creatorData || null,
 							userJoin: userJoinData || null,
-						};
+							index: {
+								[sortBy]: parseInt(lastIndex) + groups.indexOf(groupDoc) + 1,
+							},
+						} as Partial<GroupData>;
 					})
 				);
 
@@ -136,3 +137,26 @@ export default async function handler(
 		res.status(500).json({ message: error.message, error: error });
 	}
 }
+
+const getSortByLatest = async ({
+	privacy = "public" as SiteGroup["privacy"],
+	fromDate = new Date().toISOString() as string,
+	limit = "10",
+}) => {
+	const { groupsCollection } = await groupDb();
+
+	return groupsCollection
+		? await groupsCollection
+				.find({
+					privacy: privacy,
+					createdAt: {
+						$lt: fromDate,
+					},
+				})
+				.sort({
+					createdAt: -1,
+				})
+				.limit(parseInt(limit as string))
+				.toArray()
+		: [];
+};

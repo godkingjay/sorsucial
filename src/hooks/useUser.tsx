@@ -11,7 +11,7 @@ import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { collection, doc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/router";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
 
@@ -26,9 +26,12 @@ const useUser = () => {
 	const resetAdminStateValue = useResetRecoilState(adminState);
 	const resetAdminModalStateValue = useResetRecoilState(adminModalState);
 
-	const userMemo = useMemo(() => {
-		return user;
-	}, [user]);
+	const userMemo = useMemo(() => user, [user]);
+	const userStateValueMemo = useMemo(() => userStateValue, [userStateValue]);
+	const setUserStateValueMemo = useMemo(
+		() => setUserStateValue,
+		[setUserStateValue]
+	);
 
 	/**
 	 * *  ██████╗        █████╗  ██████╗ ██████╗ ██████╗ ██╗   ██╗███╗   ██╗████████╗
@@ -44,123 +47,56 @@ const useUser = () => {
 	 * @param {string} email
 	 * @param {string} password
 	 */
-	const createAccount = async (email: string, password: string) => {
-		try {
-			await createUserWithEmailAndPassword(clientAuth, email, password)
-				.then(async ({ user: userCredential }) => {
-					if (userCredential) {
-						const date = new Date();
+	const createAccount = useCallback(
+		async (email: string, password: string) => {
+			try {
+				await createUserWithEmailAndPassword(clientAuth, email, password)
+					.then(async ({ user: userCredential }) => {
+						if (userCredential) {
+							const date = new Date();
 
-						const newUser: SiteUser = {
-							uid: userCredential.uid,
-							email: userCredential.email as string,
-							firstName: "",
-							lastName: "",
-							isFirstLogin: true,
-							roles: ["user"],
-							numberOfConnections: 0,
-							numberOfFollowers: 0,
-							updatedAt: date,
-							createdAt: date,
-						};
+							const newUser: SiteUser = {
+								uid: userCredential.uid,
+								email: userCredential.email as string,
+								firstName: "",
+								lastName: "",
+								isFirstLogin: true,
+								roles: ["user"],
+								numberOfConnections: 0,
+								numberOfFollowers: 0,
+								updatedAt: date,
+								createdAt: date,
+							};
 
-						const newUserData = await axios
-							.post(apiConfig.apiEndpoint + "/users/", {
-								privateKey: apiConfig.privateKey,
-								userData: newUser,
-							})
-							.then((res) => res.data.newUser)
-							.catch((error) => {
-								console.log("API: Create Account Error: ", error.message);
-							});
+							const newUserData = await axios
+								.post(apiConfig.apiEndpoint + "/users/", {
+									privateKey: apiConfig.privateKey,
+									userData: newUser,
+								})
+								.then((res) => res.data.newUser)
+								.catch((error) => {
+									console.log("API: Create Account Error: ", error.message);
+								});
 
-						if (newUserData) {
-							setUserStateValue((prev) => ({
-								...prev,
-								user: {
-									...newUserData,
-								},
-							}));
+							if (newUserData) {
+								setUserStateValueMemo((prev) => ({
+									...prev,
+									user: {
+										...newUserData,
+									},
+								}));
+							}
 						}
-					}
-				})
-				.catch((error: any) => {
-					console.log("Auth: Create Account Error: ", error.message);
-				});
-		} catch (error: any) {
-			console.log("Firebase: Account Creation Error!");
-		}
-	};
-
-	/**
-	 * *  ██████╗       ██╗   ██╗███████╗███████╗██████╗
-	 * * ██╔════╝██╗    ██║   ██║██╔════╝██╔════╝██╔══██╗
-	 * * ██║     ╚═╝    ██║   ██║███████╗█████╗  ██████╔╝
-	 * * ██║     ██╗    ██║   ██║╚════██║██╔══╝  ██╔══██╗
-	 * * ╚██████╗╚═╝    ╚██████╔╝███████║███████╗██║  ██║
-	 * *  ╚═════╝        ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝
-	 */
-	/**
-	 *
-	 *
-	 * @param {CreateUserType} userData
-	 */
-	const createUser = async (userData: CreateUserType) => {
-		try {
-			const newUser = {
-				firstName: userData.firstName,
-				middleName: userData.middleName,
-				lastName: userData.lastName,
-				isFirstLogin: false,
-				imageURL: "",
-				birthDate: userData.birthdate,
-				gender: userData.gender as SiteUser["gender"],
-				stateOrProvince: userData.stateOrProvince,
-				cityOrMunicipality: userData.cityOrMunicipality,
-				barangay: userData.barangay,
-				streetAddress: userData.streetAddress,
-				updatedAt: new Date(),
-			};
-
-			if (userData.profilePhoto?.url) {
-				const imageDocRef = doc(
-					collection(clientDb, `users/${user?.uid}/images`)
-				);
-
-				const userProfilePhoto = await uploadProfilePhoto(
-					userData.profilePhoto,
-					imageDocRef.id
-				).catch((error: any) => {
-					console.log("Hook: Upload Profile Photo Error: ", error.message);
-				});
-
-				if (userProfilePhoto) {
-					newUser.imageURL = userProfilePhoto.fileURL;
-				}
+					})
+					.catch((error: any) => {
+						console.log("Auth: Create Account Error: ", error.message);
+					});
+			} catch (error: any) {
+				console.log("Firebase: Account Creation Error!");
 			}
-
-			const newUserData = await axios
-				.put(apiConfig.apiEndpoint + "/users/", {
-					apiKey: userStateValue.api?.keys[0].key,
-					userData: newUser,
-					userId: user?.uid,
-				})
-				.then((res) => res.data.newUser)
-				.catch((error) => {
-					console.log("API: Create User Error: ", error.message);
-				});
-
-			setUserStateValue((prev) => ({
-				...prev,
-				user: {
-					...userStateValue.user,
-					...newUserData,
-				},
-			}));
-		} catch (error: any) {
-			console.log("Hook: User Creation Error!");
-		}
-	};
+		},
+		[setUserStateValueMemo]
+	);
 
 	/**
 	 * *  ██████╗       ██████╗ ██████╗  ██████╗ ███████╗██╗██╗     ███████╗    ██████╗ ██╗  ██╗ ██████╗ ████████╗ ██████╗
@@ -177,60 +113,139 @@ const useUser = () => {
 	 * @param {string} imageId
 	 * @return {*}
 	 */
-	const uploadProfilePhoto = async (
-		image: CreateUserType["profilePhoto"],
-		imageId: string
-	) => {
-		try {
-			const storageRef = ref(
-				clientStorage,
-				`users/${user?.uid}/images/${imageId}`
-			);
-			const response = await fetch(image?.url as string);
-			const blob = await response.blob();
-
-			await uploadBytes(storageRef, blob).catch((error: any) => {
-				console.log(
-					"Firebase Storage: Uploading Profile Photo Error: ",
-					error.message
+	const uploadProfilePhoto = useCallback(
+		async (image: CreateUserType["profilePhoto"], imageId: string) => {
+			try {
+				const storageRef = ref(
+					clientStorage,
+					`users/${userMemo?.uid}/images/${imageId}`
 				);
-				throw error;
-			});
+				const response = await fetch(image?.url as string);
+				const blob = await response.blob();
 
-			const downloadURL = await getDownloadURL(storageRef).catch(
-				(error: any) => {
+				await uploadBytes(storageRef, blob).catch((error: any) => {
 					console.log(
-						"Firebase Storage: Getting Profile Photo Download URL Error: ",
+						"Firebase Storage: Uploading Profile Photo Error: ",
 						error.message
 					);
 					throw error;
+				});
+
+				const downloadURL = await getDownloadURL(storageRef).catch(
+					(error: any) => {
+						console.log(
+							"Firebase Storage: Getting Profile Photo Download URL Error: ",
+							error.message
+						);
+						throw error;
+					}
+				);
+
+				const newImage: UserImage = {
+					id: imageId,
+					userId: userMemo?.uid as string,
+					height: image?.height as number,
+					width: image?.width as number,
+					fileName: image?.name as string,
+					fileType: image?.type as string,
+					filePath: storageRef.fullPath,
+					fileURL: downloadURL,
+					fileExtension: image?.name.split(".").pop() as string,
+					fileSize: image?.size as number,
+					createdAt: new Date(),
+				};
+
+				await axios.post(apiConfig.apiEndpoint + "/users/images/", {
+					newImage,
+				});
+
+				return newImage;
+			} catch (error: any) {
+				console.log("Firebase Storage: Upload Profile Photo Error!");
+				throw error;
+			}
+		},
+		[userMemo?.uid]
+	);
+
+	/**
+	 * *  ██████╗       ██╗   ██╗███████╗███████╗██████╗
+	 * * ██╔════╝██╗    ██║   ██║██╔════╝██╔════╝██╔══██╗
+	 * * ██║     ╚═╝    ██║   ██║███████╗█████╗  ██████╔╝
+	 * * ██║     ██╗    ██║   ██║╚════██║██╔══╝  ██╔══██╗
+	 * * ╚██████╗╚═╝    ╚██████╔╝███████║███████╗██║  ██║
+	 * *  ╚═════╝        ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 * @param {CreateUserType} userData
+	 */
+	const createUser = useCallback(
+		async (userData: CreateUserType) => {
+			try {
+				const newUser = {
+					firstName: userData.firstName,
+					middleName: userData.middleName,
+					lastName: userData.lastName,
+					isFirstLogin: false,
+					imageURL: "",
+					birthDate: userData.birthdate,
+					gender: userData.gender as SiteUser["gender"],
+					stateOrProvince: userData.stateOrProvince,
+					cityOrMunicipality: userData.cityOrMunicipality,
+					barangay: userData.barangay,
+					streetAddress: userData.streetAddress,
+					updatedAt: new Date(),
+				};
+
+				if (userData.profilePhoto?.url) {
+					const imageDocRef = doc(
+						collection(clientDb, `users/${userMemo?.uid}/images`)
+					);
+
+					const userProfilePhoto = await uploadProfilePhoto(
+						userData.profilePhoto,
+						imageDocRef.id
+					).catch((error: any) => {
+						console.log("Hook: Upload Profile Photo Error: ", error.message);
+					});
+
+					if (userProfilePhoto) {
+						newUser.imageURL = userProfilePhoto.fileURL;
+					}
 				}
-			);
 
-			const newImage: UserImage = {
-				id: imageId,
-				userId: user?.uid as string,
-				height: image?.height as number,
-				width: image?.width as number,
-				fileName: image?.name as string,
-				fileType: image?.type as string,
-				filePath: storageRef.fullPath,
-				fileURL: downloadURL,
-				fileExtension: image?.name.split(".").pop() as string,
-				fileSize: image?.size as number,
-				createdAt: new Date(),
-			};
+				const newUserData = await axios
+					.put(apiConfig.apiEndpoint + "/users/", {
+						apiKey: userStateValueMemo.api?.keys[0].key,
+						userData: newUser,
+						userId: userMemo?.uid,
+					})
+					.then((res) => res.data.newUser)
+					.catch((error) => {
+						console.log("API: Create User Error: ", error.message);
+					});
 
-			await axios.post(apiConfig.apiEndpoint + "/users/images/", {
-				newImage,
-			});
-
-			return newImage;
-		} catch (error: any) {
-			console.log("Firebase Storage: Upload Profile Photo Error!");
-			throw error;
-		}
-	};
+				setUserStateValueMemo((prev) => ({
+					...prev,
+					user: {
+						...userStateValueMemo.user,
+						...newUserData,
+					},
+				}));
+			} catch (error: any) {
+				console.log("Hook: User Creation Error!");
+			}
+		},
+		[
+			setUserStateValueMemo,
+			uploadProfilePhoto,
+			userMemo?.uid,
+			userStateValueMemo.api?.keys,
+			userStateValueMemo.user,
+		]
+	);
 
 	/**
 	 * ^ ██████╗         ██████╗██╗   ██╗██████╗ ██████╗ ███████╗███╗   ██╗████████╗    ██╗   ██╗███████╗███████╗██████╗
@@ -244,14 +259,14 @@ const useUser = () => {
 	 *
 	 *
 	 */
-	const setCurrentUserState = async () => {
+	const setCurrentUserState = useCallback(async () => {
 		setLoadingUser(true);
 		try {
-			if (user) {
+			if (userMemo) {
 				const { userData, userAPI } = await axios
 					.post(apiConfig.apiEndpoint + "/auth/signin", {
 						privateKey: apiConfig.privateKey,
-						userId: user.uid,
+						userId: userMemo.uid,
 					})
 					.then((res) => res.data)
 					.catch((error) => {
@@ -259,7 +274,7 @@ const useUser = () => {
 					});
 
 				if (userData) {
-					setUserStateValue((prev) => ({
+					setUserStateValueMemo((prev) => ({
 						...prev,
 						user: userData,
 						api: userAPI,
@@ -275,33 +290,7 @@ const useUser = () => {
 		}
 
 		setLoadingUser(false);
-	};
-
-	/**
-	 * ~ ██╗      ██████╗  ██████╗      ██████╗ ██╗   ██╗████████╗    ██╗   ██╗███████╗███████╗██████╗
-	 * ~ ██║     ██╔═══██╗██╔════╝     ██╔═══██╗██║   ██║╚══██╔══╝    ██║   ██║██╔════╝██╔════╝██╔══██╗
-	 * ~ ██║     ██║   ██║██║  ███╗    ██║   ██║██║   ██║   ██║       ██║   ██║███████╗█████╗  ██████╔╝
-	 * ~ ██║     ██║   ██║██║   ██║    ██║   ██║██║   ██║   ██║       ██║   ██║╚════██║██╔══╝  ██╔══██╗
-	 * ~ ███████╗╚██████╔╝╚██████╔╝    ╚██████╔╝╚██████╔╝   ██║       ╚██████╔╝███████║███████╗██║  ██║
-	 * ~ ╚══════╝ ╚═════╝  ╚═════╝      ╚═════╝  ╚═════╝    ╚═╝        ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝
-	 */
-	/**
-	 *
-	 *
-	 */
-	const logOutUser = async () => {
-		try {
-			await signOut(clientAuth).catch((error: any) => {
-				console.log("Hook: Sign Out Error: ", error.message);
-				throw error;
-			});
-
-			await resetUserData();
-		} catch (error: any) {
-			console.log("Hook: Sign Out Error!");
-			throw error;
-		}
-	};
+	}, [setUserStateValueMemo, userMemo]);
 
 	/**
 	 * ~ ██████╗ ███████╗███████╗███████╗████████╗    ██╗   ██╗███████╗███████╗██████╗     ███████╗████████╗ █████╗ ████████╗███████╗
@@ -315,7 +304,7 @@ const useUser = () => {
 	 *
 	 *
 	 */
-	const resetUserData = async () => {
+	const resetUserData = useCallback(async () => {
 		try {
 			resetUserStateValue();
 			resetNavigationBarStateValue();
@@ -325,35 +314,66 @@ const useUser = () => {
 			console.log("Hook: Reset User Data Error!");
 			throw error;
 		}
-	};
+	}, [
+		resetAdminModalStateValue,
+		resetAdminStateValue,
+		resetNavigationBarStateValue,
+		resetUserStateValue,
+	]);
+
+	/**
+	 * ~ ██╗      ██████╗  ██████╗      ██████╗ ██╗   ██╗████████╗    ██╗   ██╗███████╗███████╗██████╗
+	 * ~ ██║     ██╔═══██╗██╔════╝     ██╔═══██╗██║   ██║╚══██╔══╝    ██║   ██║██╔════╝██╔════╝██╔══██╗
+	 * ~ ██║     ██║   ██║██║  ███╗    ██║   ██║██║   ██║   ██║       ██║   ██║███████╗█████╗  ██████╔╝
+	 * ~ ██║     ██║   ██║██║   ██║    ██║   ██║██║   ██║   ██║       ██║   ██║╚════██║██╔══╝  ██╔══██╗
+	 * ~ ███████╗╚██████╔╝╚██████╔╝    ╚██████╔╝╚██████╔╝   ██║       ╚██████╔╝███████║███████╗██║  ██║
+	 * ~ ╚══════╝ ╚═════╝  ╚═════╝      ╚═════╝  ╚═════╝    ╚═╝        ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝
+	 */
+	/**
+	 *
+	 *
+	 */
+	const logOutUser = useCallback(async () => {
+		try {
+			await signOut(clientAuth).catch((error: any) => {
+				console.log("Hook: Sign Out Error: ", error.message);
+				throw error;
+			});
+
+			await resetUserData();
+		} catch (error: any) {
+			console.log("Hook: Sign Out Error!");
+			throw error;
+		}
+	}, [resetUserData]);
 
 	useEffect(() => {
 		if (
-			!user &&
+			!userMemo &&
 			!loading &&
 			!loadingUser &&
 			!router.pathname.match(/\/auth\//)
 		) {
 			router.push("/auth/signin");
-		} else if (user && !loading && !currentUserMounted.current) {
+		} else if (userMemo && !loading && !currentUserMounted.current) {
 			currentUserMounted.current = true;
 			setCurrentUserState();
 		}
-	}, [user, loading]);
+	}, [userMemo, loading]);
 
 	useEffect(() => {
 		if (
 			!loading &&
 			!loadingUser &&
-			userStateValue.user.uid &&
-			userStateValue.user.isFirstLogin &&
+			userStateValueMemo.user.uid &&
+			userStateValueMemo.user.isFirstLogin &&
 			currentUserMounted.current
 		) {
 			router.push("/user/create-user");
 		}
 	}, [
-		userStateValue.user.uid,
-		userStateValue.user.isFirstLogin,
+		userStateValueMemo.user.uid,
+		userStateValueMemo.user.isFirstLogin,
 		currentUserMounted.current,
 	]);
 
@@ -364,8 +384,8 @@ const useUser = () => {
 		loadingUser,
 		setLoadingUser,
 		createAccount,
-		userStateValue,
-		setUserStateValue,
+		userStateValue: userStateValueMemo,
+		setUserStateValue: setUserStateValueMemo,
 		userMounted: currentUserMounted.current,
 		createUser,
 		logOutUser,

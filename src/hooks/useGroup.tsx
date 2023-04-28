@@ -9,6 +9,7 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { QueryGroupsSortBy } from "@/lib/types/api";
 
 const useGroup = () => {
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
@@ -229,10 +230,34 @@ const useGroup = () => {
 	);
 
 	const fetchGroups = useCallback(
-		async (privacy: SiteGroup["privacy"] = "public") => {
+		async ({
+			privacy = "public" as SiteGroup["privacy"],
+			sortBy = "latest" as QueryGroupsSortBy,
+		}) => {
 			try {
-				const oldestGroup =
-					groupStateValueMemo.groups[groupStateValue.groups.length - 1] || null;
+				let refGroup;
+
+				switch (sortBy) {
+					case "latest": {
+						const refIndex = groupStateValueMemo.groups.reduceRight(
+							(acc, group, index) => {
+								if (group.index[sortBy] && acc === -1) {
+									return index;
+								}
+
+								return acc;
+							},
+							-1
+						);
+
+						refGroup = groupStateValueMemo.groups[refIndex] || null;
+						break;
+					}
+
+					default: {
+						refGroup = null;
+					}
+				}
 
 				const { groups }: { groups: GroupData[] } = await axios
 					.get(apiConfig.apiEndpoint + "/groups/groups", {
@@ -240,9 +265,10 @@ const useGroup = () => {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser?.uid,
 							privacy: privacy,
+							lastIndex: refGroup?.index[sortBy] || -1,
 							fromMember:
-								oldestGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
-							fromDate: oldestGroup?.group.createdAt || null,
+								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+							fromDate: refGroup?.group.createdAt || null,
 						},
 					})
 					.then((res) => res.data)
@@ -253,7 +279,27 @@ const useGroup = () => {
 				if (groups.length) {
 					setGroupStateValueMemo((prev) => ({
 						...prev,
-						groups: [...prev.groups, ...groups],
+						groups: prev.groups
+							.map((groupData) => {
+								const groupIndex = groups.findIndex(
+									(group) => group.group.id === groupData.group.id
+								);
+
+								const existingGroup =
+									groupIndex !== -1 ? groups[groupIndex] : null;
+
+								if (existingGroup) {
+									groups.splice(groupIndex, 1);
+
+									return {
+										...existingGroup,
+										...groupData,
+									};
+								} else {
+									return groupData;
+								}
+							})
+							.concat(groups),
 					}));
 				} else {
 					console.log("Mongo: No groups found!");

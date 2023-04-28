@@ -2,13 +2,14 @@ import { GroupData } from "@/atoms/groupAtom";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { HiUserGroup } from "react-icons/hi";
 import UserIcon from "../Icons/UserIcon";
 import moment from "moment";
 import { BsFillFileEarmarkTextFill, BsFillPersonFill } from "react-icons/bs";
 import { GoCommentDiscussion } from "react-icons/go";
 import TagList from "../Tag/TagList";
+import useGroup from "@/hooks/useGroup";
 
 type GroupCardProps = {
 	groupData: GroupData;
@@ -16,7 +17,21 @@ type GroupCardProps = {
 };
 
 const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
+	const { onJoinGroup } = useGroup();
+	const [joiningGroup, setJoiningGroup] = useState(false);
 	const router = useRouter();
+
+	const handleJoinGroup = useCallback(async () => {
+		try {
+			if (!joiningGroup) {
+				setJoiningGroup(true);
+				await onJoinGroup(groupData);
+			}
+		} catch (error: any) {
+			console.log("Hook: Join/Leave group Error:\n", error.message);
+		}
+		setJoiningGroup(false);
+	}, [groupData, joiningGroup, onJoinGroup]);
 
 	const formatNumberWithSuffix = (number: number) => {
 		const suffixes = ["", "K", "M", "B"];
@@ -96,6 +111,13 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 								/>
 							</div>
 						)}
+						<button
+							type="button"
+							title="Join"
+							onClick={handleJoinGroup}
+						>
+							{groupData.userJoin ? "Leave" : "Join"}
+						</button>
 						<div className="group-card-details-wrapper">
 							<div className="group-card-details-container">
 								<div

@@ -22,78 +22,84 @@ const useGroup = () => {
 		[setGroupStateValue]
 	);
 
-	const createGroup = useCallback(async (group: CreateGroupType) => {
-		try {
-			const groupDate = new Date();
+	const createGroup = useCallback(
+		async (group: CreateGroupType) => {
+			try {
+				const groupDate = new Date();
 
-			const newGroup: Partial<SiteGroup> = {
-				name: group.name,
-				description: group.description,
-				groupTags: group.groupTags,
-				privacy: group.privacy,
-				creatorId: authUser?.uid,
-				numberOfMembers: 1,
-				numberOfPosts: 0,
-				numberOfDiscussions: 0,
-				updatedAt: groupDate,
-				createdAt: groupDate,
-			};
+				const newGroup: Partial<SiteGroup> = {
+					name: group.name,
+					description: group.description,
+					groupTags: group.groupTags,
+					privacy: group.privacy,
+					creatorId: authUser?.uid,
+					numberOfMembers: 1,
+					numberOfPosts: 0,
+					numberOfDiscussions: 0,
+					updatedAt: groupDate,
+					createdAt: groupDate,
+				};
 
-			const {
-				groupData,
-				groupMemberData,
-			}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
-				.post(apiConfig.apiEndpoint + "/groups/", {
-					apiKey: userStateValue.api?.keys[0].key,
-					groupData: newGroup,
-				})
-				.then((response) => response.data)
-				.catch((error) => {
-					throw new Error(`API: Group Creation Error:\n${error.message}`);
-				});
-
-			if (groupData) {
-				if (group.image) {
-					const groupImageRef = doc(
-						collection(clientDb, `groups/${groupData.id}/images`)
-					);
-
-					const groupImage = await uploadGroupImage(
-						groupData,
-						group.image,
-						groupImageRef.id,
-						"image"
-					).catch((error) => {
-						throw new Error(`Hook: Group Image Upload Error:\n${error.message}`);
+				const {
+					groupData,
+					groupMemberData,
+				}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
+					.post(apiConfig.apiEndpoint + "/groups/", {
+						apiKey: userStateValue.api?.keys[0].key,
+						groupData: newGroup,
+					})
+					.then((response) => response.data)
+					.catch((error) => {
+						throw new Error(`API: Group Creation Error:\n${error.message}`);
 					});
 
-					if (groupImage) {
-						groupData.image = groupImage;
-					}
-				}
+				if (groupData) {
+					if (group.image) {
+						const groupImageRef = doc(
+							collection(clientDb, `groups/${groupData.id}/images`)
+						);
 
-				setGroupStateValueMemo(
-					(prev) =>
-						({
-							...prev,
-							groups: [
-								{
-									group: groupData,
-									userJoin: groupMemberData,
-									index: {
-										newest: 0,
-										latest: 0,
+						const groupImage = await uploadGroupImage(
+							groupData,
+							group.image,
+							groupImageRef.id,
+							"image"
+						).catch((error) => {
+							throw new Error(
+								`Hook: Group Image Upload Error:\n${error.message}`
+							);
+						});
+
+						if (groupImage) {
+							groupData.image = groupImage;
+						}
+					}
+
+					setGroupStateValueMemo(
+						(prev) =>
+							({
+								...prev,
+								groups: [
+									{
+										group: groupData,
+										creator: userStateValue.user,
+										userJoin: groupMemberData,
+										index: {
+											newest: 0,
+											latest: 0,
+										},
 									},
-								},
-								...prev.groups,
-							],
-						} as GroupState)
-				);
+									...prev.groups,
+								],
+							} as GroupState)
+					);
+				}
+			} catch (error: any) {
+				console.log(`Mongo: Create Group Error:\n${error.message}`);
 			}
-		} catch (error: any) {
-			console.log(`Mongo: Create Group Error:\n${error.message}`);
-		}
-	}, []);
+		},
+		[groupStateValueMemo]
+	);
 
 	const uploadGroupImage = useCallback(
 		async (
@@ -231,7 +237,81 @@ const useGroup = () => {
 
 			return null;
 		},
-		[]
+		[groupStateValueMemo]
+	);
+
+	const onJoinGroup = useCallback(
+		async (groupData: GroupData) => {
+			try {
+				// Check if user already joined.
+
+				if (groupData.userJoin !== null) {
+					// If user already joined, then remove.
+
+					setGroupStateValueMemo((prev) => ({
+						...prev,
+						groups: prev.groups.map((group) => {
+							if (group.group.id === groupData.group.id) {
+								return {
+									...group,
+									userJoin: null,
+								};
+							}
+
+							return group;
+						}),
+						currentGroup:
+							groupData.group.id === prev.currentGroup?.group.id
+								? {
+										...prev.currentGroup,
+										userJoin: null,
+								  }
+								: prev.currentGroup,
+					}));
+				} else {
+					// If user not joined, then join.
+
+					const date = new Date();
+
+					const newGroupMember: Partial<GroupMember> = {
+						userId: userStateValue.user.uid,
+						groupId: groupData.group.id,
+						roles:
+							groupData.group.privacy === "public" ? ["member"] : ["pending"],
+						updatedAt: date,
+						acceptedAt: groupData.group.privacy === "public" ? date : undefined,
+						requestedAt: date,
+					};
+
+					setGroupStateValueMemo(
+						(prev) =>
+							({
+								...prev,
+								groups: prev.groups.map((group) => {
+									if (group.group.id === groupData.group.id) {
+										return {
+											...groupData,
+											userJoin: newGroupMember,
+										};
+									}
+
+									return group;
+								}),
+								currentGroup:
+									groupData.group.id === prev.currentGroup?.group.id
+										? {
+												...prev.currentGroup,
+												userJoin: newGroupMember,
+										  }
+										: prev.currentGroup,
+							} as GroupState)
+					);
+				}
+			} catch (error: any) {
+				console.log(`Mongo: Join Group Error:\n${error.message}`);
+			}
+		},
+		[groupStateValueMemo]
 	);
 
 	const fetchGroups = useCallback(
@@ -315,13 +395,14 @@ const useGroup = () => {
 				console.log(`MONGO: Error while fetching groups:\n${error.message}`);
 			}
 		},
-		[]
+		[groupStateValueMemo]
 	);
 
 	return {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
 		createGroup,
+		onJoinGroup,
 		fetchGroups,
 	};
 };

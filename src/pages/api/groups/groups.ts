@@ -21,6 +21,7 @@ export default async function handler(
 			apiKey,
 			userId,
 			privacy = "public" as SiteGroup["privacy"],
+			lastIndex = "-1",
 			fromMember = Number.MAX_SAFE_INTEGER.toString(),
 			fromDate = new Date().toISOString(),
 			sortBy = "latest" as QueryGroupsSortBy,
@@ -112,7 +113,7 @@ export default async function handler(
 							creator: creatorData || null,
 							userJoin: userJoinData || null,
 							index: {
-								[sortBy]: groups.indexOf(groupDoc),
+								[sortBy]: parseInt(lastIndex) + groups.indexOf(groupDoc) + 1,
 							},
 						} as Partial<GroupData>;
 					})

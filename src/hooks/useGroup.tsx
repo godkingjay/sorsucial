@@ -265,6 +265,7 @@ const useGroup = () => {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser?.uid,
 							privacy: privacy,
+							lastIndex: refGroup?.index[sortBy] || -1,
 							fromMember:
 								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
 							fromDate: refGroup?.group.createdAt || null,
@@ -278,7 +279,27 @@ const useGroup = () => {
 				if (groups.length) {
 					setGroupStateValueMemo((prev) => ({
 						...prev,
-						groups: [...prev.groups, ...groups],
+						groups: prev.groups
+							.map((groupData) => {
+								const groupIndex = groups.findIndex(
+									(group) => group.group.id === groupData.group.id
+								);
+
+								const existingGroup =
+									groupIndex !== -1 ? groups[groupIndex] : null;
+
+								if (existingGroup) {
+									groups.splice(groupIndex, 1);
+
+									return {
+										...existingGroup,
+										...groupData,
+									};
+								} else {
+									return groupData;
+								}
+							})
+							.concat(groups),
 					}));
 				} else {
 					console.log("Mongo: No groups found!");

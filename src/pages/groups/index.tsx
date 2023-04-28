@@ -1,3 +1,4 @@
+import PageFilter from "@/components/Controls/PageFilter";
 import GroupCreationListener from "@/components/Group/GroupCreationListener";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
@@ -69,6 +70,7 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 						) : (
 							<>
 								<GroupCreationListener />
+								<PageFilter />
 							</>
 						)}
 					</section>

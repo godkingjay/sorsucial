@@ -9,6 +9,7 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { QueryGroupsSortBy } from "@/lib/types/api";
 
 const useGroup = () => {
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
@@ -229,10 +230,25 @@ const useGroup = () => {
 	);
 
 	const fetchGroups = useCallback(
-		async (privacy: SiteGroup["privacy"] = "public") => {
+		async ({
+			privacy = "public" as SiteGroup["privacy"],
+			sortBy = "latest" as QueryGroupsSortBy,
+		}) => {
 			try {
-				const oldestGroup =
-					groupStateValueMemo.groups[groupStateValue.groups.length - 1] || null;
+				let refGroup;
+
+				switch (sortBy) {
+					case "latest": {
+						refGroup =
+							groupStateValueMemo.groups[groupStateValue.groups.length - 1] ||
+							null;
+						break;
+					}
+
+					default: {
+						refGroup = null;
+					}
+				}
 
 				const { groups }: { groups: GroupData[] } = await axios
 					.get(apiConfig.apiEndpoint + "/groups/groups", {
@@ -241,8 +257,8 @@ const useGroup = () => {
 							userId: authUser?.uid,
 							privacy: privacy,
 							fromMember:
-								oldestGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
-							fromDate: oldestGroup?.group.createdAt || null,
+								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+							fromDate: refGroup?.group.createdAt || null,
 						},
 					})
 					.then((res) => res.data)

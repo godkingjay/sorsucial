@@ -26,7 +26,7 @@ const AddTags: React.FC<AddTagsProps> = ({
 		if (inputItem.trim() !== "") {
 			const formattedInput = inputItem
 				.toLowerCase()
-				.replace(/[^\w.,_-\s]/g, "")
+				.replace(/[^\w.,_\-\/\s]/g, "")
 				.replace(/[^a-zA-Z0-9]+/g, "-")
 				.replace(/-+/g, "-")
 				.replace(/(^-|-$)/g, "")

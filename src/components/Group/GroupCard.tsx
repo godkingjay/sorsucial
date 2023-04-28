@@ -36,10 +36,12 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 	};
 
 	return (
-		<div className="md:data-[top='true']:col-span-2">
+		<div
+			className="md:data-[top='true']:col-span-2 "
+			data-top={index < 3}
+		>
 			<div
 				className="shadow-page-box-1 bg-white rounded-lg entrance-animation-slide-from-right relative"
-				data-top={index < 3}
 				data-order={index + 1}
 			>
 				<div className="p-4 flex flex-row flex-wrap justify-center gap-x-4">
@@ -85,8 +87,8 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 						{groupData.group.description && (
 							<div className="flex flex-col mt-2">
 								<p className="text-xs text-gray-500">
-									{groupData.group.description.length > 128
-										? groupData.group.description.substring(0, 128).concat("...")
+									{groupData.group.description.length > 256
+										? groupData.group.description.substring(0, 256).concat("...")
 										: groupData.group.description}
 								</p>
 							</div>

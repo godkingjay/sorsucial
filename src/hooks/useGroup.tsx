@@ -239,9 +239,18 @@ const useGroup = () => {
 
 				switch (sortBy) {
 					case "latest": {
-						refGroup =
-							groupStateValueMemo.groups[groupStateValue.groups.length - 1] ||
-							null;
+						const refIndex = groupStateValueMemo.groups.reduceRight(
+							(acc, group, index) => {
+								if (group.index[sortBy] && acc === -1) {
+									return index;
+								}
+
+								return acc;
+							},
+							-1
+						);
+
+						refGroup = groupStateValueMemo.groups[refIndex] || null;
 						break;
 					}
 

@@ -1,10 +1,11 @@
+import { GroupData } from "@/atoms/groupAtom";
 import { QueryGroupsSortBy } from "./../../../lib/types/api";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
-import { Collection, Document } from "mongodb";
+import { Collection, Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -64,7 +65,7 @@ export default async function handler(
 
 		switch (req.method) {
 			case "GET": {
-				let groups;
+				let groups: WithId<Document>[] = [];
 				try {
 					switch (sortBy) {
 						case "latest": {
@@ -92,6 +93,7 @@ export default async function handler(
 						.json({ error: "Error getting groups:\n" + error.message });
 					return;
 				}
+
 				groups = groups || [];
 
 				const groupsData = await Promise.all(
@@ -109,7 +111,10 @@ export default async function handler(
 							group,
 							creator: creatorData || null,
 							userJoin: userJoinData || null,
-						};
+							index: {
+								[sortBy]: groups.indexOf(groupDoc),
+							},
+						} as Partial<GroupData>;
 					})
 				);
 

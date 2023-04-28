@@ -1,5 +1,6 @@
 import { GroupImage, GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
+import { QueryGroupsSortBy } from "@/lib/types/api";
 import { atom } from "recoil";
 
 export interface GroupData {
@@ -8,6 +9,9 @@ export interface GroupData {
 	members: GroupMember[];
 	images: GroupImage[];
 	userJoin: GroupMember | null;
+	index: {
+		[sortBy in QueryGroupsSortBy]: number;
+	};
 }
 
 export interface GroupState {

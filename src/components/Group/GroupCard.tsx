@@ -1,19 +1,14 @@
 import { GroupData } from "@/atoms/groupAtom";
-import { QueryGroupsSortBy } from "@/lib/types/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiUserGroup } from "react-icons/hi";
 import UserIcon from "../Icons/UserIcon";
-import { group } from "console";
 import moment from "moment";
-import {
-	BsFillFileEarmarkTextFill,
-	BsFillPersonFill,
-	BsPostcardFill,
-} from "react-icons/bs";
+import { BsFillFileEarmarkTextFill, BsFillPersonFill } from "react-icons/bs";
 import { GoCommentDiscussion } from "react-icons/go";
+import TagList from "../Tag/TagList";
 
 type GroupCardProps = {
 	groupData: GroupData;
@@ -37,11 +32,11 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 
 	return (
 		<div
-			className="md:data-[top='true']:col-span-2 "
+			className="data-[top='true']:md:col-span-2"
 			data-top={index < 3}
 		>
 			<div
-				className="shadow-page-box-1 bg-white rounded-lg entrance-animation-slide-from-right relative"
+				className="shadow-page-box-1 flex-1 bg-white rounded-lg entrance-animation-slide-from-right relative"
 				data-order={index + 1}
 			>
 				<div className="p-4 flex flex-row flex-wrap justify-center gap-x-4">
@@ -91,6 +86,14 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 										? groupData.group.description.substring(0, 256).concat("...")
 										: groupData.group.description}
 								</p>
+							</div>
+						)}
+						{groupData.group.groupTags && (
+							<div>
+								<TagList
+									itemName="Group Tags"
+									items={groupData.group.groupTags}
+								/>
 							</div>
 						)}
 						<div className="group-card-details-wrapper">

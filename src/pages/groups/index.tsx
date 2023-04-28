@@ -1,3 +1,4 @@
+import PageEnd from "@/components/Banner/PageBanner/PageEnd";
 import PageFilter from "@/components/Controls/PageFilter";
 import GroupCreationListener from "@/components/Group/GroupCreationListener";
 import GroupsFilter from "@/components/Group/GroupsFilter";
@@ -12,7 +13,7 @@ type GroupsPageProps = {};
 
 const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const { userStateValue, userMounted } = useUser();
-	const { groupStateValue, fetchGroups } = useGroup();
+	const { fetchGroups } = useGroup();
 	const [loadingGroups, setLoadingGroups] = useState(false);
 	const [firstLoadingGroups, setFirstLoadingGroups] = useState(false);
 	const [endReached, setEndReached] = useState(false);
@@ -22,6 +23,7 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const handleFetchGroups = useCallback(async () => {
 		setLoadingGroups(true);
 		try {
+			console.log("Fetching groups!");
 			const fetchedGroupLength = await fetchGroups({
 				privacy: "public",
 				sortBy: "latest",
@@ -76,6 +78,7 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 									sortBy="latest"
 									privacy="public"
 								/>
+								{endReached && <PageEnd message="End of Groups" />}
 							</>
 						)}
 					</section>

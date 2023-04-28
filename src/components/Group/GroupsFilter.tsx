@@ -3,6 +3,7 @@ import { SiteGroup } from "@/lib/interfaces/group";
 import { QueryGroupsSortBy } from "@/lib/types/api";
 import React, { useEffect, useState } from "react";
 import GroupCard from "./GroupCard";
+import { GroupData } from "@/atoms/groupAtom";
 
 type GroupsFilterProps = {
 	sortBy: QueryGroupsSortBy;
@@ -14,16 +15,16 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	privacy = "public",
 }) => {
 	const { groupStateValue } = useGroup();
-	const [filteredGroups, setFilteredGroups] = useState(
-		groupStateValue.groups.filter(
-			(group) => group.group.privacy === privacy && group.index[sortBy] >= 0
-		)
-	);
+	const [filteredGroups, setFilteredGroups] = useState<GroupData[]>([]);
 
 	useEffect(() => {
 		setFilteredGroups(
 			groupStateValue.groups.filter(
-				(group) => group.group.privacy === privacy && group.index[sortBy] >= 0
+				(group) =>
+					group.group.privacy === privacy &&
+					group.index &&
+					group.index[sortBy] !== undefined &&
+					group.index[sortBy] >= 0
 			)
 		);
 	}, [groupStateValue.groups, privacy, sortBy]);
@@ -36,7 +37,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 						<React.Fragment key={group.group.id}>
 							<GroupCard
 								groupData={group}
-								sortBy={sortBy}
+								index={index}
 							/>
 						</React.Fragment>
 					))}

@@ -16,6 +16,7 @@ const useGroup = () => {
 	const { authUser, userStateValue } = useUser();
 
 	const groupStateValueMemo = useMemo(() => groupStateValue, [groupStateValue]);
+
 	const setGroupStateValueMemo = useMemo(
 		() => setGroupStateValue,
 		[setGroupStateValue]
@@ -79,6 +80,10 @@ const useGroup = () => {
 								{
 									group: groupData,
 									userJoin: groupMemberData,
+									index: {
+										newest: 0,
+										latest: 0,
+									},
 								},
 								...prev.groups,
 							],

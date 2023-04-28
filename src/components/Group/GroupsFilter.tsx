@@ -2,6 +2,7 @@ import useGroup from "@/hooks/useGroup";
 import { SiteGroup } from "@/lib/interfaces/group";
 import { QueryGroupsSortBy } from "@/lib/types/api";
 import React, { useEffect, useState } from "react";
+import GroupCard from "./GroupCard";
 
 type GroupsFilterProps = {
 	sortBy: QueryGroupsSortBy;
@@ -30,17 +31,13 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	return (
 		<>
 			{filteredGroups.length > 0 && (
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					{filteredGroups.map((group, index) => (
 						<React.Fragment key={group.group.id}>
-							<div
-								className="shadow-page-box-1 bg-white rounded-lg p-4 data-[top='true']:col-span-2"
-								data-top={index < 3}
-								data-order={index + 1}
-							>
-								<p>{group.group.name}</p>
-								<p>{group.index[sortBy]}</p>
-							</div>
+							<GroupCard
+								groupData={group}
+								sortBy={sortBy}
+							/>
 						</React.Fragment>
 					))}
 				</div>

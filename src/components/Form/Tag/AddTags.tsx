@@ -61,7 +61,7 @@ const AddTags: React.FC<AddTagsProps> = ({
 						key={index}
 						className="flex items-center space-x-2 bg-blue-100 rounded-full px-2 py-1"
 					>
-						<span className="text-sm px-1">{item}</span>
+						<span className="text-sm px-1 flex-1 truncate">{item}</span>
 						<button
 							type="button"
 							title={`Remove ${itemName}`}

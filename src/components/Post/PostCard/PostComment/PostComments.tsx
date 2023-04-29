@@ -7,6 +7,7 @@ import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.
 import CommentItem from "./CommentItem";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 import { PostComment } from "@/lib/interfaces/post";
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 
 type PostCommentsProps = {
 	userStateValue: UserState;
@@ -214,6 +215,14 @@ const PostComments: React.FC<PostCommentsProps> = ({
 							</>
 						) : (
 							<>
+								{currentPost.postDeleted && (
+									<div className="duration-200 cursor-not-allowed opacity-100 sm:opacity-50 entrance-animation-float-down z-[250] sticky top-16 items-center mb-2 font-semibold hover:opacity-100 focus-within:opacity-100">
+										<ErrorBannerTextSm
+											message="This post no longer exist. It may have been deleted by the
+											creator or an admin."
+										/>
+									</div>
+								)}
 								{currentPost?.postComments
 									.filter(
 										(comment) =>
@@ -253,29 +262,32 @@ const PostComments: React.FC<PostCommentsProps> = ({
 									currentPost.postComments.filter(
 										(comment) =>
 											comment.comment.commentForId === currentPost.post.id
-									).length && (
-									<div className="flex flex-col w-full justify-start">
-										<button
-											type="button"
-											title="View More Comments"
-											className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-											onClick={handleFetchComments}
-										>
-											View More Comments
-										</button>
-									</div>
+									).length &&
+									!currentPost.postDeleted && (
+										<div className="flex flex-col w-full justify-start">
+											<button
+												type="button"
+												title="View More Comments"
+												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+												onClick={handleFetchComments}
+											>
+												View More Comments
+											</button>
+										</div>
+									)}
+								{!currentPost.postDeleted && (
+									<CommentBox
+										userStateValue={userStateValue}
+										commentForm={postCommentForm}
+										setCommentForm={setPostCommentForm}
+										commentLevel={0}
+										commentForId={currentPost?.post.id}
+										onChange={handleInputChange}
+										onSubmit={handleCommentSubmit}
+										submitting={creatingComment}
+										commentBoxRef={commentBoxRef}
+									/>
 								)}
-								<CommentBox
-									userStateValue={userStateValue}
-									commentForm={postCommentForm}
-									setCommentForm={setPostCommentForm}
-									commentLevel={0}
-									commentForId={currentPost?.post.id}
-									onChange={handleInputChange}
-									onSubmit={handleCommentSubmit}
-									submitting={creatingComment}
-									commentBoxRef={commentBoxRef}
-								/>
 							</>
 						)}
 					</div>

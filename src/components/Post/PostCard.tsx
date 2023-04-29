@@ -314,7 +314,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				<PostFooter
 					postData={postData}
 					postOptionsStateValue={postOptionsStateValue}
-					disabled={liking || deletingPost}
+					disabled={liking || deletingPost || postData.postDeleted || false}
 					handlePostLike={handlePostLike}
 					handleFooterCommentClick={handleFooterCommentClick}
 					handlePostOptions={handlePostOptions}

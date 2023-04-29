@@ -2,47 +2,144 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
-import { CommentLike, PostComment } from "@/lib/interfaces/post";
+import { CommentLike, PostComment, SitePost } from "@/lib/interfaces/post";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
+import userDb from "@/lib/db/userDb";
+import postDb from "@/lib/db/postDb";
+import { SiteUserAPI } from "@/lib/interfaces/api";
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const usersCollection = db.collection("users");
-		const postsCollection = db.collection("posts");
-		const postCommentsCollection = db.collection("post-comments");
-		const postCommentLikesCollection = db.collection("post-comment-likes");
+		const { apiKeysCollection, usersCollection } = await userDb();
+
+		const {
+			postsCollection,
+			postCommentsCollection,
+			postCommentLikesCollection,
+		} = await postDb();
+
+		const {
+			apiKey,
+			postId,
+			commentData: rawCommentData,
+		} = req.body || req.query;
+
+		const commentData: PostComment | undefined =
+			typeof rawCommentData === "string"
+				? JSON.parse(rawCommentData)
+				: rawCommentData;
+
+		if (!apiKey) {
+			return res.status(400).json({ error: "API key is missing!" });
+		}
+
+		if (!apiKeysCollection) {
+			return res
+				.status(500)
+				.json({ error: "Failed to connect to API Keys Database!" });
+		}
+
+		if (!usersCollection) {
+			return res
+				.status(500)
+				.json({ error: "Failed to connect to Users Database!" });
+		}
+
+		if (
+			!postsCollection ||
+			!postCommentsCollection ||
+			!postCommentLikesCollection
+		) {
+			return res
+				.status(500)
+				.json({ error: "Failed to connect to Posts Database!" });
+		}
+
+		const userAPI = (await apiKeysCollection.findOne({
+			"keys.key": apiKey,
+		})) as unknown as SiteUserAPI;
+
+		if (!userAPI) {
+			res.status(401).json({ error: "Invalid API key" });
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			res.status(401).json({ error: "Invalid user" });
+		}
+
+		const postData = (await postsCollection.findOne({
+			id: commentData?.postId || postId,
+		})) as unknown as SitePost;
+
+		if (!postData) {
+			res.status(404).json({
+				postDeleted: true,
+				commentDeleted: true,
+				error: "Post not found",
+			});
+		}
+
+		if (commentData && commentData.commentLevel > 0) {
+			const parentCommentData = (await postCommentsCollection.findOne({
+				id: commentData.commentForId,
+			})) as unknown as PostComment;
+
+			if (!parentCommentData) {
+				res.status(404).json({
+					parentCommentDeleted: true,
+					error: "Parent Comment not found",
+				});
+			}
+		}
 
 		switch (req.method) {
 			case "POST": {
-				const { newComment } = req.body;
+				if (!commentData) {
+					return res.status(400).json({ error: "Missing comment data" });
+				}
 
-				if (!newComment) {
-					res.status(500).json({ error: "No comment data provided" });
-					return;
+				if (
+					!commentData.postId ||
+					!commentData.creatorId ||
+					!commentData.commentText
+				) {
+					return res.status(400).json({ error: "Comment data incomplete" });
 				}
 
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
-				newComment.id = objectIdString;
+				commentData.id = objectIdString;
+				(commentData as any)._id = objectId;
 
-				const newCommentState = await postCommentsCollection.insertOne({
-					_id: objectId,
-					...newComment,
-				});
+				const newCommentState = await postCommentsCollection.findOneAndUpdate(
+					{
+						id: commentData!.id,
+					},
+					{
+						$set: {
+							...commentData!,
+						},
+					},
+					{
+						upsert: true,
+					}
+				);
 
 				const newPostState =
-					newComment.commentLevel === 0
+					commentData!.commentLevel === 0
 						? await postsCollection.updateOne(
 								{
-									id: newComment.postId,
+									id: commentData!.postId,
 								},
 								{
 									$inc: {
@@ -53,7 +150,7 @@ export default async function handler(
 						  )
 						: await postsCollection.updateOne(
 								{
-									id: newComment.postId,
+									id: commentData!.postId,
 								},
 								{
 									$inc: {
@@ -62,40 +159,83 @@ export default async function handler(
 								}
 						  );
 
-				res.status(200).json({ newCommentState, newComment });
+				res.status(201).json({
+					newCommentState,
+					newComment: commentData,
+				});
 				break;
 			}
 
 			case "PUT": {
-				const { updatedComment } = req.body;
-
-				if (!updatedComment) {
-					res.status(500).json({ error: "No comment data provided" });
-					return;
+				if (!commentData) {
+					res.status(400).json({ error: "No comment data provided" });
 				}
+
+				const existingComment = (await postCommentsCollection.findOne({
+					id: commentData!.id,
+				})) as unknown as PostComment;
+
+				if (!existingComment) {
+					res.status(404).json({
+						commentDeleted: true,
+						error: "Comment not found",
+					});
+				}
+
+				const { numberOfReplies, ...updatedComment } = commentData!;
 
 				const updatedCommentState = await postCommentsCollection.updateOne(
 					{
-						id: updatedComment.id,
+						id: commentData!.id,
 					},
 					{
-						$set: {
-							...updatedComment,
-						},
+						$set: updatedComment,
 					}
 				);
 
-				res.status(200).json({ isUpdated: updatedCommentState.acknowledged });
+				if (numberOfReplies) {
+					await postCommentsCollection.findOneAndUpdate(
+						{
+							id: commentData!.id,
+						},
+						{
+							$inc: {
+								numberOfReplies: 1,
+							},
+						}
+					);
+				}
 
+				if (updatedCommentState.modifiedCount > 0) {
+					res.status(200).json({ message: "Comment updated" });
+				} else {
+					res.status(200).json({ message: "Comment not updated" });
+				}
 				break;
 			}
 
 			case "DELETE": {
-				const { deletedComment } = req.body;
-
-				if (!deletedComment) {
+				if (!commentData!) {
 					res.status(500).json({ error: "No comment data provided" });
-					return;
+				}
+
+				if (commentData?.creatorId !== userData.uid) {
+					if (!userData.roles.includes("admin")) {
+						res.status(401).json({
+							error: "You are not authorized to delete this comment",
+						});
+					}
+				}
+
+				const existingComment = (await postCommentsCollection.findOne({
+					id: commentData!.id,
+				})) as unknown as PostComment;
+
+				if (!existingComment) {
+					res.status(404).json({
+						commentDeleted: true,
+						error: "Comment not found",
+					});
 				}
 
 				let count = 0;
@@ -148,11 +288,11 @@ export default async function handler(
 					}
 				};
 
-				await deleteComment(deletedComment);
+				await deleteComment(commentData!);
 
 				const updatePostState = await postsCollection.updateOne(
 					{
-						id: deletedComment.postId,
+						id: commentData!.postId,
 					},
 					{
 						$inc: {

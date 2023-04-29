@@ -91,6 +91,7 @@ export interface PostCommentData {
 	comment: PostComment;
 	creator: SiteUser | null;
 	userCommentLike: CommentLike | null;
+	commentDeleted?: boolean;
 }
 
 /**

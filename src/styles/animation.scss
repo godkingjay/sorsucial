@@ -31,6 +31,17 @@
 			transform: translateX(0px);
 		}
 	}
+
+	@keyframes entrance-animation-slide-from-left {
+		0% {
+			opacity: 0%;
+			transform: translateX(-16px);
+		}
+		100% {
+			opacity: 100%;
+			transform: translateX(0px);
+		}
+	}
 }
 
 @keyframes waving-animation-1 {
@@ -75,5 +86,9 @@
 
 	.entrance-animation-slide-from-right {
 		animation: entrance-animation-slide-from-right 0.25s ease-in-out;
+	}
+
+	.entrance-animation-slide-from-left {
+		animation: entrance-animation-slide-from-left 0.25s ease-in-out;
 	}
 }

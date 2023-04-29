@@ -23,7 +23,6 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const handleFetchGroups = useCallback(async () => {
 		setLoadingGroups(true);
 		try {
-			console.log("Fetching groups!");
 			const fetchedGroupLength = await fetchGroups({
 				privacy: "public",
 				sortBy: "latest",

@@ -1145,6 +1145,10 @@ const usePost = () => {
 		 */
 		fetchUserLike,
 		onPostLike,
+		/**
+		 * Actions for post
+		 */
+		actionPostDeleted,
 	};
 };
 

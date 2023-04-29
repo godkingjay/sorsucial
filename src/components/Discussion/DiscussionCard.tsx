@@ -74,6 +74,10 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 	const handleDiscussionVote = async (voteType: "upVote" | "downVote") => {
 		try {
+			if (!userStateValue.user.uid) {
+				throw new Error("You must be logged in to vote.");
+			}
+
 			if (!voting) {
 				setVoting(true);
 				await onDiscussionVote(discussionData, voteType);

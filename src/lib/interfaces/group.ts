@@ -76,17 +76,18 @@ export interface SiteGroup {
 export interface GroupMember {
 	userId: string;
 	groupId: string;
-	role:
+	roles: (
 		| "owner"
 		| "admin"
 		| "moderator"
 		| "member"
 		| "banned"
 		| "pending"
-		| "rejected";
+		| "rejected"
+	)[];
 	updatedAt: Date;
-	acceptedAt: Date;
-	rejectedAt: Date;
+	acceptedAt?: Date;
+	rejectedAt?: Date;
 	requestedAt: Date;
 }
 

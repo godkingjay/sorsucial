@@ -117,7 +117,7 @@ export default async function handler(
 				const newGroupMember: Partial<GroupMember> = {
 					userId: groupData.creatorId,
 					groupId: objectIdString,
-					role: "owner",
+					roles: ["owner", "admin", "moderator", "member"],
 					acceptedAt: groupData.createdAt,
 					updatedAt: groupData.createdAt,
 					requestedAt: groupData.createdAt,

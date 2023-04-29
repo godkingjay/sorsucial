@@ -16,79 +16,90 @@ const useGroup = () => {
 	const { authUser, userStateValue } = useUser();
 
 	const groupStateValueMemo = useMemo(() => groupStateValue, [groupStateValue]);
+
 	const setGroupStateValueMemo = useMemo(
 		() => setGroupStateValue,
 		[setGroupStateValue]
 	);
 
-	const createGroup = useCallback(async (group: CreateGroupType) => {
-		try {
-			const groupDate = new Date();
+	const createGroup = useCallback(
+		async (group: CreateGroupType) => {
+			try {
+				const groupDate = new Date();
 
-			const newGroup: Partial<SiteGroup> = {
-				name: group.name,
-				description: group.description,
-				groupTags: group.groupTags,
-				privacy: group.privacy,
-				creatorId: authUser?.uid,
-				numberOfMembers: 1,
-				numberOfPosts: 0,
-				numberOfDiscussions: 0,
-				updatedAt: groupDate,
-				createdAt: groupDate,
-			};
+				const newGroup: Partial<SiteGroup> = {
+					name: group.name,
+					description: group.description,
+					groupTags: group.groupTags,
+					privacy: group.privacy,
+					creatorId: authUser?.uid,
+					numberOfMembers: 1,
+					numberOfPosts: 0,
+					numberOfDiscussions: 0,
+					updatedAt: groupDate,
+					createdAt: groupDate,
+				};
 
-			const {
-				groupData,
-				groupMemberData,
-			}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
-				.post(apiConfig.apiEndpoint + "/groups/", {
-					apiKey: userStateValue.api?.keys[0].key,
-					groupData: newGroup,
-				})
-				.then((response) => response.data)
-				.catch((error) => {
-					throw new Error(`API: Group Creation Error:\n${error.message}`);
-				});
-
-			if (groupData) {
-				if (group.image) {
-					const groupImageRef = doc(
-						collection(clientDb, `groups/${groupData.id}/images`)
-					);
-
-					const groupImage = await uploadGroupImage(
-						groupData,
-						group.image,
-						groupImageRef.id,
-						"image"
-					).catch((error) => {
-						throw new Error(`Hook: Group Image Upload Error:\n${error.message}`);
+				const {
+					groupData,
+					groupMemberData,
+				}: { groupData: SiteGroup; groupMemberData: GroupMember } = await axios
+					.post(apiConfig.apiEndpoint + "/groups/", {
+						apiKey: userStateValue.api?.keys[0].key,
+						groupData: newGroup,
+					})
+					.then((response) => response.data)
+					.catch((error) => {
+						throw new Error(`API: Group Creation Error:\n${error.message}`);
 					});
 
-					if (groupImage) {
-						groupData.image = groupImage;
-					}
-				}
+				if (groupData) {
+					if (group.image) {
+						const groupImageRef = doc(
+							collection(clientDb, `groups/${groupData.id}/images`)
+						);
 
-				setGroupStateValueMemo(
-					(prev) =>
-						({
-							...prev,
-							groups: [
-								{
-									group: groupData,
-									userJoin: groupMemberData,
-								},
-								...prev.groups,
-							],
-						} as GroupState)
-				);
+						const groupImage = await uploadGroupImage(
+							groupData,
+							group.image,
+							groupImageRef.id,
+							"image"
+						).catch((error) => {
+							throw new Error(
+								`Hook: Group Image Upload Error:\n${error.message}`
+							);
+						});
+
+						if (groupImage) {
+							groupData.image = groupImage;
+						}
+					}
+
+					setGroupStateValueMemo(
+						(prev) =>
+							({
+								...prev,
+								groups: [
+									{
+										group: groupData,
+										creator: userStateValue.user,
+										userJoin: groupMemberData,
+										index: {
+											newest: 0,
+											latest: 0,
+										},
+									},
+									...prev.groups,
+								],
+							} as GroupState)
+					);
+				}
+			} catch (error: any) {
+				console.log(`Mongo: Create Group Error:\n${error.message}`);
 			}
-		} catch (error: any) {
-			console.log(`Mongo: Create Group Error:\n${error.message}`);
-		}
-	}, []);
+		},
+		[groupStateValueMemo]
+	);
 
 	const uploadGroupImage = useCallback(
 		async (
@@ -226,7 +237,254 @@ const useGroup = () => {
 
 			return null;
 		},
-		[]
+		[groupStateValueMemo]
+	);
+
+	/**
+	 * This code is defining a function called `onJoinGroup` using the `useCallback` hook in a
+	 * TypeScript React component. The function takes in a `groupData` object of type `GroupData` as an
+	 * argument. The function then makes an API call to either delete the user from the group or add the
+	 * user to the group depending on whether the user has already joined the group or not. If the user is
+	 * deleted from the group, the function updates the `groupStateValueMemo` state to reflect the change
+	 * in the number of members in the group. If the user is added to the group, the function updates the
+	 * `groupStateValueMemo` state to reflect the change in the number of members in the group. If there is
+	 * an error, then the function logs the error.
+	 *
+	 * @param {GroupData} groupData The group data.
+	 *
+	 * @returns {Promise<void>} The promise that resolves when the function finishes executing.
+	 *
+	 * @see {@link GroupData}
+	 * @see {@link groupStateValueMemo}
+	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usecallback | React useCallback Hook}
+	 */
+	const onJoinGroup = useCallback(
+		async (groupData: GroupData) => {
+			try {
+				/**
+				 * The date is the current date and time.
+				 * The date will be used to update the `updatedAt` property of the group.
+				 */
+				const date = new Date();
+
+				/**
+				 * This is a conditional block that handles the logic for a user joining or leaving a
+				 * group. If the user is already a member of the group, the code sends a DELETE request to the API
+				 * to remove the user from the group. If the user is not a member of the group, the code sends a
+				 * POST request to the API to add the user to the group. The code also updates the state of the
+				 * group and the user's membership status accordingly.
+				 */
+				if (groupData.userJoin !== null) {
+					/**
+					 * If the user is already a member of the group, then delete the user from the group.
+					 * The code sends a DELETE request to the API to remove the user from the group.
+					 * If there is an error, then log the error.
+					 *
+					 * The code also updates the state of the group and the user's membership status accordingly.
+					 */
+
+					/**
+					 * This code is making an HTTP DELETE request to the specified API endpoint to delete a
+					 * member from a group. It is passing the necessary data in the request body, including the API
+					 * key, group ID, and user ID. The response data is then returned if the request is successful,
+					 * and an error is thrown if there is an error in the request. The response data includes two
+					 * properties, `isDeleted` which is a boolean indicating whether the member was successfully
+					 * deleted, and `leaveStatus` which is a string indicating whether the member left the group or
+					 * the pending request was cancelled.
+					 *
+					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE | MDN DELETE Method}
+					 */
+					const {
+						isDeleted,
+						leaveStatus,
+					}: {
+						isDeleted: boolean;
+						leaveStatus: "cancel" | "leave";
+					} = await axios
+						.delete(apiConfig.apiEndpoint + "/groups/members/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								groupId: groupData.group.id,
+								userId: userStateValue.user.uid,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API: Group Member Deletion Error:\n${error.message}`
+							);
+						});
+
+					if (isDeleted) {
+						/**
+						 * This code is updating the state of a group in a React component based on whether a user
+						 * has left the group or not. It is updating the number of members in the group and the last
+						 * updated time stamp. It is also setting the userJoin property to null for the group and the
+						 * currentGroup if the user has left the current group. The code is using the
+						 * setGroupStateValueMemo function to update the state in a memoized way.
+						 */
+						setGroupStateValueMemo(
+							(prev) =>
+								({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupData.group.id) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													numberOfMembers:
+														leaveStatus === "leave"
+															? group.group.numberOfMembers - 1
+															: group.group.numberOfMembers,
+													updatedAt: date.toISOString(),
+												},
+												userJoin: null,
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										groupData.group.id === prev.currentGroup?.group.id
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														numberOfMembers:
+															leaveStatus === "leave"
+																? prev.currentGroup?.group.numberOfMembers - 1
+																: prev.currentGroup?.group.numberOfMembers,
+														updatedAt: date.toISOString(),
+													},
+													userJoin: null,
+											  }
+											: prev.currentGroup,
+								} as GroupState)
+						);
+					}
+				} else {
+					/**
+					 * If the user is not a member of the group, then add the user to the group.
+					 * The code sends a POST request to the API to add the user to the group.
+					 * If there is an error, then log the error.
+					 *
+					 * The code also updates the state of the group and the user's membership status accordingly.
+					 */
+
+					/**
+					 * This code is creating a new object of type `Partial<GroupMember>` with some properties
+					 * assigned values. The `userId` property is assigned the value of `userStateValue.user.uid`, the
+					 * `groupId` property is assigned the value of `groupData.group.id`, the `roles` property is
+					 * assigned an array of strings based on the `privacy` property of `groupData.group`, the
+					 * `updatedAt` property is assigned the value of `date`, the `acceptedAt` property is assigned the
+					 * value of `date` if the `privacy` property of `groupData.group` is "public or undefined, and the
+					 * `requestedAt` property is assigned the value of `date`.
+					 *
+					 * @see {@link https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype | TypeScript Partial<Type> Utility Type}
+					 */
+					const newGroupMember: Partial<GroupMember> = {
+						userId: userStateValue.user.uid,
+						groupId: groupData.group.id,
+						roles:
+							groupData.group.privacy === "public" ? ["member"] : ["pending"],
+						updatedAt: date,
+						acceptedAt: groupData.group.privacy === "public" ? date : undefined,
+						requestedAt: date,
+					};
+
+					/**
+					 * The code is checking if the current user is the creator of a group. If the user is the creator,
+					 * then a new group member is being created with roles set to "owner", "admin", "moderator", and
+					 * "member", and the acceptedAt property is being set to the current date.
+					 */
+					if (groupData.group.creatorId === userStateValue.user.uid) {
+						newGroupMember.roles = ["owner", "admin", "moderator", "member"];
+						newGroupMember.acceptedAt = date;
+					}
+
+					/**
+					 * This code is making a POST request to an API endpoint to create a new group member. It is
+					 * sending an API key and the data for the new group member as the request payload. The response
+					 * from the API is then assigned to the variables `groupMemberData` and `joinStatus`. If there is
+					 * an error in the API request, an error message is thrown.
+					 *
+					 * @param {string} apiConfig.apiEndpoint - The API endpoint to send the request to.
+					 * @param {string} userStateValue.api?.keys[0].key - The API key to send with the request.
+					 * @param {Partial<GroupMember>} newGroupMember - The data for the new group member to send with the request.
+					 *
+					 * @returns {Promise<{ groupMemberData: GroupMember; joinStatus: "accepted" | "added" }>} The response from the API.
+					 *
+					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST | MDN POST Method}
+					 */
+					const {
+						groupMemberData,
+						joinStatus,
+					}: { groupMemberData: GroupMember; joinStatus: "accepted" | "added" } =
+						await axios
+							.post(apiConfig.apiEndpoint + "/groups/members/", {
+								apiKey: userStateValue.api?.keys[0].key,
+								groupMemberData: newGroupMember,
+							})
+							.then((response) => response.data)
+							.catch((error) => {
+								throw new Error(
+									`API: Group Member Creation Error:\n${error.message}`
+								);
+							});
+
+					/**
+					 * This code is updating the state of a group and its members based on a join status. It is
+					 * checking if the group ID matches the current group and updating the number of members
+					 * accordingly. It is also updating the userJoin property with newGroupMember. The code
+					 * is using the setGroupStateValueMemo function to update the state of the group.
+					 * This function is a memoized version of the setGroupStateValue function.
+					 */
+					if (groupMemberData) {
+						setGroupStateValueMemo(
+							(prev) =>
+								({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupData.group.id) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													numberOfMembers:
+														joinStatus === "added"
+															? group.group.numberOfMembers + 1
+															: group.group.numberOfMembers,
+												},
+												userJoin: newGroupMember,
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										groupData.group.id === prev.currentGroup?.group.id
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														numberOfMembers:
+															joinStatus === "added"
+																? prev.currentGroup?.group.numberOfMembers + 1
+																: prev.currentGroup?.group.numberOfMembers,
+													},
+													userJoin: newGroupMember,
+											  }
+											: prev.currentGroup,
+								} as GroupState)
+						);
+					}
+				}
+			} catch (error: any) {
+				console.log(`Mongo: Join Group Error:\n${error.message}`);
+			}
+		},
+		[groupStateValueMemo]
 	);
 
 	const fetchGroups = useCallback(
@@ -310,13 +568,14 @@ const useGroup = () => {
 				console.log(`MONGO: Error while fetching groups:\n${error.message}`);
 			}
 		},
-		[]
+		[groupStateValueMemo]
 	);
 
 	return {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
 		createGroup,
+		onJoinGroup,
 		fetchGroups,
 	};
 };

@@ -71,6 +71,7 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 													src={userStateValue.userPage.user.imageURL}
 													alt="User Profile Image"
 													className="w-full bg-center object-cover"
+													sizes="(min-width: 1200px) 900px, (min-width: 768px) 700px, 100vw"
 													fill
 												/>
 											) : (

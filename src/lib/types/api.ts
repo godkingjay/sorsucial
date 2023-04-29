@@ -110,4 +110,5 @@ export type QueryGroupsSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";

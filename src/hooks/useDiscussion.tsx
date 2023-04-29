@@ -421,7 +421,8 @@ const useDiscussion = () => {
 						discussionType: discussionType,
 						privacy: privacy,
 						isOpen,
-						fromDate: lastDiscussion?.discussion.createdAt,
+						fromDate:
+							lastDiscussion?.discussion.createdAt || new Date().toISOString(),
 					},
 				})
 				.then((response) => response.data.discussions)

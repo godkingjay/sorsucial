@@ -283,6 +283,11 @@ const useGroup = () => {
 						requestedAt: date,
 					};
 
+					if (groupData.group.creatorId === userStateValue.user.uid) {
+						newGroupMember.roles = ["owner", "admin", "moderator", "member"];
+						newGroupMember.acceptedAt = date;
+					}
+
 					setGroupStateValueMemo(
 						(prev) =>
 							({

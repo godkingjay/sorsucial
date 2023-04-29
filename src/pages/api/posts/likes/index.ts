@@ -89,7 +89,9 @@ export default async function handler(
 		})) as unknown as SitePost;
 
 		if (!postData) {
-			return res.status(404).json({ error: "Post not found!" });
+			return res
+				.status(404)
+				.json({ postDeleted: true, error: "Post not found!" });
 		}
 
 		const existingLike = (await postLikesCollection.findOne({

@@ -63,6 +63,29 @@ const usePost = () => {
 	 */
 	const { authUser, userStateValue } = useUser();
 
+	const actionPostDeleted = (postDeleted: boolean, postId: string) => {
+		setPostStateValue((prev) => ({
+			...prev,
+			posts: prev.posts.map((post) => {
+				if (post.post.id === postId) {
+					return {
+						...post,
+						postDeleted,
+					};
+				}
+
+				return post;
+			}),
+			currentPost:
+				prev.currentPost?.post.id === postId
+					? {
+							...prev.currentPost,
+							postDeleted,
+					  }
+					: prev.currentPost,
+		}));
+	};
+
 	/**
 	 * *  ██████╗           ██████╗  ██████╗ ███████╗████████╗
 	 * * ██╔════╝    ██╗    ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝
@@ -691,7 +714,13 @@ const usePost = () => {
 							},
 						})
 						.catch((error) => {
-							throw new Error(`API: Post Like Error:\n${error.message}`);
+							const { postDeleted } = error.response.data;
+
+							if (postDeleted && !postData.postDeleted) {
+								actionPostDeleted(postDeleted, postData.post.id);
+							}
+
+							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
 
 					/**
@@ -776,7 +805,13 @@ const usePost = () => {
 							userLikeData: userLike,
 						})
 						.catch((error) => {
-							throw new Error(`API: Post Like Error:\n${error.message}`);
+							const { postDeleted } = error.response.data;
+
+							if (postDeleted && !postData.postDeleted) {
+								actionPostDeleted(postDeleted, postData.post.id);
+							}
+
+							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
 
 					/**
@@ -823,7 +858,7 @@ const usePost = () => {
 				throw new Error("You must be logged in to like a post");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Post Like Error", error.message);
+			console.log(`=>Mongo: Post Like Error:\n${error.message}`);
 		}
 	};
 
@@ -968,9 +1003,9 @@ const usePost = () => {
 							userId: authUser.uid,
 						},
 					})
-					.then((res) => res.data.userLike)
-					.catch((err) => {
-						throw new Error("API (GET): Getting likes error: ", err.message);
+					.then((response) => response.data.userLike)
+					.catch((error: any) => {
+						throw new Error(`API (GET): Getting likes error\n ${error.message}`);
 					});
 
 				if (userLikeData) {

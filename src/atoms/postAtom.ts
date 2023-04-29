@@ -118,6 +118,7 @@ export interface PostData {
 	userLike: PostLike | null;
 	userVote: PollVote | null;
 	postComments: PostCommentData[];
+	postDeleted?: boolean;
 }
 
 /**

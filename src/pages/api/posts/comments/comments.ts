@@ -25,8 +25,9 @@ export default async function handler(
 					getUserId,
 					getCommentPostId,
 					getCommentForId,
-					getFromLikes,
-					getFromDate,
+					getFromLikes = Number.MAX_SAFE_INTEGER.toString(),
+					getFromReplies = Number.MAX_SAFE_INTEGER.toString(),
+					getFromDate = new Date().toISOString(),
 				} = req.query;
 
 				if (!getCommentPostId) {
@@ -47,6 +48,9 @@ export default async function handler(
 								numberOfLikes: {
 									$lt: parseInt(getFromLikes as string),
 								},
+								numberOfReplies: {
+									$lt: parseInt(getFromReplies as string),
+								},
 								createdAt: {
 									$lt: getFromDate,
 								},
@@ -64,6 +68,9 @@ export default async function handler(
 								commentForId: getCommentForId,
 								numberOfLikes: {
 									$lt: parseInt(getFromLikes as string),
+								},
+								numberOfReplies: {
+									$lt: parseInt(getFromReplies as string),
 								},
 							})
 							.sort({

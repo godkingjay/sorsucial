@@ -9,6 +9,7 @@ import { postShareType } from "../PostCard";
 type PostFooterProps = {
 	postData: PostData;
 	postOptionsStateValue: PostOptionsState;
+	disabled: boolean;
 	handlePostLike: () => Promise<void>;
 	handleFooterCommentClick: () => void;
 	handlePostOptions: (name: keyof PostOptionsState) => void;
@@ -18,6 +19,7 @@ type PostFooterProps = {
 const PostFooter: React.FC<PostFooterProps> = ({
 	postData,
 	postOptionsStateValue,
+	disabled,
 	handlePostLike,
 	handleFooterCommentClick,
 	handlePostOptions,
@@ -30,8 +32,9 @@ const PostFooter: React.FC<PostFooterProps> = ({
 					type="button"
 					title="Like"
 					className="post-footer-button post-like-button"
-					onClick={handlePostLike}
+					onClick={() => !disabled && handlePostLike()}
 					data-liked={postData.userLike ? true : false}
+					disabled={disabled}
 				>
 					{postData.userLike ? (
 						<>

@@ -1,7 +1,8 @@
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { DiscussionVote } from "@/lib/interfaces/discussion";
+import { DiscussionVote, SiteDiscussion } from "@/lib/interfaces/discussion";
+import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -9,33 +10,40 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const { discussionsCollection, discussionVotesCollection } =
 			await discussionDb();
-		const { apiKeysCollection } = await userDb();
 
 		const {
 			apiKey,
-			discussionVoteData,
+			discussionVoteData: rawDiscussionVoteData,
 			userId,
 			discussionId,
 			voteType,
 		}: {
 			apiKey: string;
-			discussionVoteData: Partial<DiscussionVote>;
+			discussionVoteData: Partial<DiscussionVote> | string | undefined;
 			userId: string;
 			discussionId: string;
 			discussionVoteId: string;
 			voteType: "upVote" | "downVote";
 		} = req.body || req.query;
 
+		const discussionVoteData: DiscussionVote | undefined =
+			typeof rawDiscussionVoteData === "string"
+				? JSON.parse(rawDiscussionVoteData)
+				: rawDiscussionVoteData;
+
 		if (!apiKey) {
-			res.status(500).json({ error: "No API key provided" });
-			return;
+			return res.status(400).json({ error: "No API key provided" });
+		}
+
+		if (!apiKeysCollection) {
+			return res.status(500).json({ error: "Database connection error" });
 		}
 
 		if (!discussionsCollection || !discussionVotesCollection) {
-			res.status(500).json({ error: "No database connection" });
-			return;
+			return res.status(500).json({ error: "Database connection error" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -43,83 +51,102 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(500).json({ error: "Invalid API key" });
-			return;
+			return res.status(401).json({ error: "PERM: Invalid API key" });
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			return res.status(401).json({ error: "PERM: Invalid User" });
+		}
+
+		const discussionData = (await discussionsCollection.findOne({
+			id: discussionId || discussionVoteData?.discussionId,
+		})) as unknown as SiteDiscussion;
+
+		if (!discussionData) {
+			return res
+				.status(404)
+				.json({ discussionDeleted: true, error: "Discussion not found" });
 		}
 
 		switch (req.method) {
 			case "POST": {
 				if (!discussionVoteData) {
-					res.status(500).json({ error: "No discussion vote data provided" });
+					return res
+						.status(400)
+						.json({ error: "No discussion vote data provided" });
 				}
 
 				if (discussionVoteData.userId !== userAPI.userId) {
-					res.status(500).json({ error: "User ID does not match API key" });
+					return res
+						.status(401)
+						.json({ error: "POST - PERM: User ID does not match API key" });
 				}
 
 				if (voteType !== "upVote" && voteType !== "downVote") {
-					res.status(500).json({ error: "Invalid vote type" });
+					return res.status(400).json({ error: "Invalid vote type" });
 				}
 
-				const newDiscussionVoteState = await discussionVotesCollection.insertOne(
-					discussionVoteData
-				);
-
-				if (voteType === "upVote") {
-					await discussionsCollection
-						.updateOne(
-							{
-								id: discussionVoteData.discussionId,
-							},
-							{
-								$inc: {
-									numberOfVotes: 1,
-									numberOfUpVotes: 1,
-								},
-							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				} else {
-					await discussionsCollection
-						.updateOne(
-							{
-								id: discussionVoteData.discussionId,
-							},
-							{
-								$inc: {
-									numberOfVotes: 1,
-									numberOfDownVotes: 1,
-								},
-							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				}
-
-				res.status(200).json({
-					message: "Discussion vote created",
-					voteSuccess: newDiscussionVoteState
-						? newDiscussionVoteState.acknowledged
-						: false,
+				const existingDiscussionVote = await discussionVotesCollection.findOne({
+					userId: discussionVoteData.userId,
+					discussionId: discussionVoteData.discussionId,
 				});
+
+				if (existingDiscussionVote) {
+					return res
+						.status(409)
+						.json({ error: "User has already voted on this discussion" });
+				}
+
+				try {
+					const newDiscussionVoteState =
+						await discussionVotesCollection.findOneAndUpdate(
+							{
+								userId: discussionVoteData.userId,
+								discussionId: discussionVoteData.discussionId,
+							},
+							{
+								$set: discussionVoteData,
+							},
+							{
+								upsert: true,
+							}
+						);
+
+					const update =
+						voteType === "upVote"
+							? { $inc: { numberOfVotes: 1, numberOfUpVotes: 1 } }
+							: { $inc: { numberOfVotes: 1, numberOfDownVotes: 1 } };
+
+					await discussionsCollection.updateOne(
+						{
+							id: discussionVoteData.discussionId,
+						},
+						update
+					);
+
+					return res.status(201).json({
+						message: "Discussion vote created",
+						voteSuccess: newDiscussionVoteState
+							? newDiscussionVoteState.ok
+							: false,
+					});
+				} catch (error) {
+					console.error(error);
+					return res.status(500).json({
+						error: "An error occurred while processing your request",
+					});
+				}
 
 				break;
 			}
 
 			case "GET": {
 				if (!userId || !discussionId) {
-					res
+					return res
 						.status(500)
 						.json({ error: "No user ID or discussion ID provided" });
 				}
@@ -129,7 +156,7 @@ export default async function handler(
 					discussionId,
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					message: "Discussion vote retrieved",
 					userVote: discussionVote,
 				});
@@ -138,31 +165,53 @@ export default async function handler(
 
 			case "PUT": {
 				if (!discussionVoteData) {
-					res.status(400).json({ error: "No discussion vote data provided" });
+					return res
+						.status(400)
+						.json({ error: "No discussion vote data provided" });
 				}
 
 				if (discussionVoteData.userId !== userAPI.userId) {
-					res.status(401).json({ error: "User ID does not match API key" });
+					return res
+						.status(401)
+						.json({ error: "PUT - PERM: User ID does not match API key" });
 				}
 
 				if (voteType !== "upVote" && voteType !== "downVote") {
-					res.status(400).json({ error: "Invalid vote type" });
+					return res.status(400).json({ error: "Invalid vote type" });
 				}
 
-				const updateDiscussionVoteState =
-					await discussionVotesCollection.updateOne(
-						{
-							userId: discussionVoteData.userId,
-							discussionId: discussionVoteData.discussionId,
-						},
-						{
-							$set: discussionVoteData,
-						}
-					);
+				const existingDiscussionVote = (await discussionVotesCollection.findOne({
+					userId: discussionVoteData.userId,
+					discussionId: discussionVoteData.discussionId,
+				})) as unknown as DiscussionVote;
 
-				if (voteType === "upVote") {
-					await discussionsCollection
-						.updateOne(
+				if (!existingDiscussionVote) {
+					return res
+						.status(400)
+						.json({ error: "User has not voted on this discussion" });
+				}
+
+				if (discussionVoteData.voteValue === existingDiscussionVote.voteValue) {
+					return res.status(400).json({
+						error:
+							"User has already voted on this discussion with this vote value",
+					});
+				}
+
+				try {
+					const updateDiscussionVoteState =
+						await discussionVotesCollection.findOneAndUpdate(
+							{
+								userId: discussionVoteData.userId,
+								discussionId: discussionVoteData.discussionId,
+							},
+							{
+								$set: discussionVoteData,
+							}
+						);
+
+					if (voteType === "upVote") {
+						await discussionsCollection.findOneAndUpdate(
 							{
 								id: discussionVoteData.discussionId,
 							},
@@ -175,17 +224,9 @@ export default async function handler(
 									numberOfDownVotes: -1,
 								},
 							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				} else {
-					await discussionsCollection
-						.updateOne(
+						);
+					} else {
+						await discussionsCollection.findOneAndUpdate(
 							{
 								id: discussionVoteData.discussionId,
 							},
@@ -198,119 +239,88 @@ export default async function handler(
 									numberOfDownVotes: 1,
 								},
 							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				}
+						);
+					}
 
-				res.status(200).json({
-					message: "Discussion vote updated",
-					voteChanged: updateDiscussionVoteState
-						? updateDiscussionVoteState.acknowledged
-						: false,
-				});
+					return res.status(200).json({
+						message: "Discussion vote updated",
+						voteChanged: updateDiscussionVoteState
+							? updateDiscussionVoteState.ok
+							: false,
+					});
+				} catch (error: any) {
+					console.error(error);
+					return res.status(500).json({
+						error: "An error occurred while processing your request",
+					});
+				}
 
 				break;
 			}
 
 			case "DELETE": {
 				if (!discussionId) {
-					res.status(500).json({ error: "No discussion ID provided" });
+					return res.status(400).json({ error: "Discussion ID is missing" });
 				}
 
 				if (!userId) {
-					res.status(500).json({ error: "No user ID provided" });
+					return res.status(400).json({ error: "User ID is missing" });
 				}
 
 				if (userId !== userAPI.userId) {
-					res.status(500).json({ error: "User ID does not match API key" });
+					return res
+						.status(403)
+						.json({ error: "User ID does not match API key" });
 				}
 
-				const discussionVote = (await discussionVotesCollection.findOne({
-					discussionId,
-					userId,
-				})) as unknown as DiscussionVote;
-
-				if (!discussionVote) {
-					res.status(500).json({ error: "No discussion vote found" });
-				}
-
-				const deleteDiscussionVoteState = await discussionVotesCollection
-					.deleteOne({
+				try {
+					const discussionVote = await discussionVotesCollection.findOne({
 						discussionId,
 						userId,
-					})
-					.catch((error: any) => {
-						res.status(500).json({
-							error:
-								"Mongo(API): Deleting Discussion Vote Document Error:" +
-								error.message,
-						});
 					});
 
-				if (discussionVote.voteValue === 1) {
-					await discussionsCollection
-						.updateOne(
-							{
-								id: discussionVote.discussionId,
-							},
-							{
-								$inc: {
-									numberOfVotes: -1,
-									numberOfUpVotes: -1,
-								},
-							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				} else {
-					await discussionsCollection
-						.updateOne(
-							{
-								id: discussionVote.discussionId,
-							},
-							{
-								$inc: {
-									numberOfVotes: -1,
-									numberOfDownVotes: -1,
-								},
-							}
-						)
-						.catch((error: any) => {
-							res.status(500).json({
-								error:
-									"Mongo(API): Updating Discussion Document Error:" +
-									error.message,
-							});
-						});
-				}
+					if (!discussionVote) {
+						return res.status(404).json({ error: "Discussion vote not found" });
+					}
 
-				res.status(200).json({
-					message: "Discussion vote deleted",
-					voteDeleted: deleteDiscussionVoteState
-						? deleteDiscussionVoteState.acknowledged
-						: false,
-				});
+					const deleteDiscussionVoteState =
+						await discussionVotesCollection.deleteOne({
+							discussionId,
+							userId,
+						});
+
+					if (discussionVote.voteValue === 1) {
+						await discussionsCollection.updateOne(
+							{ id: discussionVote.discussionId },
+							{ $inc: { numberOfVotes: -1, numberOfUpVotes: -1 } }
+						);
+					} else {
+						await discussionsCollection.updateOne(
+							{ id: discussionVote.discussionId },
+							{ $inc: { numberOfVotes: -1, numberOfDownVotes: -1 } }
+						);
+					}
+
+					return res.status(200).json({
+						message: "Discussion vote deleted",
+						voteDeleted: deleteDiscussionVoteState.acknowledged,
+					});
+				} catch (error) {
+					console.error(error);
+					return res.status(500).json({
+						error: "Internal server error",
+					});
+				}
 
 				break;
 			}
 
 			default: {
-				res.status(500).json({ error: "Invalid request method" });
+				return res.status(500).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

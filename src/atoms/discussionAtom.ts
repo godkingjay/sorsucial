@@ -35,6 +35,7 @@ export interface DiscussionData {
 	creator: SiteUser | null;
 	userVote: DiscussionVote | null;
 	discussionReplies: DiscussionReplyData[];
+	discussionDeleted?: boolean;
 }
 
 export interface DiscussionState {

@@ -153,20 +153,14 @@ const AnnouncementView: React.FC<Props> = ({
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost &&
-								!postStateValue.posts.find((post) => post.post.id === postId) ? (
+								{!postStateValue.currentPost ? (
 									<PostDiscussionNotFound type="announcement" />
 								) : (
 									<>
 										<PostCard
 											userStateValue={userStateValue}
 											userMounted={userMounted}
-											postData={
-												postStateValue.currentPost ||
-												postStateValue.posts.find(
-													(post) => post.post.id === postId
-												)!
-											}
+											postData={postStateValue.currentPost}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}

@@ -74,7 +74,7 @@ export default async function handler(
 			!postCommentsCollection ||
 			!postCommentLikesCollection
 		) {
-			res.status(500).json({ error: "Cannot connect with the Post Database!" });
+			res.status(401).json({ error: "Cannot connect with the Post Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -82,8 +82,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(500).json({ error: "Invalid API key" });
-			return;
+			res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -109,25 +108,25 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			case "POST": {
-				if (!postData) {
+				if (!postData || !postData.postTitle) {
 					res.status(500).json({ error: "No post provided" });
-					return;
 				}
 
 				if (!creator) {
 					res.status(500).json({ error: "No creator provided" });
-					return;
 				}
 
 				if (postData.creatorId !== creator.uid) {
 					res.status(500).json({ error: "Creator id does not match creator" });
-					return;
 				}
 
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
 				postData.id = objectIdString;
+				postData.creatorId = creator.uid;
+				postData.updatedAt = new Date().toISOString() as unknown as Date;
+				postData.createdAt = new Date().toISOString() as unknown as Date;
 
 				const newPostState = await postsCollection.insertOne({
 					...postData,
@@ -143,13 +142,13 @@ export default async function handler(
 							$inc: {
 								total: 1,
 								posts: 1,
-							} as Partial<Tag>,
+							},
 							$set: {
 								updatedAt: postData.createdAt,
-							} as Partial<Tag>,
+							},
 							$setOnInsert: {
 								createdAt: postData.createdAt,
-							} as Partial<Tag>,
+							},
 						},
 						{
 							upsert: true,
@@ -204,28 +203,37 @@ export default async function handler(
 			 */
 			case "PUT": {
 				if (!postData) {
-					res.status(500).json({ error: "No post provided" });
-					return;
+					return res.status(400).json({ error: "No post provided" });
 				}
 
-				if (postData.creatorId !== userData.uid) {
-					if (!userData.roles.includes("admin")) {
-						res.status(400).json({
-							error: "User is not the creator of the post or an admin!",
-						});
-					}
+				if (!userData) {
+					return res.status(401).json({ error: "User is not authenticated" });
 				}
 
-				const updateState = await postsCollection.updateOne(
+				if (
+					postData.creatorId !== userData.uid &&
+					!userData.roles.includes("admin")
+				) {
+					return res
+						.status(400)
+						.json({ error: "User is not the creator of the post or an admin" });
+				}
+
+				const existingPost = await postsCollection.findOne({ id: postData.id });
+
+				if (!existingPost) {
+					return res
+						.status(400)
+						.json({ notFound: true, error: "Post does not exist" });
+				}
+
+				const updateState = await postsCollection.findOneAndUpdate(
 					{ id: postData.id },
-					{
-						$set: {
-							...postData,
-						},
-					}
+					{ $set: { ...postData } },
+					{ returnDocument: "after" }
 				);
 
-				res.status(200).json({ updateState });
+				res.status(200).json({ notFound: !updateState, updateState });
 				break;
 			}
 
@@ -246,36 +254,35 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				if (!postData) {
-					res.status(500).json({ error: "No post provided" });
-					return;
+					res.status(400).json({ error: "No post provided" });
 				}
 
 				if (postData.creatorId !== userData.uid) {
 					if (!userData.roles.includes("admin")) {
-						res.status(400).json({
+						res.status(403).json({
 							error: "User is not the creator of the post or an admin!",
 						});
 					}
 				}
 
-				const deleteState = await postsCollection.deleteOne({
-					id: postData.id,
-				});
+				const existingPost = await postsCollection.findOne({ id: postData.id });
 
-				const deletePostLikesState = await postLikesCollection.deleteMany({
-					postId: postData.id,
-				});
+				if (!existingPost) {
+					res.status(200).json({
+						isDeleted: true,
+						error: "Post does not exist!",
+					});
+				}
 
 				const deleteComment = async (comment: PostComment) => {
-					const deleteCommentState = await postCommentsCollection.deleteOne({
+					await postCommentsCollection.deleteOne({
 						id: comment.id,
 					});
 
-					const deleteCommentLikesState =
-						await postCommentLikesCollection.deleteMany({
-							postId: comment.postId,
-							commentId: comment.id,
-						});
+					await postCommentLikesCollection.deleteMany({
+						postId: comment.postId,
+						commentId: comment.id,
+					});
 
 					const nestedComments = await postCommentsCollection
 						.find({
@@ -298,6 +305,14 @@ export default async function handler(
 					await deleteComment(postComment as unknown as PostComment);
 				}
 
+				const deletePostLikesState = await postLikesCollection.deleteMany({
+					postId: postData.id,
+				});
+
+				const deleteState = await postsCollection.deleteOne({
+					id: postData.id,
+				});
+
 				postData.postTags?.map(async (tag) => {
 					await tagsCollection.updateOne(
 						{
@@ -315,7 +330,11 @@ export default async function handler(
 					);
 				});
 
-				res.status(200).json({ deleteState, deletePostLikesState });
+				res.status(200).json({
+					isDeleted: deleteState ? deleteState.acknowledged : false,
+					deleteState,
+					deletePostLikesState,
+				});
 				break;
 			}
 

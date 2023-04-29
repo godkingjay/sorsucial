@@ -13,7 +13,6 @@ import {
 	TbArrowBigUp,
 	TbArrowBigUpFilled,
 	TbArrowBigUpLinesFilled,
-	TbShare3,
 } from "react-icons/tb";
 import { GoComment } from "react-icons/go";
 import { RiArrowUpDownFill } from "react-icons/ri";
@@ -88,17 +87,17 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	const [voting, setVoting] = useState(false);
 	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
-	const handleFetchReplies = () => {
+	const handleFetchReplies = async () => {
 		setShowReplies(true);
-		fetchDiscussionReplies(
+		await fetchDiscussionReplies(
 			currentDiscussion.discussion.id,
 			replyData.reply.id,
 			setLoadingReplies
 		);
 	};
 
-	const handleDeleteReply = () => {
-		handleReplyDelete(replyData.reply, setDeletingReply);
+	const handleDeleteReply = async () => {
+		await handleReplyDelete(replyData.reply, setDeletingReply);
 	};
 
 	const handleShowReplyBox = () => {
@@ -228,10 +227,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									onClick={() =>
 										!voting &&
+										!deletingReply &&
 										handleReplyVote(voting, setVoting, replyData, "upVote")
 									}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
+									disabled={voting || deletingReply}
 								>
 									{replyData.userReplyVote?.voteValue === 1 ? (
 										<div className="icon-container">
@@ -264,10 +265,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									onClick={() =>
 										!voting &&
+										!deletingReply &&
 										handleReplyVote(voting, setVoting, replyData, "downVote")
 									}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
+									disabled={voting || deletingReply}
 								>
 									{replyData.userReplyVote?.voteValue === -1 ? (
 										<div className="icon-container">
@@ -314,8 +317,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 										type="button"
 										title="Delete"
 										className="button delete-button"
-										onClick={() => !deletingReply && handleDeleteReply()}
-										disabled={deletingReply}
+										onClick={() =>
+											!deletingReply && !voting && handleDeleteReply()
+										}
+										disabled={deletingReply || voting}
 									>
 										<div className="icon-container">
 											<MdDeleteOutline className="icon" />
@@ -390,7 +395,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 							setReplyForm={setDiscussionReplyForm}
 							replyForId={replyData.reply.id}
 							replyLevel={replyData.reply.replyLevel + 1}
-							submitting={false}
+							submitting={submitting}
 							replyBoxRef={replyBoxRef}
 							setShowReplies={setShowReplies}
 							onSubmit={onSubmit}

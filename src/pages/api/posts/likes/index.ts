@@ -1,7 +1,7 @@
 import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { PostLike } from "@/lib/interfaces/post";
+import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -41,27 +41,31 @@ export default async function handler(
 			userId,
 		} = req.body || req.query;
 
-		const userLikeData: PostLike =
+		const userLikeData: PostLike | undefined =
 			typeof rawUserLikeData === "string"
 				? JSON.parse(rawUserLikeData)
 				: rawUserLikeData;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "API key is missing!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
-				.json({ error: "Cannot connect with the API Keys Database!" });
+				.json({ error: "Failed to connect to API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Failed to connect to Users Database!" });
 		}
 
 		if (!postsCollection || !postLikesCollection) {
-			res.status(500).json({ error: "Cannot connect with the Posts Database!" });
+			return res
+				.status(500)
+				.json({ error: "Failed to connect to Posts Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -69,8 +73,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
-			return;
+			return res.status(401).json({ error: "Invalid API key!" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -78,9 +81,23 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user" });
-			return;
+			return res.status(401).json({ error: "Invalid user!" });
 		}
+
+		const postData = (await postsCollection.findOne({
+			id: userLikeData?.postId || postId,
+		})) as unknown as SitePost;
+
+		if (!postData) {
+			return res
+				.status(404)
+				.json({ postDeleted: true, error: "Post not found!" });
+		}
+
+		const existingLike = (await postLikesCollection.findOne({
+			userId: userLikeData?.userId || userId,
+			postId: userLikeData?.postId || postId,
+		})) as unknown as PostLike;
 
 		switch (req.method) {
 			/**-------------------------------------------------------------------------------------------------------------------
@@ -100,19 +117,31 @@ export default async function handler(
 			 */
 			case "POST": {
 				if (!userLikeData) {
-					res.status(400).json({ error: "No user like data provided" });
+					return res.status(400).json({ error: "No user like data provided" });
 				}
 
-				const newLikeState = await postLikesCollection
-					.insertOne(userLikeData)
-					.catch((error: any) => {
-						res
-							.status(500)
-							.json({ error: "Error inserting like data:\n" + error.message });
-					});
+				if (userAPI.userId !== userLikeData.userId) {
+					return res.status(401).json({ error: "Unauthorized user" });
+				}
 
-				const newPostStateLiked = await postsCollection
-					.updateOne(
+				if (existingLike) {
+					return res.status(400).json({ error: "User already liked this post" });
+				}
+
+				try {
+					const newLikeState = await postLikesCollection.findOneAndUpdate(
+						{
+							userId: userLikeData.userId,
+							postId: userLikeData.postId,
+						},
+						{
+							$set: userLikeData,
+						},
+						{
+							upsert: true,
+						}
+					);
+					const newPostStateLiked = await postsCollection.updateOne(
 						{
 							id: userLikeData.postId,
 						},
@@ -121,15 +150,14 @@ export default async function handler(
 								numberOfLikes: 1,
 							},
 						}
-					)
-					.catch((error: any) => {
-						res
-							.status(500)
-							.json({ error: "Error updating post data:\n" + error.message });
-					});
+					);
 
-				res.status(200).json({ newLikeState, newPostStateLiked });
-				break;
+					return res.status(200).json({ newLikeState, newPostStateLiked });
+				} catch (error: any) {
+					return res
+						.status(500)
+						.json({ error: "Server error: " + error.message });
+				}
 			}
 
 			/**-------------------------------------------------------------------------------------------------------------------
@@ -149,21 +177,14 @@ export default async function handler(
 			 */
 			case "GET": {
 				if (!postId || !userId) {
-					res.status(400).json({ error: "No post id or user id provided" });
+					return res
+						.status(400)
+						.json({ error: "No post id or user id provided" });
 				}
 
-				const like = await postLikesCollection
-					.findOne({
-						postId: postId,
-						userId: userId,
-					})
-					.catch((error: any) => {
-						res
-							.status(500)
-							.json({ error: "Error getting like data:\n" + error.message });
-					});
-
-				res.status(200).json({ userLike: like });
+				return res.status(200).json({
+					userLike: existingLike,
+				});
 				break;
 			}
 
@@ -184,7 +205,17 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				if (!postId || !userId) {
-					res.status(400).json({ error: "No post id or user id provided" });
+					return res
+						.status(400)
+						.json({ error: "No post id or user id provided" });
+				}
+
+				if (userAPI.userId !== userId) {
+					return res.status(401).json({ error: "Invalid user" });
+				}
+
+				if (!existingLike) {
+					return res.status(404).json({ error: "User has not liked this post" });
 				}
 
 				const deleteLikeState = await postLikesCollection
@@ -193,7 +224,7 @@ export default async function handler(
 						userId: userId,
 					})
 					.catch((error: any) => {
-						res
+						return res
 							.status(500)
 							.json({ error: "Error deleting like data:\n" + error.message });
 					});
@@ -210,12 +241,12 @@ export default async function handler(
 						}
 					)
 					.catch((error: any) => {
-						res
+						return res
 							.status(500)
 							.json({ error: "Error updating post data:\n" + error.message });
 					});
 
-				res.status(200).json({ deleteLikeState, newPostStateUnliked });
+				return res.status(200).json({ deleteLikeState, newPostStateUnliked });
 				break;
 			}
 
@@ -235,11 +266,11 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "Invalid method" });
+				return res.status(500).json({ error: "Invalid method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

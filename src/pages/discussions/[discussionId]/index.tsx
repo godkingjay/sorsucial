@@ -141,23 +141,14 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 							</>
 						) : (
 							<>
-								{!discussionStateValue.currentDiscussion &&
-								!discussionStateValue.discussions.find(
-									(discussion) => discussion.discussion.id === discussionId
-								) ? (
+								{!discussionStateValue.currentDiscussion ? (
 									<div>Not Found</div>
 								) : (
 									<>
 										<DiscussionCard
 											userStateValue={userStateValue}
 											userMounted={userMounted}
-											discussionData={
-												discussionStateValue.currentDiscussion ||
-												discussionStateValue.discussions.find(
-													(discussion) =>
-														discussion.discussion.id === discussionId
-												)!
-											}
+											discussionData={discussionStateValue.currentDiscussion}
 											discussionOptionsStateValue={discussionOptionsStateValue}
 											setDiscussionOptionsStateValue={
 												setDiscussionOptionsStateValue

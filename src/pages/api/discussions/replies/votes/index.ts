@@ -34,21 +34,23 @@ export default async function handler(
 				: rawReplyVoteData;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (!discussionRepliesCollection || !discussionReplyVotesCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
 		}
@@ -58,8 +60,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
-			return;
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -67,20 +68,37 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid User" });
-			return;
+			return res.status(401).json({ error: "Invalid User" });
 		}
 
 		switch (req.method) {
 			case "POST": {
 				if (!replyVoteData) {
-					res.status(400).json({ error: "No reply vote data provided!" });
+					return res.status(400).json({ error: "No reply vote data provided!" });
+				}
+
+				const existingReplyVote = (await discussionReplyVotesCollection.findOne({
+					replyId: replyVoteData.replyId,
+					userId: replyVoteData.userId,
+					discussionId: replyVoteData.discussionId,
+				})) as unknown as ReplyVote;
+
+				if (existingReplyVote) {
+					return res.status(400).json({ error: "Reply vote already exists!" });
 				}
 
 				const newReplyVoteState = await discussionReplyVotesCollection
-					.insertOne(replyVoteData)
+					.findOneAndUpdate(
+						{
+							replyId: replyVoteData.replyId,
+							userId: replyVoteData.userId,
+							discussionId: replyVoteData.discussionId,
+						},
+						{ $set: replyVoteData },
+						{ upsert: true }
+					)
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error:
 								"Mongo(API): Creating new reply vote error\n" + error.message,
 						});
@@ -88,7 +106,9 @@ export default async function handler(
 
 				const newDiscussionReplyStateVoted = await discussionRepliesCollection
 					.updateOne(
-						{ id: replyVoteData.replyId },
+						{
+							id: replyVoteData.replyId,
+						},
 						{
 							$inc: {
 								numberOfVotes: 1,
@@ -98,18 +118,16 @@ export default async function handler(
 						}
 					)
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error:
 								"Mongo(API): Updating discussion reply error\n" + error.message,
 						});
 					});
 
-				res.status(200).json({
+				return res.status(200).json({
 					newReplyVoteState,
 					newDiscussionReplyStateVoted,
-					voteSuccess: newReplyVoteState
-						? newReplyVoteState.acknowledged
-						: false,
+					voteSuccess: newReplyVoteState ? newReplyVoteState.ok === 1 : false,
 				});
 
 				break;
@@ -117,19 +135,33 @@ export default async function handler(
 
 			case "PUT": {
 				if (!replyVoteData) {
-					res.status(400).json({ error: "No reply vote data provided!" });
+					return res.status(400).json({ error: "No reply vote data provided!" });
 				}
 
 				if (replyVoteData.userId !== userData.uid) {
-					res.status(401).json({ error: "Unauthorized" });
+					return res.status(401).json({ error: "Unauthorized" });
 				}
 
 				if (replyVoteData.voteValue !== 1 && replyVoteData.voteValue !== -1) {
-					res.status(400).json({ error: "Invalid vote value" });
+					return res.status(400).json({ error: "Invalid vote value" });
+				}
+
+				const existingReplyVote = (await discussionReplyVotesCollection.findOne({
+					replyId: replyVoteData.replyId,
+					userId: replyVoteData.userId,
+					discussionId: replyVoteData.discussionId,
+				})) as unknown as ReplyVote;
+
+				if (!existingReplyVote) {
+					return res.status(400).json({ error: "Reply vote does not exist!" });
+				}
+
+				if (existingReplyVote.voteValue === replyVoteData.voteValue) {
+					return res.status(400).json({ error: "Reply vote already exists!" });
 				}
 
 				const newReplyVoteState = await discussionReplyVotesCollection
-					.updateOne(
+					.findOneAndUpdate(
 						{
 							userId: replyVoteData.userId,
 							replyId: replyVoteData.replyId,
@@ -138,15 +170,16 @@ export default async function handler(
 						{ $set: replyVoteData }
 					)
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: "Mongo(API): Updating reply vote error\n" + error.message,
 						});
 					});
 
 				const newDiscussionReplyStateVoted = await discussionRepliesCollection
 					.updateOne(
-						{ id: replyVoteData.replyId },
-
+						{
+							id: replyVoteData.replyId,
+						},
 						{
 							$set: {
 								updatedAt: replyVoteData.updatedAt,
@@ -158,16 +191,14 @@ export default async function handler(
 						}
 					)
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error:
 								"Mongo(API): Updating discussion reply error\n" + error.message,
 						});
 					});
 
-				res.status(200).json({
-					voteChanged: newReplyVoteState
-						? newReplyVoteState.acknowledged
-						: false,
+				return res.status(200).json({
+					voteChanged: newReplyVoteState ? newReplyVoteState.ok === 1 : false,
 				});
 
 				break;
@@ -175,11 +206,11 @@ export default async function handler(
 
 			case "DELETE": {
 				if (!replyVoteData) {
-					res.status(400).json({ error: "No reply vote data provided!" });
+					return res.status(400).json({ error: "No reply vote data provided!" });
 				}
 
 				if (userAPI.userId !== replyVoteData.userId) {
-					res.status(401).json({ error: "Unauthorized" });
+					return res.status(401).json({ error: "Unauthorized" });
 				}
 
 				const deletedReplyVoteState = await discussionReplyVotesCollection
@@ -189,7 +220,7 @@ export default async function handler(
 						discussionId: replyVoteData.discussionId,
 					})
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: "Mongo(API): Deleting reply vote error\n" + error.message,
 						});
 					});
@@ -197,7 +228,9 @@ export default async function handler(
 				const updatedDiscussionReplyStateVoted =
 					await discussionRepliesCollection
 						.updateOne(
-							{ id: replyVoteData.replyId },
+							{
+								id: replyVoteData.replyId,
+							},
 							{
 								$inc: {
 									numberOfVotes: -1,
@@ -207,14 +240,14 @@ export default async function handler(
 							}
 						)
 						.catch((error) => {
-							res.status(500).json({
+							return res.status(500).json({
 								error:
 									"Mongo(API): Updating discussion reply error\n" +
 									error.message,
 							});
 						});
 
-				res.status(200).json({
+				return res.status(200).json({
 					message: deletedReplyVoteState ? "Vote Deleted" : "Vote Not deleted",
 					voteDeleted: deletedReplyVoteState
 						? deletedReplyVoteState.acknowledged
@@ -225,11 +258,11 @@ export default async function handler(
 			}
 
 			default: {
-				res.status(400).json({ error: "Invalid request method" });
+				return res.status(400).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

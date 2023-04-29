@@ -152,8 +152,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost &&
-								!postStateValue.posts.find((post) => post.post.id === postId) ? (
+								{!postStateValue.currentPost ? (
 									<div>Not Found</div>
 								) : (
 									<>

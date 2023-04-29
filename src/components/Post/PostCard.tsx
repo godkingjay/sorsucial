@@ -1,6 +1,6 @@
 import { PostData, PostOptionsState } from "@/atoms/postAtom";
 import { UserState } from "@/atoms/userAtom";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
 import { SetterOrUpdater } from "recoil";
@@ -46,6 +46,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	);
 	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
 	const [liking, setLiking] = useState(false);
+	const [deletingPost, setDeletingPost] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handlePostOptions = (name: keyof PostOptionsState) => {
@@ -74,16 +75,23 @@ const PostCard: React.FC<PostCardProps> = ({
 	const handleDeletePost = async () => {
 		try {
 			if (userStateValue.user.uid !== postData.post.creatorId) {
-				throw new Error("You are not authorized to delete this post.");
+				if (!userStateValue.user.roles.includes("admin")) {
+					throw new Error("You are not authorized to delete this post.");
+				}
 			}
 
-			await deletePost(postData);
+			if (!deletingPost) {
+				setDeletingPost(true);
+				await deletePost(postData);
+			}
 		} catch (error: any) {
 			console.log("Hook: Post Deletion Erro: ", error.message);
 		}
+
+		setDeletingPost(false);
 	};
 
-	const handlePostLike = async () => {
+	const handlePostLike = useCallback(async () => {
 		try {
 			if (!userStateValue.user.uid) {
 				throw new Error("You have to be logged in to like a post.");
@@ -98,7 +106,7 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 
 		setLiking(false);
-	};
+	}, [liking, onPostLike, postData, userStateValue.user.uid]);
 
 	const handleImageOrVideoNav = (direction: "previous" | "next") => {
 		if (direction === "previous") {
@@ -306,6 +314,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				<PostFooter
 					postData={postData}
 					postOptionsStateValue={postOptionsStateValue}
+					disabled={liking || deletingPost || postData.postDeleted || false}
 					handlePostLike={handlePostLike}
 					handleFooterCommentClick={handleFooterCommentClick}
 					handlePostOptions={handlePostOptions}

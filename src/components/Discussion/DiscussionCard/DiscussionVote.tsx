@@ -9,6 +9,7 @@ import {
 
 type DiscussionVoteProps = {
 	discussionData: DiscussionData;
+	voting: boolean;
 	isSingleDiscussionPage: () => boolean;
 	handleDiscussionVote: (voteType: "upVote" | "downVote") => void;
 	formatWithSuffix: (number: number) => string;
@@ -16,6 +17,7 @@ type DiscussionVoteProps = {
 
 const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 	discussionData,
+	voting,
 	isSingleDiscussionPage,
 	handleDiscussionVote,
 	formatWithSuffix,
@@ -34,9 +36,10 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 								? "Remove Upvote"
 								: "Upvote"
 						}
-						onClick={() => handleDiscussionVote("upVote")}
+						onClick={() => !voting && handleDiscussionVote("upVote")}
 						className="vote-button upvote-button"
 						data-voted={discussionData.userVote?.voteValue === 1}
+						disabled={voting}
 					>
 						{discussionData.userVote?.voteValue === 1 ? (
 							<div className="icon-container">
@@ -67,9 +70,10 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 								? "Remove Downvote"
 								: "Downvote"
 						}
-						onClick={() => handleDiscussionVote("downVote")}
+						onClick={() => !voting && handleDiscussionVote("downVote")}
 						className="vote-button downvote-button"
 						data-voted={discussionData.userVote?.voteValue === -1}
+						disabled={voting}
 					>
 						{discussionData.userVote?.voteValue === -1 ? (
 							<div className="icon-container">

@@ -1,5 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
 import { DiscussionReplyData, DiscussionState } from "@/atoms/discussionAtom";
@@ -87,77 +87,89 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 		}
 	};
 
-	const handleReplyVote = async (
-		voting: boolean,
-		setVoting: React.Dispatch<React.SetStateAction<boolean>>,
-		replyData: DiscussionReplyData,
-		voteType: "upVote" | "downVote"
-	) => {
-		if (!replyData) {
-			return;
-		}
-
-		try {
-			if (!userStateValue.user.uid) {
+	const handleReplyVote = useCallback(
+		async (
+			voting: boolean,
+			setVoting: React.Dispatch<React.SetStateAction<boolean>>,
+			replyData: DiscussionReplyData,
+			voteType: "upVote" | "downVote"
+		) => {
+			if (!replyData) {
 				return;
 			}
 
-			if (!voting) {
-				setVoting(true);
-				await onReplyVote(replyData, voteType);
+			try {
+				if (!userStateValue.user.uid) {
+					return;
+				}
+
+				if (!voting) {
+					setVoting(true);
+					await onReplyVote(replyData, voteType);
+				}
+			} catch (error: any) {
+				console.log("Hook: Error while voting for reply:\n", error.message);
 			}
-		} catch (error: any) {
-			console.log("Hook: Error while voting for reply:\n", error.message);
-		}
-		setVoting(false);
-	};
+			setVoting(false);
+		},
+		[onReplyVote, userStateValue.user.uid]
+	);
 
-	const handleReplyDelete = async (
-		reply: Reply,
-		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
-	) => {
-		if (!reply) {
-			return;
-		}
+	const handleReplyDelete = useCallback(
+		async (
+			reply: Reply,
+			setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+		) => {
+			if (!reply) {
+				return;
+			}
 
-		setDeleting(true);
-		try {
-			await deleteReply(reply);
-		} catch (error: any) {
-			console.log("Hook: Error while deleting reply:\n", error.message);
-		}
-		setDeleting(false);
-	};
+			setDeleting(true);
+			try {
+				await deleteReply(reply);
+			} catch (error: any) {
+				console.log("Hook: Error while deleting reply:\n", error.message);
+			}
+			setDeleting(false);
+		},
+		[deleteReply]
+	);
 
-	const handleReplySubmit = async (
-		event: React.FormEvent<HTMLFormElement>,
-		replyForm: DiscussionReplyFormType,
-		setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>,
-		replyForId: string,
-		replyLevel: number
-	) => {
-		event.preventDefault();
+	const handleReplySubmit = useCallback(
+		async (
+			event: React.FormEvent<HTMLFormElement>,
+			replyForm: DiscussionReplyFormType,
+			setReplyForm: React.Dispatch<
+				React.SetStateAction<DiscussionReplyFormType>
+			>,
+			replyForId: string,
+			replyLevel: number
+		) => {
+			event.preventDefault();
 
-		if (creatingReply) return;
+			try {
+				if (!creatingReply) {
+					setCreatingReply(true);
+					await createReply({
+						...replyForm,
+						replyForId,
+						replyLevel,
+					});
+					setReplyForm((prev) => ({
+						...prev,
+						replyText: "",
+					}));
+				} else {
+					console.log("Hook: Already creating reply");
+				}
+			} catch (error) {
+				console.log("Hook: Error while creating comment: ", error);
+			}
 
-		setCreatingReply(true);
-
-		try {
-			await createReply({
-				...replyForm,
-				replyForId,
-				replyLevel,
-			});
-			setReplyForm((prev) => ({
-				...prev,
-				replyText: "",
-			}));
-		} catch (error) {
-			console.log("Hook: Error while creating comment: ", error);
-		}
-
-		setCreatingReply(false);
-	};
+			setCreatingReply(false);
+		},
+		[createReply, creatingReply]
+	);
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,

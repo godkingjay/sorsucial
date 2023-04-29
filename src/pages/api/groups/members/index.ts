@@ -120,6 +120,13 @@ export default async function handler(
 			id: groupId || groupMemberData.groupId,
 		})) as unknown as SiteGroup;
 
+		if (!groupData) {
+			res.status(404).json({
+				groupDeleted: true,
+				error: "Group not found!",
+			});
+		}
+
 		switch (req.method) {
 			/**
 			 * This is a case statement that handles the HTTP POST request method.

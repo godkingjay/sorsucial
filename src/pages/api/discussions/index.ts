@@ -64,13 +64,16 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(500).json({ error: "Invalid API key" });
-			return;
+			res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
 			uid: userAPI.userId,
 		})) as unknown as SiteUser;
+
+		if (!userData) {
+			res.status(401).json({ error: "Invalid User" });
+		}
 
 		switch (req.method) {
 			case "POST": {
@@ -146,6 +149,16 @@ export default async function handler(
 							error: "User is not the creator of the discussion or an admin!",
 						});
 					}
+				}
+
+				const existingDiscussion = (await discussionsCollection.findOne({
+					id: discussionData.id,
+				})) as unknown as SiteDiscussion;
+
+				if (!existingDiscussion) {
+					res
+						.status(200)
+						.json({ isDeleted: true, error: "Discussion does not exist!" });
 				}
 
 				const deleteReply = async (reply: Reply) => {

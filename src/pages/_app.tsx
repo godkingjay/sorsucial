@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout/Layout";
+import { siteDetails } from "@/lib/host";
 import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -20,6 +21,10 @@ export default function App({ Component, pageProps }: AppProps) {
 					content="SorSUcial"
 				/>
 				<meta
+					property="description"
+					content="SorSUcial is the unofficial social media platform for the University of Sorsogon State University."
+				/>
+				<meta
 					property="og:description"
 					content="SorSUcial is the unofficial social media platform for the University of Sorsogon State University."
 				/>
@@ -29,11 +34,11 @@ export default function App({ Component, pageProps }: AppProps) {
 				/>
 				<meta
 					property="og:url"
-					content="https://yoursite.com/"
+					content={siteDetails.host}
 				/>
 				<meta
 					property="og:image"
-					content="/assets/logo/sorsucial-c-lg.png"
+					content="./assets/logo/sorsucial-c-lg.png"
 				/>
 				<meta
 					property="og:image:alt"

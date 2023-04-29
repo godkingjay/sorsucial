@@ -7,6 +7,7 @@ import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
 import CommentItemCard from "./CommentItem/CommentItemCard";
+import { FiAlertCircle } from "react-icons/fi";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -26,6 +27,7 @@ type CommentItemProps = {
 	) => Promise<void>;
 	handleCommentDelete: (
 		comment: PostCommentData["comment"],
+		deleting: boolean,
 		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
 	) => Promise<void>;
 	onSubmit: (
@@ -74,17 +76,25 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const [liking, setLiking] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
-	const handleFetchComments = () => {
+	const handleFetchComments = async () => {
 		setShowComments(true);
-		fetchPostComments(
-			currentPost.post.id,
-			commentData.comment.id,
-			setLoadingComments
-		);
+		if (!loadingComments && !commentData.commentDeleted) {
+			await fetchPostComments(
+				currentPost.post.id,
+				commentData.comment.id,
+				setLoadingComments
+			);
+		}
 	};
 
-	const handleDeleteComment = () => {
-		handleCommentDelete(commentData.comment, setDeletingComment);
+	const handleDeleteComment = async () => {
+		if (!liking && !deletingComment && !commentData.commentDeleted) {
+			await handleCommentDelete(
+				commentData.comment,
+				deletingComment,
+				setDeletingComment
+			);
+		}
 	};
 
 	const handleShowCommentBox = () => {
@@ -128,44 +138,64 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							commentData={commentData}
 							formatNumberWithSuffix={formatNumberWithSuffix}
 						/>
+						{commentData.commentDeleted && (
+							<div className="inline-flex gap-x-2 entrance-animation-slide-from-left text-red-500">
+								<div className="h-4 w-4 aspect-square">
+									<FiAlertCircle className="h-full w-full" />
+								</div>
+								<p className="text-xs">This comment no longer exist</p>
+							</div>
+						)}
 						<div className="flex flex-row items-center gap-x-4 gap-y-2 text-xs font-semibold px-4 text-gray-500 flex-wrap">
-							<button
-								type="button"
-								title="Like"
-								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
-								onClick={() => handleCommentLike(liking, setLiking, commentData)}
-								comment-liked={
-									commentData.userCommentLike?.commentId ===
-									commentData.comment.id
-										? "true"
-										: "false"
-								}
-							>
-								{commentData.userCommentLike?.commentId ===
-								commentData.comment.id
-									? "Liked"
-									: "Like"}
-							</button>
-							{postCommentForm.commentLevel < maxCommentLevel && (
-								<button
-									type="button"
-									title="Reply"
-									className="btn-text"
-									onClick={handleShowCommentBox}
-								>
-									Reply
-								</button>
-							)}
-							{(userStateValue.user.uid === commentData.comment.creatorId ||
-								userStateValue.user.roles.includes("admin")) && (
-								<button
-									type="button"
-									title="Delete"
-									className="btn-text hover:text-red-500"
-									onClick={handleDeleteComment}
-								>
-									Delete
-								</button>
+							{!commentData.commentDeleted && (
+								<>
+									<button
+										type="button"
+										title="Like"
+										className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
+										onClick={() =>
+											!liking &&
+											!deletingComment &&
+											handleCommentLike(liking, setLiking, commentData)
+										}
+										comment-liked={
+											commentData.userCommentLike?.commentId ===
+											commentData.comment.id
+												? "true"
+												: "false"
+										}
+										disabled={liking || deletingComment}
+									>
+										{commentData.userCommentLike?.commentId ===
+										commentData.comment.id
+											? "Liked"
+											: "Like"}
+									</button>
+									{postCommentForm.commentLevel < maxCommentLevel && (
+										<button
+											type="button"
+											title="Reply"
+											className="btn-text"
+											onClick={handleShowCommentBox}
+										>
+											Reply
+										</button>
+									)}
+									{(userStateValue.user.uid === commentData.comment.creatorId ||
+										userStateValue.user.roles.includes("admin")) && (
+										<button
+											type="button"
+											title="Delete"
+											className="btn-text hover:text-red-500"
+											onClick={() =>
+												!liking && !deletingComment && handleDeleteComment()
+											}
+											disabled={deletingComment || liking}
+										>
+											Delete
+										</button>
+									)}
+								</>
 							)}
 							<p className="font-normal text-2xs w-max">
 								{moment(commentData.comment.createdAt).diff(moment(), "days") >
@@ -222,41 +252,45 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							)}
 						</div>
 					)}
-					{commentData.comment.numberOfReplies > remainingReplies && (
-						<div className="flex flex-col w-full justify-start">
-							<button
-								type="button"
-								title="Show Replies"
-								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-								onClick={handleFetchComments}
-							>
-								{showComments
-									? "View More Replies"
-									: `Show ${
-											commentData.comment.numberOfReplies - remainingReplies
-									  } ${
-											commentData.comment.numberOfReplies - remainingReplies ===
-											1
-												? "Reply"
-												: "Replies"
-									  }`}
-							</button>
-						</div>
-					)}
-					{showCommentBox && postCommentForm.commentLevel < maxCommentLevel && (
-						<CommentBox
-							userStateValue={userStateValue}
-							commentForm={postCommentForm}
-							setCommentForm={setPostCommentForm}
-							commentForId={commentData.comment.id}
-							commentLevel={commentData.comment.commentLevel + 1}
-							submitting={false}
-							commentBoxRef={commentBoxRef}
-							setShowComments={setShowComments}
-							onSubmit={onSubmit}
-							onChange={onChange}
-						/>
-					)}
+					{commentData.comment.numberOfReplies > remainingReplies &&
+						!commentData.commentDeleted && (
+							<div className="flex flex-col w-full justify-start">
+								<button
+									type="button"
+									title="Show Replies"
+									className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+									onClick={() => !loadingComments && handleFetchComments()}
+								>
+									{showComments
+										? "View More Replies"
+										: `Show ${
+												commentData.comment.numberOfReplies - remainingReplies
+										  } ${
+												commentData.comment.numberOfReplies -
+													remainingReplies ===
+												1
+													? "Reply"
+													: "Replies"
+										  }`}
+								</button>
+							</div>
+						)}
+					{showCommentBox &&
+						postCommentForm.commentLevel < maxCommentLevel &&
+						!commentData.commentDeleted && (
+							<CommentBox
+								userStateValue={userStateValue}
+								commentForm={postCommentForm}
+								setCommentForm={setPostCommentForm}
+								commentForId={commentData.comment.id}
+								commentLevel={commentData.comment.commentLevel + 1}
+								submitting={false}
+								commentBoxRef={commentBoxRef}
+								setShowComments={setShowComments}
+								onSubmit={onSubmit}
+								onChange={onChange}
+							/>
+						)}
 				</div>
 			</div>
 		</>

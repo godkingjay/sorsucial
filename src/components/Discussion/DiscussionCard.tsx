@@ -72,15 +72,15 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		}
 	};
 
-	const handleDiscussionVote = (voteType: "upVote" | "downVote") => {
+	const handleDiscussionVote = async (voteType: "upVote" | "downVote") => {
 		try {
 			if (!userStateValue.user.uid) {
-				throw new Error("You have to be logged in to vote in a discussion.");
+				throw new Error("You must be logged in to vote.");
 			}
 
 			if (!voting) {
 				setVoting(true);
-				onDiscussionVote(discussionData, voteType);
+				await onDiscussionVote(discussionData, voteType);
 			} else {
 				throw new Error("You can only vote once.");
 			}
@@ -239,6 +239,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			<div className="flex flex-row">
 				<DiscussionVote
 					discussionData={discussionData}
+					voting={voting}
 					isSingleDiscussionPage={isSingleDiscussionPage}
 					handleDiscussionVote={handleDiscussionVote}
 					formatWithSuffix={formatNumberWithSuffix}

@@ -28,23 +28,19 @@ export default async function handler(
 			typeof rawReplyData === "string" ? JSON.parse(rawReplyData) : rawReplyData;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(401).json({ error: "No API key provided" });
 		}
 
-		if (!apiKeysCollection) {
-			res
-				.status(500)
-				.json({ error: "Cannot connect with the API Keys Database!" });
-		}
-
-		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+		if (!apiKeysCollection || !usersCollection) {
+			return res
+				.status(503)
+				.json({ error: "Cannot connect with the API or Users Database" });
 		}
 
 		if (!discussionsCollection || !discussionVotesCollection) {
-			res
-				.status(500)
-				.json({ error: "Cannot connect with the Discussions Database!" });
+			return res
+				.status(503)
+				.json({ error: "Cannot connect with the Discussions Database" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -52,7 +48,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(403).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -60,13 +56,13 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user" });
+			return res.status(404).json({ error: "User not found" });
 		}
 
 		switch (req.method) {
 			case "POST": {
 				if (!replyData) {
-					res.status(400).json({ error: "No reply data provided!" });
+					return res.status(400).json({ error: "Invalid reply data provided!" });
 				}
 
 				const objectId = new ObjectId();
@@ -74,18 +70,22 @@ export default async function handler(
 
 				replyData.id = objectIdString;
 
+				const existingReply = await discussionRepliesCollection.findOne({
+					id: replyData.id,
+				});
+
+				if (existingReply) {
+					return res.status(409).json({ error: "Reply already exists!" });
+				}
+
 				const newReplyState = await discussionRepliesCollection
 					.insertOne({
 						_id: objectId,
 						...replyData,
 					})
 					.catch((error: any) => {
-						res.status(500).json({
-							error: `
-                Mongo (API):
-                Inserting reply error:
-                ${error.message}
-              `,
+						return res.status(500).json({
+							error: `Mongo (API): Inserting reply error:\n${error.message}`,
 						});
 					});
 
@@ -109,16 +109,12 @@ export default async function handler(
 								}
 						  ),
 				]).catch((error: any) => {
-					res.status(500).json({
-						error: `
-              Mongo (API):
-              Updating discussion error:
-              ${error.message}
-            `,
+					return res.status(500).json({
+						error: `Mongo (API): Updating discussion error:\n${error.message}`,
 					});
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					newReplyState,
 					newReplyData: replyData,
 				});
@@ -126,8 +122,22 @@ export default async function handler(
 			}
 
 			case "PUT": {
-				if (!replyData) {
-					res.status(400).json({ error: "No reply data provided!" });
+				if (!replyData || !replyData.id) {
+					return res.status(400).json({ error: "No reply data provided!" });
+				}
+
+				if (replyData.creatorId !== userAPI.userId) {
+					if (!userData.roles.includes("admin")) {
+						return res.status(401).json({ error: "Unauthorized!" });
+					}
+				}
+
+				const existingReply = await discussionRepliesCollection.findOne({
+					id: replyData.id,
+				});
+
+				if (!existingReply) {
+					return res.status(404).json({ error: "Reply not found!" });
 				}
 
 				const updatedReplyState = await discussionRepliesCollection
@@ -140,12 +150,12 @@ export default async function handler(
 						}
 					)
 					.catch((error: any) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: `Mongo (API):\nUpdating reply error:\n${error.message}`,
 						});
 					});
 
-				res.status(200).json({
+				return res.status(200).json({
 					isUpdated: updatedReplyState ? updatedReplyState.acknowledged : false,
 				});
 
@@ -154,13 +164,21 @@ export default async function handler(
 
 			case "DELETE": {
 				if (!replyData) {
-					res.status(400).json({ error: "No reply data provided!" });
+					return res.status(400).json({ error: "No reply data provided!" });
 				}
 
 				if (userAPI.userId !== replyData.creatorId) {
 					if (!userData.roles.includes("admin")) {
-						res.status(401).json({ error: "Unauthorized!" });
+						return res.status(401).json({ error: "Unauthorized!" });
 					}
+				}
+
+				const existingReply = await discussionRepliesCollection.findOne({
+					id: replyData.id,
+				});
+
+				if (!existingReply) {
+					return res.status(404).json({ error: "Reply not found!" });
 				}
 
 				let deleteCount = 0;
@@ -189,7 +207,7 @@ export default async function handler(
 								}
 							)
 							.catch((error: any) => {
-								res.status(500).json({
+								return res.status(500).json({
 									error: `Mongo (API): Updating discussion error:\n${error.message}`,
 								});
 							});
@@ -204,7 +222,7 @@ export default async function handler(
 								}
 							)
 							.catch((error: any) => {
-								res.status(500).json({
+								return res.status(500).json({
 									error: `Mongo (API): Updating reply error:\n${error.message}`,
 								});
 							});
@@ -233,12 +251,12 @@ export default async function handler(
 						}
 					)
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: `Mongo (API): Updating discussion error:\n${error.message}`,
 						});
 					});
 
-				res.status(200).json({
+				return res.status(200).json({
 					isDeleted: deleteCount > 0,
 					deleteCount: deleteCount,
 				});
@@ -247,11 +265,11 @@ export default async function handler(
 			}
 
 			default: {
-				res.status(400).json({ error: "Invalid request method" });
+				return res.status(400).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

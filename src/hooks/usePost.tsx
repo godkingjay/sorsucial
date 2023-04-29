@@ -63,6 +63,29 @@ const usePost = () => {
 	 */
 	const { authUser, userStateValue } = useUser();
 
+	const actionPostDeleted = (postDeleted: boolean, postId: string) => {
+		setPostStateValue((prev) => ({
+			...prev,
+			posts: prev.posts.map((post) => {
+				if (post.post.id === postId) {
+					return {
+						...post,
+						postDeleted,
+					};
+				}
+
+				return post;
+			}),
+			currentPost:
+				prev.currentPost?.post.id === postId
+					? {
+							...prev.currentPost,
+							postDeleted,
+					  }
+					: prev.currentPost,
+		}));
+	};
+
 	/**
 	 * *  ██████╗           ██████╗  ██████╗ ███████╗████████╗
 	 * * ██╔════╝    ██╗    ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝
@@ -691,7 +714,13 @@ const usePost = () => {
 							},
 						})
 						.catch((error) => {
-							throw new Error(`API: Post Like Error:\n${error.message}`);
+							const { postDeleted } = error.response.data;
+
+							if (postDeleted && !postData.postDeleted) {
+								actionPostDeleted(postDeleted, postData.post.id);
+							}
+
+							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
 
 					/**
@@ -776,7 +805,13 @@ const usePost = () => {
 							userLikeData: userLike,
 						})
 						.catch((error) => {
-							throw new Error(`API: Post Like Error:\n${error.message}`);
+							const { postDeleted } = error.response.data;
+
+							if (postDeleted && !postData.postDeleted) {
+								actionPostDeleted(postDeleted, postData.post.id);
+							}
+
+							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
 
 					/**
@@ -823,7 +858,7 @@ const usePost = () => {
 				throw new Error("You must be logged in to like a post");
 			}
 		} catch (error: any) {
-			console.log("Firestore: Post Like Error", error.message);
+			console.log(`=>Mongo: Post Like Error:\n${error.message}`);
 		}
 	};
 
@@ -968,9 +1003,9 @@ const usePost = () => {
 							userId: authUser.uid,
 						},
 					})
-					.then((res) => res.data.userLike)
-					.catch((err) => {
-						throw new Error("API (GET): Getting likes error: ", err.message);
+					.then((response) => response.data.userLike)
+					.catch((error: any) => {
+						throw new Error(`API (GET): Getting likes error\n ${error.message}`);
 					});
 
 				if (userLikeData) {
@@ -1047,26 +1082,33 @@ const usePost = () => {
 				});
 			}
 
-			await axios.delete(apiConfig.apiEndpoint + "/posts/", {
-				data: {
-					apiKey: userStateValue.api?.keys[0].key,
-					postData: postData.post,
-				},
-			});
+			const { isDeleted } = await axios
+				.delete(apiConfig.apiEndpoint + "/posts/", {
+					data: {
+						apiKey: userStateValue.api?.keys[0].key,
+						postData: postData.post,
+					},
+				})
+				.then((response) => response.data)
+				.catch((err) => {
+					throw new Error("API (DELETE): Deleting post error: ", err.message);
+				});
 
-			setPostStateValue(
-				(prev) =>
-					({
-						...prev,
-						posts: prev.posts.filter(
-							(post) => post.post.id !== postData.post.id
-						),
-						currentPost:
-							prev.currentPost?.post.id === postData.post.id
-								? null
-								: prev.currentPost,
-					} as PostState)
-			);
+			if (isDeleted) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: prev.posts.filter(
+								(post) => post.post.id !== postData.post.id
+							),
+							currentPost:
+								prev.currentPost?.post.id === postData.post.id
+									? null
+									: prev.currentPost,
+						} as PostState)
+				);
+			}
 		} catch (error: any) {
 			console.log("MONGO: Post Deletion Error", error.message);
 		}
@@ -1103,6 +1145,10 @@ const usePost = () => {
 		 */
 		fetchUserLike,
 		onPostLike,
+		/**
+		 * Actions for post
+		 */
+		actionPostDeleted,
 	};
 };
 

@@ -1,7 +1,7 @@
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { ReplyVote } from "@/lib/interfaces/discussion";
+import { ReplyVote, SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -11,15 +11,18 @@ export default async function handler(
 ) {
 	try {
 		const { apiKeysCollection, usersCollection } = await userDb();
-		const { discussionRepliesCollection, discussionReplyVotesCollection } =
-			await discussionDb();
+		const {
+			discussionsCollection,
+			discussionRepliesCollection,
+			discussionReplyVotesCollection,
+		} = await discussionDb();
 
 		const {
 			apiKey,
-			replyVoteData: rawReplyVoteData,
-			discussionId,
-			replyId,
 			userId,
+			replyId,
+			discussionId,
+			replyVoteData: rawReplyVoteData,
 		}: {
 			apiKey: string;
 			replyVoteData: string | ReplyVote;
@@ -49,7 +52,11 @@ export default async function handler(
 				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
-		if (!discussionRepliesCollection || !discussionReplyVotesCollection) {
+		if (
+			!discussionsCollection ||
+			!discussionRepliesCollection ||
+			!discussionReplyVotesCollection
+		) {
 			return res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
@@ -71,10 +78,43 @@ export default async function handler(
 			return res.status(401).json({ error: "Invalid User" });
 		}
 
+		const discussionData = (await discussionsCollection.findOne({
+			id: replyVoteData?.discussionId || discussionId,
+		})) as unknown as SiteDiscussion;
+
+		if (!discussionData) {
+			return res.status(404).json({
+				discussionDeleted: true,
+				replyDeleted: true,
+				error: "Discussion Not Found",
+			});
+		}
+
+		const replyData = (await discussionRepliesCollection.findOne({
+			id: replyVoteData?.replyId || replyId,
+		})) as unknown as SiteDiscussion;
+
+		if (!replyData) {
+			return res.status(404).json({
+				replyDeleted: true,
+				error: "Reply Not Found",
+			});
+		}
+
 		switch (req.method) {
 			case "POST": {
 				if (!replyVoteData) {
 					return res.status(400).json({ error: "No reply vote data provided!" });
+				}
+
+				if (
+					!replyVoteData.userId ||
+					!replyVoteData.replyId ||
+					!replyVoteData.discussionId
+				) {
+					return res
+						.status(400)
+						.json({ error: "User vote data are missing some fields!" });
 				}
 
 				const existingReplyVote = (await discussionReplyVotesCollection.findOne({
@@ -84,7 +124,9 @@ export default async function handler(
 				})) as unknown as ReplyVote;
 
 				if (existingReplyVote) {
-					return res.status(400).json({ error: "Reply vote already exists!" });
+					return res.status(400).json({
+						error: "Reply vote already exists!",
+					});
 				}
 
 				const newReplyVoteState = await discussionReplyVotesCollection
@@ -124,7 +166,7 @@ export default async function handler(
 						});
 					});
 
-				return res.status(200).json({
+				return res.status(201).json({
 					newReplyVoteState,
 					newDiscussionReplyStateVoted,
 					voteSuccess: newReplyVoteState ? newReplyVoteState.ok === 1 : false,
@@ -153,7 +195,9 @@ export default async function handler(
 				})) as unknown as ReplyVote;
 
 				if (!existingReplyVote) {
-					return res.status(400).json({ error: "Reply vote does not exist!" });
+					return res.status(404).json({
+						error: "Reply vote does not exist!",
+					});
 				}
 
 				if (existingReplyVote.voteValue === replyVoteData.voteValue) {
@@ -206,11 +250,28 @@ export default async function handler(
 
 			case "DELETE": {
 				if (!replyVoteData) {
-					return res.status(400).json({ error: "No reply vote data provided!" });
+					return res.status(400).json({
+						error: "No reply vote data provided!",
+					});
 				}
 
 				if (userAPI.userId !== replyVoteData.userId) {
-					return res.status(401).json({ error: "Unauthorized" });
+					return res.status(401).json({
+						error: "User is not authorized to delete reply vote!",
+					});
+				}
+
+				const existingReplyVote = (await discussionReplyVotesCollection.findOne({
+					replyId: replyVoteData.replyId,
+					userId: replyVoteData.userId,
+					discussionId: replyVoteData.discussionId,
+				})) as unknown as ReplyVote;
+
+				if (!existingReplyVote) {
+					return res.status(200).json({
+						voteDeleted: true,
+						error: "Reply vote does not exist!",
+					});
 				}
 
 				const deletedReplyVoteState = await discussionReplyVotesCollection

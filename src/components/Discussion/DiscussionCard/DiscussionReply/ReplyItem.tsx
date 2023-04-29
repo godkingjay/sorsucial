@@ -18,6 +18,7 @@ import { GoComment } from "react-icons/go";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { Reply } from "@/lib/interfaces/discussion";
 import { MdDeleteOutline } from "react-icons/md";
+import { FiAlertCircle } from "react-icons/fi";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
@@ -38,6 +39,7 @@ type ReplyItemProps = {
 	) => Promise<void>;
 	handleReplyDelete: (
 		reply: Reply,
+		deleting: boolean,
 		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
 	) => Promise<void>;
 	onSubmit: (
@@ -89,15 +91,19 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 
 	const handleFetchReplies = async () => {
 		setShowReplies(true);
-		await fetchDiscussionReplies(
-			currentDiscussion.discussion.id,
-			replyData.reply.id,
-			setLoadingReplies
-		);
+		if (!loadingReplies && !replyData.replyDeleted) {
+			await fetchDiscussionReplies(
+				currentDiscussion.discussion.id,
+				replyData.reply.id,
+				setLoadingReplies
+			);
+		}
 	};
 
 	const handleDeleteReply = async () => {
-		await handleReplyDelete(replyData.reply, setDeletingReply);
+		if (!voting && !deletingReply && !replyData.replyDeleted) {
+			await handleReplyDelete(replyData.reply, deletingReply, setDeletingReply);
+		}
 	};
 
 	const handleShowReplyBox = () => {
@@ -216,6 +222,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 								</div>
 							</div>
 						</div>
+						{replyData.replyDeleted && (
+							<div className="inline-flex gap-x-2 entrance-animation-slide-from-left text-red-500">
+								<div className="h-4 w-4 aspect-square">
+									<FiAlertCircle className="h-full w-full" />
+								</div>
+								<p className="text-xs">This reply no longer exist</p>
+							</div>
+						)}
 						<div className="reply-footer-container">
 							<div className="reply-vote-buttons-container">
 								<button
@@ -228,11 +242,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									onClick={() =>
 										!voting &&
 										!deletingReply &&
+										!replyData.replyDeleted &&
 										handleReplyVote(voting, setVoting, replyData, "upVote")
 									}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
-									disabled={voting || deletingReply}
+									disabled={voting || deletingReply || replyData.replyDeleted}
 								>
 									{replyData.userReplyVote?.voteValue === 1 ? (
 										<div className="icon-container">
@@ -266,11 +281,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									onClick={() =>
 										!voting &&
 										!deletingReply &&
+										!replyData.replyDeleted &&
 										handleReplyVote(voting, setVoting, replyData, "downVote")
 									}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
-									disabled={voting || deletingReply}
+									disabled={voting || deletingReply || replyData.replyDeleted}
 								>
 									{replyData.userReplyVote?.voteValue === -1 ? (
 										<div className="icon-container">
@@ -318,9 +334,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 										title="Delete"
 										className="button delete-button"
 										onClick={() =>
-											!deletingReply && !voting && handleDeleteReply()
+											!deletingReply &&
+											!voting &&
+											!replyData.replyDeleted &&
+											handleDeleteReply()
 										}
-										disabled={deletingReply || voting}
+										disabled={deletingReply || voting || replyData.replyDeleted}
 									>
 										<div className="icon-container">
 											<MdDeleteOutline className="icon" />
@@ -368,40 +387,44 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 							)}
 						</div>
 					)}
-					{replyData.reply.numberOfReplies > remainingReplies && (
-						<div className="flex flex-col w-full justify-start">
-							<button
-								type="button"
-								title="Show Replies"
-								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-								onClick={handleFetchReplies}
-							>
-								{showReplies
-									? "View More Replies"
-									: `Show ${
-											replyData.reply.numberOfReplies - remainingReplies
-									  } ${
-											replyData.reply.numberOfReplies - remainingReplies === 1
-												? "Reply"
-												: "Replies"
-									  }`}
-							</button>
-						</div>
-					)}
-					{showReplyBox && discussionReplyForm.replyLevel < maxReplyLevel && (
-						<ReplyBox
-							userStateValue={userStateValue}
-							replyForm={discussionReplyForm}
-							setReplyForm={setDiscussionReplyForm}
-							replyForId={replyData.reply.id}
-							replyLevel={replyData.reply.replyLevel + 1}
-							submitting={submitting}
-							replyBoxRef={replyBoxRef}
-							setShowReplies={setShowReplies}
-							onSubmit={onSubmit}
-							onChange={onChange}
-						/>
-					)}
+					{replyData.reply.numberOfReplies > remainingReplies &&
+						!replyData.replyDeleted && (
+							<div className="flex flex-col w-full justify-start">
+								<button
+									type="button"
+									title="Show Replies"
+									className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+									onClick={() => !loadingReplies && handleFetchReplies()}
+									disabled={loadingReplies}
+								>
+									{showReplies
+										? "View More Replies"
+										: `Show ${
+												replyData.reply.numberOfReplies - remainingReplies
+										  } ${
+												replyData.reply.numberOfReplies - remainingReplies === 1
+													? "Reply"
+													: "Replies"
+										  }`}
+								</button>
+							</div>
+						)}
+					{showReplyBox &&
+						discussionReplyForm.replyLevel < maxReplyLevel &&
+						!replyData.replyDeleted && (
+							<ReplyBox
+								userStateValue={userStateValue}
+								replyForm={discussionReplyForm}
+								setReplyForm={setDiscussionReplyForm}
+								replyForId={replyData.reply.id}
+								replyLevel={replyData.reply.replyLevel + 1}
+								submitting={submitting}
+								replyBoxRef={replyBoxRef}
+								setShowReplies={setShowReplies}
+								onSubmit={onSubmit}
+								onChange={onChange}
+							/>
+						)}
 				</div>
 			</div>
 		</>

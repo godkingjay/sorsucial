@@ -93,7 +93,7 @@ const useDiscussion = () => {
 				.then((response) => response.data.newDiscussion)
 				.catch((error: any) => {
 					throw new Error(
-						`API(Discussion): Discussion Creation Error:  ${error.message}`
+						`=>API(Discussion): Discussion Creation Error:\n${error.message}`
 					);
 				});
 
@@ -113,11 +113,11 @@ const useDiscussion = () => {
 				);
 			} else {
 				throw new Error(
-					`API(Discussion): Discussion Creation Error:  No Data Returned!`
+					`=>API(Discussion): Discussion Creation Error:\nNo Data Returned!`
 				);
 			}
 		} catch (error: any) {
-			console.log("Mongo: Creating Discussion Error: ", error.message);
+			console.log(`=>Mongo: Creating Discussion Error:\n${error.message}`);
 		}
 	};
 
@@ -175,7 +175,7 @@ const useDiscussion = () => {
 							}
 
 							throw new Error(
-								`API(Discussion): Discussion Vote Deletion Error:  ${error.message}`
+								`=>API(Discussion): Discussion Vote Deletion Error:\n${error.message}`
 							);
 						});
 				} else {
@@ -197,7 +197,7 @@ const useDiscussion = () => {
 							}
 
 							throw new Error(
-								`API(Discussion): Discussion Vote Change Error:  ${error.message}`
+								`=>API(Discussion): Discussion Vote Change Error:\n${error.message}`
 							);
 						});
 				}
@@ -306,7 +306,7 @@ const useDiscussion = () => {
 						}
 
 						throw new Error(
-							`API(Discussion): Discussion Vote Error:  ${error.message}`
+							`=>API(Discussion): Discussion Vote Error:\n${error.message}`
 						);
 					});
 
@@ -371,7 +371,7 @@ const useDiscussion = () => {
 				}
 			}
 		} catch (error: any) {
-			console.log("Mongo: Voting Discussion Error: ", error.message);
+			console.log(`=>Mongo: Voting Discussion Error:\n${error.message}`);
 		}
 	};
 
@@ -428,7 +428,7 @@ const useDiscussion = () => {
 				.then((response) => response.data.discussions)
 				.catch((error: any) => {
 					throw new Error(
-						`API (GET - Discussions): Getting Discussions Error: ${error.message}`
+						`=>API (GET - Discussions): Getting Discussions Error:\n${error.message}`
 					);
 				});
 
@@ -443,7 +443,7 @@ const useDiscussion = () => {
 
 			return discussions.length;
 		} catch (error: any) {
-			console.log("Mongo: Fetching Discussions Error: ", error.message);
+			console.log(`=>Mongo: Fetching Discussions Error:\n${error.message}`);
 		}
 	};
 
@@ -475,7 +475,7 @@ const useDiscussion = () => {
 					.then((response) => response.data)
 					.catch((error: any) => {
 						throw new Error(
-							`API (GET - User Vote): Getting User Vote Error: ${error.message}`
+							`=>API (GET - User Vote): Getting User Vote Error:\n${error.message}`
 						);
 					});
 
@@ -488,7 +488,9 @@ const useDiscussion = () => {
 				throw new Error("User not logged in!");
 			}
 		} catch (error: any) {
-			console.log("Mongo: Fetching Discussion User Vote Error: ", error.message);
+			console.log(
+				`=>Mongo: Fetching Discussion User Vote Error:\n${error.message}`
+			);
 			return null;
 		}
 	};
@@ -545,7 +547,7 @@ const useDiscussion = () => {
 				}));
 			}
 		} catch (error: any) {
-			console.log("Mongo: Deleting Discussion Error: ", error.message);
+			console.log(`=>Mongo: Deleting Discussion Error:\n${error.message}`);
 		}
 	};
 
@@ -571,6 +573,10 @@ const useDiscussion = () => {
 		 */
 		onDiscussionVote,
 		fetchUserVote,
+		/**
+		 * Actions
+		 */
+		actionDeletedDiscussion,
 	};
 };
 

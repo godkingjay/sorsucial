@@ -14,7 +14,36 @@ export type fetchReplyParamsType = {
 
 const useReply = () => {
 	const { authUser, userStateValue } = useUser();
-	const { discussionStateValue, setDiscussionStateValue } = useDiscussion();
+	const {
+		discussionStateValue,
+		setDiscussionStateValue,
+		actionDeletedDiscussion,
+	} = useDiscussion();
+
+	const actionReplyDeleted = (replyDeleted: boolean, replyId: string) => {
+		setDiscussionStateValue(
+			(prev) =>
+				({
+					...prev,
+					currentDiscussion:
+						{
+							...prev.currentDiscussion,
+							discussionReplies: prev.currentDiscussion?.discussionReplies.map(
+								(reply) => {
+									if (reply.reply.id === replyId) {
+										return {
+											...reply,
+											replyDeleted,
+										};
+									}
+
+									return reply;
+								}
+							),
+						} || null,
+				} as DiscussionState)
+		);
+	};
 
 	/**
 	 * *  ██████╗       ██████╗ ███████╗██████╗ ██╗  ██╗   ██╗
@@ -58,20 +87,38 @@ const useReply = () => {
 				})
 				.then((response) => response.data)
 				.catch((error) => {
-					throw new Error(`
-							API (POST - Reply): Create reply failed:
-							${error.message}
-						`);
+					const { discussionDeleted, parentReplyDelete, replyDeleted } =
+						error.response.data;
+
+					if (discussionDeleted) {
+						actionDeletedDiscussion(discussionDeleted, replyForm.discussionId);
+					}
+
+					if (parentReplyDelete || replyDeleted) {
+						actionReplyDeleted(
+							parentReplyDelete || replyDeleted,
+							replyForm.replyForId
+						);
+					}
+
+					throw new Error(
+						`=>API (POST - Reply): Create reply failed:\n${error.message}`
+					);
 				});
 
 			if (newReplyData) {
 				if (newReplyData.discussionId !== newReplyData.replyForId) {
+					const replyFor =
+						discussionStateValue.currentDiscussion?.discussionReplies.find(
+							(reply) => reply.reply.id === newReplyData.replyForId
+						)!;
+
 					const updatedReply: Partial<Reply> = {
-						id: newReplyData.replyForId,
-						numberOfReplies:
-							discussionStateValue.currentDiscussion?.discussionReplies.find(
-								(reply) => reply.reply.id === newReplyData.replyForId
-							)?.reply.numberOfReplies! + 1,
+						id: replyFor.reply.id,
+						creatorId: replyFor.reply.creatorId,
+						replyForId: replyFor.reply.replyForId,
+						discussionId: replyFor.reply.discussionId,
+						numberOfReplies: replyFor.reply.numberOfReplies! + 1,
 					};
 
 					const { isUpdated } = await axios
@@ -81,8 +128,22 @@ const useReply = () => {
 						})
 						.then((response) => response.data)
 						.catch((error) => {
+							const { discussionDeleted, parentReplyDelete } =
+								error.response.data;
+
+							if (discussionDeleted) {
+								actionDeletedDiscussion(
+									discussionDeleted,
+									replyFor.reply.discussionId
+								);
+							}
+
+							if (parentReplyDelete) {
+								actionReplyDeleted(parentReplyDelete, replyFor.reply.replyForId);
+							}
+
 							throw new Error(
-								`API (PUT - Reply): Update reply failed:\n${error.message}`
+								`=>API (PUT - Reply): Update reply failed:\n${error.message}`
 							);
 						});
 
@@ -155,10 +216,7 @@ const useReply = () => {
 				}));
 			}
 		} catch (error: any) {
-			console.log(`
-        MONGO: Create Reply Error:
-        ${error.message}
-      `);
+			console.log(`=>MONGO: Create Reply Error:\n${error.message}`);
 		}
 	};
 
@@ -210,8 +268,21 @@ const useReply = () => {
 						})
 						.then((response) => response.data)
 						.catch((error) => {
+							const { discussionDeleted, replyDeleted } = error.response.data;
+
+							if (discussionDeleted) {
+								actionDeletedDiscussion(
+									discussionDeleted,
+									replyData.reply.discussionId
+								);
+							}
+
+							if (replyDeleted) {
+								actionReplyDeleted(replyDeleted, replyData.reply.id);
+							}
+
 							throw new Error(
-								`API (DELETE - Reply Vote): Delete reply vote failed:\n${error.message}`
+								`=>API (DELETE - Reply Vote): Delete reply vote failed:\n${error.message}`
 							);
 						});
 				} else {
@@ -222,8 +293,21 @@ const useReply = () => {
 						})
 						.then((response) => response.data)
 						.catch((error) => {
+							const { discussionDeleted, replyDeleted } = error.response.data;
+
+							if (discussionDeleted) {
+								actionDeletedDiscussion(
+									discussionDeleted,
+									replyData.reply.discussionId
+								);
+							}
+
+							if (replyDeleted) {
+								actionReplyDeleted(replyDeleted, replyData.reply.id);
+							}
+
 							throw new Error(
-								`API (PUT - Reply Vote): Update reply vote failed:\n${error.message}`
+								`=>API (PUT - Reply Vote): Update reply vote failed:\n${error.message}`
 							);
 						});
 				}
@@ -274,11 +358,29 @@ const useReply = () => {
 				);
 			} else {
 				const { voteSuccess } = await axios
-					.post(apiConfig.apiEndpoint + "/discussions/replies/votes", {
+					.post(apiConfig.apiEndpoint + "/discussions/replies/votes/", {
 						apiKey: userStateValue.api?.keys[0].key,
 						replyVoteData: newReplyVote,
 					})
-					.then((response) => response.data);
+					.then((response) => response.data)
+					.catch((error) => {
+						const { discussionDeleted, replyDeleted } = error.response.data;
+
+						if (discussionDeleted) {
+							actionDeletedDiscussion(
+								discussionDeleted,
+								replyData.reply.discussionId
+							);
+						}
+
+						if (replyDeleted) {
+							actionReplyDeleted(replyDeleted, replyData.reply.id);
+						}
+
+						throw new Error(
+							`=>API (POST - Reply Vote): Create reply vote failed:\n${error.message}`
+						);
+					});
 
 				if (voteSuccess) {
 					setDiscussionStateValue(
@@ -315,7 +417,7 @@ const useReply = () => {
 				}
 			}
 		} catch (error: any) {
-			console.log(`MONGO: Reply Vote Error:\n${error.message}\n`);
+			console.log(`=>MONGO: Reply Vote Error:\n${error.message}`);
 		}
 	};
 
@@ -390,7 +492,7 @@ const useReply = () => {
 				}
 			}
 		} catch (error: any) {
-			console.log(`MONGO: Fetch Replies Error:\n${error.message}`);
+			console.log(`=>MONGO: Fetch Replies Error:\n${error.message}`);
 		}
 	};
 
@@ -435,8 +537,18 @@ const useReply = () => {
 					})
 					.then((response) => response.data)
 					.catch((error) => {
+						const { discussionDeleted, replyDeleted } = error.response.data;
+
+						if (discussionDeleted) {
+							actionDeletedDiscussion(discussionDeleted, reply.discussionId);
+						}
+
+						if (replyDeleted) {
+							actionReplyDeleted(replyDeleted, reply.id);
+						}
+
 						throw new Error(
-							`API (DELETE - Replies): Delete reply failed:\n${error.message}`
+							`=>API (DELETE - Replies): Delete reply failed:\n${error.message}`
 						);
 					});
 
@@ -497,7 +609,7 @@ const useReply = () => {
 				throw new Error("You are not authorized to delete this reply");
 			}
 		} catch (error: any) {
-			console.log(`MONGO: Delete Reply Error:\n${error.message}`);
+			console.log(`=>MONGO: Delete Reply Error:\n${error.message}`);
 		}
 	};
 

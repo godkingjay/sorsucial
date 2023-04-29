@@ -5,6 +5,7 @@ import { Reply } from "@/lib/interfaces/discussion";
 import { DiscussionReplyData, DiscussionState } from "@/atoms/discussionAtom";
 import useReply from "@/hooks/useReply";
 import ReplyItem from "./ReplyItem";
+import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 
 type DiscussionRepliesProps = {
 	userStateValue: UserState;
@@ -43,7 +44,32 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	const [loadingReplies, setLoadingReplies] = React.useState(true);
 	const componentDidMount = React.useRef(false);
 
-	const firstFetchReplies = async () => {
+	const fetchDiscussionReplies = useCallback(
+		async (
+			discussionId: string,
+			replyForId: string,
+			setFetchingReplies: React.Dispatch<React.SetStateAction<boolean>>
+		) => {
+			setFetchingReplies(true);
+			try {
+				if (currentDiscussion) {
+					await fetchReplies({
+						discussionId,
+						replyForId,
+					});
+				}
+			} catch (error: any) {
+				console.log(`
+				Hook: Error while fetching replies for discussion:
+				${error.message}
+			`);
+			}
+			setFetchingReplies(false);
+		},
+		[currentDiscussion, fetchReplies]
+	);
+
+	const firstFetchReplies = useCallback(async () => {
 		setFirstLoadingReplies(true);
 		if (currentDiscussion) {
 			await fetchDiscussionReplies(
@@ -53,39 +79,19 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 			);
 		}
 		setFirstLoadingReplies(false);
-	};
+	}, [currentDiscussion, fetchDiscussionReplies]);
 
-	const fetchDiscussionReplies = async (
-		discussionId: string,
-		replyForId: string,
-		setFetchingReplies: React.Dispatch<React.SetStateAction<boolean>>
-	) => {
-		setFetchingReplies(true);
-		try {
-			if (currentDiscussion) {
-				await fetchReplies({
-					discussionId,
-					replyForId,
-				});
-			}
-		} catch (error: any) {
-			console.log(`
-				Hook: Error while fetching replies for discussion:
-				${error.message}
-			`);
-		}
-		setFetchingReplies(false);
-	};
-
-	const handleFetchReplies = () => {
+	const handleFetchReplies = useCallback(async () => {
 		if (currentDiscussion) {
-			fetchDiscussionReplies(
-				currentDiscussion.discussion.id,
-				currentDiscussion.discussion.id,
-				setLoadingReplies
-			);
+			if (!loadingReplies) {
+				await fetchDiscussionReplies(
+					currentDiscussion.discussion.id,
+					currentDiscussion.discussion.id,
+					setLoadingReplies
+				);
+			}
 		}
-	};
+	}, [currentDiscussion, fetchDiscussionReplies, loadingReplies]);
 
 	const handleReplyVote = useCallback(
 		async (
@@ -118,17 +124,16 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	const handleReplyDelete = useCallback(
 		async (
 			reply: Reply,
+			deleting: boolean,
 			setDeleting: React.Dispatch<React.SetStateAction<boolean>>
 		) => {
-			if (!reply) {
-				return;
-			}
-
-			setDeleting(true);
 			try {
-				await deleteReply(reply);
+				if (!deleting && reply) {
+					setDeleting(true);
+					await deleteReply(reply);
+				}
 			} catch (error: any) {
-				console.log("Hook: Error while deleting reply:\n", error.message);
+				console.log(`=>Hook: Error while deleting reply:\n${error.message}`);
 			}
 			setDeleting(false);
 		},
@@ -200,6 +205,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 							</>
 						) : (
 							<>
+								{currentDiscussion.discussionDeleted && (
+									<div className="duration-200 cursor-not-allowed opacity-100 sm:opacity-50 entrance-animation-float-down z-[250] sticky top-16 items-center mb-2 font-semibold hover:opacity-100 focus-within:opacity-100">
+										<ErrorBannerTextSm
+											message="This discussion no longer exist. It may have been deleted by the
+											creator or an admin."
+										/>
+									</div>
+								)}
 								{currentDiscussion.discussionReplies
 									.filter(
 										(reply) =>
@@ -227,31 +240,34 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 									currentDiscussion.discussionReplies.filter(
 										(reply) =>
 											reply.reply.replyForId === currentDiscussion.discussion.id
-									).length && (
-									<div className="flex flex-col w-full justify-start">
-										<button
-											type="button"
-											title="View More Replies"
-											className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-											onClick={handleFetchReplies}
-										>
-											View More Replies
-										</button>
-									</div>
-								)}
-								{currentDiscussion.discussion.isOpen && (
-									<ReplyBox
-										userStateValue={userStateValue}
-										replyForm={discussionReplyForm}
-										setReplyForm={setDiscussionReplyForm}
-										replyLevel={0}
-										replyForId={currentDiscussion.discussion.id}
-										submitting={creatingReply}
-										replyBoxRef={replyBoxRef}
-										onSubmit={handleReplySubmit}
-										onChange={handleInputChange}
-									/>
-								)}
+									).length &&
+									!currentDiscussion.discussionDeleted && (
+										<div className="flex flex-col w-full justify-start">
+											<button
+												type="button"
+												title="View More Replies"
+												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
+												onClick={() => !loadingReplies && handleFetchReplies()}
+												disabled={loadingReplies}
+											>
+												View More Replies
+											</button>
+										</div>
+									)}
+								{currentDiscussion.discussion.isOpen &&
+									!currentDiscussion.discussionDeleted && (
+										<ReplyBox
+											userStateValue={userStateValue}
+											replyForm={discussionReplyForm}
+											setReplyForm={setDiscussionReplyForm}
+											replyLevel={0}
+											replyForId={currentDiscussion.discussion.id}
+											submitting={creatingReply}
+											replyBoxRef={replyBoxRef}
+											onSubmit={handleReplySubmit}
+											onChange={handleInputChange}
+										/>
+									)}
 							</>
 						)}
 					</div>

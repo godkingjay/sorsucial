@@ -41,7 +41,7 @@ export default async function handler(
 			userId,
 		} = req.body || req.query;
 
-		const userLikeData: PostLike =
+		const userLikeData: PostLike | undefined =
 			typeof rawUserLikeData === "string"
 				? JSON.parse(rawUserLikeData)
 				: rawUserLikeData;
@@ -85,7 +85,7 @@ export default async function handler(
 		}
 
 		const postData = (await postsCollection.findOne({
-			id: postId,
+			id: userLikeData?.postId || postId,
 		})) as unknown as SitePost;
 
 		if (!postData) {
@@ -95,8 +95,8 @@ export default async function handler(
 		}
 
 		const existingLike = (await postLikesCollection.findOne({
-			userId: userLikeData.userId || userId,
-			postId: userLikeData.postId || postId,
+			userId: userLikeData?.userId || userId,
+			postId: userLikeData?.postId || postId,
 		})) as unknown as PostLike;
 
 		switch (req.method) {

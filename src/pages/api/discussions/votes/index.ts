@@ -163,12 +163,12 @@ export default async function handler(
 
 				if (!existingDiscussionVote) {
 					return res
-						.status(500)
+						.status(400)
 						.json({ error: "User has not voted on this discussion" });
 				}
 
 				if (discussionVoteData.voteValue === existingDiscussionVote.voteValue) {
-					return res.status(500).json({
+					return res.status(400).json({
 						error:
 							"User has already voted on this discussion with this vote value",
 					});

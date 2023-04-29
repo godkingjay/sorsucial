@@ -13,7 +13,6 @@ import {
 	TbArrowBigUp,
 	TbArrowBigUpFilled,
 	TbArrowBigUpLinesFilled,
-	TbShare3,
 } from "react-icons/tb";
 import { GoComment } from "react-icons/go";
 import { RiArrowUpDownFill } from "react-icons/ri";
@@ -88,17 +87,17 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	const [voting, setVoting] = useState(false);
 	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
-	const handleFetchReplies = () => {
+	const handleFetchReplies = async () => {
 		setShowReplies(true);
-		fetchDiscussionReplies(
+		await fetchDiscussionReplies(
 			currentDiscussion.discussion.id,
 			replyData.reply.id,
 			setLoadingReplies
 		);
 	};
 
-	const handleDeleteReply = () => {
-		handleReplyDelete(replyData.reply, setDeletingReply);
+	const handleDeleteReply = async () => {
+		await handleReplyDelete(replyData.reply, setDeletingReply);
 	};
 
 	const handleShowReplyBox = () => {
@@ -232,6 +231,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
+									disabled={voting}
 								>
 									{replyData.userReplyVote?.voteValue === 1 ? (
 										<div className="icon-container">
@@ -268,6 +268,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
+									disabled={voting}
 								>
 									{replyData.userReplyVote?.voteValue === -1 ? (
 										<div className="icon-container">

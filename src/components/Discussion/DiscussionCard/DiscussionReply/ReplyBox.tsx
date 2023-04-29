@@ -38,11 +38,14 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 	onSubmit,
 	onChange,
 }) => {
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		onSubmit(event, replyForm, setReplyForm, replyForId, replyLevel);
-		if (setShowReplies) {
-			setShowReplies(true);
+
+		if (!submitting) {
+			await onSubmit(event, replyForm, setReplyForm, replyForId, replyLevel);
+			if (setShowReplies) {
+				setShowReplies(true);
+			}
 		}
 	};
 

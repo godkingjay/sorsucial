@@ -301,7 +301,10 @@ export default async function handler(
 					}
 				);
 
-				res.status(200).json({ isDeleted: count > 0, deletedCount: count });
+				res.status(200).json({
+					isDeleted: count > 0,
+					deletedCount: count,
+				});
 
 				break;
 			}

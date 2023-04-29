@@ -269,7 +269,8 @@ const PostComments: React.FC<PostCommentsProps> = ({
 												type="button"
 												title="View More Comments"
 												className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-												onClick={handleFetchComments}
+												onClick={() => !loadingComments && handleFetchComments()}
+												disabled={loadingComments}
 											>
 												View More Comments
 											</button>

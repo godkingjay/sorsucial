@@ -260,6 +260,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									title="Show Replies"
 									className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
 									onClick={() => !loadingComments && handleFetchComments()}
+									disabled={loadingComments}
 								>
 									{showComments
 										? "View More Replies"
@@ -284,7 +285,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								setCommentForm={setPostCommentForm}
 								commentForId={commentData.comment.id}
 								commentLevel={commentData.comment.commentLevel + 1}
-								submitting={false}
+								submitting={submitting}
 								commentBoxRef={commentBoxRef}
 								setShowComments={setShowComments}
 								onSubmit={onSubmit}

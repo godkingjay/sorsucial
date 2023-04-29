@@ -1,7 +1,7 @@
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { Reply } from "@/lib/interfaces/discussion";
+import { Reply, SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -24,7 +24,7 @@ export default async function handler(
 			replyData: rawReplyData,
 		}: { apiKey: string; replyData: string | Reply } = req.body || req.query;
 
-		const replyData: Reply =
+		const replyData: Reply | undefined =
 			typeof rawReplyData === "string" ? JSON.parse(rawReplyData) : rawReplyData;
 
 		if (!apiKey) {
@@ -59,16 +59,53 @@ export default async function handler(
 			return res.status(404).json({ error: "User not found" });
 		}
 
+		const discussionData = (await discussionsCollection.findOne({
+			id: replyData?.replyForId,
+		})) as unknown as SiteDiscussion;
+
+		if (!discussionData) {
+			return res.status(404).json({
+				discussionDeleted: true,
+				replyDeleted: true,
+				error: "Discussion not found",
+			});
+		}
+
+		if (replyData && replyData.replyLevel > 0) {
+			const parentReplyData = (await discussionRepliesCollection.findOne({
+				id: replyData.replyForId,
+			})) as unknown as Reply;
+
+			if (!parentReplyData) {
+				return res.status(404).json({
+					discussionDeleted: true,
+					parentReplyDeleted: true,
+					error: "Parent reply not found",
+				});
+			}
+		}
+
 		switch (req.method) {
 			case "POST": {
 				if (!replyData) {
 					return res.status(400).json({ error: "Invalid reply data provided!" });
 				}
 
+				if (
+					!replyData.creatorId ||
+					replyData.replyText ||
+					!replyData.discussionId
+				) {
+					return res
+						.status(400)
+						.json({ error: "Reply data are missing some fields!" });
+				}
+
 				const objectId = new ObjectId();
 				const objectIdString = objectId.toHexString();
 
 				replyData.id = objectIdString;
+				(replyData as any).id = objectIdString;
 
 				const existingReply = await discussionRepliesCollection.findOne({
 					id: replyData.id,
@@ -79,10 +116,19 @@ export default async function handler(
 				}
 
 				const newReplyState = await discussionRepliesCollection
-					.insertOne({
-						_id: objectId,
-						...replyData,
-					})
+					.findOneAndUpdate(
+						{
+							id: replyData.id,
+						},
+						{
+							$set: {
+								...replyData,
+							},
+						},
+						{
+							upsert: true,
+						}
+					)
 					.catch((error: any) => {
 						return res.status(500).json({
 							error: `Mongo (API): Inserting reply error:\n${error.message}`,
@@ -114,7 +160,7 @@ export default async function handler(
 					});
 				});
 
-				return res.status(200).json({
+				return res.status(201).json({
 					newReplyState,
 					newReplyData: replyData,
 				});
@@ -132,21 +178,24 @@ export default async function handler(
 					}
 				}
 
-				const existingReply = await discussionRepliesCollection.findOne({
+				const existingReply = (await discussionRepliesCollection.findOne({
 					id: replyData.id,
-				});
+				})) as unknown as Reply;
 
 				if (!existingReply) {
-					return res.status(404).json({ error: "Reply not found!" });
+					return res.status(404).json({
+						replyDeleted: true,
+						error: "Reply not found!",
+					});
 				}
+
+				const { numberOfReplies, ...updatedReply } = replyData;
 
 				const updatedReplyState = await discussionRepliesCollection
 					.updateOne(
 						{ id: replyData.id },
 						{
-							$set: {
-								...replyData,
-							},
+							$set: updatedReply,
 						}
 					)
 					.catch((error: any) => {
@@ -154,6 +203,19 @@ export default async function handler(
 							error: `Mongo (API):\nUpdating reply error:\n${error.message}`,
 						});
 					});
+
+				if (numberOfReplies) {
+					await discussionRepliesCollection.findOneAndUpdate(
+						{
+							id: replyData.id,
+						},
+						{
+							$inc: {
+								numberOfReplies: 1,
+							},
+						}
+					);
+				}
 
 				return res.status(200).json({
 					isUpdated: updatedReplyState ? updatedReplyState.acknowledged : false,
@@ -169,7 +231,9 @@ export default async function handler(
 
 				if (userAPI.userId !== replyData.creatorId) {
 					if (!userData.roles.includes("admin")) {
-						return res.status(401).json({ error: "Unauthorized!" });
+						return res
+							.status(401)
+							.json({ error: "You are not allowed to delete this reply!" });
 					}
 				}
 
@@ -178,7 +242,10 @@ export default async function handler(
 				});
 
 				if (!existingReply) {
-					return res.status(404).json({ error: "Reply not found!" });
+					return res.status(404).json({
+						replyDeleted: true,
+						error: "Reply not found!",
+					});
 				}
 
 				let deleteCount = 0;
@@ -265,7 +332,7 @@ export default async function handler(
 			}
 
 			default: {
-				return res.status(400).json({ error: "Invalid request method" });
+				return res.status(405).json({ error: "Invalid request method" });
 				break;
 			}
 		}

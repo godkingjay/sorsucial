@@ -241,17 +241,15 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				if (!postId || !commentId || !userId) {
-					res
+					return res
 						.status(400)
 						.json({ error: "No post id, comment id, and user id provided." });
 				}
 
 				if (userAPI.userId !== userId) {
-					res
-						.status(400)
-						.json({
-							error: "User is not authorized to delete this comment like",
-						});
+					return res.status(401).json({
+						error: "User is not authorized to delete this comment like",
+					});
 				}
 
 				const existingCommentLike = await postCommentLikesCollection.findOne({

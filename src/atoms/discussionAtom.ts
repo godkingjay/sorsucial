@@ -28,6 +28,7 @@ export interface DiscussionReplyData {
 	reply: Reply;
 	creator: SiteUser | null;
 	userReplyVote: ReplyVote | null;
+	replyDeleted?: boolean;
 }
 
 export interface DiscussionData {

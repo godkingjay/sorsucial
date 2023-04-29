@@ -75,7 +75,9 @@ const PostCard: React.FC<PostCardProps> = ({
 	const handleDeletePost = async () => {
 		try {
 			if (userStateValue.user.uid !== postData.post.creatorId) {
-				throw new Error("You are not authorized to delete this post.");
+				if (!userStateValue.user.roles.includes("admin")) {
+					throw new Error("You are not authorized to delete this post.");
+				}
 			}
 
 			if (!deletingPost) {

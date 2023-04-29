@@ -26,6 +26,7 @@ type CommentItemProps = {
 	) => Promise<void>;
 	handleCommentDelete: (
 		comment: PostCommentData["comment"],
+		deleting: boolean,
 		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
 	) => Promise<void>;
 	onSubmit: (
@@ -74,17 +75,25 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	const [liking, setLiking] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
 
-	const handleFetchComments = () => {
+	const handleFetchComments = async () => {
 		setShowComments(true);
-		fetchPostComments(
-			currentPost.post.id,
-			commentData.comment.id,
-			setLoadingComments
-		);
+		if (!loadingComments) {
+			await fetchPostComments(
+				currentPost.post.id,
+				commentData.comment.id,
+				setLoadingComments
+			);
+		}
 	};
 
-	const handleDeleteComment = () => {
-		handleCommentDelete(commentData.comment, setDeletingComment);
+	const handleDeleteComment = async () => {
+		if (!liking && !deletingComment) {
+			await handleCommentDelete(
+				commentData.comment,
+				deletingComment,
+				setDeletingComment
+			);
+		}
 	};
 
 	const handleShowCommentBox = () => {
@@ -133,13 +142,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								type="button"
 								title="Like"
 								className="btn-text [&[comment-liked='true']]:!text-blue-500 hover:text-blue-500"
-								onClick={() => handleCommentLike(liking, setLiking, commentData)}
+								onClick={() =>
+									!liking &&
+									!deletingComment &&
+									handleCommentLike(liking, setLiking, commentData)
+								}
 								comment-liked={
 									commentData.userCommentLike?.commentId ===
 									commentData.comment.id
 										? "true"
 										: "false"
 								}
+								disabled={liking || deletingComment}
 							>
 								{commentData.userCommentLike?.commentId ===
 								commentData.comment.id
@@ -162,7 +176,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									type="button"
 									title="Delete"
 									className="btn-text hover:text-red-500"
-									onClick={handleDeleteComment}
+									onClick={() =>
+										!liking && !deletingComment && handleDeleteComment()
+									}
+									disabled={deletingComment || liking}
 								>
 									Delete
 								</button>
@@ -228,7 +245,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								type="button"
 								title="Show Replies"
 								className="text-sm w-fit px-6 py-1 font-semibold btn-text text-gray-700"
-								onClick={handleFetchComments}
+								onClick={() => !loadingComments && handleFetchComments()}
 							>
 								{showComments
 									? "View More Replies"

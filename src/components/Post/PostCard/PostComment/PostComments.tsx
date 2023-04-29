@@ -1,5 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostCommentData, PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
@@ -45,7 +45,29 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	const [loadingComments, setLoadingComments] = useState(true);
 	const componentDidMount = useRef(false);
 
-	const firstFetchComments = async () => {
+	const fetchPostComments = useCallback(
+		async (
+			postId: string,
+			commentForId: string,
+			setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
+		) => {
+			setFetchingComments(true);
+			try {
+				if (currentPost) {
+					await fetchComments({
+						postId,
+						commentForId,
+					});
+				}
+			} catch (error: any) {
+				console.log("Hook: Error while fetching post comments: ", error.message);
+			}
+			setFetchingComments(false);
+		},
+		[currentPost, fetchComments]
+	);
+
+	const firstFetchComments = useCallback(async () => {
 		setFirstLoadingComments(true);
 		if (currentPost) {
 			await fetchPostComments(
@@ -55,82 +77,72 @@ const PostComments: React.FC<PostCommentsProps> = ({
 			);
 		}
 		setFirstLoadingComments(false);
-	};
+	}, [currentPost]);
 
-	const fetchPostComments = async (
-		postId: string,
-		commentForId: string,
-		setFetchingComments: React.Dispatch<React.SetStateAction<boolean>>
-	) => {
-		setFetchingComments(true);
-		try {
-			if (currentPost) {
-				await fetchComments({
-					postId,
-					commentForId,
-				});
-			}
-		} catch (error: any) {
-			console.log("Hook: Error while fetching post comments: ", error.message);
-		}
-		setFetchingComments(false);
-	};
-
-	const handleFetchComments = () => {
+	const handleFetchComments = useCallback(async () => {
 		if (currentPost) {
-			fetchPostComments(
+			await fetchPostComments(
 				currentPost.post.id,
 				currentPost.post.id,
 				setLoadingComments
 			);
 		}
-	};
+	}, [currentPost, fetchPostComments]);
 
-	const handleCommentLike = async (
-		liking: boolean,
-		setLiking: React.Dispatch<React.SetStateAction<boolean>>,
-		commentData: PostCommentData
-	) => {
-		if (!commentData) {
-			return;
-		}
-
-		try {
-			if (!userStateValue.user.uid) {
+	const handleCommentLike = useCallback(
+		async (
+			liking: boolean,
+			setLiking: React.Dispatch<React.SetStateAction<boolean>>,
+			commentData: PostCommentData
+		) => {
+			if (!commentData) {
 				return;
 			}
 
-			if (!liking) {
-				setLiking(true);
-				await onCommentLike(commentData);
+			try {
+				if (!userStateValue.user.uid) {
+					return;
+				}
+
+				if (!liking) {
+					setLiking(true);
+					await onCommentLike(commentData);
+				}
+			} catch (error: any) {
+				console.log(
+					"Hook: Error while liking or unliking comment: ",
+					error.message
+				);
 			}
-		} catch (error: any) {
-			console.log(
-				"Hook: Error while liking or unliking comment: ",
-				error.message
-			);
-		}
 
-		setLiking(false);
-	};
+			setLiking(false);
+		},
+		[onCommentLike, userStateValue.user.uid]
+	);
 
-	const handleCommentDelete = async (
-		comment: PostComment,
-		setDeleting: React.Dispatch<React.SetStateAction<boolean>>
-	) => {
-		if (!comment) {
-			console.log("handlePostCommentDelete: Comment is not available");
-			return;
-		}
+	const handleCommentDelete = useCallback(
+		async (
+			comment: PostComment,
+			deleting: boolean,
+			setDeleting: React.Dispatch<React.SetStateAction<boolean>>
+		) => {
+			if (!comment) {
+				console.log("handlePostCommentDelete: Comment is not available");
+				return;
+			}
 
-		setDeleting(true);
-		try {
-			await deleteComment(comment);
-		} catch (error: any) {
-			console.log("Hook: Error while deleting comment: ", error.message);
-		}
-		setDeleting(false);
-	};
+			try {
+				if (!deleting) {
+					setDeleting(true);
+					await deleteComment(comment);
+				}
+			} catch (error: any) {
+				console.log("Hook: Error while deleting comment: ", error.message);
+			}
+			setDeleting(false);
+		},
+		[deleteComment]
+	);
 
 	const handleCommentSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,

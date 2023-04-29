@@ -19,6 +19,32 @@ const useDiscussion = () => {
 		useRecoilState(discussionOptionsState);
 	const { authUser, userStateValue } = useUser();
 
+	const actionDeletedDiscussion = (
+		discussionDeleted: boolean,
+		discussionId: string
+	) => {
+		setDiscussionStateValue((prev) => ({
+			...prev,
+			discussions: prev.discussions.map((discussion) => {
+				if (discussion.discussion.id === discussionId) {
+					return {
+						...discussion,
+						discussionDeleted: discussionDeleted,
+					};
+				}
+
+				return discussion;
+			}),
+			currentDiscussion:
+				prev.currentDiscussion?.discussion.id === discussionId
+					? {
+							...prev.currentDiscussion,
+							discussionDeleted: discussionDeleted,
+					  }
+					: prev.currentDiscussion,
+		}));
+	};
+
 	/**
 	 * *  ██████╗       ██████╗ ██╗███████╗ ██████╗██╗   ██╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
 	 * * ██╔════╝██╗    ██╔══██╗██║██╔════╝██╔════╝██║   ██║██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
@@ -139,6 +165,15 @@ const useDiscussion = () => {
 						})
 						.then((response) => response.data)
 						.catch((error: any) => {
+							const { discussionDeleted } = error.response.data;
+
+							if (discussionDeleted && !discussionData.discussionDeleted) {
+								actionDeletedDiscussion(
+									discussionDeleted,
+									discussionData.discussion.id
+								);
+							}
+
 							throw new Error(
 								`API(Discussion): Discussion Vote Deletion Error:  ${error.message}`
 							);
@@ -152,6 +187,15 @@ const useDiscussion = () => {
 						})
 						.then((response) => response.data)
 						.catch((error: any) => {
+							const { discussionDeleted } = error.response.data;
+
+							if (discussionDeleted && !discussionData.discussionDeleted) {
+								actionDeletedDiscussion(
+									discussionDeleted,
+									discussionData.discussion.id
+								);
+							}
+
 							throw new Error(
 								`API(Discussion): Discussion Vote Change Error:  ${error.message}`
 							);
@@ -255,29 +299,10 @@ const useDiscussion = () => {
 						const { discussionDeleted } = error.response.data;
 
 						if (discussionDeleted && !discussionData.discussionDeleted) {
-							setDiscussionStateValue((prev) => ({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussionDeleted: discussionDeleted,
-										};
-									}
-
-									return discussion;
-								}),
-								currentDiscussion:
-									prev.currentDiscussion?.discussion.id ===
-									discussionData.discussion.id
-										? {
-												...prev.currentDiscussion,
-												discussionDeleted: discussionDeleted,
-										  }
-										: prev.currentDiscussion,
-							}));
+							actionDeletedDiscussion(
+								discussionDeleted,
+								discussionData.discussion.id
+							);
 						}
 
 						throw new Error(

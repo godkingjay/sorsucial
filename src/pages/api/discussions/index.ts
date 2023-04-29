@@ -148,6 +148,16 @@ export default async function handler(
 					}
 				}
 
+				const existingDiscussion = (await discussionsCollection.findOne({
+					id: discussionData.id,
+				})) as unknown as SiteDiscussion;
+
+				if (!existingDiscussion) {
+					res
+						.status(200)
+						.json({ isDeleted: true, error: "Discussion does not exist!" });
+				}
+
 				const deleteReply = async (reply: Reply) => {
 					const deleteReplyState = await discussionRepliesCollection.deleteOne({
 						id: reply.id,

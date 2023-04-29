@@ -1,7 +1,8 @@
 import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { DiscussionVote } from "@/lib/interfaces/discussion";
+import { DiscussionVote, SiteDiscussion } from "@/lib/interfaces/discussion";
+import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -9,7 +10,7 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	try {
-		const { apiKeysCollection } = await userDb();
+		const { apiKeysCollection, usersCollection } = await userDb();
 		const { discussionsCollection, discussionVotesCollection } =
 			await discussionDb();
 
@@ -45,7 +46,25 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			return res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "PERM: Invalid API key" });
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			return res.status(401).json({ error: "PERM: Invalid User" });
+		}
+
+		const discussionData = (await discussionsCollection.findOne({
+			id: discussionId || discussionVoteData.discussionId,
+		})) as unknown as SiteDiscussion;
+
+		if (!discussionData) {
+			return res
+				.status(404)
+				.json({ discussionDeleted: true, error: "Discussion not found" });
 		}
 
 		switch (req.method) {
@@ -59,7 +78,7 @@ export default async function handler(
 				if (discussionVoteData.userId !== userAPI.userId) {
 					return res
 						.status(401)
-						.json({ error: "User ID does not match API key" });
+						.json({ error: "POST - PERM: User ID does not match API key" });
 				}
 
 				if (voteType !== "upVote" && voteType !== "downVote") {
@@ -149,7 +168,7 @@ export default async function handler(
 				if (discussionVoteData.userId !== userAPI.userId) {
 					return res
 						.status(401)
-						.json({ error: "User ID does not match API key" });
+						.json({ error: "PUT - PERM: User ID does not match API key" });
 				}
 
 				if (voteType !== "upVote" && voteType !== "downVote") {

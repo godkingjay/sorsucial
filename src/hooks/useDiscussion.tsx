@@ -251,7 +251,35 @@ const useDiscussion = () => {
 						voteType,
 					})
 					.then((response) => response.data)
-					.catch((error) => {
+					.catch((error: any) => {
+						const { discussionDeleted } = error.response.data;
+
+						if (discussionDeleted && !discussionData.discussionDeleted) {
+							setDiscussionStateValue((prev) => ({
+								...prev,
+								discussions: prev.discussions.map((discussion) => {
+									if (
+										discussion.discussion.id === discussionData.discussion.id
+									) {
+										return {
+											...discussion,
+											discussionDeleted: discussionDeleted,
+										};
+									}
+
+									return discussion;
+								}),
+								currentDiscussion:
+									prev.currentDiscussion?.discussion.id ===
+									discussionData.discussion.id
+										? {
+												...prev.currentDiscussion,
+												discussionDeleted: discussionDeleted,
+										  }
+										: prev.currentDiscussion,
+							}));
+						}
+
 						throw new Error(
 							`API(Discussion): Discussion Vote Error:  ${error.message}`
 						);

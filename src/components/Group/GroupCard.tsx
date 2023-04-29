@@ -47,7 +47,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 
 	return (
 		<div
-			className="data-[top='true']:md:col-span-2"
+			className="group-card-wrapper data-[top='true']:md:col-span-2"
 			data-top={index < 3}
 		>
 			<div
@@ -61,6 +61,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 								src={groupData.group.image.fileURL}
 								alt="Group Image"
 								className="w-full bg-center object-cover"
+								sizes="(min-width: 1200px) 900px, (min-width: 768px) 700px, 100vw"
 								fill
 							/>
 						) : (

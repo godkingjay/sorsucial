@@ -247,27 +247,59 @@ const useGroup = () => {
 
 				if (groupData.userJoin !== null) {
 					// If user already joined, then remove.
+					const date = new Date();
 
-					setGroupStateValueMemo((prev) => ({
-						...prev,
-						groups: prev.groups.map((group) => {
-							if (group.group.id === groupData.group.id) {
-								return {
-									...group,
-									userJoin: null,
-								};
-							}
+					const { isDeleted } = await axios
+						.delete(apiConfig.apiEndpoint + "/groups/members/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								groupId: groupData.group.id,
+								userId: userStateValue.user.uid,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`API: Group Member Deletion Error:\n${error.message}`
+							);
+						});
 
-							return group;
-						}),
-						currentGroup:
-							groupData.group.id === prev.currentGroup?.group.id
-								? {
-										...prev.currentGroup,
-										userJoin: null,
-								  }
-								: prev.currentGroup,
-					}));
+					if (isDeleted) {
+						setGroupStateValueMemo(
+							(prev) =>
+								({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupData.group.id) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													numberOfMembers: group.group.numberOfMembers - 1,
+													updatedAt: date.toISOString(),
+												},
+												userJoin: null,
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										groupData.group.id === prev.currentGroup?.group.id
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														numberOfMembers:
+															prev.currentGroup?.group.numberOfMembers - 1,
+														updatedAt: date.toISOString(),
+													},
+													userJoin: null,
+											  }
+											: prev.currentGroup,
+								} as GroupState)
+						);
+					}
 				} else {
 					// If user not joined, then join.
 

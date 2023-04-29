@@ -1,7 +1,7 @@
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
-import { GroupMember } from "@/lib/interfaces/group";
+import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -115,6 +115,10 @@ export default async function handler(
 		if (!userData) {
 			res.status(401).json({ error: "Invalid user" });
 		}
+
+		const groupData = (await groupsCollection.findOne({
+			id: groupId || groupMemberData.groupId,
+		})) as unknown as SiteGroup;
 
 		switch (req.method) {
 			/**
@@ -248,13 +252,124 @@ export default async function handler(
 						joinStatus,
 					});
 				} catch (error: any) {
-					res
-						.status(500)
-						.json({
-							error: `MongoDB - POST: Creating new Group Member Error:\n${error.message}`,
-						});
+					res.status(500).json({
+						error: `MongoDB - POST: Creating new Group Member Error:\n${error.message}`,
+					});
 				}
 				break;
+			}
+
+			case "DELETE": {
+				try {
+					/**
+					 * This code is querying the groupMembersCollection to find a document
+					 * that matches the groupId and userId properties of the groupMemberData
+					 * object. It is using the findOne method to retrieve a single document
+					 * that matches the query, and the GroupMember type is specified as the
+					 * generic type parameter to ensure that the returned document is of the
+					 * correct type. The result is stored in the existingMember variable.
+					 *
+					 * @param {string} groupId - The ID of the group.
+					 * @param {string} userId - The ID of the user.
+					 *
+					 * @returns {Promise<GroupMember>} A promise that resolves to a GroupMember object.
+					 *
+					 * @see {@link https://docs.mongodb.com/manual/reference/method/db.collection.findOne/ | findOne}
+					 */
+					const existingMember =
+						await groupMembersCollection.findOne<GroupMember>({
+							groupId: groupId,
+							userId: userId,
+						});
+
+					if (!existingMember) {
+						/**
+						 * If the document does not exist, return a 404 Not Found HTTP status code
+						 *
+						 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404 | 404 Not Found}
+						 */
+						return res.status(404).json({
+							success: false,
+							error: "Group member not found",
+						});
+					}
+
+					/**
+					 * The above code is checking if the user making the request has the necessary permissions to
+					 * perform a certain action. It checks if the user is not the same as an existing member, is not
+					 * an admin, and the existing member does not have the roles of owner, admin, or moderator. If all
+					 * of these conditions are not met, the code returns a 403 error with a message indicating that
+					 * the user does not have permission to perform the action.
+					 *
+					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403 | 403 Forbidden}
+					 */
+					if (userData.uid !== existingMember.userId) {
+						if (!userData.roles.includes("admin")) {
+							if (!existingMember.roles.includes("owner")) {
+								if (!existingMember.roles.includes("admin")) {
+									if (!existingMember.roles.includes("moderator")) {
+										return res.status(403).json({
+											success: false,
+											error: "You do not have permission to perform this action",
+										});
+									}
+								}
+							}
+						}
+					}
+
+					/**
+					 * This code is deleting a document from the `groupMembersCollection` in the
+					 * database. It is using the `deleteOne` method to delete a single document that
+					 * matches the `groupId` and `userId` properties of the `req.params` object.
+					 *
+					 * @param {string} groupId - The ID of the group.
+					 * @param {string} userId - The ID of the user.
+					 *
+					 * @returns {Promise<DeleteWriteOpResultObject>} A promise that resolves to a DeleteWriteOpResultObject object.
+					 *
+					 * @see {@link https://docs.mongodb.com/manual/reference/method/db.collection.deleteOne/ | deleteOne}
+					 */
+					await groupMembersCollection.deleteOne({
+						groupId: groupId,
+						userId: userId,
+					});
+
+					/**
+					 * This code is updating the `numberOfMembers` property of the group
+					 * document in the `groupsCollection` database. It is using the `updateOne`
+					 * method to update a single document that matches the `id` property of the
+					 * `groupMemberData` object. It is using the `$inc` operator to decrement the
+					 * `numberOfMembers` property by 1.
+					 *
+					 * @param {string} id - The ID of the group.
+					 *
+					 * @returns {Promise<UpdateWriteOpResult>} A promise that resolves to an UpdateWriteOpResult object.
+					 *
+					 * @see {@link https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/ | updateOne}
+					 * @see {@link https://docs.mongodb.com/manual/reference/operator/update/inc/ | inc}
+					 */
+					await groupsCollection.updateOne(
+						{
+							id: groupId,
+						},
+						{
+							$inc: {
+								numberOfMembers: -1,
+							},
+						}
+					);
+
+					/**
+					 * This code is sending a response to the client with a 200 OK HTTP status code
+					 * and a JSON object containing the `success` property.
+					 */
+					return res.status(200).json({
+						isDeleted: true,
+					});
+				} catch (error: any) {
+					res.status(500).json({ error: error.message });
+				}
 			}
 
 			default: {

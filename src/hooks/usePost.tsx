@@ -1047,26 +1047,33 @@ const usePost = () => {
 				});
 			}
 
-			await axios.delete(apiConfig.apiEndpoint + "/posts/", {
-				data: {
-					apiKey: userStateValue.api?.keys[0].key,
-					postData: postData.post,
-				},
-			});
+			const { isDeleted } = await axios
+				.delete(apiConfig.apiEndpoint + "/posts/", {
+					data: {
+						apiKey: userStateValue.api?.keys[0].key,
+						postData: postData.post,
+					},
+				})
+				.then((response) => response.data)
+				.catch((err) => {
+					throw new Error("API (DELETE): Deleting post error: ", err.message);
+				});
 
-			setPostStateValue(
-				(prev) =>
-					({
-						...prev,
-						posts: prev.posts.filter(
-							(post) => post.post.id !== postData.post.id
-						),
-						currentPost:
-							prev.currentPost?.post.id === postData.post.id
-								? null
-								: prev.currentPost,
-					} as PostState)
-			);
+			if (isDeleted) {
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: prev.posts.filter(
+								(post) => post.post.id !== postData.post.id
+							),
+							currentPost:
+								prev.currentPost?.post.id === postData.post.id
+									? null
+									: prev.currentPost,
+						} as PostState)
+				);
+			}
 		} catch (error: any) {
 			console.log("MONGO: Post Deletion Error", error.message);
 		}

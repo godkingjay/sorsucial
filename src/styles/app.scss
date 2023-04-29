@@ -2376,6 +2376,16 @@
 		}
 	}
 
+	.group-card-wrapper {
+		&[data-top="true"] {
+			@apply md:col-span-2;
+		}
+	}
+
+	.group-card-holder {
+		@apply p-4 flex flex-row flex-wrap justify-center gap-x-4;
+	}
+
 	.group-card-details-wrapper {
 		@apply flex flex-row justify-between mt-auto pt-2;
 

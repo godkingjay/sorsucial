@@ -47,14 +47,14 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 
 	return (
 		<div
-			className="group-card-wrapper data-[top='true']:md:col-span-2"
+			className="group-card-wrapper"
 			data-top={index < 3}
 		>
 			<div
 				className="shadow-page-box-1 flex-1 bg-white rounded-lg entrance-animation-slide-from-right relative"
 				data-order={index + 1}
 			>
-				<div className="p-4 flex flex-row flex-wrap justify-center gap-x-4">
+				<div className="group-card-holder">
 					<div className="w-24 h-24 rounded-lg bg-gray-100 aspect-square shadow-lg overflow-hidden relative">
 						{groupData.group.image ? (
 							<Image

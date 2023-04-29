@@ -160,12 +160,7 @@ const AnnouncementView: React.FC<Props> = ({
 										<PostCard
 											userStateValue={userStateValue}
 											userMounted={userMounted}
-											postData={
-												postStateValue.currentPost ||
-												postStateValue.posts.find(
-													(post) => post.post.id === postId
-												)!
-											}
+											postData={postStateValue.currentPost}
 											deletePost={deletePost}
 											postOptionsStateValue={postOptionsStateValue}
 											setPostOptionsStateValue={setPostOptionsStateValue}

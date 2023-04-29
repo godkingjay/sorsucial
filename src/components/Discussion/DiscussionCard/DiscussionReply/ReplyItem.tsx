@@ -227,11 +227,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									onClick={() =>
 										!voting &&
+										!deletingReply &&
 										handleReplyVote(voting, setVoting, replyData, "upVote")
 									}
 									className="vote-button upvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === 1}
-									disabled={voting}
+									disabled={voting || deletingReply}
 								>
 									{replyData.userReplyVote?.voteValue === 1 ? (
 										<div className="icon-container">
@@ -264,11 +265,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									}
 									onClick={() =>
 										!voting &&
+										!deletingReply &&
 										handleReplyVote(voting, setVoting, replyData, "downVote")
 									}
 									className="vote-button downvote-button"
 									data-voted={replyData.userReplyVote?.voteValue === -1}
-									disabled={voting}
+									disabled={voting || deletingReply}
 								>
 									{replyData.userReplyVote?.voteValue === -1 ? (
 										<div className="icon-container">
@@ -315,8 +317,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 										type="button"
 										title="Delete"
 										className="button delete-button"
-										onClick={() => !deletingReply && handleDeleteReply()}
-										disabled={deletingReply}
+										onClick={() =>
+											!deletingReply && !voting && handleDeleteReply()
+										}
+										disabled={deletingReply || voting}
 									>
 										<div className="icon-container">
 											<MdDeleteOutline className="icon" />
@@ -391,7 +395,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 							setReplyForm={setDiscussionReplyForm}
 							replyForId={replyData.reply.id}
 							replyLevel={replyData.reply.replyLevel + 1}
-							submitting={false}
+							submitting={submitting}
 							replyBoxRef={replyBoxRef}
 							setShowReplies={setShowReplies}
 							onSubmit={onSubmit}

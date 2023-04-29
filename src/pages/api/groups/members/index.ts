@@ -294,6 +294,12 @@ export default async function handler(
 						});
 					}
 
+					const leaveStatus: "cancel" | "leave" = existingMember.roles.includes(
+						"pending"
+					)
+						? "cancel"
+						: "leave";
+
 					/**
 					 * The above code is checking if the user making the request has the necessary permissions to
 					 * perform a certain action. It checks if the user is not the same as an existing member, is not
@@ -335,30 +341,32 @@ export default async function handler(
 						userId: userId,
 					});
 
-					/**
-					 * This code is updating the `numberOfMembers` property of the group
-					 * document in the `groupsCollection` database. It is using the `updateOne`
-					 * method to update a single document that matches the `id` property of the
-					 * `groupMemberData` object. It is using the `$inc` operator to decrement the
-					 * `numberOfMembers` property by 1.
-					 *
-					 * @param {string} id - The ID of the group.
-					 *
-					 * @returns {Promise<UpdateWriteOpResult>} A promise that resolves to an UpdateWriteOpResult object.
-					 *
-					 * @see {@link https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/ | updateOne}
-					 * @see {@link https://docs.mongodb.com/manual/reference/operator/update/inc/ | inc}
-					 */
-					await groupsCollection.updateOne(
-						{
-							id: groupId,
-						},
-						{
-							$inc: {
-								numberOfMembers: -1,
+					if (leaveStatus === "leave") {
+						/**
+						 * This code is updating the `numberOfMembers` property of the group
+						 * document in the `groupsCollection` database. It is using the `updateOne`
+						 * method to update a single document that matches the `id` property of the
+						 * `groupMemberData` object. It is using the `$inc` operator to decrement the
+						 * `numberOfMembers` property by 1.
+						 *
+						 * @param {string} id - The ID of the group.
+						 *
+						 * @returns {Promise<UpdateWriteOpResult>} A promise that resolves to an UpdateWriteOpResult object.
+						 *
+						 * @see {@link https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/ | updateOne}
+						 * @see {@link https://docs.mongodb.com/manual/reference/operator/update/inc/ | inc}
+						 */
+						await groupsCollection.updateOne(
+							{
+								id: groupId,
 							},
-						}
-					);
+							{
+								$inc: {
+									numberOfMembers: -1,
+								},
+							}
+						);
+					}
 
 					/**
 					 * This code is sending a response to the client with a 200 OK HTTP status code
@@ -366,6 +374,7 @@ export default async function handler(
 					 */
 					return res.status(200).json({
 						isDeleted: true,
+						leaveStatus,
 					});
 				} catch (error: any) {
 					res.status(500).json({ error: error.message });

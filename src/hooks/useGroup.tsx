@@ -249,7 +249,13 @@ const useGroup = () => {
 					// If user already joined, then remove.
 					const date = new Date();
 
-					const { isDeleted } = await axios
+					const {
+						isDeleted,
+						leaveStatus,
+					}: {
+						isDeleted: boolean;
+						leaveStatus: "cancel" | "leave";
+					} = await axios
 						.delete(apiConfig.apiEndpoint + "/groups/members/", {
 							data: {
 								apiKey: userStateValue.api?.keys[0].key,
@@ -275,7 +281,10 @@ const useGroup = () => {
 												...group,
 												group: {
 													...group.group,
-													numberOfMembers: group.group.numberOfMembers - 1,
+													numberOfMembers:
+														leaveStatus === "leave"
+															? group.group.numberOfMembers - 1
+															: group.group.numberOfMembers,
 													updatedAt: date.toISOString(),
 												},
 												userJoin: null,
@@ -291,7 +300,9 @@ const useGroup = () => {
 													group: {
 														...prev.currentGroup?.group,
 														numberOfMembers:
-															prev.currentGroup?.group.numberOfMembers - 1,
+															leaveStatus === "leave"
+																? prev.currentGroup?.group.numberOfMembers - 1
+																: prev.currentGroup?.group.numberOfMembers,
 														updatedAt: date.toISOString(),
 													},
 													userJoin: null,

@@ -240,15 +240,60 @@ const useGroup = () => {
 		[groupStateValueMemo]
 	);
 
+	/**
+	 * This code is defining a function called `onJoinGroup` using the `useCallback` hook in a
+	 * TypeScript React component. The function takes in a `groupData` object of type `GroupData` as an
+	 * argument. The function then makes an API call to either delete the user from the group or add the
+	 * user to the group depending on whether the user has already joined the group or not. If the user is
+	 * deleted from the group, the function updates the `groupStateValueMemo` state to reflect the change
+	 * in the number of members in the group. If the user is added to the group, the function updates the
+	 * `groupStateValueMemo` state to reflect the change in the number of members in the group. If there is
+	 * an error, then the function logs the error.
+	 *
+	 * @param {GroupData} groupData The group data.
+	 *
+	 * @returns {Promise<void>} The promise that resolves when the function finishes executing.
+	 *
+	 * @see {@link GroupData}
+	 * @see {@link groupStateValueMemo}
+	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usecallback | React useCallback Hook}
+	 */
 	const onJoinGroup = useCallback(
 		async (groupData: GroupData) => {
 			try {
-				// Check if user already joined.
+				/**
+				 * The date is the current date and time.
+				 * The date will be used to update the `updatedAt` property of the group.
+				 */
+				const date = new Date();
 
+				/**
+				 * This is a conditional block that handles the logic for a user joining or leaving a
+				 * group. If the user is already a member of the group, the code sends a DELETE request to the API
+				 * to remove the user from the group. If the user is not a member of the group, the code sends a
+				 * POST request to the API to add the user to the group. The code also updates the state of the
+				 * group and the user's membership status accordingly.
+				 */
 				if (groupData.userJoin !== null) {
-					// If user already joined, then remove.
-					const date = new Date();
+					/**
+					 * If the user is already a member of the group, then delete the user from the group.
+					 * The code sends a DELETE request to the API to remove the user from the group.
+					 * If there is an error, then log the error.
+					 *
+					 * The code also updates the state of the group and the user's membership status accordingly.
+					 */
 
+					/**
+					 * This code is making an HTTP DELETE request to the specified API endpoint to delete a
+					 * member from a group. It is passing the necessary data in the request body, including the API
+					 * key, group ID, and user ID. The response data is then returned if the request is successful,
+					 * and an error is thrown if there is an error in the request. The response data includes two
+					 * properties, `isDeleted` which is a boolean indicating whether the member was successfully
+					 * deleted, and `leaveStatus` which is a string indicating whether the member left the group or
+					 * the pending request was cancelled.
+					 *
+					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE | MDN DELETE Method}
+					 */
 					const {
 						isDeleted,
 						leaveStatus,
@@ -271,6 +316,13 @@ const useGroup = () => {
 						});
 
 					if (isDeleted) {
+						/**
+						 * This code is updating the state of a group in a React component based on whether a user
+						 * has left the group or not. It is updating the number of members in the group and the last
+						 * updated time stamp. It is also setting the userJoin property to null for the group and the
+						 * currentGroup if the user has left the current group. The code is using the
+						 * setGroupStateValueMemo function to update the state in a memoized way.
+						 */
 						setGroupStateValueMemo(
 							(prev) =>
 								({
@@ -312,10 +364,25 @@ const useGroup = () => {
 						);
 					}
 				} else {
-					// If user not joined, then join.
+					/**
+					 * If the user is not a member of the group, then add the user to the group.
+					 * The code sends a POST request to the API to add the user to the group.
+					 * If there is an error, then log the error.
+					 *
+					 * The code also updates the state of the group and the user's membership status accordingly.
+					 */
 
-					const date = new Date();
-
+					/**
+					 * This code is creating a new object of type `Partial<GroupMember>` with some properties
+					 * assigned values. The `userId` property is assigned the value of `userStateValue.user.uid`, the
+					 * `groupId` property is assigned the value of `groupData.group.id`, the `roles` property is
+					 * assigned an array of strings based on the `privacy` property of `groupData.group`, the
+					 * `updatedAt` property is assigned the value of `date`, the `acceptedAt` property is assigned the
+					 * value of `date` if the `privacy` property of `groupData.group` is "public or undefined, and the
+					 * `requestedAt` property is assigned the value of `date`.
+					 *
+					 * @see {@link https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype | TypeScript Partial<Type> Utility Type}
+					 */
 					const newGroupMember: Partial<GroupMember> = {
 						userId: userStateValue.user.uid,
 						groupId: groupData.group.id,
@@ -326,11 +393,30 @@ const useGroup = () => {
 						requestedAt: date,
 					};
 
+					/**
+					 * The code is checking if the current user is the creator of a group. If the user is the creator,
+					 * then a new group member is being created with roles set to "owner", "admin", "moderator", and
+					 * "member", and the acceptedAt property is being set to the current date.
+					 */
 					if (groupData.group.creatorId === userStateValue.user.uid) {
 						newGroupMember.roles = ["owner", "admin", "moderator", "member"];
 						newGroupMember.acceptedAt = date;
 					}
 
+					/**
+					 * This code is making a POST request to an API endpoint to create a new group member. It is
+					 * sending an API key and the data for the new group member as the request payload. The response
+					 * from the API is then assigned to the variables `groupMemberData` and `joinStatus`. If there is
+					 * an error in the API request, an error message is thrown.
+					 *
+					 * @param {string} apiConfig.apiEndpoint - The API endpoint to send the request to.
+					 * @param {string} userStateValue.api?.keys[0].key - The API key to send with the request.
+					 * @param {Partial<GroupMember>} newGroupMember - The data for the new group member to send with the request.
+					 *
+					 * @returns {Promise<{ groupMemberData: GroupMember; joinStatus: "accepted" | "added" }>} The response from the API.
+					 *
+					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST | MDN POST Method}
+					 */
 					const {
 						groupMemberData,
 						joinStatus,
@@ -347,6 +433,13 @@ const useGroup = () => {
 								);
 							});
 
+					/**
+					 * This code is updating the state of a group and its members based on a join status. It is
+					 * checking if the group ID matches the current group and updating the number of members
+					 * accordingly. It is also updating the userJoin property with newGroupMember. The code
+					 * is using the setGroupStateValueMemo function to update the state of the group.
+					 * This function is a memoized version of the setGroupStateValue function.
+					 */
 					if (groupMemberData) {
 						setGroupStateValueMemo(
 							(prev) =>

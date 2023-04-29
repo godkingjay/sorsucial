@@ -294,6 +294,14 @@ export default async function handler(
 						});
 					}
 
+					/**
+					 * This code is checking if a user's role includes "pending". If it does, the leaveStatus
+					 * variable is assigned the value "cancel". If it doesn't, the leaveStatus variable is assigned
+					 * the value "leave". The variable is of a union type that can only have one of these two string
+					 * values.
+					 *
+					 * @see {@link https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html | Unions}
+					 * */
 					const leaveStatus: "cancel" | "leave" = existingMember.roles.includes(
 						"pending"
 					)
@@ -301,7 +309,7 @@ export default async function handler(
 						: "leave";
 
 					/**
-					 * The above code is checking if the user making the request has the necessary permissions to
+					 * This code checking if the user making the request has the necessary permissions to
 					 * perform a certain action. It checks if the user is not the same as an existing member, is not
 					 * an admin, and the existing member does not have the roles of owner, admin, or moderator. If all
 					 * of these conditions are not met, the code returns a 403 error with a message indicating that

@@ -359,10 +359,12 @@ const useReply = () => {
 								userId: authUser?.uid,
 								discussionId: discussionId,
 								replyForId: replyForId,
-								fromVote: lastReply
-									? lastReply.reply.numberOfVotes + 1
-									: Number.MAX_SAFE_INTEGER,
-								fromDate: lastReply?.reply.createdAt,
+								fromVotes:
+									lastReply?.reply.numberOfVotes + 1 || Number.MAX_SAFE_INTEGER,
+								fromReplies:
+									lastReply?.reply.numberOfReplies + 1 ||
+									Number.MAX_SAFE_INTEGER,
+								fromDate: lastReply?.reply.createdAt || new Date().toISOString(),
 							},
 						})
 						.then((response) => response.data)

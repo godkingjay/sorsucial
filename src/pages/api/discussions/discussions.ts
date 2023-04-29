@@ -19,10 +19,10 @@ export default async function handler(
 		const {
 			apiKey,
 			userId,
-			discussionType,
-			privacy,
+			discussionType = "discussion",
+			privacy = "public",
 			isOpen,
-			fromDate,
+			fromDate = new Date().toISOString(),
 		}: {
 			apiKey: string;
 			userId: string;

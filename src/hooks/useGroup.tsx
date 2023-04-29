@@ -288,29 +288,61 @@ const useGroup = () => {
 						newGroupMember.acceptedAt = date;
 					}
 
-					setGroupStateValueMemo(
-						(prev) =>
-							({
-								...prev,
-								groups: prev.groups.map((group) => {
-									if (group.group.id === groupData.group.id) {
-										return {
-											...groupData,
-											userJoin: newGroupMember,
-										};
-									}
+					const {
+						groupMemberData,
+						joinStatus,
+					}: { groupMemberData: GroupMember; joinStatus: "accepted" | "added" } =
+						await axios
+							.post(apiConfig.apiEndpoint + "/groups/members/", {
+								apiKey: userStateValue.api?.keys[0].key,
+								groupMemberData: newGroupMember,
+							})
+							.then((response) => response.data)
+							.catch((error) => {
+								throw new Error(
+									`API: Group Member Creation Error:\n${error.message}`
+								);
+							});
 
-									return group;
-								}),
-								currentGroup:
-									groupData.group.id === prev.currentGroup?.group.id
-										? {
-												...prev.currentGroup,
+					if (groupMemberData) {
+						setGroupStateValueMemo(
+							(prev) =>
+								({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupData.group.id) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													numberOfMembers:
+														joinStatus === "added"
+															? group.group.numberOfMembers + 1
+															: group.group.numberOfMembers,
+												},
 												userJoin: newGroupMember,
-										  }
-										: prev.currentGroup,
-							} as GroupState)
-					);
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										groupData.group.id === prev.currentGroup?.group.id
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														numberOfMembers:
+															joinStatus === "added"
+																? prev.currentGroup?.group.numberOfMembers + 1
+																: prev.currentGroup?.group.numberOfMembers,
+													},
+													userJoin: newGroupMember,
+											  }
+											: prev.currentGroup,
+								} as GroupState)
+						);
+					}
 				}
 			} catch (error: any) {
 				console.log(`Mongo: Join Group Error:\n${error.message}`);

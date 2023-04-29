@@ -153,8 +153,7 @@ const AnnouncementView: React.FC<Props> = ({
 							</>
 						) : (
 							<>
-								{!postStateValue.currentPost &&
-								!postStateValue.posts.find((post) => post.post.id === postId) ? (
+								{!postStateValue.currentPost ? (
 									<PostDiscussionNotFound type="announcement" />
 								) : (
 									<>

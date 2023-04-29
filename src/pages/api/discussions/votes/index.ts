@@ -16,18 +16,23 @@ export default async function handler(
 
 		const {
 			apiKey,
-			discussionVoteData,
+			discussionVoteData: rawDiscussionVoteData,
 			userId,
 			discussionId,
 			voteType,
 		}: {
 			apiKey: string;
-			discussionVoteData: Partial<DiscussionVote>;
+			discussionVoteData: Partial<DiscussionVote> | string | undefined;
 			userId: string;
 			discussionId: string;
 			discussionVoteId: string;
 			voteType: "upVote" | "downVote";
 		} = req.body || req.query;
+
+		const discussionVoteData: DiscussionVote | undefined =
+			typeof rawDiscussionVoteData === "string"
+				? JSON.parse(rawDiscussionVoteData)
+				: rawDiscussionVoteData;
 
 		if (!apiKey) {
 			return res.status(400).json({ error: "No API key provided" });
@@ -58,7 +63,7 @@ export default async function handler(
 		}
 
 		const discussionData = (await discussionsCollection.findOne({
-			id: discussionId || discussionVoteData.discussionId,
+			id: discussionId || discussionVoteData?.discussionId,
 		})) as unknown as SiteDiscussion;
 
 		if (!discussionData) {

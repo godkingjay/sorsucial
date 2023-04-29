@@ -2386,6 +2386,54 @@
 		@apply p-4 flex flex-row flex-wrap justify-center gap-x-4;
 	}
 
+	.group-join-leave-button {
+		@apply text-xs px-4 py-2 h-auto min-w-0 w-32 my-2 ml-auto flex flex-row gap-x-2 relative;
+
+		.icon-container {
+			@apply absolute top-[50%] left-4 translate-y-[-50%] h-4 w-4 grid place-items-center;
+
+			.icon {
+				@apply h-full w-full;
+			}
+		}
+
+		.loading-spinner {
+			@apply h-4 w-4 aspect-square;
+		}
+
+		&[data-state="join"],
+		&[data-state="rejected"] {
+			@apply bg-blue-500 border-blue-500 text-white;
+
+			&:hover,
+			&:focus {
+				@apply bg-blue-600 border-blue-600;
+			}
+		}
+
+		&[data-state="banned"] {
+			@apply bg-transparent border-red-500 text-red-500 cursor-not-allowed;
+		}
+
+		&[data-state="pending"] {
+			@apply bg-transparent border-blue-500 border-dashed text-blue-500;
+
+			&:hover,
+			&:focus {
+				@apply bg-blue-50 border-blue-600 border-dashed text-blue-600;
+			}
+		}
+
+		&[data-state="joined"] {
+			@apply bg-green-500 border-green-500 text-white;
+
+			&:hover,
+			&:focus {
+				@apply bg-green-600 border-green-600;
+			}
+		}
+	}
+
 	.group-card-details-wrapper {
 		@apply flex flex-row justify-between mt-auto pt-2;
 

@@ -21,7 +21,7 @@ const TagsList: React.FC<TagListProps> = ({ itemName, items }) => {
 			{items.slice(0, MAX_DISPLAY_ITEMS).map((item, index) => (
 				<div
 					key={index}
-					className="h-6 flex text-sm px-2 py-0.5 rounded-full items-center space-x-2 bg-blue-100"
+					className="h-6 flex text-sm px-2 py-0.5 rounded-full items-center space-x-2 bg-blue-100 hover:text-blue-700 hover:bg-blue-200"
 				>
 					<span className="text-2xs px-1 truncate text-blue-500">{item}</span>
 				</div>
@@ -31,6 +31,9 @@ const TagsList: React.FC<TagListProps> = ({ itemName, items }) => {
 					className="relative"
 					onMouseEnter={() => handleTooltipToggle(true)}
 					onMouseLeave={() => handleTooltipToggle(false)}
+					onClick={() => handleTooltipToggle(!isTooltipOpen)}
+					onFocus={() => handleTooltipToggle(true)}
+					onBlur={() => handleTooltipToggle(false)}
 				>
 					<div
 						className="w-6 h-6 flex flex-col items-center justify-center text-gray-500 p-1 cursor-pointer bg-blue-100 rounded-full hover:text-blue-500 focus:text-blue-500"

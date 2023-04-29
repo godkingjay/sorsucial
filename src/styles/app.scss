@@ -2387,7 +2387,7 @@
 	}
 
 	.group-join-leave-button {
-		@apply text-xs px-4 py-2 h-auto min-w-0 w-32 my-2 ml-auto flex flex-row gap-x-2 relative;
+		@apply text-xs px-4 py-2 h-auto min-w-0 w-32 my-2 flex flex-row gap-x-2 relative;
 
 		.icon-container {
 			@apply absolute top-[50%] left-4 translate-y-[-50%] h-4 w-4 grid place-items-center;

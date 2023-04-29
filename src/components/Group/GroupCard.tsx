@@ -114,67 +114,69 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 								/>
 							</div>
 						)}
-						<button
-							type="button"
-							title="Join"
-							onClick={() =>
-								(!groupData.userJoin?.roles.includes("banned") ||
-									joiningGroup) &&
-								handleJoinGroup()
-							}
-							className="page-button group-join-leave-button"
-							data-state={
-								groupData.userJoin
-									? groupData.userJoin.roles.includes("rejected")
-										? "rejected"
-										: groupData.userJoin.roles.includes("banned")
-										? "banned"
-										: groupData.userJoin.roles.includes("pending")
-										? "pending"
-										: "joined"
-									: "join"
-							}
-							disabled={
-								joiningGroup || groupData.userJoin?.roles.includes("banned")
-							}
-						>
-							{!joiningGroup ? (
-								<>
-									<div className="icon-container">
-										{groupData.userJoin ? (
-											groupData.userJoin.roles.includes("rejected") ? (
-												<MdGroupAdd className="icon" />
-											) : groupData.userJoin.roles.includes("banned") ? (
-												<MdBlock className="icon" />
-											) : groupData.userJoin.roles.includes("pending") ? (
-												<MdOutlineTimer className="icon" />
+						<div className="flex flex-row justify-end">
+							<button
+								type="button"
+								title="Join"
+								onClick={() =>
+									(!groupData.userJoin?.roles.includes("banned") ||
+										joiningGroup) &&
+									handleJoinGroup()
+								}
+								className="page-button group-join-leave-button"
+								data-state={
+									groupData.userJoin
+										? groupData.userJoin.roles.includes("rejected")
+											? "rejected"
+											: groupData.userJoin.roles.includes("banned")
+											? "banned"
+											: groupData.userJoin.roles.includes("pending")
+											? "pending"
+											: "joined"
+										: "join"
+								}
+								disabled={
+									joiningGroup || groupData.userJoin?.roles.includes("banned")
+								}
+							>
+								{!joiningGroup ? (
+									<>
+										<div className="icon-container">
+											{groupData.userJoin ? (
+												groupData.userJoin.roles.includes("rejected") ? (
+													<MdGroupAdd className="icon" />
+												) : groupData.userJoin.roles.includes("banned") ? (
+													<MdBlock className="icon" />
+												) : groupData.userJoin.roles.includes("pending") ? (
+													<MdOutlineTimer className="icon" />
+												) : (
+													<MdCheck className="icon" />
+												)
 											) : (
-												<MdCheck className="icon" />
-											)
-										) : (
-											<MdGroupAdd className="icon" />
-										)}
+												<MdGroupAdd className="icon" />
+											)}
+										</div>
+										<div>
+											<p>
+												{groupData.userJoin
+													? groupData.userJoin.roles.includes("rejected")
+														? "Join"
+														: groupData.userJoin.roles.includes("banned")
+														? "Banned"
+														: groupData.userJoin.roles.includes("pending")
+														? "Pending"
+														: "Joined"
+													: "Join"}
+											</p>
+										</div>
+									</>
+								) : (
+									<div className="loading-spinner animate-spin">
+										<FiLoader className="h-full w-full" />
 									</div>
-									<div>
-										<p>
-											{groupData.userJoin
-												? groupData.userJoin.roles.includes("rejected")
-													? "Join"
-													: groupData.userJoin.roles.includes("banned")
-													? "Banned"
-													: groupData.userJoin.roles.includes("pending")
-													? "Pending"
-													: "Joined"
-												: "Join"}
-										</p>
-									</div>
-								</>
-							) : (
-								<div className="loading-spinner animate-spin">
-									<FiLoader className="h-full w-full" />
-								</div>
-							)}
-						</button>
+								)}
+							</button>
+						</div>
 						<div className="group-card-details-wrapper">
 							<div className="group-card-details-container">
 								<div

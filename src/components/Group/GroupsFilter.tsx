@@ -46,6 +46,15 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	return (
 		<>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				{firstLoadingGroups && (
+					<>
+						<GroupCardSkeleton index={0} />
+						<GroupCardSkeleton index={1} />
+						<GroupCardSkeleton index={2} />
+						<GroupCardSkeleton index={3} />
+						<GroupCardSkeleton index={4} />
+					</>
+				)}
 				{filteredGroupsLength > 0 && (
 					<>
 						{filteredGroups.map((group, index) => (
@@ -56,13 +65,13 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 								/>
 							</React.Fragment>
 						))}
-					</>
-				)}
-				{loadingGroups && (
-					<>
-						<GroupCardSkeleton index={filteredGroupsLength + 1} />
-						<GroupCardSkeleton index={filteredGroupsLength + 2} />
-						<GroupCardSkeleton index={filteredGroupsLength + 3} />
+						{loadingGroups && (
+							<>
+								<GroupCardSkeleton index={filteredGroupsLength + 1} />
+								<GroupCardSkeleton index={filteredGroupsLength + 2} />
+								<GroupCardSkeleton index={filteredGroupsLength + 3} />
+							</>
+						)}
 					</>
 				)}
 			</div>

@@ -20,7 +20,8 @@ export type QueryUsersSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryPostsSortBy =
 	| "name-asc"
@@ -48,7 +49,8 @@ export type QueryPostsSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryDiscussionsSortBy =
 	| "name-asc"
@@ -80,7 +82,8 @@ export type QueryDiscussionsSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryGroupsSortBy =
 	| "name-asc"

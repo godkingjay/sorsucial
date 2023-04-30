@@ -22,6 +22,32 @@ const useGroup = () => {
 		[setGroupStateValue]
 	);
 
+	const actionGroupDeleted = useCallback(
+		(groupDeleted: boolean, groupId: string) => {
+			setGroupStateValueMemo((prev) => ({
+				...prev,
+				groups: prev.groups.map((group) => {
+					if (group.group.id === groupId) {
+						return {
+							...group,
+							groupDeleted,
+						};
+					}
+
+					return group;
+				}),
+				currentGroup:
+					prev.currentGroup?.group.id === groupId
+						? {
+								...prev.currentGroup,
+								groupDeleted,
+						  }
+						: prev.currentGroup,
+			}));
+		},
+		[]
+	);
+
 	const createGroup = useCallback(
 		async (group: CreateGroupType) => {
 			try {
@@ -50,7 +76,7 @@ const useGroup = () => {
 					})
 					.then((response) => response.data)
 					.catch((error) => {
-						throw new Error(`API: Group Creation Error:\n${error.message}`);
+						throw new Error(`=>API: Group Creation Error:\n${error.message}`);
 					});
 
 				if (groupData) {
@@ -66,7 +92,7 @@ const useGroup = () => {
 							"image"
 						).catch((error) => {
 							throw new Error(
-								`Hook: Group Image Upload Error:\n${error.message}`
+								`=>Hook: Group Image Upload Error:\n${error.message}`
 							);
 						});
 
@@ -95,7 +121,7 @@ const useGroup = () => {
 					);
 				}
 			} catch (error: any) {
-				console.log(`Mongo: Create Group Error:\n${error.message}`);
+				console.log(`=>Mongo: Create Group Error:\n${error.message}`);
 			}
 		},
 		[groupStateValueMemo]
@@ -158,7 +184,7 @@ const useGroup = () => {
 				 */
 				await uploadBytes(storageRef, blob).catch((error: any) => {
 					throw new Error(
-						"Firebase Storage: Image Upload Error:\n" + error.message
+						"=>Firebase Storage: Image Upload Error:\n" + error.message
 					);
 				});
 
@@ -172,7 +198,7 @@ const useGroup = () => {
 				const downloadURL = await getDownloadURL(storageRef).catch(
 					(error: any) => {
 						throw new Error(
-							"Firebase Storage: Image  Download URL Error:\n" + error.message
+							`=>Firebase Storage: Image  Download URL Error:\n${error.message}`
 						);
 					}
 				);
@@ -222,7 +248,7 @@ const useGroup = () => {
 					.then((response) => response.data)
 					.catch((error) => {
 						throw new Error(
-							`API: Group Image Creation Error:\n${error.message}`
+							`=>API: Group Image Creation Error:\n${error.message}`
 						);
 					});
 
@@ -232,7 +258,7 @@ const useGroup = () => {
 				 */
 				return groupImageData || null;
 			} catch (error: any) {
-				console.log("Firebase: Uploading Image Error:\n", error.message);
+				console.log("=>Firebase: Uploading Image Error:\n", error.message);
 			}
 
 			return null;
@@ -310,8 +336,14 @@ const useGroup = () => {
 						})
 						.then((response) => response.data)
 						.catch((error) => {
+							const { groupDeleted } = error.response.data;
+
+							if (groupDeleted && !groupData.groupDeleted) {
+								actionGroupDeleted(groupDeleted, groupData.group.id);
+							}
+
 							throw new Error(
-								`API: Group Member Deletion Error:\n${error.message}`
+								`=>API: Group Member Deletion Error:\n${error.message}`
 							);
 						});
 
@@ -428,8 +460,14 @@ const useGroup = () => {
 							})
 							.then((response) => response.data)
 							.catch((error) => {
+								const { groupDeleted } = error.response.data;
+
+								if (groupDeleted && !groupData.groupDeleted) {
+									actionGroupDeleted(groupDeleted, groupData.group.id);
+								}
+
 								throw new Error(
-									`API: Group Member Creation Error:\n${error.message}`
+									`=>API: Group Member Creation Error:\n${error.message}`
 								);
 							});
 
@@ -481,7 +519,7 @@ const useGroup = () => {
 					}
 				}
 			} catch (error: any) {
-				console.log(`Mongo: Join Group Error:\n${error.message}`);
+				console.log(`=>Mongo: Join Group Error:\n${error.message}`);
 			}
 		},
 		[groupStateValueMemo]
@@ -539,7 +577,9 @@ const useGroup = () => {
 					})
 					.then((res) => res.data)
 					.catch((err) => {
-						throw new Error(`API (GET): Getting Groups error:\n ${err.message}`);
+						throw new Error(
+							`=>API (GET): Getting Groups error:\n${err.message}`
+						);
 					});
 
 				if (groups.length) {
@@ -573,7 +613,7 @@ const useGroup = () => {
 
 				return groups.length;
 			} catch (error: any) {
-				console.log(`MONGO: Error while fetching groups:\n${error.message}`);
+				console.log(`=>MONGO: Error while fetching groups:\n${error.message}`);
 			}
 		},
 		[groupStateValueMemo]

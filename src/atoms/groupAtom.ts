@@ -9,6 +9,7 @@ export interface GroupData {
 	members: GroupMember[];
 	images: GroupImage[];
 	userJoin: GroupMember | null;
+	groupDeleted?: boolean;
 	index: {
 		[sortBy in QueryGroupsSortBy]: number;
 	};

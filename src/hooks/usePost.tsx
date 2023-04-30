@@ -706,6 +706,10 @@ const usePost = () => {
 					userLike.groupId = postData.post.groupId;
 				}
 
+				/**
+				 * This function resets the user's like on a post and updates the number of likes accordingly.
+				 * This function will only be called if there is an error in liking or removing like.
+				 */
 				const resetUserLike = () => {
 					setPostStateValue(
 						(prev) =>
@@ -744,6 +748,17 @@ const usePost = () => {
 					);
 				};
 
+				/**
+				 * This code is updating the state of a post in a React application. It is updating the number
+				 * of likes for a post and the user's like status for that post. It does this by mapping over the
+				 * previous state's posts array and finding the post with the matching ID. It then updates the
+				 * post's number of likes and user like status based on whether the user had previously liked the
+				 * post or not. It also updates the current post in the state if it matches the post being updated.
+				 *
+				 * This code updates the client-side state of the application. It does not update the database.
+				 * The database is updated in the API. If the user like or like remove fails, then the state
+				 * will be reset to the previous state.
+				 */
 				setPostStateValue(
 					(prev) =>
 						({

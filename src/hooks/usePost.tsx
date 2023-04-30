@@ -722,8 +722,8 @@ const usePost = () => {
 											post: {
 												...post.post,
 												numberOfLikes: previousUserLike
-													? post.post.numberOfLikes - 1
-													: post.post.numberOfLikes + 1,
+													? post.post.numberOfLikes + 1
+													: post.post.numberOfLikes - 1,
 											},
 											userLike: previousUserLike,
 										};
@@ -738,8 +738,8 @@ const usePost = () => {
 												post: {
 													...prev.currentPost?.post,
 													numberOfLikes: previousUserLike
-														? prev.currentPost.post.numberOfLikes - 1
-														: prev.currentPost.post.numberOfLikes + 1,
+														? prev.currentPost.post.numberOfLikes + 1
+														: prev.currentPost.post.numberOfLikes - 1,
 												},
 												userLike: previousUserLike,
 										  }
@@ -770,8 +770,8 @@ const usePost = () => {
 										post: {
 											...post.post,
 											numberOfLikes: previousUserLike
-												? post.post.numberOfLikes + 1
-												: post.post.numberOfLikes - 1,
+												? post.post.numberOfLikes - 1
+												: post.post.numberOfLikes + 1,
 										},
 										userLike: previousUserLike ? null : userLike,
 									};
@@ -786,8 +786,8 @@ const usePost = () => {
 											post: {
 												...prev.currentPost?.post,
 												numberOfLikes: previousUserLike
-													? prev.currentPost.post.numberOfLikes + 1
-													: prev.currentPost.post.numberOfLikes - 1,
+													? prev.currentPost.post.numberOfLikes - 1
+													: prev.currentPost.post.numberOfLikes + 1,
 											},
 											userLike: previousUserLike ? null : userLike,
 									  }

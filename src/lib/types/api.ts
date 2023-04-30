@@ -1,4 +1,21 @@
 import { SiteDiscussion } from "../interfaces/discussion";
+import { SitePost } from "../interfaces/post";
+
+export type APIEndpointPostsParams = {
+	apiKey: string;
+	userId: string;
+	postType: SitePost["postType"];
+	privacy: SitePost["privacy"];
+	groupId?: string;
+	tags?: string;
+	creator?: string;
+	lastIndex?: string | number;
+	fromLikes?: string | number;
+	fromComments?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryPostsSortBy;
+	limit?: string | number;
+};
 
 export type APIEndpointDiscussionsParams = {
 	apiKey: string;
@@ -15,7 +32,7 @@ export type APIEndpointDiscussionsParams = {
 	fromDownVotes?: string | number;
 	fromReplies?: string | number;
 	fromDate?: string | Date;
-	sortBy: QueryPostsSortBy;
+	sortBy: QueryDiscussionsSortBy;
 	limit?: string | number;
 };
 

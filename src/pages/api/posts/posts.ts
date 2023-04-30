@@ -1,3 +1,4 @@
+import { APIEndpointPostsParams } from "./../../../lib/types/api";
 import { PostData } from "@/atoms/postAtom";
 import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
@@ -40,18 +41,18 @@ export default async function handler(
 		const {
 			apiKey,
 			userId,
-			postType = "feed" as SitePost["postType"],
-			privacy = "public" as SitePost["privacy"],
+			postType = "feed",
+			privacy = "public",
 			groupId,
 			tags,
 			creator,
-			lastIndex = "-1",
-			fromLikes = Number.MAX_SAFE_INTEGER.toString(),
-			fromComments = Number.MAX_SAFE_INTEGER.toString(),
-			fromDate = new Date().toISOString() as Date | string,
-			sortBy = "latest" as QueryPostsSortBy,
-			limit = "10",
-		} = req.body || req.query;
+			lastIndex = -1,
+			fromLikes = Number.MAX_SAFE_INTEGER,
+			fromComments = Number.MAX_SAFE_INTEGER,
+			fromDate = new Date().toISOString(),
+			sortBy = "latest",
+			limit = 10,
+		}: APIEndpointPostsParams = req.body || req.query;
 
 		if (!apiKey) {
 			return res.status(400).json({ error: "No API key provided!" });
@@ -120,10 +121,7 @@ export default async function handler(
 							posts = await getSortByLatest({
 								postType,
 								privacy,
-								fromDate:
-									typeof fromDate === "string"
-										? fromDate
-										: fromDate.toIsoString(),
+								fromDate,
 								limit,
 							});
 
@@ -163,7 +161,12 @@ export default async function handler(
 							creator: creatorData || null,
 							userLike: userLikeData || null,
 							index: {
-								[sortBy]: parseInt(lastIndex) + posts.indexOf(postDoc) + 1,
+								[sortBy]:
+									(typeof lastIndex === "string"
+										? parseInt(lastIndex)
+										: lastIndex) +
+									posts.indexOf(postDoc) +
+									1,
 							} as Partial<PostData>,
 						};
 					})
@@ -203,11 +206,11 @@ export default async function handler(
 }
 
 const getSortByLatest = async ({
-	postType = "feed" as SitePost["postType"],
-	privacy = "public" as SitePost["privacy"],
-	fromDate = new Date().toISOString() as string,
-	limit = "10",
-}) => {
+	postType,
+	privacy,
+	fromDate,
+	limit = 10,
+}: Partial<APIEndpointPostsParams>) => {
 	const { postsCollection } = await postDb();
 
 	return postsCollection
@@ -216,13 +219,14 @@ const getSortByLatest = async ({
 					postType: postType,
 					privacy: privacy,
 					createdAt: {
-						$lt: fromDate,
+						$lt:
+							typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
 					},
 				})
 				.sort({
 					createdAt: -1,
 				})
-				.limit(parseInt(limit as string))
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
 				.toArray()
 		: [];
 };

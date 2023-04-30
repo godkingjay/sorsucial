@@ -1,8 +1,8 @@
-import PageEnd from "@/components/Banner/PageBanner/PageEnd";
 import PageFilter from "@/components/Controls/PageFilter";
 import GroupCreationListener from "@/components/Group/GroupCreationListener";
 import GroupsFilter from "@/components/Group/GroupsFilter";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import GroupCardSkeleton from "@/components/Skeleton/Group/GroupCardSkeleton";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
@@ -67,7 +67,9 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 					<section className="flex flex-col gap-y-4">
 						{!userMounted ? (
 							<>
-								<p>Loading</p>
+								<GroupCardSkeleton index={0} />
+								<GroupCardSkeleton index={0} />
+								<GroupCardSkeleton index={0} />
 							</>
 						) : (
 							<>
@@ -76,8 +78,12 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 								<GroupsFilter
 									sortBy="latest"
 									privacy="public"
+									loadingGroups={loadingGroups}
+									firstLoadingGroups={firstLoadingGroups}
+									endReached={endReached}
+									groupsMounted={groupsMounted.current}
+									handleFetchGroups={handleFetchGroups}
 								/>
-								{endReached && <PageEnd message="End of Groups" />}
 							</>
 						)}
 					</section>

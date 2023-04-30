@@ -1,3 +1,4 @@
+import PageEnd from "@/components/Banner/PageBanner/PageEnd";
 import PageFilter from "@/components/Controls/PageFilter";
 import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
@@ -111,15 +112,7 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 										onVisible={handleFetchFeeds}
 									></VisibleInViewPort>
 								)}
-								{endReached && (
-									<div className="h-16 flex flex-col items-center justify-center">
-										<div className="flex flex-row items-center w-full gap-x-4">
-											<div className="flex-1 h-[1px] bg-gray-300"></div>
-											<p className="text-gray-400">End of Feeds</p>
-											<div className="flex-1 h-[1px] bg-gray-300"></div>
-										</div>
-									</div>
-								)}
+								{endReached && <PageEnd message="End of Feeds" />}
 							</>
 						)}
 					</section>

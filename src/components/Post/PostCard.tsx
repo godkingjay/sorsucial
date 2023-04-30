@@ -12,6 +12,7 @@ import PostLinks from "./PostCard/PostBody/PostLinks";
 import { NextRouter } from "next/router";
 import { siteDetails } from "@/lib/host";
 import PostComments from "./PostCard/PostComment/PostComments";
+import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -278,6 +279,14 @@ const PostCard: React.FC<PostCardProps> = ({
 
 	return (
 		<div className="post-card entrance-animation-slide-from-right">
+			{!isSinglePostPage() && postData.postDeleted && (
+				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 rounded-t-lg">
+					<ErrorBannerTextXs
+						message="This post no longer exist. It may have been deleted by the
+											creator or an admin."
+					/>
+				</div>
+			)}
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}

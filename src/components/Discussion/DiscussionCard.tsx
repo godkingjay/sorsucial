@@ -9,10 +9,8 @@ import DiscussionTextContent from "./DiscussionCard/DiscussionTextContent";
 import DiscussionVoteAndReplyDetails from "./DiscussionCard/DiscussionVoteAndReplyDetails";
 import DiscussionFooter from "./DiscussionCard/DiscussionFooter";
 import { siteDetails } from "@/lib/host";
-import { BiCommentDetail } from "react-icons/bi";
-import UserIcon from "../Icons/UserIcon";
-import ReplyBox from "./DiscussionCard/DiscussionReply/ReplyBox";
 import DiscussionReplies from "./DiscussionCard/DiscussionReply/DiscussionReplies";
+import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
 
 type DiscussionCardProps = {
 	userStateValue: UserState;
@@ -236,6 +234,14 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative entrance-animation-slide-from-right">
+			{!isSingleDiscussionPage() && discussionData.discussionDeleted && (
+				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 rounded-t-lg">
+					<ErrorBannerTextXs
+						message="This discussion no longer exist. It may have been deleted by the
+											creator or an admin."
+					/>
+				</div>
+			)}
 			<div className="flex flex-row">
 				<DiscussionVote
 					discussionData={discussionData}

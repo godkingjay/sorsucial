@@ -6,6 +6,7 @@ import { DiscussionReplyData, DiscussionState } from "@/atoms/discussionAtom";
 import useReply from "@/hooks/useReply";
 import ReplyItem from "./ReplyItem";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
 
 type DiscussionRepliesProps = {
 	userStateValue: UserState;
@@ -236,6 +237,18 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											/>
 										</React.Fragment>
 									))}
+								{loadingReplies && (
+									<>
+										<DiscussionReplyItemSkeleton
+											replyLevel={0}
+											parentShowReplyBox={false}
+										/>
+										<DiscussionReplyItemSkeleton
+											replyLevel={0}
+											parentShowReplyBox={false}
+										/>
+									</>
+								)}
 								{currentDiscussion.discussion.numberOfFirstLevelReplies >
 									currentDiscussion.discussionReplies.filter(
 										(reply) =>

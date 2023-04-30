@@ -57,14 +57,14 @@ export default async function handler(
 		 * @param {string} apiKey - The API key to be verified.
 		 */
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		/**
 		 * Checks if there is a connection with the API Keys Database.
 		 */
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(503)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
@@ -73,14 +73,16 @@ export default async function handler(
 		 * Checks if there is a connection with the Users Database.
 		 */
 		if (!usersCollection) {
-			res.status(503).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(503)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		/**
 		 * Checks if there is a connection with the Groups Database and Group Members Collection.
 		 */
 		if (!groupsCollection || !groupMembersCollection) {
-			res
+			return res
 				.status(503)
 				.json({ error: "Cannot connect with the Groups Database!" });
 		}
@@ -98,7 +100,7 @@ export default async function handler(
 		 * @type {SiteUser}
 		 */
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		/**
@@ -113,7 +115,7 @@ export default async function handler(
 		 * If user data is invalid, return a 401 Unauthorized status code.
 		 */
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user" });
+			return res.status(401).json({ error: "Invalid user" });
 		}
 
 		const groupData = (await groupsCollection.findOne({
@@ -121,7 +123,7 @@ export default async function handler(
 		})) as unknown as SiteGroup;
 
 		if (!groupData) {
-			res.status(404).json({
+			return res.status(404).json({
 				groupDeleted: true,
 				error: "Group not found!",
 			});
@@ -250,7 +252,7 @@ export default async function handler(
 					 *
 					 * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201 | 201 OK}
 					 */
-					res.status(201).json({
+					return res.status(201).json({
 						success: true,
 						groupMemberData: {
 							_id: upsertedId,
@@ -259,7 +261,7 @@ export default async function handler(
 						joinStatus,
 					});
 				} catch (error: any) {
-					res.status(500).json({
+					return res.status(500).json({
 						error: `MongoDB - POST: Creating new Group Member Error:\n${error.message}`,
 					});
 				}
@@ -392,15 +394,15 @@ export default async function handler(
 						leaveStatus,
 					});
 				} catch (error: any) {
-					res.status(500).json({ error: error.message });
+					return res.status(500).json({ error: error.message });
 				}
 			}
 
 			default: {
-				res.status(405).json({ error: "Method not supported" });
+				return res.status(405).json({ error: "Method not supported" });
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

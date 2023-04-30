@@ -29,7 +29,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 }) => {
 	const { groupStateValue } = useGroup();
 	const [filteredGroups, setFilteredGroups] = useState<GroupData[]>([]);
-	const filteredGroupsLength = filteredGroups.length;
+	const filteredGroupsLength = filteredGroups.length || -1;
 
 	useEffect(() => {
 		setFilteredGroups(
@@ -63,6 +63,8 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 						<GroupCardSkeleton index={filteredGroupsLength + 1} />
 						<GroupCardSkeleton index={filteredGroupsLength + 2} />
 						<GroupCardSkeleton index={filteredGroupsLength + 3} />
+						<GroupCardSkeleton index={filteredGroupsLength + 4} />
+						<GroupCardSkeleton index={filteredGroupsLength + 5} />
 					</>
 				)}
 			</div>

@@ -75,9 +75,7 @@ export default async function handler(
 								fromDate:
 									typeof fromDate === "string"
 										? fromDate
-										: ((typeof fromDate as string) || Date) === Date
-										? fromDate.toISOString()
-										: new Date().toISOString(),
+										: fromDate.toISOString(),
 								limit: limit,
 							});
 							break;

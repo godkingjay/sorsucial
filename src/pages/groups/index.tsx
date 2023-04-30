@@ -68,8 +68,10 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 						{!userMounted ? (
 							<>
 								<GroupCardSkeleton index={0} />
-								<GroupCardSkeleton index={0} />
-								<GroupCardSkeleton index={0} />
+								<GroupCardSkeleton index={1} />
+								<GroupCardSkeleton index={2} />
+								<GroupCardSkeleton index={3} />
+								<GroupCardSkeleton index={4} />
 							</>
 						) : (
 							<>

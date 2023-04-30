@@ -67,7 +67,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 								fill
 							/>
 						) : (
-							<div className="h-full w-full bg-gradient-to-t from-logo-400 to-logo-100 p-4 text-white">
+							<div className="h-full w-full bg-gray-200 p-4 text-gray-50">
 								<HiUserGroup className="h-full w-full" />
 							</div>
 						)}

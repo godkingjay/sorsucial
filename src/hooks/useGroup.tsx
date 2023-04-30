@@ -490,6 +490,8 @@ const useGroup = () => {
 	const fetchGroups = useCallback(
 		async ({
 			privacy = "public" as SiteGroup["privacy"],
+			tags = undefined as string | undefined,
+			creator = undefined as string | undefined,
 			sortBy = "latest" as QueryGroupsSortBy,
 		}) => {
 			try {
@@ -523,9 +525,15 @@ const useGroup = () => {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser?.uid,
 							privacy: privacy,
+							tags: tags,
+							creator: creator,
 							lastIndex: refGroup?.index[sortBy] || -1,
-							fromMember:
+							fromMembers:
 								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+							fromPosts:
+								refGroup?.group.numberOfPosts || Number.MAX_SAFE_INTEGER,
+							fromDiscussions:
+								refGroup?.group.numberOfDiscussions || Number.MAX_SAFE_INTEGER,
 							fromDate: refGroup?.group.createdAt || null,
 						},
 					})

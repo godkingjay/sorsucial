@@ -1011,7 +1011,7 @@ const usePost = () => {
 					posts: prev.posts
 						.map((post) => {
 							const postIndex = posts.findIndex(
-								(p) => p.post.id === post.post.id
+								(postData) => postData.post.id === post.post.id
 							);
 
 							const existingPost = postIndex !== -1 ? posts[postIndex] : null;

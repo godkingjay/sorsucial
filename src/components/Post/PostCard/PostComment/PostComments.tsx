@@ -3,9 +3,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostCommentData, PostState } from "@/atoms/postAtom";
 import useComment from "@/hooks/useComment";
-import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentInputBoxSkeleton";
+import PostCommentInputBoxSkeleton from "@/components/Skeleton/Post/PostComment/PostCommentInputBoxSkeleton";
 import CommentItem from "./CommentItem";
-import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment.tsx/PostCommentItemSkeleton";
+import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment/PostCommentItemSkeleton";
 import { PostComment } from "@/lib/interfaces/post";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 

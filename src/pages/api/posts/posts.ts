@@ -5,7 +5,6 @@ import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
-import { QueryPostsSortBy } from "@/lib/types/api";
 import { Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 

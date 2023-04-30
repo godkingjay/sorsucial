@@ -24,25 +24,25 @@ export default async function handler(
 			typeof rawGroupData === "string" ? JSON.parse(rawGroupData) : rawGroupData;
 
 		if (!apiKey) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: "No API Key provided!",
 			});
 		}
 
 		if (!apiKeysCollection) {
-			res.status(500).json({
+			return res.status(500).json({
 				error: "Cannot connect with the API Keys Database!",
 			});
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({
+			return res.status(500).json({
 				error: "Cannot connect with the Users Database!",
 			});
 		}
 
 		if (!groupsCollection || !groupMembersCollection || !groupImagesCollection) {
-			res.status(500).json({
+			return res.status(500).json({
 				error: "Cannot connect with the Groups Database!",
 			});
 		}
@@ -52,7 +52,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -60,17 +60,17 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(404).json({ error: "Invalid user" });
+			return res.status(401).json({ error: "Invalid user" });
 		}
 
 		switch (req.method) {
 			case "POST": {
 				if (!groupData) {
-					res.status(400).json({ error: "No group data provided!" });
+					return res.status(400).json({ error: "No group data provided!" });
 				}
 
 				if (groupData.creatorId !== userAPI.userId) {
-					res
+					return res
 						.status(403)
 						.json({ error: "You are not the creator of this group!" });
 				}
@@ -86,7 +86,7 @@ export default async function handler(
 						_id: objectId,
 					} as Partial<SiteGroup>)
 					.catch((error: any) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: `Mongo: Creating group document ${objectIdString} failed:\n${error.message}`,
 						});
 					});
@@ -126,12 +126,12 @@ export default async function handler(
 				const newGroupMemberState = await groupMembersCollection
 					.insertOne(newGroupMember)
 					.catch((error: any) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: `Mongo: Creating group member document ${objectIdString} failed:\n${error.message}`,
 						});
 					});
 
-				res.status(200).json({
+				return res.status(200).json({
 					message: "Group created successfully!",
 					newGroupState,
 					groupMemberData: newGroupMember,
@@ -142,7 +142,7 @@ export default async function handler(
 			}
 
 			default: {
-				res.status(405).json({
+				return res.status(405).json({
 					message: `Method ${req.method} Not Allowed`,
 					error: `Method ${req.method} Not Allowed`,
 				});
@@ -151,7 +151,7 @@ export default async function handler(
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({
+		return res.status(500).json({
 			message: "Internal Server Error",
 			error: error.message,
 		});

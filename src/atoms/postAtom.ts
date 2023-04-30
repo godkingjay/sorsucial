@@ -8,6 +8,7 @@ import {
 	SitePost,
 } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
+import { QueryPostsSortBy } from "@/lib/types/api";
 import { atom } from "recoil";
 
 export interface PostOptionsState {
@@ -120,6 +121,9 @@ export interface PostData {
 	userVote: PollVote | null;
 	postComments: PostCommentData[];
 	postDeleted?: boolean;
+	index: {
+		[sortBy in QueryPostsSortBy]: number;
+	};
 }
 
 /**

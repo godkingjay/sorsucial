@@ -49,6 +49,7 @@ const TagsList: React.FC<TagListProps> = ({ itemName, items }) => {
 									key={index}
 									title={item}
 									className="h-5 flex text-sm items-center space-x-2 px-2 duration-200 hover:bg-slate-500 hover:scale-110"
+									onClick={(event) => event.stopPropagation()}
 								>
 									<span className="text-2xs px-1 truncate text-white">
 										{item.length > 64 ? `${item.slice(0, 64)}...` : item}

@@ -11,6 +11,7 @@ import DiscussionFooter from "./DiscussionCard/DiscussionFooter";
 import { siteDetails } from "@/lib/host";
 import DiscussionReplies from "./DiscussionCard/DiscussionReply/DiscussionReplies";
 import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
+import TagsList from "../Tag/TagList";
 
 type DiscussionCardProps = {
 	userStateValue: UserState;
@@ -264,6 +265,17 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						isSingleDiscussionPage={isSingleDiscussionPage}
 						handleReadMoreClick={handleReadMoreClick}
 					/>
+					{discussionData.discussion.discussionTags &&
+						discussionData.discussion.discussionTags.length > 0 && (
+							<div className="flex flex-row gap-x-4 mx-4 mb-2">
+								<div className="flex-1">
+									<TagsList
+										itemName="Discussion Tags"
+										items={discussionData.discussion.discussionTags}
+									/>
+								</div>
+							</div>
+						)}
 					<div className="flex flex-col">
 						<DiscussionVoteAndReplyDetails
 							discussionData={discussionData}

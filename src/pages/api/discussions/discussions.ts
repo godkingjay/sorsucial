@@ -6,6 +6,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import userDb from "@/lib/db/userDb";
 import { DiscussionData } from "@/atoms/discussionAtom";
 import { SiteUserAPI } from "@/lib/interfaces/api";
+import {
+	APIEndpointDiscussionsParams,
+	QueryDiscussionsSortBy,
+} from "@/lib/types/api";
+import { Document, WithId } from "mongodb";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,35 +24,40 @@ export default async function handler(
 		const {
 			apiKey,
 			userId,
-			discussionType = "discussion",
-			privacy = "public",
-			isOpen,
+			discussionType = "discussion" as SiteDiscussion["discussionType"],
+			privacy = "public" as SiteDiscussion["privacy"],
+			groupId,
+			tags,
+			creator,
+			isOpen = true,
+			lastIndex = "-1",
+			fromVotes = Number.MAX_SAFE_INTEGER.toString(),
+			fromUpVotes = Number.MAX_SAFE_INTEGER.toString(),
+			fromDownVotes = Number.MAX_SAFE_INTEGER.toString(),
+			fromReplies = Number.MAX_SAFE_INTEGER.toString(),
 			fromDate = new Date().toISOString(),
-		}: {
-			apiKey: string;
-			userId: string;
-			discussionType: SiteDiscussion["discussionType"];
-			privacy: SiteDiscussion["privacy"];
-			isOpen: boolean | string;
-			fromDate: string;
-		} = req.body || req.query;
+			sortBy = "latest",
+			limit = "10",
+		}: APIEndpointDiscussionsParams = req.body || req.query;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (!discussionsCollection || !discussionVotesCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
 		}
@@ -57,43 +67,47 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(500).json({ error: "Invalid API key" });
-			return;
+			return res.status(401).json({ error: "Invalid API key" });
+		}
+
+		const userData = (await usersCollection.findOne({
+			uid: userAPI.userId,
+		})) as unknown as SiteUser;
+
+		if (!userData) {
+			return res.status(401).json({ error: "invalid User" });
 		}
 
 		switch (req.method) {
 			case "GET": {
 				if (!discussionType) {
-					res.status(505).json({ error: "No discussion type provided"! });
-					return;
+					return res.status(400).json({ error: "No discussion type provided"! });
 				}
 
-				const discussions = fromDate
-					? await discussionsCollection
-							.find({
-								discussionType: discussionType,
-								privacy: privacy,
-								isOpen: isOpen === "true" ? true : false,
-								createdAt: {
-									$lt: fromDate,
-								},
-							})
-							.sort({
-								createdAt: -1,
-							})
-							.limit(10)
-							.toArray()
-					: await discussionsCollection
-							.find({
-								discussionType: discussionType,
-								privacy: privacy,
-								isOpen: isOpen === "true" ? true : false,
-							})
-							.sort({
-								createdAt: -1,
-							})
-							.limit(10)
-							.toArray();
+				let discussions: WithId<Document>[] = [];
+
+				switch (sortBy) {
+					case "latest": {
+						discussions = await getSortByLatest({
+							discussionType,
+							privacy,
+							isOpen,
+							fromDate,
+							limit,
+						});
+
+						break;
+					}
+
+					default: {
+						return res
+							.status(400)
+							.json({ error: "Invalid sort by option provided!" });
+						break;
+					}
+				}
+
+				discussions = discussions || [];
 
 				const discussionsData: Partial<DiscussionData>[] = await Promise.all(
 					discussions.map(async (discussionDoc) => {
@@ -110,14 +124,22 @@ export default async function handler(
 							discussion,
 							creator: creatorData,
 							userVote: userVoteData,
-						};
+							index: {
+								[sortBy]:
+									(typeof lastIndex === "string"
+										? parseInt(lastIndex)
+										: lastIndex) +
+									discussions.indexOf(discussionDoc) +
+									1,
+							},
+						} as Partial<DiscussionData>;
 					})
 				);
 
 				if (discussionsData.length) {
-					res.status(200).json({ discussions: discussionsData });
+					return res.status(200).json({ discussions: discussionsData });
 				} else {
-					res.status(200).json({ discussions: [] });
+					return res.status(200).json({ discussions: [] });
 				}
 
 				break;
@@ -139,11 +161,38 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(405).json({ error: "Method not allowed!" });
+				return res.status(405).json({ error: "Method not allowed!" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }
+
+const getSortByLatest = async ({
+	discussionType,
+	privacy,
+	isOpen,
+	fromDate,
+	limit = 10,
+}: Partial<APIEndpointDiscussionsParams>) => {
+	const { discussionsCollection } = await discussionDb();
+
+	return discussionsCollection
+		? await discussionsCollection
+				.find({
+					discussionType: discussionType,
+					privacy: privacy,
+					isOpen: typeof isOpen === "string" ? isOpen === "true" : isOpen,
+					createdAt: {
+						$lt: fromDate,
+					},
+				})
+				.sort({
+					createdAt: -1,
+				})
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
+				.toArray()
+		: [];
+};

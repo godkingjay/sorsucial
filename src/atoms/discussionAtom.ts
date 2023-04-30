@@ -5,6 +5,7 @@ import {
 	SiteDiscussion,
 } from "@/lib/interfaces/discussion";
 import { SiteUser } from "@/lib/interfaces/user";
+import { QueryDiscussionsSortBy } from "@/lib/types/api";
 import { atom } from "recoil";
 
 export interface DiscussionOptionsState {
@@ -37,6 +38,9 @@ export interface DiscussionData {
 	userVote: DiscussionVote | null;
 	discussionReplies: DiscussionReplyData[];
 	discussionDeleted?: boolean;
+	index: {
+		[sortBy in QueryDiscussionsSortBy]: number;
+	};
 }
 
 export interface DiscussionState {

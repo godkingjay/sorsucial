@@ -1,3 +1,41 @@
+import { SiteDiscussion } from "../interfaces/discussion";
+import { SitePost } from "../interfaces/post";
+
+export type APIEndpointPostsParams = {
+	apiKey: string;
+	userId: string;
+	postType: SitePost["postType"];
+	privacy: SitePost["privacy"];
+	groupId?: string;
+	tags?: string;
+	creator?: string;
+	lastIndex?: string | number;
+	fromLikes?: string | number;
+	fromComments?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryPostsSortBy;
+	limit?: string | number;
+};
+
+export type APIEndpointDiscussionsParams = {
+	apiKey: string;
+	userId: string;
+	discussionType: SiteDiscussion["discussionType"];
+	privacy: SiteDiscussion["privacy"];
+	groupId?: string;
+	tags?: string;
+	creator?: string;
+	isOpen?: string | boolean;
+	lastIndex?: string | number;
+	fromVotes?: string | number;
+	fromUpVotes?: string | number;
+	fromDownVotes?: string | number;
+	fromReplies?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryDiscussionsSortBy;
+	limit?: string | number;
+};
+
 export type QueryUsersSortBy =
 	| "name-first-asc"
 	| "name-first-desc"
@@ -20,7 +58,8 @@ export type QueryUsersSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryPostsSortBy =
 	| "name-asc"
@@ -48,7 +87,8 @@ export type QueryPostsSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryDiscussionsSortBy =
 	| "name-asc"
@@ -80,7 +120,8 @@ export type QueryDiscussionsSortBy =
 	| "rank-year-asc"
 	| "rank-year-desc"
 	| "top-rank-asc"
-	| "top-rank-desc";
+	| "top-rank-desc"
+	| "newest";
 
 export type QueryGroupsSortBy =
 	| "name-asc"

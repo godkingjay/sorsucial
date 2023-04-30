@@ -33,7 +33,11 @@ export default function Home() {
 	const handleFetchAnnouncements = useCallback(async () => {
 		setLoadingAnnouncements(true);
 		try {
-			const fetchedPostLength = await fetchPosts("announcement", "public");
+			const fetchedPostLength = await fetchPosts({
+				postType: "announcement",
+				privacy: "public",
+				sortBy: "latest",
+			});
 			if (fetchedPostLength !== undefined) {
 				setEndReached(fetchedPostLength < 10 ? true : false);
 			}

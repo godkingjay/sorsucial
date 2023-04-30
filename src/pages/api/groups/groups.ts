@@ -5,7 +5,7 @@ import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
-import { Collection, Document, WithId } from "mongodb";
+import { Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,29 +21,35 @@ export default async function handler(
 			apiKey,
 			userId,
 			privacy = "public" as SiteGroup["privacy"],
+			tags,
+			creator,
 			lastIndex = "-1",
-			fromMember = Number.MAX_SAFE_INTEGER.toString(),
+			fromMembers = Number.MAX_SAFE_INTEGER.toString(),
+			fromPosts = Number.MAX_SAFE_INTEGER.toString(),
+			fromDiscussions = Number.MAX_SAFE_INTEGER.toString(),
 			fromDate = new Date().toISOString(),
 			sortBy = "latest" as QueryGroupsSortBy,
 			limit = "10",
 		} = req.body || req.query;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (!groupsCollection || !groupMembersCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the Groups Database!" });
 		}
@@ -53,7 +59,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key!" });
+			return res.status(401).json({ error: "Invalid API key!" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -61,7 +67,7 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user ID!" });
+			return res.status(401).json({ error: "Invalid user ID!" });
 		}
 
 		switch (req.method) {
@@ -82,15 +88,14 @@ export default async function handler(
 						}
 
 						default: {
-							res.status(400).json({ error: "Invalid sort by!" });
+							return res.status(400).json({ error: "Invalid sort by!" });
 							break;
 						}
 					}
 				} catch (error: any) {
-					res
+					return res
 						.status(500)
 						.json({ error: "Error getting groups:\n" + error.message });
-					return;
 				}
 
 				groups = groups || [];
@@ -118,21 +123,21 @@ export default async function handler(
 				);
 
 				if (groupsData.length) {
-					res.status(200).json({ groups: groupsData });
+					return res.status(200).json({ groups: groupsData });
 				} else {
-					res.status(200).json({ groups: [] });
+					return res.status(200).json({ groups: [] });
 				}
 
 				break;
 			}
 
 			default: {
-				res.status(405).json({ error: "Method not allowed!" });
+				return res.status(405).json({ error: "Method not allowed!" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ message: error.message, error: error });
+		return res.status(500).json({ message: error.message, error: error });
 	}
 }
 

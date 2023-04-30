@@ -1,8 +1,11 @@
+import { APIEndpointPostsParams } from "./../../../lib/types/api";
+import { PostData } from "@/atoms/postAtom";
 import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { PostLike, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
+import { Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**--------------------------------------------------------------------------------------------------------------------
@@ -34,25 +37,42 @@ export default async function handler(
 		const { apiKeysCollection, usersCollection } = await userDb();
 		const { postsCollection, postLikesCollection } = await postDb();
 
-		const { apiKey, userId, postType, privacy, fromDate } =
-			req.body || req.query;
+		const {
+			apiKey,
+			userId,
+			postType = "feed",
+			privacy = "public",
+			groupId,
+			tags,
+			creator,
+			lastIndex = -1,
+			fromLikes = Number.MAX_SAFE_INTEGER,
+			fromComments = Number.MAX_SAFE_INTEGER,
+			fromDate = new Date().toISOString(),
+			sortBy = "latest",
+			limit = 10,
+		}: APIEndpointPostsParams = req.body || req.query;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (!postsCollection || !postLikesCollection) {
-			res.status(500).json({ error: "Cannot connect with the Posts Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Posts Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -60,8 +80,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
-			return;
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -69,8 +88,7 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user" });
-			return;
+			return res.status(401).json({ error: "Invalid user" });
 		}
 
 		switch (req.method) {
@@ -91,33 +109,38 @@ export default async function handler(
 			 */
 			case "GET": {
 				if (!postType) {
-					res.status(400).json({ error: "No post type provided" });
+					return res.status(400).json({ error: "No post type provided" });
 				}
 
-				const posts = await Promise.all(
-					fromDate
-						? await postsCollection
-								.find({
-									postType: postType,
-									privacy: privacy,
-									createdAt: { $lt: fromDate },
-								})
-								.sort({ createdAt: -1 })
-								.limit(10)
-								.toArray()
-						: await postsCollection
-								.find({
-									postType: postType,
-									privacy: privacy,
-								})
-								.sort({ createdAt: -1 })
-								.limit(10)
-								.toArray()
-				).catch((error: any) => {
-					res
+				let posts: WithId<Document>[] = [];
+
+				try {
+					switch (sortBy) {
+						case "latest": {
+							posts = await getSortByLatest({
+								postType,
+								privacy,
+								fromDate,
+								limit,
+							});
+
+							break;
+						}
+
+						default: {
+							return res.status(400).json({
+								error: "Invalid sort by option provided",
+							});
+							break;
+						}
+					}
+				} catch (error: any) {
+					return res
 						.status(500)
 						.json({ error: "Error getting posts:\n" + error.message });
-				});
+				}
+
+				posts = posts || [];
 
 				const postsData = await Promise.all(
 					posts!.map(async (postDoc) => {
@@ -134,16 +157,24 @@ export default async function handler(
 
 						return {
 							post,
-							creator: creatorData,
-							userLike: userLikeData,
+							creator: creatorData || null,
+							userLike: userLikeData || null,
+							index: {
+								[sortBy]:
+									(typeof lastIndex === "string"
+										? parseInt(lastIndex)
+										: lastIndex) +
+									posts.indexOf(postDoc) +
+									1,
+							} as Partial<PostData>,
 						};
 					})
 				);
 
 				if (postsData.length) {
-					res.status(200).json({ posts: postsData });
+					return res.status(200).json({ posts: postsData });
 				} else {
-					res.status(200).json({ posts: [] });
+					return res.status(200).json({ posts: [] });
 				}
 				break;
 			}
@@ -164,11 +195,37 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(405).json({ error: "Method not allowed" });
+				return res.status(405).json({ error: "Method not allowed" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }
+
+const getSortByLatest = async ({
+	postType,
+	privacy,
+	fromDate,
+	limit = 10,
+}: Partial<APIEndpointPostsParams>) => {
+	const { postsCollection } = await postDb();
+
+	return postsCollection
+		? await postsCollection
+				.find({
+					postType: postType,
+					privacy: privacy,
+					createdAt: {
+						$lt:
+							typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
+					},
+				})
+				.sort({
+					createdAt: -1,
+				})
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
+				.toArray()
+		: [];
+};

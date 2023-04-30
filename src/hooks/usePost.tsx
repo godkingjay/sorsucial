@@ -28,6 +28,7 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
+import { QueryPostsSortBy } from "@/lib/types/api";
 
 /**
  * ~ ██████╗  ██████╗ ███████╗████████╗    ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗
@@ -367,6 +368,10 @@ const usePost = () => {
 										updatedAt: new Date().toISOString(),
 									},
 									creator: userStateValue.user,
+									index: {
+										newest: 0,
+										latest: 0,
+									},
 								},
 								...prev.posts,
 							],
@@ -899,31 +904,47 @@ const usePost = () => {
 	 *
 	 * @returns {Promise<number>} - A promise that resolves with the number of posts fetched.
 	 */
-	const fetchPosts = async (
-		postType: SitePost["postType"],
-		privacy: SitePost["privacy"]
-	) => {
+	const fetchPosts = async ({
+		postType = "feed" as SitePost["postType"],
+		privacy = "public" as SitePost["privacy"],
+		groupId = undefined as string | undefined,
+		tags = undefined as string | undefined,
+		creator = undefined as string | undefined,
+		sortBy = "latest" as QueryPostsSortBy,
+	}) => {
 		/**
 		 * Try to fetch posts from the backend API.
 		 *
 		 * If there is an error, then throw an error.
 		 */
 		try {
-			/**
-			 * Find the index of the last post with the given postType in the current list of posts.
-			 */
-			const lastIndex = postStateValue.posts.reduceRight((acc, post, index) => {
-				if (post.post.postType === postType && acc === -1) {
-					return index;
+			let refPost;
+			let refIndex;
+
+			switch (sortBy) {
+				case "latest": {
+					refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
+						if (
+							post.post.postType === postType &&
+							post.post.privacy === privacy &&
+							post.index[sortBy] &&
+							acc === -1
+						) {
+							return index;
+						}
+
+						return acc;
+					}, -1);
+
+					refPost = postStateValue.posts[refIndex] || null;
+					break;
 				}
 
-				return acc;
-			}, -1);
-
-			/**
-			 * Get the oldest post with the given postType from the current list of posts.
-			 */
-			const oldestPost = postStateValue.posts[lastIndex];
+				default: {
+					refPost = null;
+					break;
+				}
+			}
 
 			/**
 			 * Fetch posts from the backend API using axios.
@@ -962,7 +983,18 @@ const usePost = () => {
 						userId: authUser?.uid,
 						postType: postType,
 						privacy: privacy,
-						fromDate: oldestPost?.post.createdAt,
+						groupId: groupId,
+						tags: tags,
+						creator: creator,
+						sortBy: sortBy,
+						lastIndex: refPost ? refPost.index[sortBy] : -1,
+						fromLikes: refPost
+							? refPost.post.numberOfLikes + 1
+							: Number.MAX_SAFE_INTEGER,
+						fromComments: refPost
+							? refPost?.post.numberOfComments + 1
+							: Number.MAX_SAFE_INTEGER,
+						fromDate: refPost?.post.createdAt || new Date().toISOString(),
 					},
 				})
 				.then((res) => res.data)
@@ -974,13 +1006,29 @@ const usePost = () => {
 			 * If there are fetcher posts, append them to the current list of posts in postStateValue.
 			 */
 			if (posts.length) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							posts: [...prev.posts, ...posts],
-						} as PostState)
-				);
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: prev.posts
+						.map((post) => {
+							const postIndex = posts.findIndex(
+								(postData) => postData.post.id === post.post.id
+							);
+
+							const existingPost = postIndex !== -1 ? posts[postIndex] : null;
+
+							if (existingPost) {
+								posts.splice(postIndex, 1);
+
+								return {
+									...existingPost,
+									...post,
+								};
+							} else {
+								return post;
+							}
+						})
+						.concat(posts),
+				}));
 			} else {
 				console.log("Mongo: No posts found!");
 			}

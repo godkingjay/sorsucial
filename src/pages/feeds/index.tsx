@@ -35,7 +35,11 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 	const handleFetchFeeds = useCallback(async () => {
 		setLoadingFeeds(true);
 		try {
-			const fetchedPostLength = await fetchPosts("feed", "public");
+			const fetchedPostLength = await fetchPosts({
+				postType: "feed",
+				privacy: "public",
+				sortBy: "latest",
+			});
 			if (fetchedPostLength !== undefined) {
 				setEndReached(fetchedPostLength < 10 ? true : false);
 			}

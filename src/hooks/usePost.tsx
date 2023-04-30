@@ -684,6 +684,117 @@ const usePost = () => {
 		 */
 		try {
 			if (authUser) {
+				const previousUserLike = postData?.userLike;
+
+				const date = new Date();
+
+				/**
+				 * This is the user like data that will be used to create a new post like document.
+				 *
+				 * This data will be sent to the API to create a new post like document.
+				 */
+				const userLike: PostLike = {
+					userId: authUser.uid,
+					postId: postData.post.id,
+					createdAt: date,
+				};
+
+				/**
+				 * If the post is in a group, then add the group id to the user like data.
+				 */
+				if (postData.post.groupId) {
+					userLike.groupId = postData.post.groupId;
+				}
+
+				/**
+				 * This function resets the user's like on a post and updates the number of likes accordingly.
+				 * This function will only be called if there is an error in liking or removing like.
+				 */
+				const resetUserLike = () => {
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: previousUserLike
+													? post.post.numberOfLikes + 1
+													: post.post.numberOfLikes - 1,
+											},
+											userLike: previousUserLike,
+										};
+									}
+
+									return post;
+								}),
+								currentPost:
+									prev.currentPost?.post.id === postData.post.id
+										? {
+												...prev.currentPost,
+												post: {
+													...prev.currentPost?.post,
+													numberOfLikes: previousUserLike
+														? prev.currentPost.post.numberOfLikes + 1
+														: prev.currentPost.post.numberOfLikes - 1,
+												},
+												userLike: previousUserLike,
+										  }
+										: prev.currentPost,
+							} as PostState)
+					);
+				};
+
+				/**
+				 * This code is updating the state of a post in a React application. It is updating the number
+				 * of likes for a post and the user's like status for that post. It does this by mapping over the
+				 * previous state's posts array and finding the post with the matching ID. It then updates the
+				 * post's number of likes and user like status based on whether the user had previously liked the
+				 * post or not. It also updates the current post in the state if it matches the post being updated.
+				 *
+				 * This code updates the client-side state of the application. It does not update the database.
+				 * The database is updated in the API. If the user like or like remove fails, then the state
+				 * will be reset to the previous state.
+				 */
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: prev.posts.map((post) => {
+								if (post.post.id === postData.post.id) {
+									return {
+										...post,
+										post: {
+											...post.post,
+											numberOfLikes: previousUserLike
+												? post.post.numberOfLikes - 1
+												: post.post.numberOfLikes + 1,
+										},
+										userLike: previousUserLike ? null : userLike,
+									};
+								}
+
+								return post;
+							}),
+							currentPost:
+								prev.currentPost?.post.id === postData.post.id
+									? {
+											...prev.currentPost,
+											post: {
+												...prev.currentPost?.post,
+												numberOfLikes: previousUserLike
+													? prev.currentPost.post.numberOfLikes - 1
+													: prev.currentPost.post.numberOfLikes + 1,
+											},
+											userLike: previousUserLike ? null : userLike,
+									  }
+									: prev.currentPost,
+						} as PostState)
+				);
+
 				/**
 				 * If the user has already liked the post, unlike it.
 				 * Else, like the post.
@@ -720,69 +831,14 @@ const usePost = () => {
 								actionPostDeleted(postDeleted, postData.post.id);
 							}
 
+							resetUserLike();
+
 							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
-
-					/**
-					 * Update the post state value.
-					 *
-					 * Find the respective post and update the post and userLike properties.
-					 *
-					 * If the post being unliked is the current post, then update the current post.
-					 */
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes - 1,
-											},
-											userLike: null,
-										};
-									}
-
-									return post;
-								}),
-								currentPost:
-									prev.currentPost?.post.id === postData.post.id
-										? {
-												...prev.currentPost,
-												post: {
-													...prev.currentPost?.post,
-													numberOfLikes:
-														prev.currentPost?.post.numberOfLikes! - 1,
-												},
-												userLike: null,
-										  }
-										: prev.currentPost,
-							} as PostState)
-					);
 				} else {
 					/**
 					 * If there is no current user like, then like the post.
 					 */
-					/**
-					 * This is the user like data that will be used to create a new post like document.
-					 *
-					 * This data will be sent to the API to create a new post like document.
-					 */
-					const userLike: PostLike = {
-						userId: authUser.uid,
-						postId: postData.post.id,
-						createdAt: new Date(),
-					};
-
-					/**
-					 * If the post is in a group, then add the group id to the user like data.
-					 */
-					if (postData.post.groupId) {
-						userLike.groupId = postData.post.groupId;
-					}
 
 					/**
 					 * API Call to create a new post like document.
@@ -811,48 +867,10 @@ const usePost = () => {
 								actionPostDeleted(postDeleted, postData.post.id);
 							}
 
+							resetUserLike();
+
 							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
-
-					/**
-					 * Update the post state value.
-					 *
-					 * Finds the respective post and updates the post and userLike properties.
-					 *
-					 * If the post being liked is the current post, then update the current post.
-					 */
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes + 1,
-											},
-											userLike,
-										};
-									}
-
-									return post;
-								}),
-								currentPost:
-									prev.currentPost?.post.id === postData.post.id
-										? {
-												...prev.currentPost,
-												post: {
-													...prev.currentPost?.post,
-													numberOfLikes:
-														prev.currentPost?.post.numberOfLikes! + 1,
-												},
-												userLike: null,
-										  }
-										: prev.currentPost,
-							} as PostState)
-					);
 				}
 			} else {
 				throw new Error("You must be logged in to like a post");

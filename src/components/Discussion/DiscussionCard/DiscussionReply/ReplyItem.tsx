@@ -19,6 +19,7 @@ import { RiArrowUpDownFill } from "react-icons/ri";
 import { Reply } from "@/lib/interfaces/discussion";
 import { MdDeleteOutline } from "react-icons/md";
 import { FiAlertCircle } from "react-icons/fi";
+import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
@@ -382,7 +383,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 								))}
 							{loadingReplies && (
 								<>
-									<p>Loading Replies...</p>
+									<DiscussionReplyItemSkeleton
+										replyLevel={replyData.reply.replyLevel + 1}
+										parentShowReplyBox={showReplyBox}
+									/>
+									<DiscussionReplyItemSkeleton
+										replyLevel={replyData.reply.replyLevel + 1}
+										parentShowReplyBox={showReplyBox}
+									/>
 								</>
 							)}
 						</div>

@@ -59,7 +59,10 @@ const PostImagesOrVideosTab: React.FC<PostImagesOrVideosTabProps> = ({
 					</button>
 				</div>
 			</div>
-			<div className="image-or-video-tab-output-container">
+			<div
+				className="image-or-video-tab-output-container"
+				data-empty={createPostForm.imagesOrVideos.length === 0}
+			>
 				{createPostForm.imagesOrVideos.length ? (
 					<>
 						{createPostForm.imagesOrVideos.map((imageOrVideo) => (

@@ -4,18 +4,32 @@ import { QueryGroupsSortBy } from "@/lib/types/api";
 import React, { useEffect, useState } from "react";
 import GroupCard from "./GroupCard";
 import { GroupData } from "@/atoms/groupAtom";
+import GroupCardSkeleton from "../Skeleton/Group/GroupCardSkeleton";
+import VisibleInViewPort from "../Events/VisibleInViewPort";
+import PageEnd from "../Banner/PageBanner/PageEnd";
 
 type GroupsFilterProps = {
 	sortBy: QueryGroupsSortBy;
 	privacy: SiteGroup["privacy"];
+	loadingGroups: boolean;
+	endReached: boolean;
+	groupsMounted: boolean;
+	firstLoadingGroups: boolean;
+	handleFetchGroups: () => Promise<void>;
 };
 
 const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	sortBy = "latest",
 	privacy = "public",
+	loadingGroups,
+	endReached,
+	groupsMounted,
+	firstLoadingGroups,
+	handleFetchGroups,
 }) => {
 	const { groupStateValue } = useGroup();
 	const [filteredGroups, setFilteredGroups] = useState<GroupData[]>([]);
+	const filteredGroupsLength = filteredGroups.length;
 
 	useEffect(() => {
 		setFilteredGroups(
@@ -31,7 +45,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 
 	return (
 		<>
-			{filteredGroups.length > 0 && (
+			{filteredGroupsLength > 0 && (
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					{filteredGroups.map((group, index) => (
 						<React.Fragment key={group.group.id}>
@@ -41,6 +55,19 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 							/>
 						</React.Fragment>
 					))}
+					{loadingGroups && (
+						<>
+							<GroupCardSkeleton index={filteredGroupsLength + 1} />
+							<GroupCardSkeleton index={filteredGroupsLength + 1} />
+						</>
+					)}
+					{!endReached && groupsMounted && filteredGroupsLength > 0 && (
+						<VisibleInViewPort
+							disabled={endReached || loadingGroups || firstLoadingGroups}
+							onVisible={handleFetchGroups}
+						></VisibleInViewPort>
+					)}
+					{endReached && <PageEnd message="End of Groups" />}
 				</div>
 			)}
 		</>

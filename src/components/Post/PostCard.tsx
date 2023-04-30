@@ -12,6 +12,8 @@ import PostLinks from "./PostCard/PostBody/PostLinks";
 import { NextRouter } from "next/router";
 import { siteDetails } from "@/lib/host";
 import PostComments from "./PostCard/PostComment/PostComments";
+import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
+import TagsList from "../Tag/TagList";
 
 type PostCardProps = {
 	userStateValue: UserState;
@@ -278,6 +280,14 @@ const PostCard: React.FC<PostCardProps> = ({
 
 	return (
 		<div className="post-card entrance-animation-slide-from-right">
+			{!isSinglePostPage() && postData.postDeleted && (
+				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 rounded-t-lg">
+					<ErrorBannerTextXs
+						message="This post no longer exist. It may have been deleted by the
+											creator or an admin."
+					/>
+				</div>
+			)}
 			<PostHead
 				userStateValue={userStateValue}
 				postData={postData}
@@ -303,6 +313,17 @@ const PostCard: React.FC<PostCardProps> = ({
 					postData={postData}
 					formatFileSize={formatFileSize}
 				/>
+			)}
+			{postData.post.postTags && postData.post.postTags.length > 0 && (
+				<div className="flex flex-row gap-x-4 mx-4 px-4 py-2 bg-gray-50 rounded-lg mb-2 shadow-sm">
+					<p className="py-2 font-bold text-gray-500 text-sm">Tags:</p>
+					<div className="flex-1">
+						<TagsList
+							itemName="Post Tags"
+							items={postData.post.postTags}
+						/>
+					</div>
+				</div>
 			)}
 			{postData.post.postLinks.length > 0 && <PostLinks postData={postData} />}
 			<PostLikeAndCommentDetails

@@ -59,13 +59,7 @@ const AnnouncementView: React.FC<Props> = ({
 									return post;
 								}
 						  })
-						: [
-								...prev.posts,
-								{
-									...postPageData,
-									userLike: userLikeData,
-								},
-						  ],
+						: prev.posts,
 					currentPost: {
 						...postPageData,
 						userLike: userLikeData,

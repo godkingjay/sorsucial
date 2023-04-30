@@ -21,7 +21,8 @@ const TagsList: React.FC<TagListProps> = ({ itemName, items }) => {
 			{items.slice(0, MAX_DISPLAY_ITEMS).map((item, index) => (
 				<div
 					key={index}
-					className="h-6 flex text-sm px-2 py-0.5 rounded-full items-center space-x-2 bg-blue-100 hover:text-blue-700 hover:bg-blue-200"
+					title={item}
+					className="h-6 flex text-sm px-2 py-0.5 rounded-full items-center space-x-2 duration-200 bg-blue-100 hover:text-blue-700 hover:bg-blue-200 hover:-translate-y-2 hover:scale-110"
 				>
 					<span className="text-2xs px-1 truncate text-blue-500">{item}</span>
 				</div>
@@ -46,7 +47,8 @@ const TagsList: React.FC<TagListProps> = ({ itemName, items }) => {
 							{items.slice(MAX_DISPLAY_ITEMS, 20).map((item, index) => (
 								<div
 									key={index}
-									className="h-5 flex text-sm items-center space-x-2 px-2 hover:bg-slate-500"
+									title={item}
+									className="h-5 flex text-sm items-center space-x-2 px-2 duration-200 hover:bg-slate-500 hover:scale-110"
 								>
 									<span className="text-2xs px-1 truncate text-white">
 										{item.length > 64 ? `${item.slice(0, 64)}...` : item}

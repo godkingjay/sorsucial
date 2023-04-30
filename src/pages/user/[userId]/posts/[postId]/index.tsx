@@ -58,13 +58,7 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 									return post;
 								}
 						  })
-						: [
-								...prev.posts,
-								{
-									...postPageData,
-									userLike: userLikeData,
-								},
-						  ],
+						: prev.posts,
 					currentPost: {
 						...postPageData,
 						userLike: userLikeData,

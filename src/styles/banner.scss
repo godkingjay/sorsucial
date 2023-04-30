@@ -1,3 +1,9 @@
-.banner-error-sm {
-	@apply w-full h-max min-h-[48px] flex flex-row items-center justify-center bg-red-500 text-white text-sm rounded-md px-4 py-2;
+@layer components {
+	.banner-error-sm {
+		@apply w-full h-max min-h-[48px] flex flex-row items-center justify-center bg-red-500 text-white text-sm rounded-md px-4 py-2;
+	}
+
+	.banner-error-xs {
+		@apply w-full h-max min-h-[36px] flex flex-row items-center justify-center bg-red-500 text-white text-xs rounded-md px-4 py-2;
+	}
 }

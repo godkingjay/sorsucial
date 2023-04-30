@@ -39,7 +39,11 @@ const PostMenuDropdown: React.FC<PostMenuDropdownProps> = ({
 								type="button"
 								title="Delete Post"
 								className="post-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
-								onClick={handleDeletePost}
+								onClick={() =>
+									postOptionsStateValue.menu === postData.post.id &&
+									handleDeletePost()
+								}
+								disabled={postOptionsStateValue.menu !== postData.post.id}
 							>
 								<div className="icon-container">
 									<MdDeleteOutline className="icon" />

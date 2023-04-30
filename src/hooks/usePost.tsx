@@ -368,6 +368,10 @@ const usePost = () => {
 										updatedAt: new Date().toISOString(),
 									},
 									creator: userStateValue.user,
+									index: {
+										newest: 0,
+										latest: 0,
+									},
 								},
 								...prev.posts,
 							],
@@ -983,7 +987,7 @@ const usePost = () => {
 						tags: tags,
 						creator: creator,
 						sortBy: sortBy,
-						lastIndex: refPost?.index[sortBy] || -1,
+						lastIndex: refPost ? refPost.index[sortBy] : -1,
 						fromLikes: refPost
 							? refPost.post.numberOfLikes + 1
 							: Number.MAX_SAFE_INTEGER,
@@ -1002,13 +1006,29 @@ const usePost = () => {
 			 * If there are fetcher posts, append them to the current list of posts in postStateValue.
 			 */
 			if (posts.length) {
-				setPostStateValue(
-					(prev) =>
-						({
-							...prev,
-							posts: [...prev.posts, ...posts],
-						} as PostState)
-				);
+				setPostStateValue((prev) => ({
+					...prev,
+					posts: prev.posts
+						.map((post) => {
+							const postIndex = posts.findIndex(
+								(p) => p.post.id === post.post.id
+							);
+
+							const existingPost = postIndex !== -1 ? posts[postIndex] : null;
+
+							if (existingPost) {
+								posts.splice(postIndex, 1);
+
+								return {
+									...existingPost,
+									...post,
+								};
+							} else {
+								return post;
+							}
+						})
+						.concat(posts),
+				}));
 			} else {
 				console.log("Mongo: No posts found!");
 			}

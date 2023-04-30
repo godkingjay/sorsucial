@@ -63,7 +63,7 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 									return discussion;
 								}
 						  })
-						: [...prev.discussions, discussionPageData],
+						: prev.discussions,
 					currentDiscussion: {
 						...discussionPageData,
 						userVote: userVoteData,

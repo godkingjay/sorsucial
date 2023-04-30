@@ -1,3 +1,24 @@
+import { SiteDiscussion } from "../interfaces/discussion";
+
+export type APIEndpointDiscussionsParams = {
+	apiKey: string;
+	userId: string;
+	discussionType: SiteDiscussion["discussionType"];
+	privacy: SiteDiscussion["privacy"];
+	groupId?: string;
+	tags?: string;
+	creator?: string;
+	isOpen?: string | boolean;
+	lastIndex?: string | number;
+	fromVotes?: string | number;
+	fromUpVotes?: string | number;
+	fromDownVotes?: string | number;
+	fromReplies?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryPostsSortBy;
+	limit?: string | number;
+};
+
 export type QueryUsersSortBy =
 	| "name-first-asc"
 	| "name-first-desc"

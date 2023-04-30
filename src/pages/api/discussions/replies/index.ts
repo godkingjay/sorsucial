@@ -93,7 +93,7 @@ export default async function handler(
 
 				if (
 					!replyData.creatorId ||
-					replyData.replyText ||
+					!replyData.replyText ||
 					!replyData.discussionId
 				) {
 					return res

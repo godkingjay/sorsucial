@@ -1,6 +1,13 @@
 import { adminState } from "@/atoms/adminAtom";
-import { adminModalState } from "@/atoms/modalAtom";
+import { discussionOptionsState, discussionState } from "@/atoms/discussionAtom";
+import { groupState } from "@/atoms/groupAtom";
+import {
+	adminModalState,
+	discussionCreationModalState,
+	postCreationModalState,
+} from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
+import { postOptionsState, postState } from "@/atoms/postAtom";
 import { userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { clientAuth, clientDb, clientStorage } from "@/firebase/clientApp";
@@ -25,6 +32,19 @@ const useUser = () => {
 	const resetNavigationBarStateValue = useResetRecoilState(navigationBarState);
 	const resetAdminStateValue = useResetRecoilState(adminState);
 	const resetAdminModalStateValue = useResetRecoilState(adminModalState);
+	const resetPostStateValue = useResetRecoilState(postState);
+	const resetPostOptionStateValue = useResetRecoilState(postOptionsState);
+	const resetPostCreationModalStateValue = useResetRecoilState(
+		postCreationModalState
+	);
+	const resetDiscussionStateValue = useResetRecoilState(discussionState);
+	const resetDiscussionOptionStateValue = useResetRecoilState(
+		discussionOptionsState
+	);
+	const resetDiscussionCreationModalStateValue = useResetRecoilState(
+		discussionCreationModalState
+	);
+	const resetGroupStateValue = useResetRecoilState(groupState);
 
 	const userMemo = useMemo(() => user, [user]);
 	const userStateValueMemo = useMemo(() => userStateValue, [userStateValue]);
@@ -310,16 +330,18 @@ const useUser = () => {
 			resetNavigationBarStateValue();
 			resetAdminStateValue();
 			resetAdminModalStateValue();
+			resetPostStateValue();
+			resetPostOptionStateValue();
+			resetPostCreationModalStateValue();
+			resetDiscussionStateValue();
+			resetDiscussionOptionStateValue();
+			resetDiscussionCreationModalStateValue();
+			resetGroupStateValue();
 		} catch (error: any) {
 			console.log("Hook: Reset User Data Error!");
 			throw error;
 		}
-	}, [
-		resetAdminModalStateValue,
-		resetAdminStateValue,
-		resetNavigationBarStateValue,
-		resetUserStateValue,
-	]);
+	}, [userStateValueMemo]);
 
 	/**
 	 * ~ ██╗      ██████╗  ██████╗      ██████╗ ██╗   ██╗████████╗    ██╗   ██╗███████╗███████╗██████╗

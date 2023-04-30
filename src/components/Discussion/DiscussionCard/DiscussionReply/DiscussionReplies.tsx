@@ -202,7 +202,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 					<div className="p-4 flex flex-col gap-y-2">
 						{firstLoadingReplies || !userMounted ? (
 							<>
-								<p>Loading Replies</p>
+								<DiscussionReplyItemSkeleton
+									replyLevel={0}
+									parentShowReplyBox={false}
+								/>
+								<DiscussionReplyItemSkeleton
+									replyLevel={0}
+									parentShowReplyBox={false}
+								/>
 							</>
 						) : (
 							<>

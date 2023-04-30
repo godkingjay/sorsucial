@@ -45,31 +45,34 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 
 	return (
 		<>
-			{filteredGroupsLength > 0 && (
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					{filteredGroups.map((group, index) => (
-						<React.Fragment key={group.group.id}>
-							<GroupCard
-								groupData={group}
-								index={index}
-							/>
-						</React.Fragment>
-					))}
-					{loadingGroups && (
-						<>
-							<GroupCardSkeleton index={filteredGroupsLength + 1} />
-							<GroupCardSkeleton index={filteredGroupsLength + 1} />
-						</>
-					)}
-					{!endReached && groupsMounted && filteredGroupsLength > 0 && (
-						<VisibleInViewPort
-							disabled={endReached || loadingGroups || firstLoadingGroups}
-							onVisible={handleFetchGroups}
-						></VisibleInViewPort>
-					)}
-					{endReached && <PageEnd message="End of Groups" />}
-				</div>
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				{filteredGroupsLength > 0 && (
+					<>
+						{filteredGroups.map((group, index) => (
+							<React.Fragment key={group.group.id}>
+								<GroupCard
+									groupData={group}
+									index={index}
+								/>
+							</React.Fragment>
+						))}
+					</>
+				)}
+				{loadingGroups && (
+					<>
+						<GroupCardSkeleton index={filteredGroupsLength + 1} />
+						<GroupCardSkeleton index={filteredGroupsLength + 2} />
+						<GroupCardSkeleton index={filteredGroupsLength + 3} />
+					</>
+				)}
+			</div>
+			{!endReached && groupsMounted && filteredGroupsLength > 0 && (
+				<VisibleInViewPort
+					disabled={endReached || loadingGroups || firstLoadingGroups}
+					onVisible={handleFetchGroups}
+				></VisibleInViewPort>
 			)}
+			{endReached && <PageEnd message="End of Groups" />}
 		</>
 	);
 };

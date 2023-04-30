@@ -359,7 +359,7 @@ const useUser = () => {
 			currentUserMounted.current = true;
 			setCurrentUserState();
 		}
-	}, [userMemo, loading]);
+	}, [userMemo, loading, setCurrentUserState]);
 
 	useEffect(() => {
 		if (

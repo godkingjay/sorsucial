@@ -8,7 +8,7 @@ const GroupCardSkeleton: React.FC<GroupCardSkeletonProps> = ({ index }) => {
 	return (
 		<div
 			className="group-card-wrapper"
-			data-top={index}
+			data-top={index < 3}
 		>
 			<div className="shadow-page-box-1 bg-white rounded-lg flex flex-col entrance-animation-slide-from-right">
 				<div className="p-4 flex flex-row gap-x-4">

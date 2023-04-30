@@ -60,7 +60,7 @@ export default async function handler(
 		}
 
 		const discussionData = (await discussionsCollection.findOne({
-			id: replyData?.replyForId,
+			id: replyData?.discussionId,
 		})) as unknown as SiteDiscussion;
 
 		if (!discussionData) {

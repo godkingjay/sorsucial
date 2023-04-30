@@ -684,6 +684,102 @@ const usePost = () => {
 		 */
 		try {
 			if (authUser) {
+				const previousUserLike = postData?.userLike;
+
+				const date = new Date();
+
+				/**
+				 * This is the user like data that will be used to create a new post like document.
+				 *
+				 * This data will be sent to the API to create a new post like document.
+				 */
+				const userLike: PostLike = {
+					userId: authUser.uid,
+					postId: postData.post.id,
+					createdAt: date,
+				};
+
+				/**
+				 * If the post is in a group, then add the group id to the user like data.
+				 */
+				if (postData.post.groupId) {
+					userLike.groupId = postData.post.groupId;
+				}
+
+				const resetUserLike = () => {
+					setPostStateValue(
+						(prev) =>
+							({
+								...prev,
+								posts: prev.posts.map((post) => {
+									if (post.post.id === postData.post.id) {
+										return {
+											...post,
+											post: {
+												...post.post,
+												numberOfLikes: previousUserLike
+													? post.post.numberOfLikes - 1
+													: post.post.numberOfLikes + 1,
+											},
+											userLike: previousUserLike,
+										};
+									}
+
+									return post;
+								}),
+								currentPost:
+									prev.currentPost?.post.id === postData.post.id
+										? {
+												...prev.currentPost,
+												post: {
+													...prev.currentPost?.post,
+													numberOfLikes: previousUserLike
+														? prev.currentPost.post.numberOfLikes - 1
+														: prev.currentPost.post.numberOfLikes + 1,
+												},
+												userLike: previousUserLike,
+										  }
+										: prev.currentPost,
+							} as PostState)
+					);
+				};
+
+				setPostStateValue(
+					(prev) =>
+						({
+							...prev,
+							posts: prev.posts.map((post) => {
+								if (post.post.id === postData.post.id) {
+									return {
+										...post,
+										post: {
+											...post.post,
+											numberOfLikes: previousUserLike
+												? post.post.numberOfLikes + 1
+												: post.post.numberOfLikes - 1,
+										},
+										userLike: previousUserLike ? null : userLike,
+									};
+								}
+
+								return post;
+							}),
+							currentPost:
+								prev.currentPost?.post.id === postData.post.id
+									? {
+											...prev.currentPost,
+											post: {
+												...prev.currentPost?.post,
+												numberOfLikes: previousUserLike
+													? prev.currentPost.post.numberOfLikes + 1
+													: prev.currentPost.post.numberOfLikes - 1,
+											},
+											userLike: previousUserLike ? null : userLike,
+									  }
+									: prev.currentPost,
+						} as PostState)
+				);
+
 				/**
 				 * If the user has already liked the post, unlike it.
 				 * Else, like the post.
@@ -720,69 +816,14 @@ const usePost = () => {
 								actionPostDeleted(postDeleted, postData.post.id);
 							}
 
+							resetUserLike();
+
 							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
-
-					/**
-					 * Update the post state value.
-					 *
-					 * Find the respective post and update the post and userLike properties.
-					 *
-					 * If the post being unliked is the current post, then update the current post.
-					 */
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes - 1,
-											},
-											userLike: null,
-										};
-									}
-
-									return post;
-								}),
-								currentPost:
-									prev.currentPost?.post.id === postData.post.id
-										? {
-												...prev.currentPost,
-												post: {
-													...prev.currentPost?.post,
-													numberOfLikes:
-														prev.currentPost?.post.numberOfLikes! - 1,
-												},
-												userLike: null,
-										  }
-										: prev.currentPost,
-							} as PostState)
-					);
 				} else {
 					/**
 					 * If there is no current user like, then like the post.
 					 */
-					/**
-					 * This is the user like data that will be used to create a new post like document.
-					 *
-					 * This data will be sent to the API to create a new post like document.
-					 */
-					const userLike: PostLike = {
-						userId: authUser.uid,
-						postId: postData.post.id,
-						createdAt: new Date(),
-					};
-
-					/**
-					 * If the post is in a group, then add the group id to the user like data.
-					 */
-					if (postData.post.groupId) {
-						userLike.groupId = postData.post.groupId;
-					}
 
 					/**
 					 * API Call to create a new post like document.
@@ -811,48 +852,10 @@ const usePost = () => {
 								actionPostDeleted(postDeleted, postData.post.id);
 							}
 
+							resetUserLike();
+
 							throw new Error(`=>API: Post Like Error:\n${error.message}`);
 						});
-
-					/**
-					 * Update the post state value.
-					 *
-					 * Finds the respective post and updates the post and userLike properties.
-					 *
-					 * If the post being liked is the current post, then update the current post.
-					 */
-					setPostStateValue(
-						(prev) =>
-							({
-								...prev,
-								posts: prev.posts.map((post) => {
-									if (post.post.id === postData.post.id) {
-										return {
-											...post,
-											post: {
-												...post.post,
-												numberOfLikes: post.post.numberOfLikes + 1,
-											},
-											userLike,
-										};
-									}
-
-									return post;
-								}),
-								currentPost:
-									prev.currentPost?.post.id === postData.post.id
-										? {
-												...prev.currentPost,
-												post: {
-													...prev.currentPost?.post,
-													numberOfLikes:
-														prev.currentPost?.post.numberOfLikes! + 1,
-												},
-												userLike: null,
-										  }
-										: prev.currentPost,
-							} as PostState)
-					);
 				}
 			} else {
 				throw new Error("You must be logged in to like a post");

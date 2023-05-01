@@ -129,8 +129,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 			</Head>
 			<div className="flex flex-col px-4 py-4">
 				<LimitedBodyLayout>
-					{(loadingGroup || !userMounted || fetchingGroupUserData) &&
-					!groupPageData ? (
+					{loadingGroup || !userMounted || fetchingGroupUserData ? (
 						<>
 							<p>Loading Group</p>
 						</>

@@ -5,6 +5,7 @@ import useUser from "@/hooks/useUser";
 import { CurrentDirectory } from "./Layout";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import LimitedBodyLayout from "./LimitedBodyLayout";
 
 type GroupPageProps = {
 	children: React.ReactNode;
@@ -33,7 +34,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 								/>
 							</div>
 							<div className="z-20 sticky flex flex-col items-center top-14 bg-white shadow-page-box-1">
-								<div className="w-full flex flex-row max-w-5xl px-8">
+								<div className="w-full max-w-4xl flex flex-row px-8">
 									<Link
 										href={`/groups/${groupStateValue.currentGroup.group.id}`}
 										className="group-nav-bar-item"

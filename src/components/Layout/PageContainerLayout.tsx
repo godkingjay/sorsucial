@@ -46,6 +46,7 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 					navigationBarStateValue={navigationBarStateValue}
 					setNavigationBarStateValue={setNavigationBarStateValue}
 					router={router}
+					currentDirectory={currentDirectory}
 					loadingUser={loadingUser}
 					authLoading={authLoading}
 					authUser={authUser}

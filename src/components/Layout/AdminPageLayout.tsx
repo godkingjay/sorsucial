@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import AdminNavigation from "../Controls/AdminNavigation";
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { SetterOrUpdater } from "recoil";
@@ -6,12 +6,14 @@ import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
+import { CurrentDirectory } from "./Layout";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
 	navigationBarStateValue: NavigationBarState;
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 	router: NextRouter;
+	currentDirectory: CurrentDirectory;
 	loadingUser: boolean;
 	authLoading: boolean;
 	authUser?: User | null;
@@ -24,23 +26,22 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	navigationBarStateValue,
 	setNavigationBarStateValue,
 	router,
+	currentDirectory,
 	loadingUser,
 	authLoading,
 	authUser,
 	userStateValue,
 	userMounted,
 }) => {
+	const componentDidMount = useRef(false);
+
 	useEffect(() => {
-		if (!authUser) {
-			return;
-		}
-		const levelTwo = router.pathname.split("/")[2];
-		if (levelTwo) {
+		if (currentDirectory.second) {
 			const isPathOfAdmin = [
 				"manage-users",
 				"manage-groups",
 				"manage-requests",
-			].includes(levelTwo);
+			].includes(currentDirectory.second);
 
 			if (isPathOfAdmin) {
 				setNavigationBarStateValue((prev) => ({
@@ -48,10 +49,11 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 					adminPageNavBar: {
 						...prev.adminPageNavBar,
 						current:
-							levelTwo as NavigationBarState["adminPageNavBar"]["current"],
+							currentDirectory.second as NavigationBarState["adminPageNavBar"]["current"],
 					},
 				}));
 			} else {
+				console.log("Redirecting...");
 				router.push("/admin");
 			}
 		} else {
@@ -63,7 +65,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 				},
 			}));
 		}
-	}, [loadingUser, authUser, router.pathname]);
+	}, [currentDirectory]);
 
 	useEffect(() => {
 		if (
@@ -71,20 +73,27 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 			!authLoading &&
 			authUser &&
 			!userStateValue.user.roles.includes("admin") &&
-			userMounted
+			userMounted &&
+			!componentDidMount.current
 		) {
+			componentDidMount.current = true;
 			router.push("/");
 		}
 	}, [loadingUser, authLoading, authUser, userStateValue.user.roles]);
 
-	if (loadingUser || authLoading || !userMounted) {
-		return <LoadingScreen />;
-	}
-
 	return (
 		<div className="flex-1">
-			<AdminNavigation navigationBarStateValue={navigationBarStateValue} />
-			<div className="w-full overflow-x-auto scroll-x-style">{children}</div>
+			{loadingUser ||
+			authLoading ||
+			!userMounted ||
+			!userStateValue.user.roles.includes("admin") ? (
+				<LoadingScreen />
+			) : (
+				<>
+					<AdminNavigation navigationBarStateValue={navigationBarStateValue} />
+					<div className="w-full overflow-x-auto scroll-x-style">{children}</div>
+				</>
+			)}
 		</div>
 	);
 };

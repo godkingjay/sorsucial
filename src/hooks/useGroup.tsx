@@ -619,12 +619,37 @@ const useGroup = () => {
 		[groupStateValueMemo]
 	);
 
+	const fetchUserJoin = useCallback(async (groupId: string, userId: string) => {
+		try {
+			const { userJoin } = await axios
+				.get(apiConfig.apiEndpoint + "/groups/members/", {
+					params: {
+						apiKey: userStateValue.api?.keys[0].key,
+						groupId: groupId,
+						userId: userId,
+					},
+				})
+				.then((response) => response.data)
+				.catch((error: any) => {
+					throw new Error(
+						`=>API (GET): Getting User Join error:\n${error.message}`
+					);
+				});
+
+			return userJoin || null;
+		} catch (error: any) {
+			console.log(`=>MONGO: Error while fetching user join:\n${error.message}`);
+			return null;
+		}
+	}, []);
+
 	return {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
 		createGroup,
 		onJoinGroup,
 		fetchGroups,
+		fetchUserJoin,
 	};
 };
 

@@ -1,72 +1,10 @@
-import PageEnd from "@/components/Banner/PageBanner/PageEnd";
-import VisibleInViewPort from "@/components/Events/VisibleInViewPort";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
-import PostCard from "@/components/Post/PostCard";
-import PostCreationListener from "@/components/Post/PostCreationListener";
-import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
-import usePost from "@/hooks/usePost";
+import PostsFilter from "@/components/Post/PostsFilter";
 import useUser from "@/hooks/useUser";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
-	const router = useRouter();
-	const { userStateValue, userMounted } = useUser();
-	const {
-		postStateValue,
-		postOptionsStateValue,
-		setPostOptionsStateValue,
-		deletePost,
-		fetchPosts,
-		onPostLike,
-	} = usePost();
-	const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
-	const [firstLoadingAnnouncements, setFirstLoadingAnnouncements] =
-		useState(false);
-	const [endReached, setEndReached] = useState(false);
-	const announcementPostsLength = postStateValue.posts.filter(
-		(allPost) => allPost.post.postType === "announcement"
-	).length;
-	const announcementsMounted = useRef(false);
-
-	const handleFetchAnnouncements = useCallback(async () => {
-		setLoadingAnnouncements(true);
-		try {
-			const fetchedPostLength = await fetchPosts({
-				postType: "announcement",
-				privacy: "public",
-				sortBy: "latest",
-			});
-			if (fetchedPostLength !== undefined) {
-				setEndReached(fetchedPostLength < 10 ? true : false);
-			}
-		} catch (error: any) {
-			console.log("Hook: fetching announcement Error: ", error.message);
-		}
-		setLoadingAnnouncements(false);
-	}, [fetchPosts]);
-
-	const handleFirstFetchAnnouncements = useCallback(async () => {
-		setFirstLoadingAnnouncements(true);
-		try {
-			await handleFetchAnnouncements();
-		} catch (error: any) {
-			console.log("First Fetch: fetching announcement Error: ", error.message);
-		}
-		setFirstLoadingAnnouncements(false);
-	}, []);
-
-	useEffect(() => {
-		if (userMounted) {
-			if (!announcementsMounted.current && announcementPostsLength === 0) {
-				announcementsMounted.current = true;
-				handleFirstFetchAnnouncements();
-			} else {
-				announcementsMounted.current = true;
-			}
-		}
-	}, [userMounted]);
+	const { userStateValue } = useUser();
 
 	return (
 		<>
@@ -75,56 +13,14 @@ export default function Home() {
 			</Head>
 			<main className="flex flex-col flex-1 py-4 px-4">
 				<LimitedBodyLayout>
-					<section className="flex flex-col gap-y-4">
-						{firstLoadingAnnouncements || !userMounted ? (
-							<>
-								<PostCardSkeleton />
-								<PostCardSkeleton />
-							</>
-						) : (
-							<>
-								{userStateValue.user.roles.includes("admin") && (
-									<PostCreationListener
-										useStateValue={userStateValue}
-										postType="announcement"
-									/>
-								)}
-								{postStateValue.posts
-									.filter((allPost) => allPost.post.postType === "announcement")
-									.map((announcement) => (
-										<PostCard
-											key={announcement.post.id}
-											userStateValue={userStateValue}
-											postData={announcement}
-											deletePost={deletePost}
-											postOptionsStateValue={postOptionsStateValue}
-											setPostOptionsStateValue={setPostOptionsStateValue}
-											onPostLike={onPostLike}
-											router={router}
-										/>
-									))}
-								{loadingAnnouncements && (
-									<>
-										<PostCardSkeleton />
-										<PostCardSkeleton />
-									</>
-								)}
-								{!endReached &&
-									announcementsMounted &&
-									announcementPostsLength > 0 && (
-										<VisibleInViewPort
-											disabled={
-												endReached ||
-												loadingAnnouncements ||
-												firstLoadingAnnouncements
-											}
-											onVisible={handleFetchAnnouncements}
-										></VisibleInViewPort>
-									)}
-								{endReached && <PageEnd message="End of Announcements" />}
-							</>
-						)}
-					</section>
+					<PostsFilter
+						postType="announcement"
+						postCreation={userStateValue.user.roles.includes("admin")}
+						filter={false}
+						privacy="public"
+						sortBy="latest"
+						pageEnd="End of Feeds"
+					/>
 				</LimitedBodyLayout>
 			</main>
 		</>

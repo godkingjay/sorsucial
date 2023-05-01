@@ -1,6 +1,6 @@
 import React from "react";
 
-type PostDiscussionNotFoundProps = {
+export type PostDiscussionNotFoundProps = {
 	type:
 		| "user-post"
 		| "announcement"

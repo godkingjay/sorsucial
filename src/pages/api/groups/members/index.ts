@@ -398,6 +398,23 @@ export default async function handler(
 				}
 			}
 
+			case "GET": {
+				if (!userId || !groupId) {
+					return res.status(400).json({ error: "Missing required parameter" });
+				}
+
+				const groupMemberData = (await groupMembersCollection.findOne({
+					groupId: groupId,
+					userId: userId,
+				})) as unknown as GroupMember;
+
+				return res.status(200).json({
+					userJoin: groupMemberData,
+				});
+
+				break;
+			}
+
 			default: {
 				return res.status(405).json({ error: "Method not supported" });
 			}

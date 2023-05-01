@@ -18,7 +18,6 @@ const GroupsPage: React.FC<GroupsPageProps> = () => {
 	const [firstLoadingGroups, setFirstLoadingGroups] = useState(false);
 	const [endReached, setEndReached] = useState(false);
 	const groupsMounted = useRef(false);
-	const router = useRouter();
 
 	const handleFetchGroups = useCallback(async () => {
 		setLoadingGroups(true);

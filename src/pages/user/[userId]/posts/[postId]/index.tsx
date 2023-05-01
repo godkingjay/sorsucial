@@ -49,14 +49,15 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 					...prev,
 					posts: currentPost
 						? prev.posts.map((post) => {
-								if (post.post.id === currentPost.post.id) {
-									return {
-										...postPageData,
-										userLike: userLikeData,
-									};
-								} else {
+								if (post.post.id !== currentPost.post.id) {
 									return post;
 								}
+
+								return {
+									...post,
+									...postPageData,
+									userLike: userLikeData,
+								};
 						  })
 						: prev.posts,
 					currentPost: {

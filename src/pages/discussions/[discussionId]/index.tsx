@@ -53,15 +53,16 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 					discussions: currentDiscussion
 						? prev.discussions.map((discussion) => {
 								if (
-									discussion.discussion.id === currentDiscussion.discussion.id
+									discussion.discussion.id !== currentDiscussion.discussion.id
 								) {
-									return {
-										...discussionPageData,
-										userVote: userVoteData,
-									};
-								} else {
 									return discussion;
 								}
+
+								return {
+									...discussion,
+									...discussionPageData,
+									userVote: userVoteData,
+								};
 						  })
 						: prev.discussions,
 					currentDiscussion: {

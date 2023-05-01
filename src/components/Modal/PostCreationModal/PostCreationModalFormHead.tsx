@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { postPrivacyOptions } from "../PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
 import { SitePost } from "@/lib/interfaces/post";
+import useGroup from "@/hooks/useGroup";
 
 type PostCreationModalFormHeadProps = {
 	userStateValue: UserState;
@@ -22,6 +23,8 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 	handleClose,
 	handleSelectPrivacy,
 }) => {
+	const { groupStateValue } = useGroup();
+
 	return (
 		<div className="post-creation-modal-form-head">
 			<Link
@@ -54,6 +57,14 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 						options={
 							postType === "announcement"
 								? postPrivacyOptions.slice(0, 1)
+								: postType === "group"
+								? [
+										postPrivacyOptions.find(
+											(privacy) =>
+												privacy.label ===
+												groupStateValue.currentGroup?.group.privacy
+										) || postPrivacyOptions[0],
+								  ]
 								: postPrivacyOptions
 						}
 						defaultValue={postPrivacyOptions[0]}

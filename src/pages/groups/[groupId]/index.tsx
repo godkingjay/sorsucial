@@ -3,6 +3,8 @@ import ButtonJoinLeaveGroup from "@/components/Group/Buttons/ButtonJoinLeaveGrou
 import GroupPageHeader from "@/components/Group/GroupPageHeader";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCreationListener from "@/components/Post/PostCreationListener";
+import PostsFilter from "@/components/Post/PostsFilter";
+import PostFilter from "@/components/Post/PostsFilter";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import groupDb from "@/lib/db/groupDb";
@@ -153,10 +155,16 @@ const GroupPage: React.FC<GroupPageProps> = ({
 								</>
 							) : (
 								<>
-									<PostCreationListener
-										postType="group"
-										useStateValue={userStateValue}
-									/>
+									{groupStateValue.currentGroup.group.id === groupId && (
+										<PostsFilter
+											postType="group"
+											postCreation={true}
+											filter={true}
+											groupId={groupStateValue.currentGroup.group.id}
+											privacy={groupStateValue.currentGroup.group.privacy}
+											sortBy="latest"
+										/>
+									)}
 								</>
 							)}
 						</>

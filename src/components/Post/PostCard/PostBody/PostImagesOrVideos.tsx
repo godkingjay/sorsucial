@@ -1,26 +1,36 @@
-import { PostData } from "@/atoms/postAtom";
+import { SitePost } from "@/lib/interfaces/post";
 import { validImageTypes, validVideoTypes } from "@/lib/types/validFiles";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 
 type PostImagesOrVideosProps = {
-	postData: PostData;
-	currentImageOrVideo: number;
-	handleImageOrVideoNav: (direction: "previous" | "next") => void;
+	imagesOrVideos: SitePost["postImagesOrVideos"];
 };
 
 const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
-	postData,
-	currentImageOrVideo,
-	handleImageOrVideoNav,
+	imagesOrVideos,
 }) => {
+	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
+
+	const handleImageOrVideoNav = (direction: "previous" | "next") => {
+		if (direction === "previous") {
+			if (currentImageOrVideo > 0) {
+				setCurrentImageOrVideo(currentImageOrVideo - 1);
+			}
+		} else {
+			if (currentImageOrVideo < imagesOrVideos.length - 1) {
+				setCurrentImageOrVideo(currentImageOrVideo + 1);
+			}
+		}
+	};
+
 	return (
 		<div className="post-images-or-videos-wrapper">
 			<div className="post-images-or-videos-container relative">
 				<div className="post-images-or-videos-bg">
 					<div className="post-images-or-videos-items-container">
-						{postData.post.postImagesOrVideos.map((imageOrVideo, index) => (
+						{imagesOrVideos.map((imageOrVideo, index) => (
 							<React.Fragment key={imageOrVideo.id}>
 								{validImageTypes.ext.includes(imageOrVideo.fileType) && (
 									<Image
@@ -49,20 +59,18 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 								)}
 							</React.Fragment>
 						))}
-						{postData.post.postImagesOrVideos.length > 1 && (
+						{imagesOrVideos.length > 1 && (
 							<div className="absolute w-full flex flex-col items-center justify-center bottom-2">
 								<div className="flex flex-row items-center justify-center gap-x-1">
-									{postData.post.postImagesOrVideos.map(
-										(imageOrVideo, index) => (
-											<div
-												key={index}
-												className="h-2 w-2 aspect-square bg-gray-500 bg-opacity-50 rounded-full data-[current-image=true]:bg-gray-300"
-												data-current-image={
-													currentImageOrVideo === index ? true : false
-												}
-											></div>
-										)
-									)}
+									{imagesOrVideos.map((imageOrVideo, index) => (
+										<div
+											key={index}
+											className="h-2 w-2 aspect-square bg-gray-500 bg-opacity-50 rounded-full data-[current-image=true]:bg-gray-300"
+											data-current-image={
+												currentImageOrVideo === index ? true : false
+											}
+										></div>
+									))}
 								</div>
 							</div>
 						)}
@@ -83,17 +91,13 @@ const PostImagesOrVideos: React.FC<PostImagesOrVideosProps> = ({
 								</div>
 							</button>
 						)}
-						{currentImageOrVideo <
-							postData.post.postImagesOrVideos.length - 1 && (
+						{currentImageOrVideo < imagesOrVideos.length - 1 && (
 							<button
 								type="button"
 								title="Next Image or Video"
 								className="button next"
 								onClick={() => handleImageOrVideoNav("next")}
-								disabled={
-									currentImageOrVideo ===
-									postData.post.postImagesOrVideos.length - 1
-								}
+								disabled={currentImageOrVideo === imagesOrVideos.length - 1}
 							>
 								<div className="icon-container">
 									<RxCaretRight className="icon" />

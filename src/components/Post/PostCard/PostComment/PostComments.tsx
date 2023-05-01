@@ -1,4 +1,3 @@
-import { UserState } from "@/atoms/userAtom";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostCommentData, PostState } from "@/atoms/postAtom";
@@ -8,13 +7,11 @@ import CommentItem from "./CommentItem";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment/PostCommentItemSkeleton";
 import { PostComment } from "@/lib/interfaces/post";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import useUser from "@/hooks/useUser";
 
 type PostCommentsProps = {
-	userStateValue: UserState;
-	userMounted: boolean;
 	currentPost: PostState["currentPost"];
 	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
-	formatNumberWithSuffix: (number: number) => string;
 };
 
 export type PostCommentFormType = {
@@ -26,12 +23,10 @@ export type PostCommentFormType = {
 };
 
 const PostComments: React.FC<PostCommentsProps> = ({
-	userStateValue,
-	userMounted,
 	currentPost,
 	commentBoxRef,
-	formatNumberWithSuffix,
 }) => {
+	const { userStateValue, userMounted } = useUser();
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
 		groupId: currentPost?.post.groupId,
@@ -233,7 +228,6 @@ const PostComments: React.FC<PostCommentsProps> = ({
 										<React.Fragment key={comment.comment.id}>
 											<CommentItem
 												currentPost={currentPost}
-												userStateValue={userStateValue}
 												submitting={creatingComment}
 												commentData={comment}
 												parentShowCommentBox={true}
@@ -242,7 +236,6 @@ const PostComments: React.FC<PostCommentsProps> = ({
 												handleCommentDelete={handleCommentDelete}
 												onChange={handleInputChange}
 												onSubmit={handleCommentSubmit}
-												formatNumberWithSuffix={formatNumberWithSuffix}
 											/>
 										</React.Fragment>
 									))}
@@ -278,7 +271,6 @@ const PostComments: React.FC<PostCommentsProps> = ({
 									)}
 								{!currentPost.postDeleted && (
 									<CommentBox
-										userStateValue={userStateValue}
 										commentForm={postCommentForm}
 										setCommentForm={setPostCommentForm}
 										commentLevel={0}

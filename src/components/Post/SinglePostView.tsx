@@ -138,16 +138,7 @@ const SinglePostView: React.FC<SinglePostViewProps> = ({
 								) : (
 									<>
 										{postStateValue.currentPost.post.id === postId && (
-											<PostCard
-												userStateValue={userStateValue}
-												userMounted={userMounted}
-												postData={postStateValue.currentPost!}
-												deletePost={deletePost}
-												postOptionsStateValue={postOptionsStateValue}
-												setPostOptionsStateValue={setPostOptionsStateValue}
-												onPostLike={onPostLike}
-												router={router}
-											/>
+											<PostCard postData={postStateValue.currentPost!} />
 										)}
 									</>
 								)}

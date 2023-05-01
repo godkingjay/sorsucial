@@ -1,17 +1,16 @@
 import { PostCommentData } from "@/atoms/postAtom";
+import useInput from "@/hooks/useInput";
 import Link from "next/link";
 import React from "react";
 import { AiFillLike } from "react-icons/ai";
 
 type CommentItemCardProps = {
 	commentData: PostCommentData;
-	formatNumberWithSuffix: (number: number) => string;
 };
 
-const CommentItemCard: React.FC<CommentItemCardProps> = ({
-	commentData,
-	formatNumberWithSuffix,
-}) => {
+const CommentItemCard: React.FC<CommentItemCardProps> = ({ commentData }) => {
+	const { formatNumberWithSuffix } = useInput();
+
 	return (
 		<div className="w-full flex-1 flex flex-row gap-x-2 relative">
 			<div className="flex flex-row">

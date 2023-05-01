@@ -134,13 +134,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 								{filteredGroups.map((post, index) => (
 									<PostCard
 										key={post.post.id}
-										userStateValue={userStateValue}
 										postData={post}
-										deletePost={deletePost}
-										postOptionsStateValue={postOptionsStateValue}
-										setPostOptionsStateValue={setPostOptionsStateValue}
-										onPostLike={onPostLike}
-										router={router}
 									/>
 								))}
 							</>

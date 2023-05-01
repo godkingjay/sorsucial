@@ -150,8 +150,33 @@ const useInput = () => {
 		[validateImageOrVideo]
 	);
 
+	const formatNumberWithSuffix = useCallback((number: number) => {
+		const suffixes = ["", "K", "M", "B"];
+		let suffixIndex = 0;
+		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
+			number /= 1000;
+			suffixIndex++;
+		}
+		const roundedNumber = Math.floor(number * 100) / 100;
+		const suffix = suffixes[suffixIndex];
+		return `${roundedNumber}${suffix}`;
+	}, []);
+
+	const formatFileSize = useCallback((size: number) => {
+		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+		let i = 0;
+		let fileSize = size;
+		while (fileSize >= 1024) {
+			fileSize /= 1024;
+			i++;
+		}
+		return fileSize.toFixed(2) + " " + units[i];
+	}, []);
+
 	return {
 		uploadImageOrVideo,
+		formatNumberWithSuffix,
+		formatFileSize,
 	};
 };
 

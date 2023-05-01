@@ -1,13 +1,21 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
+import ButtonJoinLeaveGroup from "@/components/Group/Buttons/ButtonJoinLeaveGroup";
+import GroupPageHeader from "@/components/Group/GroupPageHeader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
 import { siteDetails } from "@/lib/host";
+import moment from "moment";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
+import { HiOutlineCamera } from "react-icons/hi";
+import { RiGroup2Fill } from "react-icons/ri";
 import safeJsonStringify from "safe-json-stringify";
 
 type GroupPageProps = {
@@ -20,7 +28,7 @@ const GroupPage: React.FC<GroupPageProps> = ({
 	loadingPage = true,
 }) => {
 	const { userStateValue, userMounted } = useUser();
-	const { groupStateValue, setGroupStateValue } = useGroup();
+	const { groupStateValue, setGroupStateValue, fetchUserJoin } = useGroup();
 	const [fetchingGroupUserData, setFetchingGroupUserData] = useState(true);
 	const router = useRouter();
 	const { groupId } = router.query;
@@ -31,6 +39,11 @@ const GroupPage: React.FC<GroupPageProps> = ({
 			if (groupPageData) {
 				const currentGroup = groupStateValue.groups.find(
 					(group) => group.group.id === groupPageData.group.id
+				);
+
+				const userJoin = await fetchUserJoin(
+					groupPageData.group.id,
+					userStateValue.user.uid
 				);
 
 				setGroupStateValue((prev) => ({
@@ -44,11 +57,13 @@ const GroupPage: React.FC<GroupPageProps> = ({
 								return {
 									...group,
 									...groupPageData,
+									userJoin: userJoin,
 								};
 						  })
 						: prev.groups,
 					currentGroup: {
 						...groupPageData,
+						userJoin: userJoin,
 					},
 				}));
 			}
@@ -57,7 +72,13 @@ const GroupPage: React.FC<GroupPageProps> = ({
 		} finally {
 			setFetchingGroupUserData(false);
 		}
-	}, [groupPageData, groupStateValue.groups, setGroupStateValue]);
+	}, [
+		fetchUserJoin,
+		groupPageData,
+		groupStateValue.groups,
+		setGroupStateValue,
+		userStateValue.user.uid,
+	]);
 
 	useEffect(() => {
 		if (userMounted) {
@@ -117,23 +138,23 @@ const GroupPage: React.FC<GroupPageProps> = ({
 				/>
 			</Head>
 			<div className="flex flex-col">
-				{loadingPage || !userMounted ? (
-					<>
-						<p>Loading Group</p>
-					</>
-				) : (
-					<>
-						{!groupStateValue.currentGroup ? (
-							<>
-								<p>Group Not Found</p>
-							</>
-						) : (
-							<>
-								<p>{groupStateValue.currentGroup.group.name}</p>
-							</>
-						)}
-					</>
-				)}
+				<LimitedBodyLayout>
+					{loadingPage || !userMounted || fetchingGroupUserData ? (
+						<>
+							<p>Loading Group</p>
+						</>
+					) : (
+						<>
+							{!groupStateValue.currentGroup ? (
+								<>
+									<p>Group Not Found</p>
+								</>
+							) : (
+								<></>
+							)}
+						</>
+					)}
+				</LimitedBodyLayout>
 			</div>
 		</>
 	);

@@ -31,7 +31,7 @@ const GroupPageHeader: React.FC<GroupPageHeaderProps> = ({
 			console.log("Hook: Join/Leave group Error:\n", error.message);
 		}
 		setJoiningGroup(false);
-	}, [groupData]);
+	}, [groupData, joiningGroup, onJoinGroup]);
 
 	return (
 		<div className="w-full flex flex-col items-center shadow-page-box-1 bg-white">

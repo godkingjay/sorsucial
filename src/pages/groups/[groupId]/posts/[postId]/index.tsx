@@ -36,6 +36,7 @@ const GroupPostView: React.FC<GroupPostViewProps> = ({
 					<SinglePostView
 						loadingPost={loadingPage}
 						postPageData={postPageData}
+						type="group-post"
 					/>
 				)}
 			</GroupPageLoader>

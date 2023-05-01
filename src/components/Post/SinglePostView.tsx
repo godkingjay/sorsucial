@@ -8,15 +8,21 @@ import React, { useEffect, useState } from "react";
 import LimitedBodyLayout from "../Layout/LimitedBodyLayout";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import PostCard from "./PostCard";
+import { SitePost } from "@/lib/interfaces/post";
+import PostDiscussionNotFound, {
+	PostDiscussionNotFoundProps,
+} from "../Error/PostDiscussionNotFound";
 
 type SinglePostViewProps = {
 	postPageData: PostState["currentPost"];
 	loadingPost: boolean;
+	type: PostDiscussionNotFoundProps["type"];
 };
 
 const SinglePostView: React.FC<SinglePostViewProps> = ({
 	postPageData,
 	loadingPost,
+	type,
 }) => {
 	const { userStateValue, userMounted } = useUser();
 	const {
@@ -128,7 +134,7 @@ const SinglePostView: React.FC<SinglePostViewProps> = ({
 						) : (
 							<>
 								{!postStateValue.currentPost ? (
-									<div>Not Found</div>
+									<PostDiscussionNotFound type={type} />
 								) : (
 									<>
 										{postStateValue.currentPost.post.id === postId && (

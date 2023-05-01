@@ -74,7 +74,7 @@ const PostCard: React.FC<PostCardProps> = ({
 		setSeeMore(!seeMore);
 	};
 
-	const handleDeletePost = async () => {
+	const handleDeletePost = useCallback(async () => {
 		try {
 			if (userStateValue.user.uid !== postData.post.creatorId) {
 				if (!userStateValue.user.roles.includes("admin")) {
@@ -91,7 +91,13 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 
 		setDeletingPost(false);
-	};
+	}, [
+		deletePost,
+		deletingPost,
+		postData,
+		userStateValue.user.roles,
+		userStateValue.user.uid,
+	]);
 
 	const handlePostLike = useCallback(async () => {
 		try {

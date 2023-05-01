@@ -37,16 +37,16 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 }) => {
 	const { userStateValue, userMounted } = useUser();
 	const { postStateValue, fetchPosts } = usePost();
-	const [filteredGroups, setFilteredGroups] = useState<PostData[]>([]);
+	const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
 	const [loadingPosts, setLoadingPosts] = useState(false);
 	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
 	const [endReached, setEndReached] = useState(false);
 	const postsMounted = useRef(false);
-	const filteredGroupsLength = filteredGroups.length || -1;
+	const filteredPostsLength = filteredPosts.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
 
 	const handleFilterPosts = useCallback(() => {
-		setFilteredGroups(
+		setFilteredPosts(
 			postStateValue.posts.filter(
 				(post) =>
 					(groupId ? post.post.groupId === groupId : true) &&
@@ -104,14 +104,14 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	useEffect(() => {
 		if (userMounted) {
-			if (!postsMounted.current && filteredGroupsLength <= 0) {
+			if (!postsMounted.current && filteredPostsLength <= 0) {
 				postsMounted.current = true;
 				handleFirstFetchPosts();
 			} else {
 				postsMounted.current = true;
 			}
 		}
-	}, [filteredGroupsLength, handleFirstFetchPosts, userMounted]);
+	}, [filteredPostsLength, handleFirstFetchPosts, userMounted]);
 
 	useEffect(() => {
 		handleFilterPosts();
@@ -136,9 +136,9 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 							/>
 						)}
 						{filter && <PageFilter />}
-						{filteredGroupsLength > 0 && (
+						{filteredPostsLength > 0 && (
 							<>
-								{filteredGroups.map((post, index) => (
+								{filteredPosts.map((post, index) => (
 									<PostCard
 										key={post.post.id}
 										postData={post}
@@ -152,7 +152,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 								<PostCardSkeleton />
 							</>
 						)}
-						{!endReached && postsMounted && filteredGroupsLength > 0 && (
+						{!endReached && postsMounted && filteredPostsLength > 0 && (
 							<>
 								<VisibleInViewPort
 									disabled={endReached || loadingPosts || firstLoadingPosts}

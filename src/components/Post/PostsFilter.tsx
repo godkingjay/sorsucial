@@ -25,11 +25,11 @@ type PostsFilterProps = {
 };
 
 const PostsFilter: React.FC<PostsFilterProps> = ({
-	postType = "feed",
-	postCreation = false,
-	filter = false,
-	sortBy = "latest",
-	privacy = "public",
+	postType,
+	postCreation,
+	filter,
+	sortBy,
+	privacy,
 	groupId,
 	creator,
 	tags,
@@ -56,22 +56,24 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		setFilteredGroups(
 			postStateValue.posts.filter(
 				(post) =>
-					(groupId ? post.post.groupId === groupId : true) &&
+					(groupId ? post.post.groupId === groupId : !post.post.groupId) &&
 					post.post.privacy === privacy &&
+					post.post.postType === postType &&
 					post.index &&
 					post.index[sortBy] !== undefined &&
 					post.index[sortBy] >= 0
 			)
 		);
-	}, [groupId, postStateValue.posts, privacy, sortBy]);
+	}, [postStateValue.posts, groupId, privacy, postType, sortBy]);
 
 	const handleFetchPosts = useCallback(async () => {
 		setLoadingPosts(true);
 		try {
 			const fetchedPostLength = await fetchPosts({
-				postType: "feed",
-				privacy: "public",
-				sortBy: "latest",
+				postType: postType,
+				privacy: privacy,
+				sortBy: sortBy,
+				groupId: groupId || undefined,
 			});
 			if (fetchedPostLength !== undefined) {
 				setEndReached(fetchedPostLength < 10 ? true : false);
@@ -80,7 +82,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 			console.log("Hook: fetching feeds Error: ", error.message);
 		}
 		setLoadingPosts(false);
-	}, [fetchPosts]);
+	}, [fetchPosts, groupId, postType, privacy, sortBy]);
 
 	const handleFirstFetchPosts = useCallback(async () => {
 		setFirstLoadingPosts(true);
@@ -101,19 +103,11 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 				postsMounted.current = true;
 			}
 		}
-	}, [userMounted]);
+	}, [filteredGroupsLength, handleFirstFetchPosts, userMounted]);
 
 	useEffect(() => {
 		handleFilterPosts();
-	}, [
-		postStateValue.posts,
-		privacy,
-		sortBy,
-		groupId,
-		creator,
-		tags,
-		handleFilterPosts,
-	]);
+	}, [handleFilterPosts]);
 
 	return (
 		<>

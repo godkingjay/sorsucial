@@ -29,6 +29,7 @@ import {
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
 import { QueryPostsSortBy } from "@/lib/types/api";
+import { useCallback } from "react";
 
 /**
  * ~ ██████╗  ██████╗ ███████╗████████╗    ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗
@@ -904,145 +905,163 @@ const usePost = () => {
 	 *
 	 * @returns {Promise<number>} - A promise that resolves with the number of posts fetched.
 	 */
-	const fetchPosts = async ({
-		postType = "feed" as SitePost["postType"],
-		privacy = "public" as SitePost["privacy"],
-		groupId = undefined as string | undefined,
-		tags = undefined as string | undefined,
-		creator = undefined as string | undefined,
-		sortBy = "latest" as QueryPostsSortBy,
-	}) => {
-		/**
-		 * Try to fetch posts from the backend API.
-		 *
-		 * If there is an error, then throw an error.
-		 */
-		try {
-			let refPost;
-			let refIndex;
-
-			switch (sortBy) {
-				case "latest": {
-					refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
-						if (
-							post.post.postType === postType &&
-							post.post.privacy === privacy &&
-							post.index[sortBy] &&
-							acc === -1
-						) {
-							return index;
-						}
-
-						return acc;
-					}, -1);
-
-					refPost = postStateValue.posts[refIndex] || null;
-					break;
-				}
-
-				default: {
-					refPost = null;
-					break;
-				}
-			}
-
+	const fetchPosts = useCallback(
+		async ({
+			postType = "feed" as SitePost["postType"],
+			privacy = "public" as SitePost["privacy"],
+			groupId = undefined as string | undefined,
+			tags = undefined as string | undefined,
+			creator = undefined as string | undefined,
+			sortBy = "latest" as QueryPostsSortBy,
+		}) => {
 			/**
-			 * Fetch posts from the backend API using axios.
-			 *
-			 * This API Call will fetch posts from the backend API.
-			 * After fetching posts, assign the posts to the temporary posts variable.
-			 *
-			 * Method: GET
-			 * Endpoint: "/posts/posts"
-			 * Parameters: {
-			 * 	apiKey: string,
-			 * 		- The API Key of the user.
-			 * 	userId: string,
-			 * 		- The user id of the user.
-			 * 	postType: SitePost["postType"],
-			 * 		- The type of post to fetch.
-			 * 	privacy: SitePost["privacy"],
-			 * 		- The privacy level of the post to fetch.
-			 * 	fromDate: Date,
-			 * 		- The date to fetch posts from.
-			 * }
-			 * Response: {
-			 * 	posts: PostData[],
-			 * }
+			 * Try to fetch posts from the backend API.
 			 *
 			 * If there is an error, then throw an error.
 			 */
-			const {
-				posts,
-			}: {
-				posts: PostData[];
-			} = await axios
-				.get(apiConfig.apiEndpoint + "/posts/posts", {
-					params: {
-						apiKey: userStateValue.api?.keys[0].key,
-						userId: authUser?.uid,
-						postType: postType,
-						privacy: privacy,
-						groupId: groupId,
-						tags: tags,
-						creator: creator,
-						sortBy: sortBy,
-						lastIndex: refPost ? refPost.index[sortBy] : -1,
-						fromLikes: refPost
-							? refPost.post.numberOfLikes + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromComments: refPost
-							? refPost?.post.numberOfComments + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromDate: refPost?.post.createdAt || new Date().toISOString(),
-					},
-				})
-				.then((res) => res.data)
-				.catch((err) => {
-					throw new Error(`API (GET): Getting posts error:\n ${err.message}`);
+			try {
+				let refPost;
+				let refIndex;
+
+				switch (sortBy) {
+					case "latest": {
+						refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
+							if (
+								(groupId ? post.post.groupId === groupId : true) &&
+								post.post.postType === postType &&
+								post.post.privacy === privacy &&
+								post.index[sortBy] &&
+								acc === -1
+							) {
+								return index;
+							}
+
+							return acc;
+						}, -1);
+
+						refPost = postStateValue.posts[refIndex] || null;
+						break;
+					}
+
+					default: {
+						refPost = null;
+						break;
+					}
+				}
+
+				console.log({
+					postType,
+					privacy,
+					groupId,
+					tags,
+					creator,
+					sortBy,
 				});
 
-			/**
-			 * If there are fetcher posts, append them to the current list of posts in postStateValue.
-			 */
-			if (posts.length) {
-				setPostStateValue((prev) => ({
-					...prev,
-					posts: prev.posts
-						.map((post) => {
-							const postIndex = posts.findIndex(
-								(postData) => postData.post.id === post.post.id
-							);
+				/**
+				 * Fetch posts from the backend API using axios.
+				 *
+				 * This API Call will fetch posts from the backend API.
+				 * After fetching posts, assign the posts to the temporary posts variable.
+				 *
+				 * Method: GET
+				 * Endpoint: "/posts/posts"
+				 * Parameters: {
+				 * 	apiKey: string,
+				 * 		- The API Key of the user.
+				 * 	userId: string,
+				 * 		- The user id of the user.
+				 * 	postType: SitePost["postType"],
+				 * 		- The type of post to fetch.
+				 * 	privacy: SitePost["privacy"],
+				 * 		- The privacy level of the post to fetch.
+				 * 	fromDate: Date,
+				 * 		- The date to fetch posts from.
+				 * }
+				 * Response: {
+				 * 	posts: PostData[],
+				 * }
+				 *
+				 * If there is an error, then throw an error.
+				 */
+				const {
+					posts,
+				}: {
+					posts: PostData[];
+				} = await axios
+					.get(apiConfig.apiEndpoint + "/posts/posts", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser?.uid,
+							postType: postType,
+							privacy: privacy,
+							groupId: groupId,
+							tags: tags,
+							creator: creator,
+							sortBy: sortBy,
+							lastIndex: refPost ? refPost.index[sortBy] : -1,
+							fromLikes: refPost
+								? refPost.post.numberOfLikes + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromComments: refPost
+								? refPost?.post.numberOfComments + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromDate: refPost?.post.createdAt || new Date().toISOString(),
+						},
+					})
+					.then((res) => res.data)
+					.catch((err) => {
+						throw new Error(`API (GET): Getting posts error:\n ${err.message}`);
+					});
 
-							const existingPost = postIndex !== -1 ? posts[postIndex] : null;
+				/**
+				 * If there are fetcher posts, append them to the current list of posts in postStateValue.
+				 */
+				if (posts.length) {
+					setPostStateValue((prev) => ({
+						...prev,
+						posts: prev.posts
+							.map((post) => {
+								const postIndex = posts.findIndex(
+									(postData) => postData.post.id === post.post.id
+								);
 
-							if (existingPost) {
-								posts.splice(postIndex, 1);
+								const existingPost = postIndex !== -1 ? posts[postIndex] : null;
 
-								return {
-									...existingPost,
-									...post,
-								};
-							} else {
-								return post;
-							}
-						})
-						.concat(posts),
-				}));
-			} else {
-				console.log("Mongo: No posts found!");
+								if (existingPost) {
+									posts.splice(postIndex, 1);
+
+									return {
+										...existingPost,
+										...post,
+									};
+								} else {
+									return post;
+								}
+							})
+							.concat(posts),
+					}));
+				} else {
+					console.log("Mongo: No posts found!");
+				}
+
+				/**
+				 * Get the number of posts fetched.
+				 *
+				 * @returns {number} - The number of posts fetched.
+				 */
+				return posts.length;
+			} catch (error: any) {
+				console.log("Mongo: Fetching Posts Error", error.message);
 			}
-
-			/**
-			 * Get the number of posts fetched.
-			 *
-			 * @returns {number} - The number of posts fetched.
-			 */
-			return posts.length;
-		} catch (error: any) {
-			console.log("Mongo: Fetching Posts Error", error.message);
-		}
-	};
+		},
+		[
+			authUser?.uid,
+			postStateValue.posts,
+			setPostStateValue,
+			userStateValue.api?.keys,
+		]
+	);
 
 	/**
 	 * ^ ██████╗            ██╗     ██╗██╗  ██╗███████╗

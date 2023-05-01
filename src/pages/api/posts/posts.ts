@@ -118,6 +118,7 @@ export default async function handler(
 					switch (sortBy) {
 						case "latest": {
 							posts = await getSortByLatest({
+								groupId,
 								postType,
 								privacy,
 								fromDate,
@@ -205,6 +206,7 @@ export default async function handler(
 }
 
 const getSortByLatest = async ({
+	groupId,
 	postType,
 	privacy,
 	fromDate,
@@ -212,16 +214,21 @@ const getSortByLatest = async ({
 }: Partial<APIEndpointPostsParams>) => {
 	const { postsCollection } = await postDb();
 
+	let query: any = {
+		postType: postType,
+		privacy: privacy,
+		createdAt: {
+			$lt: typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
+		},
+	};
+
+	if (groupId) {
+		query.groupId = groupId;
+	}
+
 	return postsCollection
 		? await postsCollection
-				.find({
-					postType: postType,
-					privacy: privacy,
-					createdAt: {
-						$lt:
-							typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
-					},
-				})
+				.find(query)
 				.sort({
 					createdAt: -1,
 				})

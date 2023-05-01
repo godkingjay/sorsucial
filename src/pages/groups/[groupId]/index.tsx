@@ -2,6 +2,7 @@ import { GroupData, GroupState } from "@/atoms/groupAtom";
 import ButtonJoinLeaveGroup from "@/components/Group/Buttons/ButtonJoinLeaveGroup";
 import GroupPageHeader from "@/components/Group/GroupPageHeader";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import PostCreationListener from "@/components/Post/PostCreationListener";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import groupDb from "@/lib/db/groupDb";
@@ -137,9 +138,10 @@ const GroupPage: React.FC<GroupPageProps> = ({
 					}
 				/>
 			</Head>
-			<div className="flex flex-col">
+			<div className="flex flex-col px-4 py-4">
 				<LimitedBodyLayout>
-					{loadingPage || !userMounted || fetchingGroupUserData ? (
+					{(loadingPage || !userMounted || fetchingGroupUserData) &&
+					!groupPageData ? (
 						<>
 							<p>Loading Group</p>
 						</>
@@ -150,7 +152,12 @@ const GroupPage: React.FC<GroupPageProps> = ({
 									<p>Group Not Found</p>
 								</>
 							) : (
-								<></>
+								<>
+									<PostCreationListener
+										postType="group"
+										useStateValue={userStateValue}
+									/>
+								</>
 							)}
 						</>
 					)}

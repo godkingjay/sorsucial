@@ -4,6 +4,7 @@ import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import { CurrentDirectory } from "./Layout";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 type GroupPageProps = {
 	children: React.ReactNode;
@@ -30,8 +31,49 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 								userStateValue={userStateValue}
 							/>
 							<div className="sticky flex flex-col items-center top-14 bg-white shadow-page-box-1">
-								<div className="w-full flex flex-col max-w-5xl px-8 py-4">
-									<p>Navigation</p>
+								<div className="w-full flex flex-row max-w-5xl px-8">
+									<Link
+										href={`/groups/${groupStateValue.currentGroup.group.id}`}
+										className="group-nav-bar-item"
+										data-active={
+											!currentDirectory.third || currentDirectory.third === ""
+										}
+									>
+										Posts
+										<div className="indicator"></div>
+									</Link>
+									<Link
+										href={`/groups/${groupStateValue.currentGroup.group.id}/discussions/`}
+										className="group-nav-bar-item"
+										data-active={currentDirectory.third === "discussions"}
+									>
+										Discussions
+										<div className="indicator"></div>
+									</Link>
+									<Link
+										href={`/groups/${groupStateValue.currentGroup.group.id}/gallery/`}
+										className="group-nav-bar-item"
+										data-active={currentDirectory.third === "gallery"}
+									>
+										Gallery
+										<div className="indicator"></div>
+									</Link>
+									<Link
+										href={`/groups/${groupStateValue.currentGroup.group.id}/members/`}
+										className="group-nav-bar-item"
+										data-active={currentDirectory.third === "members"}
+									>
+										Members
+										<div className="indicator"></div>
+									</Link>
+									<Link
+										href={`/groups/${groupStateValue.currentGroup.group.id}/about/`}
+										className="group-nav-bar-item"
+										data-active={currentDirectory.third === "about"}
+									>
+										About
+										<div className="indicator"></div>
+									</Link>
 								</div>
 							</div>
 						</>

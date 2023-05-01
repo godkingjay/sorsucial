@@ -23,6 +23,7 @@ import { checkIsValidLink } from "@/lib/functions/checks";
 import PostLinksTab from "./PostCreationModal/PostCreationTabs/PostLinksTab";
 import { BiPoll } from "react-icons/bi";
 import AddTags from "../Form/Tag/AddTags";
+import { useRouter } from "next/router";
 
 type PostCreationModalProps = {
 	postCreationModalStateValue: PostCreationModalState;
@@ -134,11 +135,14 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 	setPostCreationModalStateValue,
 	userStateValue,
 }) => {
+	const { groupId } = useRouter().query;
+
 	const defaultCreatePostForm: CreatePostType = {
 		postTitle: "",
 		postBody: "",
 		postTags: [],
 		postType: postCreationModalStateValue.postType,
+		groupId: groupId ? groupId.toString() : undefined,
 		isCommentable: true,
 		privacy: "public",
 		imagesOrVideos: [],

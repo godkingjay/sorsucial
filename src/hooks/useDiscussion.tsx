@@ -564,7 +564,7 @@ const useDiscussion = () => {
 							if (
 								discussion.discussion.discussionType === discussionType &&
 								discussion.discussion.privacy === privacy &&
-								discussion.index[sortBy] &&
+								discussion?.index[sortBy] &&
 								acc === -1
 							) {
 								return index;
@@ -596,21 +596,21 @@ const useDiscussion = () => {
 						tags: tags,
 						creator: creator,
 						isOpen,
-						lastIndex: refDiscussion ? refDiscussion.index[sortBy] : -1,
+						lastIndex: refDiscussion ? refDiscussion?.index[sortBy] : -1,
 						fromVotes: refDiscussion
-							? refDiscussion.discussion.numberOfVotes + 1
+							? refDiscussion?.discussion.numberOfVotes + 1
 							: Number.MAX_SAFE_INTEGER,
 						fromUpVotes: refDiscussion
-							? refDiscussion.discussion.numberOfUpVotes + 1
+							? refDiscussion?.discussion.numberOfUpVotes + 1
 							: Number.MAX_SAFE_INTEGER,
 						fromDownVotes: refDiscussion
-							? refDiscussion.discussion.numberOfDownVotes + 1
+							? refDiscussion?.discussion.numberOfDownVotes + 1
 							: Number.MAX_SAFE_INTEGER,
 						fromReplies: refDiscussion
-							? refDiscussion.discussion.numberOfReplies + 1
+							? refDiscussion?.discussion.numberOfReplies + 1
 							: Number.MAX_SAFE_INTEGER,
 						fromDate: refDiscussion
-							? refDiscussion.discussion.createdAt
+							? refDiscussion?.discussion.createdAt
 							: new Date().toISOString(),
 					},
 				})

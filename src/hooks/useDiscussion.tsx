@@ -145,20 +145,178 @@ const useDiscussion = () => {
 		voteType: "upVote" | "downVote"
 	) => {
 		try {
+			const prevDiscussionVote = discussionData?.userVote;
+
+			const voteDate = new Date();
+
+			const isDeleteVote =
+				(voteType === "upVote" && prevDiscussionVote?.voteValue === 1) ||
+				(voteType === "downVote" && prevDiscussionVote?.voteValue === -1);
+
+			const newDiscussionVote: Partial<DiscussionVote> = prevDiscussionVote
+				? {
+						userId: prevDiscussionVote.userId,
+						discussionId: prevDiscussionVote.discussionId,
+						voteValue: voteType === "upVote" ? 1 : -1,
+						updatedAt: voteDate,
+				  }
+				: {
+						userId: userStateValue.user.uid,
+						discussionId: discussionData.discussion.id,
+						voteValue: voteType === "upVote" ? 1 : -1,
+						createdAt: voteDate,
+						updatedAt: voteDate,
+				  };
+
+			if (discussionData.discussion.groupId) {
+				newDiscussionVote.groupId = discussionData.discussion.groupId;
+			}
+
+			setDiscussionStateValue(
+				(prev) =>
+					({
+						...prev,
+						discussions: prev.discussions.map((discussion) => {
+							if (discussion.discussion.id !== discussionData.discussion.id) {
+								return discussion;
+							}
+
+							const { numberOfVotes, numberOfUpVotes, numberOfDownVotes } =
+								discussion.discussion;
+
+							const { createdAt } = discussion.userVote ?? newDiscussionVote;
+
+							return {
+								...discussion,
+								discussion: {
+									...discussion.discussion,
+									numberOfVotes: isDeleteVote
+										? prevDiscussionVote
+											? numberOfVotes - 1
+											: numberOfVotes
+										: !prevDiscussionVote
+										? numberOfVotes + 1
+										: numberOfVotes,
+									numberOfUpVotes: isDeleteVote
+										? voteType === "upVote"
+											? numberOfUpVotes - 1
+											: numberOfUpVotes
+										: !prevDiscussionVote
+										? voteType === "upVote"
+											? numberOfUpVotes + 1
+											: numberOfUpVotes
+										: voteType === "upVote"
+										? numberOfUpVotes + 1
+										: numberOfUpVotes - 1,
+									numberOfDownVotes: isDeleteVote
+										? voteType === "downVote"
+											? numberOfDownVotes - 1
+											: numberOfDownVotes
+										: !prevDiscussionVote
+										? voteType === "downVote"
+											? numberOfDownVotes + 1
+											: numberOfDownVotes
+										: voteType === "downVote"
+										? numberOfDownVotes + 1
+										: numberOfDownVotes - 1,
+									updatedAt: voteDate.toISOString(),
+								},
+								userVote:
+									isDeleteVote && prevDiscussionVote
+										? null
+										: {
+												...newDiscussionVote,
+												updatedAt: voteDate.toISOString(),
+												createdAt:
+													typeof createdAt === "string"
+														? createdAt
+														: createdAt!.toISOString(),
+										  },
+							};
+						}),
+						currentDiscussion:
+							prev.currentDiscussion?.discussion.id ===
+							discussionData.discussion.id
+								? {
+										...prev.currentDiscussion,
+										discussion: {
+											...prev.currentDiscussion.discussion,
+											numberOfVotes: isDeleteVote
+												? prevDiscussionVote
+													? prev.currentDiscussion.discussion.numberOfVotes - 1
+													: prev.currentDiscussion.discussion.numberOfVotes
+												: !prevDiscussionVote
+												? prev.currentDiscussion.discussion.numberOfVotes + 1
+												: prev.currentDiscussion.discussion.numberOfVotes,
+											numberOfUpVotes: isDeleteVote
+												? voteType === "upVote"
+													? prev.currentDiscussion.discussion.numberOfUpVotes - 1
+													: prev.currentDiscussion.discussion.numberOfUpVotes
+												: !prevDiscussionVote
+												? voteType === "upVote"
+													? prev.currentDiscussion.discussion.numberOfUpVotes + 1
+													: prev.currentDiscussion.discussion.numberOfUpVotes
+												: voteType === "upVote"
+												? prev.currentDiscussion.discussion.numberOfUpVotes + 1
+												: prev.currentDiscussion.discussion.numberOfUpVotes - 1,
+											numberOfDownVotes: isDeleteVote
+												? voteType === "downVote"
+													? prev.currentDiscussion.discussion.numberOfDownVotes -
+													  1
+													: prev.currentDiscussion.discussion.numberOfDownVotes
+												: !prevDiscussionVote
+												? voteType === "downVote"
+													? prev.currentDiscussion.discussion.numberOfDownVotes +
+													  1
+													: prev.currentDiscussion.discussion.numberOfDownVotes
+												: voteType === "downVote"
+												? prev.currentDiscussion.discussion.numberOfDownVotes + 1
+												: prev.currentDiscussion.discussion.numberOfDownVotes -
+												  1,
+											updatedAt: voteDate.toISOString(),
+										},
+										userVote:
+											isDeleteVote && prevDiscussionVote
+												? null
+												: {
+														...newDiscussionVote,
+														updatedAt: voteDate.toISOString(),
+														createdAt: prev.currentDiscussion.userVote?.createdAt
+															? prev.currentDiscussion.userVote.createdAt
+															: newDiscussionVote.createdAt?.toISOString(),
+												  },
+								  }
+								: prev.currentDiscussion,
+					} as DiscussionState)
+			);
+
+			const resetUserVote = () => {
+				setDiscussionStateValue((prev) => ({
+					...prev,
+					discussions: prev.discussions.map((discussion) => {
+						if (discussion.discussion.id !== discussionData.discussion.id) {
+							return discussion;
+						}
+
+						return {
+							...discussion,
+							discussion: discussionData.discussion,
+							userVote: prevDiscussionVote,
+						};
+					}),
+					currentDiscussion:
+						prev.currentDiscussion?.discussion.id ===
+						discussionData.discussion.id
+							? {
+									...prev.currentDiscussion,
+									discussion: discussionData.discussion,
+									userVote: prevDiscussionVote,
+							  }
+							: prev.currentDiscussion,
+				}));
+			};
+
 			if (discussionData.userVote) {
-				const voteDate = new Date();
-
-				const newDiscussionVote: Partial<DiscussionVote> = {
-					userId: discussionData.userVote.userId,
-					discussionId: discussionData.userVote.discussionId,
-					voteValue: voteType === "upVote" ? 1 : -1,
-					updatedAt: voteDate,
-				};
-
-				const isDeleteVote =
-					(voteType === "upVote" && discussionData.userVote!.voteValue === 1) ||
-					(voteType === "downVote" && discussionData.userVote!.voteValue === -1);
-
 				if (isDeleteVote) {
 					const { voteDeleted } = await axios
 						.delete(apiConfig.apiEndpoint + "/discussions/votes/", {
@@ -178,6 +336,8 @@ const useDiscussion = () => {
 									discussionData.discussion.id
 								);
 							}
+
+							resetUserVote();
 
 							throw new Error(
 								`=>API(Discussion): Discussion Vote Deletion Error:\n${error.message}`
@@ -201,98 +361,85 @@ const useDiscussion = () => {
 								);
 							}
 
+							resetUserVote();
+
 							throw new Error(
 								`=>API(Discussion): Discussion Vote Change Error:\n${error.message}`
 							);
 						});
 				}
 
-				setDiscussionStateValue(
-					(prev) =>
-						({
-							...prev,
-							discussions: prev.discussions.map((discussion) => {
-								if (discussion.discussion.id === discussionData.discussion.id) {
-									return {
-										...discussion,
-										discussion: {
-											...discussion.discussion,
-											numberOfVotes: isDeleteVote
-												? discussion.discussion.numberOfVotes - 1
-												: discussion.discussion.numberOfVotes,
-											numberOfUpVotes: isDeleteVote
-												? voteType === "upVote"
-													? discussion.discussion.numberOfUpVotes - 1
-													: discussion.discussion.numberOfUpVotes
-												: voteType === "upVote"
-												? discussion.discussion.numberOfUpVotes + 1
-												: discussion.discussion.numberOfUpVotes - 1,
-											numberOfDownVotes: isDeleteVote
-												? voteType === "downVote"
-													? discussion.discussion.numberOfDownVotes - 1
-													: discussion.discussion.numberOfDownVotes
-												: voteType === "downVote"
-												? discussion.discussion.numberOfDownVotes + 1
-												: discussion.discussion.numberOfDownVotes - 1,
-											updatedAt: voteDate.toISOString(),
-										},
-										userVote: isDeleteVote ? null : newDiscussionVote,
-									};
-								}
-
-								return discussion;
-							}),
-							currentDiscussion:
-								prev.currentDiscussion?.discussion.id ===
-								discussionData.discussion.id
-									? {
-											...prev.currentDiscussion,
-											discussion: {
-												...prev.currentDiscussion.discussion,
-												numberOfVotes: isDeleteVote
-													? prev.currentDiscussion.discussion.numberOfVotes - 1
-													: prev.currentDiscussion.discussion.numberOfVotes,
-												numberOfUpVotes: isDeleteVote
-													? voteType === "upVote"
-														? prev.currentDiscussion.discussion.numberOfUpVotes -
-														  1
-														: prev.currentDiscussion.discussion.numberOfUpVotes
-													: voteType === "upVote"
-													? prev.currentDiscussion.discussion.numberOfUpVotes + 1
-													: prev.currentDiscussion.discussion.numberOfUpVotes -
-													  1,
-												numberOfDownVotes: isDeleteVote
-													? voteType === "downVote"
-														? prev.currentDiscussion.discussion
-																.numberOfDownVotes - 1
-														: prev.currentDiscussion.discussion.numberOfDownVotes
-													: voteType === "downVote"
-													? prev.currentDiscussion.discussion.numberOfDownVotes +
-													  1
-													: prev.currentDiscussion.discussion.numberOfDownVotes -
-													  1,
-												updatedAt: voteDate.toISOString(),
-											},
-											userVote: isDeleteVote ? null : newDiscussionVote,
-									  }
-									: prev.currentDiscussion,
-						} as DiscussionState)
-				);
+				// setDiscussionStateValue(
+				// 	(prev) =>
+				// 		({
+				// 			...prev,
+				// 			discussions: prev.discussions.map((discussion) => {
+				// 				if (discussion.discussion.id === discussionData.discussion.id) {
+				// 					return {
+				// 						...discussion,
+				// 						discussion: {
+				// 							...discussion.discussion,
+				// 							numberOfVotes: isDeleteVote
+				// 								? discussion.discussion.numberOfVotes - 1
+				// 								: discussion.discussion.numberOfVotes,
+				// 							numberOfUpVotes: isDeleteVote
+				// 								? voteType === "upVote"
+				// 									? discussion.discussion.numberOfUpVotes - 1
+				// 									: discussion.discussion.numberOfUpVotes
+				// 								: voteType === "upVote"
+				// 									? discussion.discussion.numberOfUpVotes + 1
+				// 									: discussion.discussion.numberOfUpVotes - 1,
+				// 							numberOfDownVotes: isDeleteVote
+				// 								? voteType === "downVote"
+				// 									? discussion.discussion.numberOfDownVotes - 1
+				// 									: discussion.discussion.numberOfDownVotes
+				// 								: voteType === "downVote"
+				// 								? discussion.discussion.numberOfDownVotes + 1
+				// 								: discussion.discussion.numberOfDownVotes - 1,
+				// 							updatedAt: voteDate.toISOString(),
+				// 						},
+				// 						userVote: isDeleteVote ? null : newDiscussionVote,
+				// 					};
+				// 				}
+				// 				return discussion;
+				// 			}),
+				// 			currentDiscussion:
+				// 				prev.currentDiscussion?.discussion.id ===
+				// 				discussionData.discussion.id
+				// 					? {
+				// 							...prev.currentDiscussion,
+				// 							discussion: {
+				// 								...prev.currentDiscussion.discussion,
+				// 								numberOfVotes: isDeleteVote
+				// 									? prev.currentDiscussion.discussion.numberOfVotes - 1
+				// 									: prev.currentDiscussion.discussion.numberOfVotes,
+				// 								numberOfUpVotes: isDeleteVote
+				// 									? voteType === "upVote"
+				// 										? prev.currentDiscussion.discussion.numberOfUpVotes -
+				// 										  1
+				// 										: prev.currentDiscussion.discussion.numberOfUpVotes
+				// 									: voteType === "upVote"
+				// 									? prev.currentDiscussion.discussion.numberOfUpVotes + 1
+				// 									: prev.currentDiscussion.discussion.numberOfUpVotes -
+				// 									  1,
+				// 								numberOfDownVotes: isDeleteVote
+				// 									? voteType === "downVote"
+				// 										? prev.currentDiscussion.discussion
+				// 												.numberOfDownVotes - 1
+				// 										: prev.currentDiscussion.discussion.numberOfDownVotes
+				// 									: voteType === "downVote"
+				// 									? prev.currentDiscussion.discussion.numberOfDownVotes +
+				// 									  1
+				// 									: prev.currentDiscussion.discussion.numberOfDownVotes -
+				// 									  1,
+				// 								updatedAt: voteDate.toISOString(),
+				// 							},
+				// 							userVote: isDeleteVote ? null : newDiscussionVote,
+				// 					  }
+				// 					: prev.currentDiscussion,
+				// 		} as DiscussionState)
+				// );
 			} else {
-				const voteDate = new Date();
-
-				const newDiscussionVote: Partial<DiscussionVote> = {
-					userId: userStateValue.user.uid,
-					discussionId: discussionData.discussion.id,
-					voteValue: voteType === "upVote" ? 1 : -1,
-					createdAt: voteDate,
-					updatedAt: voteDate,
-				};
-
-				if (discussionData.discussion.groupId) {
-					newDiscussionVote.groupId = discussionData.discussion.groupId;
-				}
-
 				const { voteSuccess } = await axios
 					.post(apiConfig.apiEndpoint + "/discussions/votes/", {
 						apiKey: userStateValue.api?.keys[0].key,
@@ -310,70 +457,71 @@ const useDiscussion = () => {
 							);
 						}
 
+						resetUserVote();
+
 						throw new Error(
 							`=>API(Discussion): Discussion Vote Error:\n${error.message}`
 						);
 					});
 
-				if (voteSuccess) {
-					setDiscussionStateValue(
-						(prev) =>
-							({
-								...prev,
-								discussions: prev.discussions.map((discussion) => {
-									if (
-										discussion.discussion.id === discussionData.discussion.id
-									) {
-										return {
-											...discussion,
-											discussion: {
-												...discussion.discussion,
-												numberOfVotes: discussion.discussion.numberOfVotes + 1,
-												numberOfUpVotes:
-													voteType === "upVote"
-														? discussion.discussion.numberOfUpVotes + 1
-														: discussion.discussion.numberOfUpVotes,
-												numberOfDownVotes:
-													voteType === "downVote"
-														? discussion.discussion.numberOfDownVotes + 1
-														: discussion.discussion.numberOfDownVotes,
-												updatedAt: voteDate.toISOString(),
-											},
-											userVote: newDiscussionVote,
-										};
-									}
-
-									return discussion;
-								}),
-								currentDiscussion:
-									prev.currentDiscussion?.discussion.id ===
-									discussionData.discussion.id
-										? {
-												...prev.currentDiscussion,
-												discussion: {
-													...prev.currentDiscussion.discussion,
-													numberOfVotes:
-														prev.currentDiscussion.discussion.numberOfVotes + 1,
-													numberOfUpVotes:
-														voteType === "upVote"
-															? prev.currentDiscussion.discussion
-																	.numberOfUpVotes + 1
-															: prev.currentDiscussion.discussion
-																	.numberOfUpVotes,
-													numberOfDownVotes:
-														voteType === "downVote"
-															? prev.currentDiscussion.discussion
-																	.numberOfDownVotes + 1
-															: prev.currentDiscussion.discussion
-																	.numberOfDownVotes,
-													updatedAt: voteDate.toISOString(),
-												},
-												userVote: newDiscussionVote,
-										  }
-										: prev.currentDiscussion,
-							} as DiscussionState)
-					);
-				}
+				// if (voteSuccess) {
+				// 	setDiscussionStateValue(
+				// 		(prev) =>
+				// 			({
+				// 				...prev,
+				// 				discussions: prev.discussions.map((discussion) => {
+				// 					if (
+				// 						discussion.discussion.id === discussionData.discussion.id
+				// 					) {
+				// 						return {
+				// 							...discussion,
+				// 							discussion: {
+				// 								...discussion.discussion,
+				// 								numberOfVotes: discussion.discussion.numberOfVotes + 1,
+				// 								numberOfUpVotes:
+				// 									voteType === "upVote"
+				// 										? discussion.discussion.numberOfUpVotes + 1
+				// 										: discussion.discussion.numberOfUpVotes,
+				// 								numberOfDownVotes:
+				// 									voteType === "downVote"
+				// 										? discussion.discussion.numberOfDownVotes + 1
+				// 										: discussion.discussion.numberOfDownVotes,
+				// 								updatedAt: voteDate.toISOString(),
+				// 							},
+				// 							userVote: newDiscussionVote,
+				// 						};
+				// 					}
+				// 					return discussion;
+				// 				}),
+				// 				currentDiscussion:
+				// 					prev.currentDiscussion?.discussion.id ===
+				// 					discussionData.discussion.id
+				// 						? {
+				// 								...prev.currentDiscussion,
+				// 								discussion: {
+				// 									...prev.currentDiscussion.discussion,
+				// 									numberOfVotes:
+				// 										prev.currentDiscussion.discussion.numberOfVotes + 1,
+				// 									numberOfUpVotes:
+				// 										voteType === "upVote"
+				// 											? prev.currentDiscussion.discussion
+				// 													.numberOfUpVotes + 1
+				// 											: prev.currentDiscussion.discussion
+				// 													.numberOfUpVotes,
+				// 									numberOfDownVotes:
+				// 										voteType === "downVote"
+				// 											? prev.currentDiscussion.discussion
+				// 													.numberOfDownVotes + 1
+				// 											: prev.currentDiscussion.discussion
+				// 													.numberOfDownVotes,
+				// 									updatedAt: voteDate.toISOString(),
+				// 								},
+				// 								userVote: newDiscussionVote,
+				// 						  }
+				// 						: prev.currentDiscussion,
+				// 			} as DiscussionState)
+				// 	);
+				// }
 			}
 		} catch (error: any) {
 			console.log(`=>Mongo: Voting Discussion Error:\n${error.message}`);

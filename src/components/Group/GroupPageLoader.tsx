@@ -7,13 +7,13 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import LimitedBodyLayout from "../Layout/LimitedBodyLayout";
 
-type GroupPageViewProps = {
+type GroupPageLoaderProps = {
 	children?: React.ReactNode;
 	loading: boolean;
 	groupPageData: GroupData | null;
 };
 
-const GroupPageView: React.FC<GroupPageViewProps> = ({
+const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 	children,
 	loading,
 	groupPageData,
@@ -151,4 +151,4 @@ const GroupPageView: React.FC<GroupPageViewProps> = ({
 	);
 };
 
-export default GroupPageView;
+export default GroupPageLoader;

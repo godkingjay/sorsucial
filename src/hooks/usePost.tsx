@@ -949,15 +949,6 @@ const usePost = () => {
 					}
 				}
 
-				console.log({
-					postType,
-					privacy,
-					groupId,
-					tags,
-					creator,
-					sortBy,
-				});
-
 				/**
 				 * Fetch posts from the backend API using axios.
 				 *

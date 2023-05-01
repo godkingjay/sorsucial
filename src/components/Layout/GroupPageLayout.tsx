@@ -26,11 +26,13 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 				{groupStateValue.currentGroup &&
 					groupStateValue.currentGroup.group.id === groupId && (
 						<>
-							<GroupPageHeader
-								groupData={groupStateValue.currentGroup}
-								userStateValue={userStateValue}
-							/>
-							<div className="sticky flex flex-col items-center top-14 bg-white shadow-page-box-1">
+							<div className="z-20 flex flex-col">
+								<GroupPageHeader
+									groupData={groupStateValue.currentGroup}
+									userStateValue={userStateValue}
+								/>
+							</div>
+							<div className="z-20 sticky flex flex-col items-center top-14 bg-white shadow-page-box-1">
 								<div className="w-full flex flex-row max-w-5xl px-8">
 									<Link
 										href={`/groups/${groupStateValue.currentGroup.group.id}`}

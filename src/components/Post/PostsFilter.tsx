@@ -50,13 +50,14 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const [endReached, setEndReached] = useState(false);
 	const postsMounted = useRef(false);
 	const filteredGroupsLength = filteredGroups.length || -1;
+	const regexCreator = new RegExp(creator || "", "i");
 	const router = useRouter();
 
 	const handleFilterPosts = useCallback(() => {
 		setFilteredGroups(
 			postStateValue.posts.filter(
 				(post) =>
-					(groupId ? post.post.groupId === groupId : !post.post.groupId) &&
+					(groupId ? post.post.groupId === groupId : true) &&
 					post.post.privacy === privacy &&
 					post.post.postType === postType &&
 					post.index &&
@@ -107,7 +108,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	useEffect(() => {
 		handleFilterPosts();
-	}, [handleFilterPosts]);
+	}, [postStateValue]);
 
 	return (
 		<>

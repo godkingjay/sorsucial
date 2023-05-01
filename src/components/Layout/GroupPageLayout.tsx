@@ -38,7 +38,9 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										href={`/groups/${groupStateValue.currentGroup.group.id}`}
 										className="group-nav-bar-item"
 										data-active={
-											!currentDirectory.third || currentDirectory.third === ""
+											!currentDirectory.third ||
+											currentDirectory.third === "posts" ||
+											currentDirectory.third === ""
 										}
 									>
 										Posts

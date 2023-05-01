@@ -9,13 +9,13 @@ import LimitedBodyLayout from "../Layout/LimitedBodyLayout";
 
 type GroupPageLoaderProps = {
 	children?: React.ReactNode;
-	loading: boolean;
+	loadingGroup: boolean;
 	groupPageData: GroupData | null;
 };
 
 const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 	children,
-	loading,
+	loadingGroup,
 	groupPageData,
 }) => {
 	const { userStateValue, userMounted } = useUser();
@@ -82,7 +82,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 		<>
 			<Head>
 				<title>
-					{loading || fetchingGroupUserData
+					{loadingGroup || fetchingGroupUserData
 						? "Loading Group"
 						: groupStateValue.currentGroup === null
 						? "Group Not Found"
@@ -129,7 +129,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 			</Head>
 			<div className="flex flex-col px-4 py-4">
 				<LimitedBodyLayout>
-					{(loading || !userMounted || fetchingGroupUserData) &&
+					{(loadingGroup || !userMounted || fetchingGroupUserData) &&
 					!groupPageData ? (
 						<>
 							<p>Loading Group</p>

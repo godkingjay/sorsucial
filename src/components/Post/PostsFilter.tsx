@@ -36,14 +36,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	pageEnd,
 }) => {
 	const { userStateValue, userMounted } = useUser();
-	const {
-		postStateValue,
-		deletePost,
-		postOptionsStateValue,
-		setPostOptionsStateValue,
-		onPostLike,
-		fetchPosts,
-	} = usePost();
+	const { postStateValue, fetchPosts } = usePost();
 	const [filteredGroups, setFilteredGroups] = useState<PostData[]>([]);
 	const [loadingPosts, setLoadingPosts] = useState(false);
 	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
@@ -51,7 +44,6 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const postsMounted = useRef(false);
 	const filteredGroupsLength = filteredGroups.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
-	const router = useRouter();
 
 	const handleFilterPosts = useCallback(() => {
 		setFilteredGroups(

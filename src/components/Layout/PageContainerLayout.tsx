@@ -8,6 +8,7 @@ import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
+import GroupPageLayout from "./GroupPageLayout";
 
 type PageContainerLayoutProps = {
 	children: React.ReactNode;
@@ -34,9 +35,13 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 	userStateValue,
 	userMounted,
 }) => {
-	return (
-		<>
-			{currentDirectory.main === "admin" ? (
+	const defaultPage = () => {
+		return <MainPageLayout>{children}</MainPageLayout>;
+	};
+
+	switch (currentDirectory.main) {
+		case "admin": {
+			return (
 				<AdminPageLayout
 					navigationBarStateValue={navigationBarStateValue}
 					setNavigationBarStateValue={setNavigationBarStateValue}
@@ -49,11 +54,28 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 				>
 					{children}
 				</AdminPageLayout>
-			) : (
-				<MainPageLayout>{children}</MainPageLayout>
-			)}
-		</>
-	);
+			);
+		}
+
+		case "groups": {
+			if (currentDirectory.second === "[groupId]") {
+				return (
+					<GroupPageLayout currentDirectory={currentDirectory}>
+						{children}
+					</GroupPageLayout>
+				);
+			} else {
+				return defaultPage();
+			}
+
+			break;
+		}
+
+		default: {
+			return defaultPage();
+			break;
+		}
+	}
 };
 
 export default PageContainerLayout;

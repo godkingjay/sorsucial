@@ -21,11 +21,13 @@ type LayoutProps = {
 };
 
 export type CurrentDirectory = {
-	main: string;
+	main?: string;
+	second?: string;
+	third?: string;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-	const [currentDirectory, setCurrentDirectory] = useState({
+	const [currentDirectory, setCurrentDirectory] = useState<CurrentDirectory>({
 		main: "",
 	});
 	const {
@@ -76,7 +78,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		const directory = router.pathname.split("/");
 		const mainDirectory = directory[1];
 		setCurrentDirectory({
-			main: router.pathname.split("/")[1],
+			main: directory[1],
+			second: directory[2],
+			third: directory[3],
 		});
 		setNavigationBarStateValue((prev) => ({
 			...prev,

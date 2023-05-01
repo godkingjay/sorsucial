@@ -1,6 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import ButtonJoinLeaveGroup from "@/components/Group/Buttons/ButtonJoinLeaveGroup";
 import GroupPageHeader from "@/components/Group/GroupPageHeader";
+import GroupPageView from "@/components/Group/GroupPageView";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostCreationListener from "@/components/Post/PostCreationListener";
 import PostsFilter from "@/components/Post/PostsFilter";
@@ -30,147 +31,27 @@ const GroupPage: React.FC<GroupPageProps> = ({
 	groupPageData,
 	loadingPage = true,
 }) => {
-	const { userStateValue, userMounted } = useUser();
-	const { groupStateValue, setGroupStateValue, fetchUserJoin } = useGroup();
-	const [fetchingGroupUserData, setFetchingGroupUserData] = useState(true);
+	const { groupStateValue } = useGroup();
 	const router = useRouter();
 	const { groupId } = router.query;
 
-	const fetchGroupUserData = useCallback(async () => {
-		setFetchingGroupUserData(true);
-		try {
-			if (groupPageData) {
-				const currentGroup = groupStateValue.groups.find(
-					(group) => group.group.id === groupPageData.group.id
-				);
-
-				const userJoin = await fetchUserJoin(
-					groupPageData.group.id,
-					userStateValue.user.uid
-				);
-
-				setGroupStateValue((prev) => ({
-					...prev,
-					groups: currentGroup
-						? prev.groups.map((group) => {
-								if (group.group.id !== currentGroup.group.id) {
-									return group;
-								}
-
-								return {
-									...group,
-									...groupPageData,
-									userJoin: userJoin,
-								};
-						  })
-						: prev.groups,
-					currentGroup: {
-						...groupPageData,
-						userJoin: userJoin,
-					},
-				}));
-			}
-		} catch (error: any) {
-			console.error("=>fetchGroupUserData Error:\n" + error.message);
-		} finally {
-			setFetchingGroupUserData(false);
-		}
-	}, [
-		fetchUserJoin,
-		groupPageData,
-		groupStateValue.groups,
-		setGroupStateValue,
-		userStateValue.user.uid,
-	]);
-
-	useEffect(() => {
-		if (userMounted) {
-			if (userStateValue.user) {
-				fetchGroupUserData();
-			}
-		}
-	}, [userMounted]);
-
 	return (
 		<>
-			<Head>
-				<title>
-					{loadingPage || fetchingGroupUserData
-						? "Loading Group"
-						: groupStateValue.currentGroup === null
-						? "Group Not Found"
-						: groupStateValue.currentGroup.group.name}{" "}
-					| SorSUcial
-				</title>
-				<meta
-					name="title"
-					property="og:title"
-					content={groupStateValue.currentGroup?.group.name || "Group"}
-				/>
-				<meta
-					name="type"
-					property="og:type"
-					content="website"
-				/>
-				<meta
-					name="description"
-					property="og:description"
-					content={
-						groupStateValue.currentGroup?.group.description?.slice(0, 512) || ""
-					}
-				/>
-				<meta
-					name="description"
-					property="description"
-					content={
-						groupStateValue.currentGroup?.group.description?.slice(0, 512) || ""
-					}
-				/>
-				<meta
-					name="url"
-					property="og:url"
-					content={siteDetails.host + `/${router.asPath.slice(1)}`}
-				/>
-				<meta
-					name="updated_time"
-					property="og:updated_time"
-					content={
-						groupStateValue.currentGroup?.group.updatedAt?.toString() ||
-						new Date().toString()
-					}
-				/>
-			</Head>
-			<div className="flex flex-col px-4 py-4">
-				<LimitedBodyLayout>
-					{(loadingPage || !userMounted || fetchingGroupUserData) &&
-					!groupPageData ? (
-						<>
-							<p>Loading Group</p>
-						</>
-					) : (
-						<>
-							{!groupStateValue.currentGroup ? (
-								<>
-									<p>Group Not Found</p>
-								</>
-							) : (
-								<>
-									{groupStateValue.currentGroup.group.id === groupId && (
-										<PostsFilter
-											postType="group"
-											postCreation={true}
-											filter={true}
-											groupId={groupStateValue.currentGroup.group.id}
-											privacy={groupStateValue.currentGroup.group.privacy}
-											sortBy="latest"
-										/>
-									)}
-								</>
-							)}
-						</>
-					)}
-				</LimitedBodyLayout>
-			</div>
+			<GroupPageView
+				groupPageData={groupPageData}
+				loading={loadingPage}
+			>
+				{groupStateValue.currentGroup?.group.id === groupId && (
+					<PostsFilter
+						postType="group"
+						postCreation={true}
+						filter={true}
+						groupId={groupStateValue.currentGroup?.group.id}
+						privacy={groupStateValue.currentGroup?.group.privacy!}
+						sortBy="latest"
+					/>
+				)}
+			</GroupPageView>
 		</>
 	);
 };

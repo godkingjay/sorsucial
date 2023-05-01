@@ -1,7 +1,7 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
 import { UserState } from "@/atoms/userAtom";
 import { NextRouter } from "next/router";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { SetterOrUpdater } from "recoil";
 import DiscussionVote from "./DiscussionCard/DiscussionVote";
 import DiscussionHead from "./DiscussionCard/DiscussionHead";
@@ -47,6 +47,7 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			: ""
 	);
 	const [voting, setVoting] = useState(false);
+	const [deleting, setDeleting] = useState(false);
 	const replyBoxRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleDiscussionOptions = (name: keyof DiscussionOptionsState) => {
@@ -63,31 +64,38 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		}
 	};
 
-	const handleDeleteDiscussion = async () => {
+	const handleDeleteDiscussion = useCallback(async () => {
 		try {
-			await deleteDiscussion(discussionData);
+			if (!deleting) {
+				setDeleting(true);
+				await deleteDiscussion(discussionData);
+			}
 		} catch (error: any) {
 			console.log("Hook: Discussion Deletion Error: ", error.message);
 		}
-	};
+		setDeleting(false);
+	}, [deleteDiscussion, deleting, discussionData]);
 
-	const handleDiscussionVote = async (voteType: "upVote" | "downVote") => {
-		try {
-			if (!userStateValue.user.uid) {
-				throw new Error("You must be logged in to vote.");
-			}
+	const handleDiscussionVote = useCallback(
+		async (voteType: "upVote" | "downVote") => {
+			try {
+				if (!userStateValue.user.uid) {
+					throw new Error("You must be logged in to vote.");
+				}
 
-			if (!voting) {
-				setVoting(true);
-				await onDiscussionVote(discussionData, voteType);
-			} else {
-				throw new Error("You can only vote once.");
+				if (!voting) {
+					setVoting(true);
+					await onDiscussionVote(discussionData, voteType);
+				} else {
+					throw new Error("You can only vote once.");
+				}
+			} catch (error: any) {
+				console.log("Hook: Discussion Vote Error: ", error.message);
 			}
-		} catch (error: any) {
-			console.log("Hook: Discussion Vote Error: ", error.message);
-		}
-		setVoting(false);
-	};
+			setVoting(false);
+		},
+		[discussionData, onDiscussionVote, userStateValue.user.uid, voting]
+	);
 
 	const handleReadMoreClick = () => {
 		switch (discussionData.discussion.discussionType) {

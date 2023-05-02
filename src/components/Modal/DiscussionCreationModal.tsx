@@ -13,6 +13,7 @@ import { FaEye, FaLock } from "react-icons/fa";
 import DiscussionCreationModalFormHead from "./DiscussionCreationModal/DiscussionCreationModalFormHead";
 import useDiscussion from "@/hooks/useDiscussion";
 import AddTags from "../Form/Tag/AddTags";
+import { useRouter } from "next/router";
 
 type DiscussionCreationModalProps = {
 	discussionCreationModalStateValue: DiscussionCreationModalState;
@@ -54,10 +55,13 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 	setDiscussionCreationModalStateValue,
 	userStateValue,
 }) => {
+	const router = useRouter();
+	const { groupId } = router.query;
 	const { createDiscussion } = useDiscussion();
 	const defaultCreateDiscussionForm: CreateDiscussionType = {
 		discussionTitle: "",
 		discussionBody: "",
+		groupId: (groupId as string) || undefined,
 		discussionTags: [],
 		discussionType: discussionCreationModalStateValue.discussionType,
 		privacy: "public",
@@ -68,6 +72,7 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 	const [creatingDiscussion, setCreatingDiscussion] = useState(false);
 	const [createDiscussionForm, setCreateDiscussionForm] =
 		useState<CreateDiscussionType>(defaultCreateDiscussionForm);
+
 	const handleCreateDiscussionSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	) => {

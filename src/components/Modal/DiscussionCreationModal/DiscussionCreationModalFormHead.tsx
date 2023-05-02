@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { UserState } from "@/atoms/userAtom";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { discussionPrivacyOptions } from "../DiscussionCreationModal";
+import useGroup from "@/hooks/useGroup";
 
 type DiscussionCreationModalFormHeadProps = {
 	userStateValue: UserState;
@@ -24,6 +25,8 @@ const DiscussionCreationModalFormHead: React.FC<
 	handleClose,
 	handleSelectPrivacy,
 }) => {
+	const { groupStateValue } = useGroup();
+
 	return (
 		<div className="discussion-creation-modal-form-head">
 			<Link
@@ -56,6 +59,14 @@ const DiscussionCreationModalFormHead: React.FC<
 						options={
 							discussionType === "discussion"
 								? discussionPrivacyOptions.slice(0, 1)
+								: discussionType === "group"
+								? [
+										discussionPrivacyOptions.find(
+											(privacy) =>
+												privacy.label ===
+												groupStateValue.currentGroup?.group.privacy
+										) || discussionPrivacyOptions[0],
+								  ]
 								: discussionPrivacyOptions
 						}
 						onSelect={handleSelectPrivacy}

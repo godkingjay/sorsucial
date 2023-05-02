@@ -1,19 +1,37 @@
 import { DiscussionData } from "@/atoms/discussionAtom";
+import { useRouter } from "next/router";
 import React from "react";
 
 type DiscussionTextContentProps = {
 	discussionData: DiscussionData;
 	discussionBody: string;
 	isSingleDiscussionPage: () => boolean;
-	handleReadMoreClick: () => void;
 };
 
 const DiscussionTextContent: React.FC<DiscussionTextContentProps> = ({
 	discussionData,
 	discussionBody,
 	isSingleDiscussionPage,
-	handleReadMoreClick,
 }) => {
+	const router = useRouter();
+
+	const handleReadMoreClick = () => {
+		switch (discussionData.discussion.discussionType) {
+			case "discussion":
+				router.push(`/discussions/${discussionData.discussion.id}`);
+				break;
+
+			case "group":
+				router.push(
+					`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
+				);
+				break;
+
+			default:
+				break;
+		}
+	};
+
 	return (
 		<div className="discussion-text-content">
 			<h1 className="discussion-text-content-title">

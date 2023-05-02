@@ -77,17 +77,17 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const handleFetchPosts = useCallback(async () => {
 		setLoadingPosts(true);
 		try {
-			const fetchedPostLength = await fetchPosts({
+			const fetchedPostsLength = await fetchPosts({
 				postType: postType,
 				privacy: privacy,
 				sortBy: sortBy,
 				groupId: groupId || undefined,
 			});
-			if (fetchedPostLength !== undefined) {
-				setEndReached(fetchedPostLength < 10 ? true : false);
+			if (fetchedPostsLength !== undefined) {
+				setEndReached(fetchedPostsLength < 10 ? true : false);
 			}
 		} catch (error: any) {
-			console.log("Hook: fetching feeds Error: ", error.message);
+			console.log("Hook: fetching posts Error: ", error.message);
 		}
 		setLoadingPosts(false);
 	}, [fetchPosts, groupId, postType, privacy, sortBy]);
@@ -97,7 +97,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		try {
 			await handleFetchPosts();
 		} catch (error: any) {
-			console.log("First Fetch: fetching feeds Error: ", error.message);
+			console.log("First Fetch: fetching posts Error: ", error.message);
 		}
 		setFirstLoadingPosts(false);
 	}, [handleFetchPosts]);

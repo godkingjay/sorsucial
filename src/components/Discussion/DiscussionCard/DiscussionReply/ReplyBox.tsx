@@ -3,9 +3,9 @@ import UserIcon from "@/components/Icons/UserIcon";
 import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { DiscussionReplyFormType } from "./DiscussionReplies";
+import useUser from "@/hooks/useUser";
 
 type ReplyBoxProps = {
-	userStateValue: UserState;
 	replyForm: DiscussionReplyFormType;
 	setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>;
 	replyLevel: number;
@@ -27,7 +27,6 @@ type ReplyBoxProps = {
 };
 
 const ReplyBox: React.FC<ReplyBoxProps> = ({
-	userStateValue,
 	replyForm,
 	setReplyForm,
 	replyLevel,
@@ -38,6 +37,8 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 	onSubmit,
 	onChange,
 }) => {
+	const { userStateValue } = useUser();
+
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 

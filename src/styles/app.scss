@@ -2498,10 +2498,14 @@
 	}
 
 	.group-nav-bar-item {
-		@apply relative flex flex-row items-center justify-center py-3 px-4 text-sm font-semibold text-gray-500 transition-colors duration-200 ease-in-out;
+		@apply relative flex flex-row items-center justify-center py-3 px-4 text-sm font-semibold text-gray-500 transition-colors duration-200 ease-in-out rounded-md;
 
 		.indicator {
-			@apply origin-bottom h-0 duration-200 absolute bottom-0 left-0 w-full bg-blue-500;
+			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute top-[102.5%] h-0 bg-blue-500;
+		}
+
+		&:hover {
+			@apply bg-gray-100;
 		}
 
 		&:hover,

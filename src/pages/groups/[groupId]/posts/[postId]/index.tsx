@@ -24,7 +24,7 @@ const GroupPostView: React.FC<GroupPostViewProps> = ({
 }) => {
 	const router = useRouter();
 	const { groupStateValue } = useGroup();
-	const { groupId, postId } = router.query;
+	const { groupId } = router.query;
 
 	return (
 		<>

@@ -4,10 +4,10 @@ import { GoCommentDiscussion } from "react-icons/go";
 import { RiShareForwardLine } from "react-icons/ri";
 import { discussionShareType } from "../DiscussionCard";
 import DiscussionShareMenu from "./DiscussionFooter/DiscussionShareMenu";
+import useDiscussion from "@/hooks/useDiscussion";
 
 type DiscussionFooterProps = {
 	discussionData: DiscussionData;
-	discussionOptionsStateValue: DiscussionOptionsState;
 	handleDiscussionOptions: (name: keyof DiscussionOptionsState) => void;
 	handleFooterReplyClick: () => void;
 	handleFooterShareClick: (type: discussionShareType) => void;
@@ -15,7 +15,6 @@ type DiscussionFooterProps = {
 
 const DiscussionFooter: React.FC<DiscussionFooterProps> = ({
 	discussionData,
-	discussionOptionsStateValue,
 	handleDiscussionOptions,
 	handleFooterReplyClick,
 	handleFooterShareClick,
@@ -57,7 +56,6 @@ const DiscussionFooter: React.FC<DiscussionFooterProps> = ({
 			{discussionData.discussion.privacy !== "private" && (
 				<DiscussionShareMenu
 					discussionData={discussionData}
-					discussionOptionsStateValue={discussionOptionsStateValue}
 					handleFooterShareClick={handleFooterShareClick}
 				/>
 			)}

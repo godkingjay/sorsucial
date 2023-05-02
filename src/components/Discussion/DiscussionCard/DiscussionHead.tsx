@@ -5,19 +5,19 @@ import moment from "moment";
 import Link from "next/link";
 import React from "react";
 import DiscussionMenuDropdown from "./DiscussionHead/DiscussionMenuDropdown";
+import useDiscussion from "@/hooks/useDiscussion";
+import { SiteUser } from "@/lib/interfaces/user";
 
 type DiscussionHeadProps = {
-	userStateValue: UserState;
+	currentUser: SiteUser;
 	discussionData: DiscussionData;
-	discussionOptionsStateValue: DiscussionOptionsState;
 	handleDiscussionOptions: (name: keyof DiscussionOptionsState) => void;
 	handleDeleteDiscussion: () => void;
 };
 
 const DiscussionHead: React.FC<DiscussionHeadProps> = ({
-	userStateValue,
+	currentUser,
 	discussionData,
-	discussionOptionsStateValue,
 	handleDiscussionOptions,
 	handleDeleteDiscussion,
 }) => {
@@ -44,11 +44,10 @@ const DiscussionHead: React.FC<DiscussionHeadProps> = ({
 					</p>
 				</div>
 			</div>
-			{(discussionData.discussion.creatorId === userStateValue.user.uid ||
-				userStateValue.user.roles.includes("admin")) && (
+			{(discussionData.discussion.creatorId === currentUser.uid ||
+				currentUser.roles.includes("admin")) && (
 				<DiscussionMenuDropdown
 					discussionData={discussionData}
-					discussionOptionsStateValue={discussionOptionsStateValue}
 					handleDiscussionOptions={handleDiscussionOptions}
 					handleDeleteDiscussion={handleDeleteDiscussion}
 				/>

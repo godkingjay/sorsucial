@@ -1,14 +1,13 @@
-import { PostData } from "@/atoms/postAtom";
 import { validAllTypes } from "@/lib/types/validFiles";
 import React from "react";
 import PostFileCard from "./PostCards/PostFileCard";
+import { SitePost } from "@/lib/interfaces/post";
 
 type PostFilesProps = {
-	postData: PostData;
-	formatFileSize: (size: number) => string;
+	postFiles: SitePost["postFiles"];
 };
 
-const PostFiles: React.FC<PostFilesProps> = ({ postData, formatFileSize }) => {
+const PostFiles: React.FC<PostFilesProps> = ({ postFiles }) => {
 	return (
 		<div className="post-files-wrapper">
 			<div className="post-files-header">
@@ -16,7 +15,7 @@ const PostFiles: React.FC<PostFilesProps> = ({ postData, formatFileSize }) => {
 				<h2 className="text">Attached Files</h2>
 			</div>
 			<div className="post-files-container">
-				{postData.post.postFiles.map((file) => {
+				{postFiles.map((file) => {
 					const fileDetails =
 						validAllTypes.find((type) => type.ext.includes(file.fileType)) ||
 						null;
@@ -26,7 +25,6 @@ const PostFiles: React.FC<PostFilesProps> = ({ postData, formatFileSize }) => {
 							key={file.id}
 							file={file}
 							fileDetails={fileDetails}
-							formatFileSize={formatFileSize}
 						/>
 					);
 				})}

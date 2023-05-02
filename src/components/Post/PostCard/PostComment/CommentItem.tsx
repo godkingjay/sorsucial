@@ -2,16 +2,15 @@ import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
 import React, { useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
-import { UserState } from "@/atoms/userAtom";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
 import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment/PostCommentItemSkeleton";
 import CommentItemCard from "./CommentItem/CommentItemCard";
 import { FiAlertCircle } from "react-icons/fi";
+import useUser from "@/hooks/useUser";
 
 type CommentItemProps = {
 	currentPost: PostData;
-	userStateValue: UserState;
 	submitting: boolean;
 	commentData: PostCommentData;
 	parentShowCommentBox: boolean;
@@ -41,13 +40,11 @@ type CommentItemProps = {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>
 	) => void;
-	formatNumberWithSuffix: (number: number) => string;
 };
 
 const maxCommentLevel = 3;
 
 const CommentItem: React.FC<CommentItemProps> = ({
-	userStateValue,
 	currentPost,
 	submitting,
 	commentData,
@@ -57,8 +54,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	handleCommentDelete,
 	onSubmit,
 	onChange,
-	formatNumberWithSuffix,
 }) => {
+	const { userStateValue } = useUser();
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: commentData.comment.postId,
 		groupId: commentData.comment.groupId,
@@ -134,10 +131,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 				</div>
 				<div className="flex-1 flex flex-col gap-y-2">
 					<div className="flex-1 flex flex-col gap-y-1 relative">
-						<CommentItemCard
-							commentData={commentData}
-							formatNumberWithSuffix={formatNumberWithSuffix}
-						/>
+						<CommentItemCard commentData={commentData} />
 						{commentData.commentDeleted && (
 							<div className="inline-flex gap-x-2 entrance-animation-slide-from-left text-red-500">
 								<div className="h-4 w-4 aspect-square">
@@ -225,7 +219,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									<React.Fragment key={comment.comment.id}>
 										<CommentItem
 											currentPost={currentPost}
-											userStateValue={userStateValue}
 											submitting={submitting}
 											commentData={comment}
 											parentShowCommentBox={showCommentBox}
@@ -234,7 +227,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											handleCommentDelete={handleCommentDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
-											formatNumberWithSuffix={formatNumberWithSuffix}
 										/>
 									</React.Fragment>
 								))}
@@ -280,7 +272,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						postCommentForm.commentLevel < maxCommentLevel &&
 						!commentData.commentDeleted && (
 							<CommentBox
-								userStateValue={userStateValue}
 								commentForm={postCommentForm}
 								setCommentForm={setPostCommentForm}
 								commentForId={commentData.comment.id}

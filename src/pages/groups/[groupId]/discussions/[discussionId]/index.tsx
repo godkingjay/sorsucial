@@ -1,25 +1,25 @@
+import { DiscussionData, DiscussionState } from "@/atoms/discussionAtom";
 import { GroupData, GroupState } from "@/atoms/groupAtom";
-import { PostData, PostState } from "@/atoms/postAtom";
+import SingleDiscussionView from "@/components/Discussion/SingleDiscussionView";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
-import SinglePostView from "@/components/Post/SinglePostView";
 import useGroup from "@/hooks/useGroup";
+import discussionDb from "@/lib/db/discussionDb";
 import groupDb from "@/lib/db/groupDb";
-import postDb from "@/lib/db/postDb";
 import userDb from "@/lib/db/userDb";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
-type GroupPostViewProps = {
+type GroupDiscussionProps = {
 	groupPageData: GroupState["currentGroup"];
-	postPageData: PostState["currentPost"];
+	discussionPageData: DiscussionState["currentDiscussion"];
 	loadingPage: boolean;
 };
 
-const GroupPostView: React.FC<GroupPostViewProps> = ({
+const GroupDiscussionView: React.FC<GroupDiscussionProps> = ({
 	groupPageData,
-	postPageData,
+	discussionPageData,
 	loadingPage = true,
 }) => {
 	const router = useRouter();
@@ -33,10 +33,10 @@ const GroupPostView: React.FC<GroupPostViewProps> = ({
 				loadingGroup={loadingPage}
 			>
 				{groupStateValue.currentGroup?.group.id === groupId && (
-					<SinglePostView
-						loadingPost={loadingPage}
-						postPageData={postPageData}
-						type="group-post"
+					<SingleDiscussionView
+						discussionPageData={discussionPageData}
+						loadingDiscussion={loadingPage}
+						type="group-discussion"
 					/>
 				)}
 			</GroupPageLoader>
@@ -44,21 +44,21 @@ const GroupPostView: React.FC<GroupPostViewProps> = ({
 	);
 };
 
-export default GroupPostView;
+export default GroupDiscussionView;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {
 		const { usersCollection } = await userDb();
 		const { groupsCollection } = await groupDb();
-		const { postsCollection } = await postDb();
-		const { groupId, postId } = context.query;
+		const { discussionsCollection } = await discussionDb();
+		const { groupId, discussionId } = context.query;
 
-		const postPageData: Partial<PostData> = {
-			post: (await postsCollection.findOne({
-				id: postId,
+		const discussionPageData: Partial<DiscussionData> = {
+			discussion: (await discussionsCollection.findOne({
+				id: discussionId,
 				groupId: groupId,
-				postType: "group",
-			})) as unknown as PostData["post"],
+				discussionType: "group",
+			})) as unknown as DiscussionData["discussion"],
 		};
 
 		const groupPageData: Partial<GroupData> = {
@@ -67,10 +67,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 			})) as unknown as GroupData["group"],
 		};
 
-		if (postPageData.post !== null) {
-			postPageData.creator = (await usersCollection.findOne({
-				uid: postPageData.post?.creatorId,
-			})) as unknown as PostData["creator"];
+		if (discussionPageData.discussion !== null) {
+			discussionPageData.creator = (await usersCollection.findOne({
+				uid: discussionPageData.discussion?.creatorId,
+			})) as unknown as DiscussionData["creator"];
 		}
 
 		if (groupPageData.group !== null) {
@@ -84,8 +84,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 				groupPageData: groupPageData.group
 					? JSON.parse(safeJsonStringify(groupPageData))
 					: null,
-				postPageData: postPageData.post
-					? JSON.parse(safeJsonStringify(postPageData))
+				discussionPageData: discussionPageData.discussion
+					? JSON.parse(safeJsonStringify(discussionPageData))
 					: null,
 				loadingPage: false,
 			},

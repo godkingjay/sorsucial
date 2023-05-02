@@ -7,13 +7,12 @@ import useReply from "@/hooks/useReply";
 import ReplyItem from "./ReplyItem";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
+import useInput from "@/hooks/useInput";
+import useUser from "@/hooks/useUser";
 
 type DiscussionRepliesProps = {
-	userStateValue: UserState;
-	userMounted: boolean;
 	currentDiscussion: DiscussionState["currentDiscussion"];
 	replyBoxRef: React.RefObject<HTMLTextAreaElement>;
-	formatNumberWithSuffix: (number: number) => string;
 };
 
 export type DiscussionReplyFormType = {
@@ -25,12 +24,13 @@ export type DiscussionReplyFormType = {
 };
 
 const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
-	userStateValue,
-	userMounted,
 	currentDiscussion,
 	replyBoxRef,
-	formatNumberWithSuffix,
 }) => {
+	const { userStateValue, userMounted } = useUser();
+
+	const { formatNumberWithSuffix } = useInput();
+
 	const { createReply, onReplyVote, fetchReplies, deleteReply } = useReply();
 	const [discussionReplyForm, setDiscussionReplyForm] =
 		React.useState<DiscussionReplyFormType>({
@@ -230,7 +230,6 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 									.map((reply) => (
 										<React.Fragment key={reply.reply.id}>
 											<ReplyItem
-												userStateValue={userStateValue}
 												currentDiscussion={currentDiscussion}
 												replyData={reply}
 												submitting={creatingReply}
@@ -240,7 +239,6 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 												handleReplyDelete={handleReplyDelete}
 												onSubmit={handleReplySubmit}
 												onChange={handleInputChange}
-												formatNumberWithSuffix={formatNumberWithSuffix}
 											/>
 										</React.Fragment>
 									))}
@@ -277,7 +275,6 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 								{currentDiscussion.discussion.isOpen &&
 									!currentDiscussion.discussionDeleted && (
 										<ReplyBox
-											userStateValue={userStateValue}
 											replyForm={discussionReplyForm}
 											setReplyForm={setDiscussionReplyForm}
 											replyLevel={0}

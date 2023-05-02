@@ -34,7 +34,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 								/>
 							</div>
 							<div className="z-20 sticky flex flex-col items-center top-14 bg-white shadow-page-box-1">
-								<div className="w-full max-w-4xl flex flex-row px-8">
+								<div className="w-full max-w-4xl flex flex-row px-8 py-1">
 									<Link
 										href={`/groups/${groupStateValue.currentGroup.group.id}`}
 										className="group-nav-bar-item"

@@ -1,52 +1,35 @@
 import { PostData, PostOptionsState } from "@/atoms/postAtom";
-import { UserState } from "@/atoms/userAtom";
 import React, { useCallback, useRef, useState } from "react";
 import PostTextContent from "./PostCard/PostTextContent";
 import PostHead from "./PostCard/PostHead";
-import { SetterOrUpdater } from "recoil";
 import PostFooter from "./PostCard/PostFooter";
 import PostLikeAndCommentDetails from "./PostCard/PostLikeAndCommentDetails";
 import PostImagesOrVideos from "./PostCard/PostBody/PostImagesOrVideos";
 import PostFiles from "./PostCard/PostBody/PostFiles";
 import PostLinks from "./PostCard/PostBody/PostLinks";
-import { NextRouter } from "next/router";
+import { useRouter } from "next/router";
 import { siteDetails } from "@/lib/host";
 import PostComments from "./PostCard/PostComment/PostComments";
 import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
 import TagsList from "../Tag/TagList";
+import useUser from "@/hooks/useUser";
+import usePost from "@/hooks/usePost";
 
 type PostCardProps = {
-	userStateValue: UserState;
-	userMounted?: boolean;
-	postOptionsStateValue: PostOptionsState;
-	setPostOptionsStateValue: SetterOrUpdater<PostOptionsState>;
 	postData: PostData;
-	deletePost: (postData: PostData) => Promise<void>;
-	onPostLike: (postData: PostData) => void;
-	router: NextRouter;
 };
 
 export type postShareType = "facebook" | "copy";
 
-const PostCard: React.FC<PostCardProps> = ({
-	userStateValue,
-	userMounted,
-	postOptionsStateValue,
-	setPostOptionsStateValue,
-	postData,
-	deletePost,
-	onPostLike,
-	router,
-}) => {
-	const [seeMore, setSeeMore] = useState(false);
-	const [postBody, setPostBody] = useState(
-		postData.post.postBody
-			? postData.post.postBody?.length < 256
-				? postData.post.postBody
-				: postData.post.postBody?.slice(0, 256) + "..."
-			: ""
-	);
-	const [currentImageOrVideo, setCurrentImageOrVideo] = useState(0);
+const PostCard: React.FC<PostCardProps> = ({ postData }) => {
+	const { userStateValue, userMounted } = useUser();
+	const {
+		postOptionsStateValue,
+		setPostOptionsStateValue,
+		deletePost,
+		onPostLike,
+	} = usePost();
+	const router = useRouter();
 	const [liking, setLiking] = useState(false);
 	const [deletingPost, setDeletingPost] = useState(false);
 	const commentBoxRef = useRef<HTMLTextAreaElement>(null);
@@ -63,15 +46,6 @@ const PostCard: React.FC<PostCardProps> = ({
 				[name]: postData.post.id,
 			});
 		}
-	};
-
-	const handleSeeMore = () => {
-		if (seeMore) {
-			setPostBody(postData.post.postBody?.slice(0, 256) + "...");
-		} else {
-			setPostBody(postData.post.postBody || "");
-		}
-		setSeeMore(!seeMore);
 	};
 
 	const handleDeletePost = useCallback(async () => {
@@ -115,18 +89,6 @@ const PostCard: React.FC<PostCardProps> = ({
 
 		setLiking(false);
 	}, [liking, onPostLike, postData, userStateValue.user.uid]);
-
-	const handleImageOrVideoNav = (direction: "previous" | "next") => {
-		if (direction === "previous") {
-			if (currentImageOrVideo > 0) {
-				setCurrentImageOrVideo(currentImageOrVideo - 1);
-			}
-		} else {
-			if (currentImageOrVideo < postData.post.postImagesOrVideos.length - 1) {
-				setCurrentImageOrVideo(currentImageOrVideo + 1);
-			}
-		}
-	};
 
 	const handleFooterCommentClick = () => {
 		if (isSinglePostPage()) {
@@ -261,64 +223,28 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
-	const formatNumberWithSuffix = (number: number) => {
-		const suffixes = ["", "K", "M", "B"];
-		let suffixIndex = 0;
-		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
-			number /= 1000;
-			suffixIndex++;
-		}
-		const roundedNumber = Math.floor(number * 100) / 100;
-		const suffix = suffixes[suffixIndex];
-		return `${roundedNumber}${suffix}`;
-	};
-
-	const formatFileSize = (size: number) => {
-		const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-		let i = 0;
-		let fileSize = size;
-		while (fileSize >= 1024) {
-			fileSize /= 1024;
-			i++;
-		}
-		return fileSize.toFixed(2) + " " + units[i];
-	};
-
 	return (
 		<div className="post-card entrance-animation-slide-from-right">
 			{!isSinglePostPage() && postData.postDeleted && (
 				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 rounded-t-lg">
-					<ErrorBannerTextXs
-						message="This post no longer exist. It may have been deleted by the
-											creator or an admin."
-					/>
+					<ErrorBannerTextXs message="This post no longer exist. It may have been deleted by the creator or an admin." />
 				</div>
 			)}
 			<PostHead
-				userStateValue={userStateValue}
+				currentUser={userStateValue.user}
 				postData={postData}
-				postOptionsStateValue={postOptionsStateValue}
 				handlePostOptions={handlePostOptions}
 				handleDeletePost={handleDeletePost}
 			/>
 			<PostTextContent
-				postData={postData}
-				postBody={postBody}
-				seeMore={seeMore}
-				handleSeeMore={handleSeeMore}
+				postTitle={postData.post.postTitle}
+				postBodyRaw={postData.post.postBody}
 			/>
 			{postData.post.postImagesOrVideos.length > 0 && (
-				<PostImagesOrVideos
-					postData={postData}
-					currentImageOrVideo={currentImageOrVideo}
-					handleImageOrVideoNav={handleImageOrVideoNav}
-				/>
+				<PostImagesOrVideos imagesOrVideos={postData.post.postImagesOrVideos} />
 			)}
 			{postData.post.postFiles.length > 0 && (
-				<PostFiles
-					postData={postData}
-					formatFileSize={formatFileSize}
-				/>
+				<PostFiles postFiles={postData.post.postFiles} />
 			)}
 			{postData.post.postTags && postData.post.postTags.length > 0 && (
 				<div className="flex flex-row gap-x-4 mx-4 px-4 py-2 bg-gray-50 rounded-lg mb-2 shadow-sm">
@@ -333,8 +259,9 @@ const PostCard: React.FC<PostCardProps> = ({
 			)}
 			{postData.post.postLinks.length > 0 && <PostLinks postData={postData} />}
 			<PostLikeAndCommentDetails
-				postData={postData}
-				formatNumberWithSuffix={formatNumberWithSuffix}
+				userLike={postData.userLike}
+				numberOfLikes={postData.post.numberOfLikes}
+				numberOfComments={postData.post.numberOfComments}
 			/>
 			<div className="h-[1px] bg-gray-200"></div>
 			<div className="flex flex-col">
@@ -350,11 +277,8 @@ const PostCard: React.FC<PostCardProps> = ({
 			</div>
 			{isSinglePostPage() && userMounted && (
 				<PostComments
-					userStateValue={userStateValue}
-					userMounted={userMounted}
 					currentPost={postData}
 					commentBoxRef={commentBoxRef}
-					formatNumberWithSuffix={formatNumberWithSuffix}
 				/>
 			)}
 		</div>

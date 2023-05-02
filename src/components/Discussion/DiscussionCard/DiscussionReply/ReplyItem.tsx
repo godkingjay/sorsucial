@@ -20,10 +20,11 @@ import { Reply } from "@/lib/interfaces/discussion";
 import { MdDeleteOutline } from "react-icons/md";
 import { FiAlertCircle } from "react-icons/fi";
 import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
+import useUser from "@/hooks/useUser";
+import useInput from "@/hooks/useInput";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
-	userStateValue: UserState;
 	submitting: boolean;
 	replyData: DiscussionReplyData;
 	parentShowReplyBox: boolean;
@@ -54,13 +55,11 @@ type ReplyItemProps = {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 		setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>
 	) => void;
-	formatNumberWithSuffix: (number: number) => string;
 };
 
 const maxReplyLevel = 3;
 
 const ReplyItem: React.FC<ReplyItemProps> = ({
-	userStateValue,
 	currentDiscussion,
 	submitting,
 	replyData,
@@ -70,8 +69,11 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	handleReplyDelete,
 	onSubmit,
 	onChange,
-	formatNumberWithSuffix,
 }) => {
+	const { userStateValue } = useUser();
+
+	const { formatNumberWithSuffix } = useInput();
+
 	const [discussionReplyForm, setDiscussionReplyForm] =
 		useState<DiscussionReplyFormType>({
 			discussionId: currentDiscussion?.discussion.id!,
@@ -368,7 +370,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									<React.Fragment key={reply.reply.id}>
 										<ReplyItem
 											currentDiscussion={currentDiscussion}
-											userStateValue={userStateValue}
 											submitting={submitting}
 											replyData={reply}
 											parentShowReplyBox={showReplyBox}
@@ -377,7 +378,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 											handleReplyDelete={handleReplyDelete}
 											onSubmit={onSubmit}
 											onChange={onChange}
-											formatNumberWithSuffix={formatNumberWithSuffix}
 										/>
 									</React.Fragment>
 								))}
@@ -421,7 +421,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 						discussionReplyForm.replyLevel < maxReplyLevel &&
 						!replyData.replyDeleted && (
 							<ReplyBox
-								userStateValue={userStateValue}
 								replyForm={discussionReplyForm}
 								setReplyForm={setDiscussionReplyForm}
 								replyForId={replyData.reply.id}

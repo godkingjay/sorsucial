@@ -6,22 +6,24 @@ import Link from "next/link";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import PostMenuDropdown from "./PostHead/PostMenuDropdown";
+import { SiteUser } from "@/lib/interfaces/user";
+import usePost from "@/hooks/usePost";
 
 type PostHeadProps = {
-	userStateValue: UserState;
+	currentUser: SiteUser;
 	postData: PostData;
-	postOptionsStateValue: PostOptionsState;
 	handlePostOptions: (name: keyof PostOptionsState) => void;
 	handleDeletePost: () => Promise<void>;
 };
 
 const PostHead: React.FC<PostHeadProps> = ({
-	userStateValue,
+	currentUser,
 	postData,
-	postOptionsStateValue,
 	handlePostOptions,
 	handleDeletePost,
 }) => {
+	const { postOptionsStateValue } = usePost();
+
 	return (
 		<div className="p-4 flex flex-row h-18 items-center gap-x-4 relative">
 			{postData.post.postType === "announcement" ? (
@@ -81,8 +83,8 @@ const PostHead: React.FC<PostHeadProps> = ({
 					</p>
 				</div>
 			</div>
-			{(postData.post.creatorId === userStateValue.user.uid ||
-				userStateValue.user.roles.includes("admin")) && (
+			{(postData.post.creatorId === currentUser.uid ||
+				currentUser.roles.includes("admin")) && (
 				<PostMenuDropdown
 					postData={postData}
 					postOptionsStateValue={postOptionsStateValue}

@@ -1,21 +1,22 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
+import useDiscussion from "@/hooks/useDiscussion";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdDeleteOutline } from "react-icons/md";
 
 type DiscussionMenuDropdownProps = {
 	discussionData: DiscussionData;
-	discussionOptionsStateValue: DiscussionOptionsState;
 	handleDiscussionOptions: (name: keyof DiscussionOptionsState) => void;
 	handleDeleteDiscussion: () => void;
 };
 
 const DiscussionMenuDropdown: React.FC<DiscussionMenuDropdownProps> = ({
 	discussionData,
-	discussionOptionsStateValue,
 	handleDiscussionOptions,
 	handleDeleteDiscussion,
 }) => {
+	const { discussionOptionsStateValue } = useDiscussion();
+
 	return (
 		<>
 			<button
@@ -42,11 +43,12 @@ const DiscussionMenuDropdown: React.FC<DiscussionMenuDropdownProps> = ({
 								title="Delete Post"
 								className="discussion-dropdown-item hover:!text-red-500 hover:!bg-red-50 focus:!text-red-500 focus:!bg-red-50"
 								onClick={() =>
-									discussionOptionsStateValue.menu === discussionData.discussion.id &&
-									handleDeleteDiscussion()
+									discussionOptionsStateValue.menu ===
+										discussionData.discussion.id && handleDeleteDiscussion()
 								}
 								disabled={
-									discussionOptionsStateValue.menu !== discussionData.discussion.id
+									discussionOptionsStateValue.menu !==
+									discussionData.discussion.id
 								}
 							>
 								<div className="icon-container">

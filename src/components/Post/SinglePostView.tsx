@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import LimitedBodyLayout from "../Layout/LimitedBodyLayout";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import PostCard from "./PostCard";
-import { SitePost } from "@/lib/interfaces/post";
 import PostDiscussionNotFound, {
 	PostDiscussionNotFoundProps,
 } from "../Error/PostDiscussionNotFound";
@@ -24,16 +23,8 @@ const SinglePostView: React.FC<SinglePostViewProps> = ({
 	loadingPost,
 	type,
 }) => {
-	const { userStateValue, userMounted } = useUser();
-	const {
-		postStateValue,
-		setPostStateValue,
-		fetchUserLike,
-		deletePost,
-		postOptionsStateValue,
-		setPostOptionsStateValue,
-		onPostLike,
-	} = usePost();
+	const { userMounted } = useUser();
+	const { postStateValue, setPostStateValue, fetchUserLike } = usePost();
 	const [fetchingPostUserData, setFetchingPostUserData] = useState(true);
 	const router = useRouter();
 	const { postId } = router.query;
@@ -138,16 +129,7 @@ const SinglePostView: React.FC<SinglePostViewProps> = ({
 								) : (
 									<>
 										{postStateValue.currentPost.post.id === postId && (
-											<PostCard
-												userStateValue={userStateValue}
-												userMounted={userMounted}
-												postData={postStateValue.currentPost!}
-												deletePost={deletePost}
-												postOptionsStateValue={postOptionsStateValue}
-												setPostOptionsStateValue={setPostOptionsStateValue}
-												onPostLike={onPostLike}
-												router={router}
-											/>
+											<PostCard postData={postStateValue.currentPost!} />
 										)}
 									</>
 								)}

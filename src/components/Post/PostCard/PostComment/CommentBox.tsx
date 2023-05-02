@@ -3,9 +3,9 @@ import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { PostCommentFormType } from "./PostComments";
 import UserIcon from "@/components/Icons/UserIcon";
+import useUser from "@/hooks/useUser";
 
 type CommentBoxProps = {
-	userStateValue: UserState;
 	commentForm: PostCommentFormType;
 	setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>;
 	commentLevel: number;
@@ -27,7 +27,6 @@ type CommentBoxProps = {
 };
 
 const CommentBox: React.FC<CommentBoxProps> = ({
-	userStateValue,
 	commentForm,
 	setCommentForm,
 	commentLevel,
@@ -38,6 +37,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	onChange,
 	onSubmit,
 }) => {
+	const { userStateValue } = useUser();
+
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel);

@@ -1,4 +1,5 @@
 import FileIcons from "@/components/Icons/FileIcons";
+import useInput from "@/hooks/useInput";
 import { PostFile } from "@/lib/interfaces/post";
 import React from "react";
 import { HiOutlineDownload } from "react-icons/hi";
@@ -6,14 +7,11 @@ import { HiOutlineDownload } from "react-icons/hi";
 type PostFileCardProps = {
 	file: PostFile;
 	fileDetails: any | null;
-	formatFileSize: (size: number) => string;
 };
 
-const PostFileCard: React.FC<PostFileCardProps> = ({
-	file,
-	fileDetails,
-	formatFileSize,
-}) => {
+const PostFileCard: React.FC<PostFileCardProps> = ({ file, fileDetails }) => {
+	const { formatFileSize } = useInput();
+
 	return (
 		<div
 			className="post-file-item"

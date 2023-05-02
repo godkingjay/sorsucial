@@ -1,6 +1,6 @@
 import { DiscussionData, DiscussionOptionsState } from "@/atoms/discussionAtom";
 import { UserState } from "@/atoms/userAtom";
-import { NextRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import React, { useCallback, useRef, useState } from "react";
 import { SetterOrUpdater } from "recoil";
 import DiscussionVote from "./DiscussionCard/DiscussionVote";
@@ -12,33 +12,27 @@ import { siteDetails } from "@/lib/host";
 import DiscussionReplies from "./DiscussionCard/DiscussionReply/DiscussionReplies";
 import ErrorBannerTextXs from "../Banner/ErrorBanner/ErrorBannerTextXs";
 import TagsList from "../Tag/TagList";
+import useUser from "@/hooks/useUser";
+import useDiscussion from "@/hooks/useDiscussion";
 
 type DiscussionCardProps = {
-	userStateValue: UserState;
-	userMounted: boolean;
 	discussionData: DiscussionData;
-	discussionOptionsStateValue: DiscussionOptionsState;
-	setDiscussionOptionsStateValue: SetterOrUpdater<DiscussionOptionsState>;
-	deleteDiscussion: (discussionData: DiscussionData) => Promise<void>;
-	onDiscussionVote: (
-		discussionData: DiscussionData,
-		voteType: "upVote" | "downVote"
-	) => void;
-	router: NextRouter;
 };
 
 export type discussionShareType = "facebook" | "copy";
 
-const DiscussionCard: React.FC<DiscussionCardProps> = ({
-	userStateValue,
-	userMounted,
-	discussionData,
-	discussionOptionsStateValue,
-	setDiscussionOptionsStateValue,
-	deleteDiscussion,
-	onDiscussionVote,
-	router,
-}) => {
+const DiscussionCard: React.FC<DiscussionCardProps> = ({ discussionData }) => {
+	const { userStateValue } = useUser();
+
+	const {
+		discussionOptionsStateValue,
+		setDiscussionOptionsStateValue,
+		deleteDiscussion,
+		onDiscussionVote,
+	} = useDiscussion();
+
+	const router = useRouter();
+
 	const [discussionBody, setDiscussionBody] = useState(
 		discussionData.discussion.discussionBody
 			? discussionData.discussion.discussionBody?.length < 256
@@ -96,23 +90,6 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		},
 		[discussionData, onDiscussionVote, userStateValue.user.uid, voting]
 	);
-
-	const handleReadMoreClick = () => {
-		switch (discussionData.discussion.discussionType) {
-			case "discussion":
-				router.push(`/discussions/${discussionData.discussion.id}`);
-				break;
-
-			case "group":
-				router.push(
-					`/groups/${discussionData.discussion.groupId}/discussions/${discussionData.discussion.id}`
-				);
-				break;
-
-			default:
-				break;
-		}
-	};
 
 	const handleFooterReplyClick = () => {
 		if (isSingleDiscussionPage()) {
@@ -229,18 +206,6 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 		return false;
 	};
 
-	const formatNumberWithSuffix = (number: number) => {
-		const suffixes = ["", "K", "M", "B"];
-		let suffixIndex = 0;
-		while (number >= 1000 && suffixIndex < suffixes.length - 1) {
-			number /= 1000;
-			suffixIndex++;
-		}
-		const roundedNumber = Math.floor(number * 100) / 100;
-		const suffix = suffixes[suffixIndex];
-		return `${roundedNumber}${suffix}`;
-	};
-
 	return (
 		<div className="flex flex-col shadow-page-box-1 bg-white rounded-lg relative entrance-animation-slide-from-right">
 			{!isSingleDiscussionPage() && discussionData.discussionDeleted && (
@@ -257,13 +222,11 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 					voting={voting}
 					isSingleDiscussionPage={isSingleDiscussionPage}
 					handleDiscussionVote={handleDiscussionVote}
-					formatWithSuffix={formatNumberWithSuffix}
 				/>
 				<div className="flex flex-col flex-1">
 					<DiscussionHead
-						userStateValue={userStateValue}
+						currentUser={userStateValue.user}
 						discussionData={discussionData}
-						discussionOptionsStateValue={discussionOptionsStateValue}
 						handleDiscussionOptions={handleDiscussionOptions}
 						handleDeleteDiscussion={handleDeleteDiscussion}
 					/>
@@ -271,7 +234,6 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						discussionData={discussionData}
 						discussionBody={discussionBody}
 						isSingleDiscussionPage={isSingleDiscussionPage}
-						handleReadMoreClick={handleReadMoreClick}
 					/>
 					{discussionData.discussion.discussionTags &&
 						discussionData.discussion.discussionTags.length > 0 && (
@@ -286,13 +248,14 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 						)}
 					<div className="flex flex-col">
 						<DiscussionVoteAndReplyDetails
-							discussionData={discussionData}
-							formatNumberWithSuffix={formatNumberWithSuffix}
+							numberOfVotes={discussionData.discussion.numberOfVotes}
+							numberOfUpVotes={discussionData.discussion.numberOfUpVotes}
+							numberOfDownVotes={discussionData.discussion.numberOfDownVotes}
+							numberOfReplies={discussionData.discussion.numberOfReplies}
 						/>
 						<div className="h-[1px] bg-gray-200"></div>
 						<DiscussionFooter
 							discussionData={discussionData}
-							discussionOptionsStateValue={discussionOptionsStateValue}
 							handleDiscussionOptions={handleDiscussionOptions}
 							handleFooterReplyClick={handleFooterReplyClick}
 							handleFooterShareClick={handleFooterShareClick}
@@ -302,11 +265,8 @@ const DiscussionCard: React.FC<DiscussionCardProps> = ({
 			</div>
 			{isSingleDiscussionPage() && (
 				<DiscussionReplies
-					userStateValue={userStateValue}
-					userMounted={userMounted}
 					currentDiscussion={discussionData}
 					replyBoxRef={replyBoxRef}
-					formatNumberWithSuffix={formatNumberWithSuffix}
 				/>
 			)}
 		</div>

@@ -1,4 +1,5 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
+import DiscussionsFilter from "@/components/Discussion/DiscussionsFilter";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
@@ -29,7 +30,14 @@ const GroupPageDiscussionsPage: React.FC<GroupPageDiscussionsPageProps> = ({
 			>
 				{groupStateValue.currentGroup?.group.id === groupId && (
 					<>
-						<p>Group Discussions Page</p>
+						<DiscussionsFilter
+							discussionType="group"
+							privacy={groupStateValue.currentGroup?.group.privacy || "public"}
+							sortBy="latest"
+							groupId={groupStateValue.currentGroup?.group.id}
+							discussionCreation={true}
+							filter={true}
+						/>
 					</>
 				)}
 			</GroupPageLoader>

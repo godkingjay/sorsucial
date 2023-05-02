@@ -36,28 +36,27 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	pageEnd,
 }) => {
 	const { userStateValue, userMounted } = useUser();
-	const {
-		postStateValue,
-		deletePost,
-		postOptionsStateValue,
-		setPostOptionsStateValue,
-		onPostLike,
-		fetchPosts,
-	} = usePost();
-	const [filteredGroups, setFilteredGroups] = useState<PostData[]>([]);
+	const { postStateValue, fetchPosts } = usePost();
+	const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
 	const [loadingPosts, setLoadingPosts] = useState(false);
 	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
 	const [endReached, setEndReached] = useState(false);
 	const postsMounted = useRef(false);
-	const filteredGroupsLength = filteredGroups.length || -1;
+	const filteredPostsLength = filteredPosts.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
-	const router = useRouter();
 
 	const handleFilterPosts = useCallback(() => {
-		setFilteredGroups(
+		setFilteredPosts(
 			postStateValue.posts.filter(
 				(post) =>
 					(groupId ? post.post.groupId === groupId : true) &&
+					(creator
+						? post.creator?.uid.match(regexCreator) ||
+						  post.creator?.firstName.match(regexCreator) ||
+						  post.creator?.lastName.match(regexCreator) ||
+						  post.creator?.middleName?.match(regexCreator) ||
+						  post.creator?.email.match(regexCreator)
+						: true) &&
 					post.post.privacy === privacy &&
 					post.post.postType === postType &&
 					post.index &&
@@ -65,22 +64,30 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 					post.index[sortBy] >= 0
 			)
 		);
-	}, [postStateValue.posts, groupId, privacy, postType, sortBy]);
+	}, [
+		postStateValue.posts,
+		groupId,
+		creator,
+		regexCreator,
+		privacy,
+		postType,
+		sortBy,
+	]);
 
 	const handleFetchPosts = useCallback(async () => {
 		setLoadingPosts(true);
 		try {
-			const fetchedPostLength = await fetchPosts({
+			const fetchedPostsLength = await fetchPosts({
 				postType: postType,
 				privacy: privacy,
 				sortBy: sortBy,
 				groupId: groupId || undefined,
 			});
-			if (fetchedPostLength !== undefined) {
-				setEndReached(fetchedPostLength < 10 ? true : false);
+			if (fetchedPostsLength !== undefined) {
+				setEndReached(fetchedPostsLength < 10 ? true : false);
 			}
 		} catch (error: any) {
-			console.log("Hook: fetching feeds Error: ", error.message);
+			console.log("Hook: fetching posts Error: ", error.message);
 		}
 		setLoadingPosts(false);
 	}, [fetchPosts, groupId, postType, privacy, sortBy]);
@@ -90,21 +97,21 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		try {
 			await handleFetchPosts();
 		} catch (error: any) {
-			console.log("First Fetch: fetching feeds Error: ", error.message);
+			console.log("First Fetch: fetching posts Error: ", error.message);
 		}
 		setFirstLoadingPosts(false);
 	}, [handleFetchPosts]);
 
 	useEffect(() => {
 		if (userMounted) {
-			if (!postsMounted.current && filteredGroupsLength <= 0) {
+			if (!postsMounted.current && filteredPostsLength <= 0) {
 				postsMounted.current = true;
 				handleFirstFetchPosts();
 			} else {
 				postsMounted.current = true;
 			}
 		}
-	}, [filteredGroupsLength, handleFirstFetchPosts, userMounted]);
+	}, [filteredPostsLength, handleFirstFetchPosts, userMounted]);
 
 	useEffect(() => {
 		handleFilterPosts();
@@ -129,18 +136,12 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 							/>
 						)}
 						{filter && <PageFilter />}
-						{filteredGroupsLength > 0 && (
+						{filteredPostsLength > 0 && (
 							<>
-								{filteredGroups.map((post, index) => (
+								{filteredPosts.map((post, index) => (
 									<PostCard
 										key={post.post.id}
-										userStateValue={userStateValue}
 										postData={post}
-										deletePost={deletePost}
-										postOptionsStateValue={postOptionsStateValue}
-										setPostOptionsStateValue={setPostOptionsStateValue}
-										onPostLike={onPostLike}
-										router={router}
 									/>
 								))}
 							</>
@@ -151,7 +152,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 								<PostCardSkeleton />
 							</>
 						)}
-						{!endReached && postsMounted && filteredGroupsLength > 0 && (
+						{!endReached && postsMounted && filteredPostsLength > 0 && (
 							<>
 								<VisibleInViewPort
 									disabled={endReached || loadingPosts || firstLoadingPosts}

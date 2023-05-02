@@ -3,18 +3,19 @@ import React from "react";
 import { BsFacebook } from "react-icons/bs";
 import { IoLinkOutline } from "react-icons/io5";
 import { discussionShareType } from "../../DiscussionCard";
+import useDiscussion from "@/hooks/useDiscussion";
 
 type DiscussionShareMenuProps = {
 	discussionData: DiscussionData;
-	discussionOptionsStateValue: DiscussionOptionsState;
 	handleFooterShareClick: (type: discussionShareType) => void;
 };
 
 const DiscussionShareMenu: React.FC<DiscussionShareMenuProps> = ({
 	discussionData,
-	discussionOptionsStateValue,
 	handleFooterShareClick,
 }) => {
+	const { discussionOptionsStateValue } = useDiscussion();
+
 	return (
 		<div
 			className="discussion-footer-share-menu-wrapper"
@@ -33,7 +34,9 @@ const DiscussionShareMenu: React.FC<DiscussionShareMenuProps> = ({
 						discussionOptionsStateValue.share === discussionData.discussion.id &&
 						handleFooterShareClick("facebook")
 					}
-					disabled={discussionOptionsStateValue.share !== discussionData.discussion.id}
+					disabled={
+						discussionOptionsStateValue.share !== discussionData.discussion.id
+					}
 				>
 					<BsFacebook className="h-full w-full" />
 				</button>
@@ -45,7 +48,9 @@ const DiscussionShareMenu: React.FC<DiscussionShareMenuProps> = ({
 						discussionOptionsStateValue.share === discussionData.discussion.id &&
 						handleFooterShareClick("copy")
 					}
-					disabled={discussionOptionsStateValue.share !== discussionData.discussion.id}
+					disabled={
+						discussionOptionsStateValue.share !== discussionData.discussion.id
+					}
 				>
 					<IoLinkOutline className="h-full w-full" />
 				</button>

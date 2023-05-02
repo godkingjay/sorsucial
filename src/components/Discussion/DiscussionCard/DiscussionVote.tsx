@@ -1,4 +1,5 @@
 import { DiscussionData } from "@/atoms/discussionAtom";
+import useInput from "@/hooks/useInput";
 import React from "react";
 import {
 	TbArrowBigDown,
@@ -12,7 +13,6 @@ type DiscussionVoteProps = {
 	voting: boolean;
 	isSingleDiscussionPage: () => boolean;
 	handleDiscussionVote: (voteType: "upVote" | "downVote") => void;
-	formatWithSuffix: (number: number) => string;
 };
 
 const DiscussionVote: React.FC<DiscussionVoteProps> = ({
@@ -20,8 +20,9 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 	voting,
 	isSingleDiscussionPage,
 	handleDiscussionVote,
-	formatWithSuffix,
 }) => {
+	const { formatNumberWithSuffix } = useInput();
+
 	return (
 		<div
 			className="discussion-vote-section"
@@ -55,7 +56,7 @@ const DiscussionVote: React.FC<DiscussionVoteProps> = ({
 						<p className="vote-count">
 							{discussionData.discussion.numberOfUpVotes <
 								discussionData.discussion.numberOfDownVotes && "-"}
-							{formatWithSuffix(
+							{formatNumberWithSuffix(
 								Math.abs(
 									discussionData.discussion.numberOfUpVotes -
 										discussionData.discussion.numberOfDownVotes

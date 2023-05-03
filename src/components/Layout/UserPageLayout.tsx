@@ -69,7 +69,7 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 								<Link
 									href={`/user/${userStateValue.userPage.user.uid}/connections/`}
 									className="user-nav-bar-item"
-									data-active={currentDirectory.third === "members"}
+									data-active={currentDirectory.third === "connections"}
 								>
 									Connections
 									<div className="indicator"></div>

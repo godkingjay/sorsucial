@@ -11,11 +11,11 @@ export interface UserState {
 	userGroups: SiteGroup[];
 	userPosts: SitePost[];
 	userDiscussions: SiteDiscussion[];
-	userPage: UserPageState | null;
+	userPage: UserData | null;
 	api?: SiteUserAPI | null;
 }
 
-export interface UserPageState {
+export interface UserData {
 	user: SiteUser;
 	userConnections?: SiteUser[];
 	userGroups?: SiteGroup[];

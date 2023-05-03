@@ -2,39 +2,43 @@ import React from "react";
 import AdminPageLayout from "./AdminPageLayout";
 import MainPageLayout from "./MainPageLayout";
 import { CurrentDirectory } from "./Layout";
-import { NavigationBarState } from "@/atoms/navigationBarAtom";
-import { SetterOrUpdater } from "recoil";
-import { NextRouter } from "next/router";
+import {
+	NavigationBarState,
+	navigationBarState,
+} from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater, useRecoilState } from "recoil";
+import { NextRouter, useRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
 import GroupPageLayout from "./GroupPageLayout";
+import useUser from "@/hooks/useUser";
+import UserPageLayout from "./UserPageLayout";
 
 type PageContainerLayoutProps = {
 	children: React.ReactNode;
 	currentDirectory: CurrentDirectory;
-	navigationBarStateValue: NavigationBarState;
-	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
-	router: NextRouter;
-	loadingUser: boolean;
-	authLoading: boolean;
-	authUser?: User | null;
-	userStateValue: UserState;
-	userMounted: boolean;
 };
 
 const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 	children,
 	currentDirectory,
-	navigationBarStateValue,
-	setNavigationBarStateValue,
-	router,
-	loadingUser,
-	authLoading,
-	authUser,
-	userStateValue,
-	userMounted,
 }) => {
+	const {
+		authUser,
+		loadingUser,
+		authLoading,
+		setLoadingUser,
+		userStateValue,
+		logOutUser,
+		userMounted,
+	} = useUser();
+
+	const [navigationBarStateValue, setNavigationBarStateValue] =
+		useRecoilState(navigationBarState);
+
+	const router = useRouter();
+
 	const defaultPage = () => {
 		return <MainPageLayout>{children}</MainPageLayout>;
 	};
@@ -64,6 +68,20 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 					<GroupPageLayout currentDirectory={currentDirectory}>
 						{children}
 					</GroupPageLayout>
+				);
+			} else {
+				return defaultPage();
+			}
+
+			break;
+		}
+
+		case "user": {
+			if (currentDirectory.second === "[userId]") {
+				return (
+					<UserPageLayout currentDirectory={currentDirectory}>
+						{children}
+					</UserPageLayout>
 				);
 			} else {
 				return defaultPage();

@@ -1,33 +1,32 @@
 import { UserState } from "@/atoms/userAtom";
 import UserPageLoader from "@/components/User/UserPageLoader";
-import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
-type UserProfileProps = {
+type UserPageAboutPageProps = {
 	userPageData: UserState["userPage"];
 	loadingPage: boolean;
 };
 
-const UserProfilePage: React.FC<UserProfileProps> = ({
+const UserPageAboutPage: React.FC<UserPageAboutPageProps> = ({
 	userPageData,
 	loadingPage = true,
 }) => {
-	const { userStateValue } = useUser();
-
 	return (
 		<>
 			<UserPageLoader
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<div>Hello</div>
+				<div>User About Page</div>
 			</UserPageLoader>
 		</>
 	);
 };
+
+export default UserPageAboutPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {
@@ -55,5 +54,3 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		};
 	}
 };
-
-export default UserProfilePage;

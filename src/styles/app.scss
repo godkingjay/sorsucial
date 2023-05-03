@@ -2499,7 +2499,23 @@
 
 	.group-nav-bar-item,
 	.user-nav-bar-item {
-		@apply relative flex flex-row items-center justify-center py-3 px-4 text-sm font-semibold text-gray-500 transition-colors duration-200 ease-in-out rounded-md;
+		@apply flex-1 sm:flex-none relative flex flex-row items-center justify-center py-3 px-4 text-sm font-semibold text-gray-500 transition-colors duration-200 ease-in-out rounded-md;
+
+		.text {
+			@apply hidden sm:inline;
+		}
+
+		.icon-container {
+			@apply grid sm:hidden min-h-[24px] min-w-[24px] p-0.5;
+
+			.icon {
+				@apply h-full w-full;
+			}
+
+			.active {
+				@apply hidden;
+			}
+		}
 
 		.indicator {
 			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute top-[102.5%] h-0 bg-gray-500;
@@ -2516,6 +2532,16 @@
 
 		&[data-active="true"] {
 			@apply text-gray-500;
+
+			.icon-container {
+				.inactive {
+					@apply hidden;
+				}
+
+				.active {
+					@apply grid;
+				}
+			}
 
 			.indicator {
 				@apply h-[3px];

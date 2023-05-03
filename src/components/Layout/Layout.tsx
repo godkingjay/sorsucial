@@ -119,17 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 								userStateValue={userStateValue}
 							/>
 						)}
-						<PageContainerLayout
-							authLoading={authLoading}
-							userStateValue={userStateValue}
-							navigationBarStateValue={navigationBarStateValue}
-							setNavigationBarStateValue={setNavigationBarStateValue}
-							currentDirectory={currentDirectory}
-							loadingUser={loadingUser}
-							router={router}
-							userMounted={userMounted}
-							authUser={authUser}
-						>
+						<PageContainerLayout currentDirectory={currentDirectory}>
 							{children}
 						</PageContainerLayout>
 					</div>

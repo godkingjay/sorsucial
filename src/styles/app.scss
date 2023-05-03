@@ -2497,11 +2497,12 @@
 		}
 	}
 
-	.group-nav-bar-item {
+	.group-nav-bar-item,
+	.user-nav-bar-item {
 		@apply relative flex flex-row items-center justify-center py-3 px-4 text-sm font-semibold text-gray-500 transition-colors duration-200 ease-in-out rounded-md;
 
 		.indicator {
-			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute top-[102.5%] h-0 bg-blue-500;
+			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute top-[102.5%] h-0 bg-gray-500;
 		}
 
 		&:hover {
@@ -2514,11 +2515,31 @@
 		}
 
 		&[data-active="true"] {
-			@apply text-blue-500;
+			@apply text-gray-500;
 
 			.indicator {
 				@apply h-[3px];
 			}
+		}
+	}
+
+	.group-nav-bar-item {
+		.indicator {
+			@apply bg-blue-500;
+		}
+
+		&[data-active="true"] {
+			@apply text-blue-500;
+		}
+	}
+
+	.user-nav-bar-item {
+		.indicator {
+			@apply bg-logo-300;
+		}
+
+		&[data-active="true"] {
+			@apply text-logo-300;
 		}
 	}
 

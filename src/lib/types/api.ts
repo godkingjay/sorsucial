@@ -1,5 +1,24 @@
 import { SiteDiscussion } from "../interfaces/discussion";
 import { SitePost } from "../interfaces/post";
+import { SiteUser } from "../interfaces/user";
+
+export type APIEndpointUsersParams = {
+	apiKey: string;
+	match: string;
+	groupId?: string;
+	roles: SiteUser["roles"];
+	gender?: SiteUser["gender"];
+	stateOrProvince?: string;
+	cityOrMunicipality?: string;
+	barangay?: string;
+	streetAddress?: string;
+	lastIndex?: string | number;
+	fromConnections?: string | number;
+	fromFollowers?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryUsersSortBy;
+	limit?: string | number;
+};
 
 export type APIEndpointPostsParams = {
 	apiKey: string;

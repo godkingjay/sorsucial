@@ -2518,7 +2518,7 @@
 		}
 
 		.indicator {
-			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute top-[102.5%] h-0 bg-gray-500;
+			@apply rounded-t-full origin-bottom w-full left-[50%] translate-x-[-50%] duration-200 absolute bottom-[-10%] h-0 bg-gray-500;
 		}
 
 		&:hover {

@@ -28,7 +28,7 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
-import { QueryPostsSortBy } from "@/lib/types/api";
+import { APIEndpointPostsParams, QueryPostsSortBy } from "@/lib/types/api";
 import { useCallback } from "react";
 
 /**
@@ -911,6 +911,7 @@ const usePost = () => {
 			privacy = "public" as SitePost["privacy"],
 			groupId = undefined as string | undefined,
 			tags = undefined as string | undefined,
+			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
 			sortBy = "latest" as QueryPostsSortBy,
 		}) => {
@@ -928,6 +929,7 @@ const usePost = () => {
 						refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
 							if (
 								(groupId ? post.post.groupId === groupId : true) &&
+								(creatorId ? post.post.creatorId === creatorId : true) &&
 								post.post.postType === postType &&
 								post.post.privacy === privacy &&
 								post.index[sortBy] &&
@@ -988,6 +990,7 @@ const usePost = () => {
 							privacy: privacy,
 							groupId: groupId,
 							tags: tags,
+							creatorId: creatorId,
 							creator: creator,
 							sortBy: sortBy,
 							lastIndex: refPost ? refPost.index[sortBy] : -1,
@@ -998,7 +1001,7 @@ const usePost = () => {
 								? refPost?.post.numberOfComments + 1
 								: Number.MAX_SAFE_INTEGER,
 							fromDate: refPost?.post.createdAt || new Date().toISOString(),
-						},
+						} as Partial<APIEndpointPostsParams>,
 					})
 					.then((res) => res.data)
 					.catch((err) => {

@@ -42,9 +42,10 @@ export default async function handler(
 			userId,
 			postType = "feed",
 			privacy = "public",
-			groupId,
-			tags,
-			creator,
+			groupId = undefined,
+			tags = undefined,
+			creatorId = undefined,
+			creator = undefined,
 			lastIndex = -1,
 			fromLikes = Number.MAX_SAFE_INTEGER,
 			fromComments = Number.MAX_SAFE_INTEGER,
@@ -118,6 +119,7 @@ export default async function handler(
 					switch (sortBy) {
 						case "latest": {
 							posts = await getSortByLatest({
+								creatorId,
 								groupId,
 								postType,
 								privacy,
@@ -206,6 +208,7 @@ export default async function handler(
 }
 
 const getSortByLatest = async ({
+	creatorId,
 	groupId,
 	postType,
 	privacy,
@@ -221,6 +224,10 @@ const getSortByLatest = async ({
 			$lt: typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
 		},
 	};
+
+	if (creatorId) {
+		query.creatorId = creatorId;
+	}
 
 	if (groupId) {
 		query.groupId = groupId;

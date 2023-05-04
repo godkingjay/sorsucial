@@ -19,21 +19,35 @@ type PostsFilterProps = {
 	sortBy: QueryPostsSortBy;
 	privacy: SitePost["privacy"];
 	groupId?: string;
+	creatorId?: string;
 	creator?: string;
 	tags?: string;
 	pageEnd?: string;
+	filterOptions?: {
+		creatorId: boolean;
+		creator: boolean;
+		tags: boolean;
+		address: boolean;
+	};
 };
 
 const PostsFilter: React.FC<PostsFilterProps> = ({
-	postType,
-	postCreation,
-	filter,
-	sortBy,
-	privacy,
-	groupId,
-	creator,
-	tags,
+	postType = "feed",
+	privacy = "public",
+	creatorId = undefined,
+	creator = undefined,
+	groupId = undefined,
+	tags = undefined,
+	sortBy = "latest",
 	pageEnd,
+	postCreation = false,
+	filter = false,
+	filterOptions = {
+		creatorId: false,
+		creator: false,
+		tags: false,
+		address: false,
+	},
 }) => {
 	const { userStateValue, userMounted } = useUser();
 	const { postStateValue, fetchPosts } = usePost();
@@ -45,14 +59,17 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const filteredPostsLength = filteredPosts.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
 
+	const router = useRouter();
+	const { userId } = router.query;
+
 	const handleFilterPosts = useCallback(() => {
 		setFilteredPosts(
 			postStateValue.posts.filter(
 				(post) =>
+					(creatorId ? post.post.creatorId === creatorId : true) &&
 					(groupId ? post.post.groupId === groupId : true) &&
 					(creator
-						? post.creator?.uid.match(regexCreator) ||
-						  post.creator?.firstName.match(regexCreator) ||
+						? post.creator?.firstName.match(regexCreator) ||
 						  post.creator?.lastName.match(regexCreator) ||
 						  post.creator?.middleName?.match(regexCreator) ||
 						  post.creator?.email.match(regexCreator)
@@ -66,6 +83,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		);
 	}, [
 		postStateValue.posts,
+		creatorId,
 		groupId,
 		creator,
 		regexCreator,
@@ -81,7 +99,10 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 				postType: postType,
 				privacy: privacy,
 				sortBy: sortBy,
-				groupId: groupId || undefined,
+				creatorId: creatorId,
+				creator: creator,
+				tags: tags,
+				groupId: groupId,
 			});
 			if (fetchedPostsLength !== undefined) {
 				setEndReached(fetchedPostsLength < 10 ? true : false);

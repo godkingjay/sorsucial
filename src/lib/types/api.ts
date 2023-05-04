@@ -27,6 +27,7 @@ export type APIEndpointPostsParams = {
 	privacy: SitePost["privacy"];
 	groupId?: string;
 	tags?: string;
+	creatorId?: string;
 	creator?: string;
 	lastIndex?: string | number;
 	fromLikes?: string | number;

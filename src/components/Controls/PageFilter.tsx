@@ -4,54 +4,70 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GiSevenPointedStar } from "react-icons/gi";
 import { GoGraph } from "react-icons/go";
 
-type PageFilterProps = {
+export type UserFilterOptions = {
+	match: boolean;
+	groupId: boolean;
+	roles: boolean;
+	age: boolean;
+	gender: boolean;
+	address: boolean;
+	connections: boolean;
+	birthDate: boolean;
+};
+
+export type PostFilterOptions = {
+	postType: boolean;
+	privacy: boolean;
+	creatorId: boolean;
+	creator: boolean;
+	groupId: boolean;
+	tags: boolean;
+	likes: boolean;
+	comments: boolean;
+	date: boolean;
+};
+
+export type DiscussionFilterOptions = {
+	discussionType: boolean;
+	privacy: boolean;
+	creatorId: boolean;
+	creator: boolean;
+	groupId: boolean;
+	tags: boolean;
+	votes: boolean;
+	replies: boolean;
+	isOpen: boolean;
+	date: boolean;
+};
+
+export type GroupFilterOptions = {
+	privacy: boolean;
+	creatorId: boolean;
+	creator: boolean;
+	tags: boolean;
+	members: boolean;
+	posts: boolean;
+	discussions: boolean;
+	date: boolean;
+};
+
+export type PageFilterProps = {
 	filterOptions?:
 		| {
 				filterType: "users";
-				match: boolean;
-				groupId: boolean;
-				roles: boolean;
-				age: boolean;
-				gender: boolean;
-				address: boolean;
-				connections: boolean;
-				birthDate: boolean;
+				options: UserFilterOptions;
 		  }
 		| {
 				filterType: "posts";
-				postType: boolean;
-				privacy: boolean;
-				creatorId: boolean;
-				creator: boolean;
-				groupId: boolean;
-				tags: boolean;
-				likes: boolean;
-				comments: boolean;
-				date: boolean;
+				options: PostFilterOptions;
 		  }
 		| {
 				filterType: "discussions";
-				discussionType: boolean;
-				privacy: boolean;
-				creatorId: boolean;
-				creator: boolean;
-				groupId: boolean;
-				tags: boolean;
-				votes: boolean;
-				replies: boolean;
-				isOpen: boolean;
-				date: boolean;
+				options: DiscussionFilterOptions;
 		  }
 		| {
 				filterType: "groups";
-				privacy: boolean;
-				creatorId: boolean;
-				creator: boolean;
-				tags: boolean;
-				members: boolean;
-				posts: boolean;
-				discussions: boolean;
-				date: boolean;
+				options: GroupFilterOptions;
 		  };
 };
 

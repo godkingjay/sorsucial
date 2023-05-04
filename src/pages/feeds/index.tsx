@@ -21,6 +21,20 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 							privacy="public"
 							sortBy="latest"
 							pageEnd="End of Feeds"
+							filterOptions={{
+								filterType: "posts",
+								options: {
+									postType: false,
+									privacy: true,
+									creatorId: true,
+									creator: true,
+									groupId: false,
+									tags: true,
+									likes: true,
+									comments: true,
+									date: true,
+								},
+							}}
 						/>
 					</section>
 				</LimitedBodyLayout>

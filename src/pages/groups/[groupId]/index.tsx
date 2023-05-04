@@ -36,6 +36,20 @@ const GroupPage: React.FC<GroupPageProps> = ({
 						groupId={groupStateValue.currentGroup?.group.id}
 						privacy={groupStateValue.currentGroup?.group.privacy!}
 						sortBy="latest"
+						filterOptions={{
+							filterType: "posts",
+							options: {
+								postType: false,
+								privacy: false,
+								creatorId: true,
+								creator: true,
+								groupId: false,
+								tags: true,
+								likes: true,
+								comments: true,
+								date: true,
+							},
+						}}
 					/>
 				)}
 			</GroupPageLoader>

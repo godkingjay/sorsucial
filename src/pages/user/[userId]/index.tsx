@@ -36,10 +36,18 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 						creatorId={userId}
 						sortBy="latest"
 						filterOptions={{
-							address: false,
-							creatorId: false,
-							creator: false,
-							tags: true,
+							filterType: "posts",
+							options: {
+								postType: false,
+								privacy: false,
+								creatorId: false,
+								creator: false,
+								groupId: false,
+								tags: true,
+								likes: true,
+								comments: true,
+								date: true,
+							},
 						}}
 					/>
 				)}

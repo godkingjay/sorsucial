@@ -1,8 +1,10 @@
 import { UserState } from "@/atoms/userAtom";
+import PostsFilter from "@/components/Post/PostsFilter";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -16,6 +18,8 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 	loadingPage = true,
 }) => {
 	const { userStateValue } = useUser();
+	const router = useRouter();
+	const { userId } = router.query;
 
 	return (
 		<>
@@ -23,7 +27,22 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<div>Hello</div>
+				{userStateValue.userPage?.user.uid === userId && (
+					<PostsFilter
+						postType="feed"
+						postCreation={userStateValue.user.uid === userId}
+						filter={true}
+						privacy="public"
+						creatorId={userId}
+						sortBy="latest"
+						filterOptions={{
+							address: false,
+							creatorId: false,
+							creator: false,
+							tags: true,
+						}}
+					/>
+				)}
 			</UserPageLoader>
 		</>
 	);

@@ -1,7 +1,10 @@
 import { UserState } from "@/atoms/userAtom";
+import DiscussionsFilter from "@/components/Discussion/DiscussionsFilter";
 import UserPageLoader from "@/components/User/UserPageLoader";
+import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -14,13 +17,41 @@ const UserPageDiscussionsPage: React.FC<UserPageDiscussionsPageProps> = ({
 	userPageData,
 	loadingPage = true,
 }) => {
+	const { userStateValue } = useUser();
+	const router = useRouter();
+	const { userId } = router.query;
+
 	return (
 		<>
 			<UserPageLoader
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<div>User Discussions Page</div>
+				{userStateValue.userPage?.user.uid === userId && (
+					<DiscussionsFilter
+						discussionType="discussion"
+						discussionCreation={userStateValue.user.uid === userId}
+						filter={true}
+						privacy="public"
+						creatorId={userId}
+						sortBy="latest"
+						filterOptions={{
+							filterType: "discussions",
+							options: {
+								discussionType: false,
+								privacy: false,
+								isOpen: false,
+								creatorId: false,
+								creator: false,
+								groupId: false,
+								tags: false,
+								votes: false,
+								replies: false,
+								date: false,
+							},
+						}}
+					/>
+				)}
 			</UserPageLoader>
 		</>
 	);

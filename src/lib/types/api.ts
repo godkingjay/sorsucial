@@ -44,6 +44,7 @@ export type APIEndpointDiscussionsParams = {
 	privacy: SiteDiscussion["privacy"];
 	groupId?: string;
 	tags?: string;
+	creatorId?: string;
 	creator?: string;
 	isOpen?: string | boolean;
 	lastIndex?: string | number;

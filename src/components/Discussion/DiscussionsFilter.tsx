@@ -6,7 +6,7 @@ import { QueryDiscussionsSortBy } from "@/lib/types/api";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import DiscussionCreationListener from "./DiscussionCreationListener";
-import PageFilter from "../Controls/PageFilter";
+import PageFilter, { PageFilterProps } from "../Controls/PageFilter";
 import DiscussionCard from "./DiscussionCard";
 import { useRouter } from "next/router";
 import VisibleInViewPort from "../Events/VisibleInViewPort";
@@ -19,33 +19,44 @@ type DiscussionsFilterProps = {
 	sortBy: QueryDiscussionsSortBy;
 	privacy: SiteDiscussion["privacy"];
 	isOpen?: boolean;
-	groupId?: string;
+	creatorId?: string;
 	creator?: string;
+	groupId?: string;
 	tags?: string;
 	pageEnd?: string;
+	filterOptions?: PageFilterProps["filterOptions"];
 };
 
 const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
-	discussionType,
-	discussionCreation,
-	filter,
-	sortBy,
-	privacy,
-	isOpen,
-	groupId,
-	creator,
-	tags,
+	discussionType = "discussion",
+	discussionCreation = false,
+	filter = false,
+	sortBy = "latest",
+	privacy = "public",
+	isOpen = undefined,
+	creatorId = undefined,
+	creator = undefined,
+	groupId = undefined,
+	tags = undefined,
 	pageEnd,
+	filterOptions = {
+		filterType: "discussions",
+		options: {
+			discussionType: false,
+			privacy: false,
+			isOpen: false,
+			creatorId: false,
+			creator: false,
+			groupId: false,
+			tags: false,
+			votes: false,
+			replies: false,
+			date: false,
+		},
+	},
 }) => {
 	const { userStateValue, userMounted } = useUser();
-	const {
-		discussionStateValue,
-		deleteDiscussion,
-		discussionOptionsStateValue,
-		setDiscussionOptionsStateValue,
-		onDiscussionVote,
-		fetchDiscussions,
-	} = useDiscussion();
+	const { discussionStateValue, fetchDiscussions } = useDiscussion();
 
 	const [filteredDiscussions, setFilteredDiscussions] = useState<
 		DiscussionData[]
@@ -64,14 +75,14 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 		setFilteredDiscussions(
 			discussionStateValue.discussions.filter(
 				(discussion) =>
-					(groupId ? discussion.discussion.groupId === groupId : true) &&
+					(creatorId ? discussion.discussion.creatorId === creatorId : true) &&
 					(creator
-						? discussion.creator?.uid.match(regexCreator) ||
-						  discussion.creator?.firstName.match(regexCreator) ||
+						? discussion.creator?.firstName.match(regexCreator) ||
 						  discussion.creator?.lastName.match(regexCreator) ||
 						  discussion.creator?.middleName?.match(regexCreator) ||
 						  discussion.creator?.email.match(regexCreator)
 						: true) &&
+					(groupId ? discussion.discussion.groupId === groupId : true) &&
 					discussion.discussion.privacy === privacy &&
 					discussion.discussion.discussionType === discussionType &&
 					discussion.index &&
@@ -81,12 +92,13 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 		);
 	}, [
 		discussionStateValue.discussions,
-		discussionType,
-		privacy,
-		sortBy,
+		creatorId,
 		creator,
-		groupId,
 		regexCreator,
+		groupId,
+		privacy,
+		discussionType,
+		sortBy,
 	]);
 
 	const handleFetchDiscussions = useCallback(async () => {
@@ -96,8 +108,9 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 				discussionType: discussionType,
 				privacy: privacy,
 				sortBy: sortBy,
-				groupId: groupId || undefined,
-				isOpen: isOpen || undefined,
+				creatorId: creatorId,
+				groupId: groupId,
+				isOpen: isOpen,
 			});
 			if (fetchedDiscussionsLength !== undefined) {
 				setEndReached(fetchedDiscussionsLength < 10 ? true : false);

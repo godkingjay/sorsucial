@@ -172,12 +172,6 @@ export default async function handler(
 					return res.status(400).json({ error: "No reply data provided!" });
 				}
 
-				if (replyData.creatorId !== userAPI.userId) {
-					if (!userData.roles.includes("admin")) {
-						return res.status(401).json({ error: "Unauthorized!" });
-					}
-				}
-
 				const existingReply = (await discussionRepliesCollection.findOne({
 					id: replyData.id,
 				})) as unknown as Reply;

@@ -26,9 +26,10 @@ export default async function handler(
 			userId,
 			discussionType = "discussion" as SiteDiscussion["discussionType"],
 			privacy = "public" as SiteDiscussion["privacy"],
-			groupId,
-			tags,
-			creator,
+			groupId = undefined,
+			tags = undefined,
+			creatorId = undefined,
+			creator = undefined,
 			isOpen = true,
 			lastIndex = "-1",
 			fromVotes = Number.MAX_SAFE_INTEGER.toString(),
@@ -92,6 +93,8 @@ export default async function handler(
 							discussionType,
 							privacy,
 							isOpen,
+							creatorId,
+							groupId,
 							fromDate,
 							limit,
 						});
@@ -174,21 +177,33 @@ const getSortByLatest = async ({
 	discussionType,
 	privacy,
 	isOpen,
+	creatorId,
+	groupId,
 	fromDate,
 	limit = 10,
 }: Partial<APIEndpointDiscussionsParams>) => {
 	const { discussionsCollection } = await discussionDb();
 
+	let query: any = {
+		discussionType: discussionType,
+		privacy: privacy,
+		isOpen: typeof isOpen === "string" ? isOpen === "true" : isOpen,
+		createdAt: {
+			$lt: fromDate,
+		},
+	};
+
+	if (creatorId) {
+		query.creatorId = creatorId;
+	}
+
+	if (groupId) {
+		query.groupId = groupId;
+	}
+
 	return discussionsCollection
 		? await discussionsCollection
-				.find({
-					discussionType: discussionType,
-					privacy: privacy,
-					isOpen: typeof isOpen === "string" ? isOpen === "true" : isOpen,
-					createdAt: {
-						$lt: fromDate,
-					},
-				})
+				.find(query)
 				.sort({
 					createdAt: -1,
 				})

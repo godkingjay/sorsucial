@@ -11,7 +11,10 @@ import { CreateDiscussionType } from "@/components/Modal/DiscussionCreationModal
 import { DiscussionVote, SiteDiscussion } from "@/lib/interfaces/discussion";
 import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
-import { QueryDiscussionsSortBy } from "@/lib/types/api";
+import {
+	APIEndpointDiscussionsParams,
+	QueryDiscussionsSortBy,
+} from "@/lib/types/api";
 
 const useDiscussion = () => {
 	const [discussionStateValue, setDiscussionStateValue] =
@@ -547,9 +550,10 @@ const useDiscussion = () => {
 	const fetchDiscussions = async ({
 		discussionType = "discussion" as SiteDiscussion["discussionType"],
 		privacy = "public" as SiteDiscussion["privacy"],
+		creatorId = undefined as string | undefined,
+		creator = undefined as string | undefined,
 		groupId = undefined as string | undefined,
 		tags = undefined as string | undefined,
-		creator = undefined as string | undefined,
 		isOpen = true as SiteDiscussion["isOpen"],
 		sortBy = "latest" as QueryDiscussionsSortBy,
 	}) => {
@@ -562,6 +566,10 @@ const useDiscussion = () => {
 					refIndex = discussionStateValue.discussions.reduceRight(
 						(acc, discussion, index) => {
 							if (
+								(creatorId
+									? discussion.discussion.creatorId === creatorId
+									: true) &&
+								(groupId ? discussion.discussion.groupId === groupId : true) &&
 								discussion.discussion.discussionType === discussionType &&
 								discussion.discussion.privacy === privacy &&
 								discussion?.index[sortBy] &&
@@ -594,6 +602,7 @@ const useDiscussion = () => {
 						privacy: privacy,
 						groupId: groupId,
 						tags: tags,
+						creatorId: creatorId,
 						creator: creator,
 						isOpen,
 						lastIndex: refDiscussion ? refDiscussion?.index[sortBy] : -1,
@@ -612,7 +621,7 @@ const useDiscussion = () => {
 						fromDate: refDiscussion
 							? refDiscussion?.discussion.createdAt
 							: new Date().toISOString(),
-					},
+					} as Partial<APIEndpointDiscussionsParams>,
 				})
 				.then((response) => response.data.discussions)
 				.catch((error: any) => {

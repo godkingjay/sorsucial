@@ -4,7 +4,56 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GiSevenPointedStar } from "react-icons/gi";
 import { GoGraph } from "react-icons/go";
 
-type PageFilterProps = {};
+type PageFilterProps = {
+	filterOptions?:
+		| {
+				filterType: "users";
+				match: boolean;
+				groupId: boolean;
+				roles: boolean;
+				age: boolean;
+				gender: boolean;
+				address: boolean;
+				connections: boolean;
+				birthDate: boolean;
+		  }
+		| {
+				filterType: "posts";
+				postType: boolean;
+				privacy: boolean;
+				creatorId: boolean;
+				creator: boolean;
+				groupId: boolean;
+				tags: boolean;
+				likes: boolean;
+				comments: boolean;
+				date: boolean;
+		  }
+		| {
+				filterType: "discussions";
+				discussionType: boolean;
+				privacy: boolean;
+				creatorId: boolean;
+				creator: boolean;
+				groupId: boolean;
+				tags: boolean;
+				votes: boolean;
+				replies: boolean;
+				isOpen: boolean;
+				date: boolean;
+		  }
+		| {
+				filterType: "groups";
+				privacy: boolean;
+				creatorId: boolean;
+				creator: boolean;
+				tags: boolean;
+				members: boolean;
+				posts: boolean;
+				discussions: boolean;
+				date: boolean;
+		  };
+};
 
 const PageFilter: React.FC<PageFilterProps> = () => {
 	const [activeTab, setActiveTab] = useState({

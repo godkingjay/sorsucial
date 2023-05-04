@@ -32,7 +32,18 @@ export const validConfigTypes = {
 };
 
 export const validDataTypes = {
-	ext: [".aae", ".bin", ".csv", ".dat", ".mpp", ".obb", ".rpt", ".sdf", ".vcf"],
+	ext: [
+		".aae",
+		".bin",
+		".csv",
+		".dat",
+		".mpp",
+		".obb",
+		".rpt",
+		".sdf",
+		".vcf",
+		"application/vnd.ms-excel",
+	],
 	type: "data",
 };
 
@@ -125,7 +136,18 @@ export const validPresentationTypes = {
 };
 
 export const validProgramTypes = {
-	ext: [".exe", ".msi", ".jar", ".apk", ".app", ".ipa", ".bat", ".run", ".sh"],
+	ext: [
+		".exe",
+		".msi",
+		".jar",
+		".apk",
+		".app",
+		".ipa",
+		".bat",
+		".run",
+		".sh",
+		"application/x-msdownload",
+	],
 	type: "program",
 };
 

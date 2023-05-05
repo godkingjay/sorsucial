@@ -30,6 +30,8 @@ import {
 import { collection, doc } from "firebase/firestore";
 import { APIEndpointPostsParams, QueryPostsSortBy } from "@/lib/types/api";
 import { useCallback } from "react";
+import useGroup from "./useGroup";
+import { GroupState } from "@/atoms/groupAtom";
 
 /**
  * ~ ██████╗  ██████╗ ███████╗████████╗    ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗
@@ -64,6 +66,8 @@ const usePost = () => {
 	 * It contains the current authenticated user and the current user's profile.
 	 */
 	const { authUser, userStateValue } = useUser();
+
+	const { groupStateValue, setGroupStateValue } = useGroup();
 
 	const actionPostDeleted = (postDeleted: boolean, postId: string) => {
 		setPostStateValue((prev) => ({
@@ -378,6 +382,36 @@ const usePost = () => {
 							],
 						} as PostState)
 				);
+
+				if (newPostData.groupId) {
+					setGroupStateValue((prev) => ({
+						...prev,
+						groups: prev.groups.map((group) => {
+							if (group.group.id === newPostData.groupId) {
+								return {
+									...group,
+									group: {
+										...group.group,
+										numberOfPosts: group.group.numberOfPosts + 1,
+									},
+								};
+							}
+
+							return group;
+						}),
+						currentGroup:
+							prev.currentGroup &&
+							prev.currentGroup?.group.id === newPostData.groupId
+								? {
+										...prev.currentGroup,
+										group: {
+											...prev.currentGroup.group,
+											numberOfPosts: prev.currentGroup.group.numberOfPosts + 1,
+										},
+								  }
+								: prev.currentGroup,
+					}));
+				}
 			}
 		} catch (error: any) {
 			console.log("MONGO: Post Creation Error", error.message);
@@ -1195,6 +1229,36 @@ const usePost = () => {
 									: prev.currentPost,
 						} as PostState)
 				);
+
+				if (postData.post.groupId) {
+					setGroupStateValue((prev) => ({
+						...prev,
+						groups: prev.groups.map((group) => {
+							if (group.group.id === postData.post.groupId) {
+								return {
+									...group,
+									group: {
+										...group.group,
+										numberOfPosts: group.group.numberOfPosts - 1,
+									},
+								};
+							}
+
+							return group;
+						}),
+						currentGroup:
+							prev.currentGroup &&
+							prev.currentGroup?.group.id === postData.post.groupId
+								? {
+										...prev.currentGroup,
+										group: {
+											...prev.currentGroup.group,
+											numberOfPosts: prev.currentGroup.group.numberOfPosts - 1,
+										},
+								  }
+								: prev.currentGroup,
+					}));
+				}
 			}
 		} catch (error: any) {
 			console.log("MONGO: Post Deletion Error", error.message);

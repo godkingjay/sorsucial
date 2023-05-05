@@ -15,13 +15,18 @@ import {
 	APIEndpointDiscussionsParams,
 	QueryDiscussionsSortBy,
 } from "@/lib/types/api";
+import useGroup from "./useGroup";
 
 const useDiscussion = () => {
 	const [discussionStateValue, setDiscussionStateValue] =
 		useRecoilState(discussionState);
+
 	const [discussionOptionsStateValue, setDiscussionOptionsStateValue] =
 		useRecoilState(discussionOptionsState);
+
 	const { authUser, userStateValue } = useUser();
+
+	const { groupStateValue, setGroupStateValue } = useGroup();
 
 	const actionDeletedDiscussion = (
 		discussionDeleted: boolean,
@@ -119,6 +124,36 @@ const useDiscussion = () => {
 							],
 						} as DiscussionState)
 				);
+
+				if (newDiscussion.groupId) {
+					setGroupStateValue((prev) => ({
+						...prev,
+						groups: prev.groups.map((group) => {
+							if (group.group.id === newDiscussion.groupId) {
+								return {
+									...group,
+									group: {
+										...group.group,
+										numberOfDiscussions: group.group.numberOfDiscussions + 1,
+									},
+								};
+							}
+
+							return group;
+						}),
+						currentGroup:
+							prev.currentGroup &&
+							prev.currentGroup?.group.id === newDiscussion.groupId
+								? {
+										...prev.currentGroup,
+										group: {
+											...prev.currentGroup.group,
+											numberOfPosts: prev.currentGroup.group.numberOfPosts + 1,
+										},
+								  }
+								: prev.currentGroup,
+					}));
+				}
 			} else {
 				throw new Error(
 					`=>API(Discussion): Discussion Creation Error:\nNo Data Returned!`
@@ -764,6 +799,36 @@ const useDiscussion = () => {
 							? null
 							: prev.currentDiscussion,
 				}));
+
+				if (discussionData.discussion.groupId) {
+					setGroupStateValue((prev) => ({
+						...prev,
+						groups: prev.groups.map((group) => {
+							if (group.group.id === discussionData.discussion.groupId) {
+								return {
+									...group,
+									group: {
+										...group.group,
+										numberOfDiscussions: group.group.numberOfDiscussions - 1,
+									},
+								};
+							}
+
+							return group;
+						}),
+						currentGroup:
+							prev.currentGroup &&
+							prev.currentGroup?.group.id === discussionData.discussion.groupId
+								? {
+										...prev.currentGroup,
+										group: {
+											...prev.currentGroup.group,
+											numberOfPosts: prev.currentGroup.group.numberOfPosts - 1,
+										},
+								  }
+								: prev.currentGroup,
+					}));
+				}
 			}
 		} catch (error: any) {
 			console.log(`=>Mongo: Deleting Discussion Error:\n${error.message}`);

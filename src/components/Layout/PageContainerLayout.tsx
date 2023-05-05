@@ -1,9 +1,9 @@
 import React from "react";
 import AdminPageLayout from "./AdminPageLayout";
 import MainPageLayout from "./MainPageLayout";
-import { CurrentDirectory } from "./Layout";
 import {
 	NavigationBarState,
+	currentDirectoryState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
 import { SetterOrUpdater, useRecoilState } from "recoil";
@@ -17,13 +17,14 @@ import UserPageLayout from "./UserPageLayout";
 
 type PageContainerLayoutProps = {
 	children: React.ReactNode;
-	currentDirectory: CurrentDirectory;
 };
 
 const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 	children,
-	currentDirectory,
 }) => {
+	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
+		useRecoilState(currentDirectoryState);
+
 	const {
 		authUser,
 		loadingUser,
@@ -43,14 +44,13 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 		return <MainPageLayout>{children}</MainPageLayout>;
 	};
 
-	switch (currentDirectory.main) {
+	switch (currentDirectoryStateValue.main) {
 		case "admin": {
 			return (
 				<AdminPageLayout
 					navigationBarStateValue={navigationBarStateValue}
 					setNavigationBarStateValue={setNavigationBarStateValue}
 					router={router}
-					currentDirectory={currentDirectory}
 					loadingUser={loadingUser}
 					authLoading={authLoading}
 					authUser={authUser}
@@ -63,12 +63,8 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 		}
 
 		case "groups": {
-			if (currentDirectory.second === "[groupId]") {
-				return (
-					<GroupPageLayout currentDirectory={currentDirectory}>
-						{children}
-					</GroupPageLayout>
-				);
+			if (currentDirectoryStateValue.second === "[groupId]") {
+				return <GroupPageLayout>{children}</GroupPageLayout>;
 			} else {
 				return defaultPage();
 			}
@@ -77,12 +73,8 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 		}
 
 		case "user": {
-			if (currentDirectory.second === "[userId]") {
-				return (
-					<UserPageLayout currentDirectory={currentDirectory}>
-						{children}
-					</UserPageLayout>
-				);
+			if (currentDirectoryStateValue.second === "[userId]") {
+				return <UserPageLayout>{children}</UserPageLayout>;
 			} else {
 				return defaultPage();
 			}

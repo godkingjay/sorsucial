@@ -6,6 +6,7 @@ import discussionDb from "@/lib/db/discussionDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import tagDb from "@/lib/db/tagDb";
+import groupDb from "@/lib/db/groupDb";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -13,12 +14,16 @@ export default async function handler(
 ) {
 	try {
 		const { apiKeysCollection, usersCollection } = await userDb();
+
 		const {
 			discussionsCollection,
 			discussionVotesCollection,
 			discussionRepliesCollection,
 			discussionReplyVotesCollection,
 		} = await discussionDb();
+
+		const { groupsCollection } = await groupDb();
+
 		const { tagsCollection } = await tagDb();
 
 		const {
@@ -53,10 +58,25 @@ export default async function handler(
 			res.status(500).json({ error: "Cannot connect with the Users Database!" });
 		}
 
-		if (!discussionsCollection || !discussionVotesCollection) {
+		if (
+			!discussionsCollection ||
+			!discussionVotesCollection ||
+			!discussionRepliesCollection ||
+			!discussionReplyVotesCollection
+		) {
 			res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
+		}
+
+		if (!groupsCollection) {
+			res
+				.status(500)
+				.json({ error: "Cannot connect with the Groups Database!" });
+		}
+
+		if (!tagsCollection) {
+			res.status(500).json({ error: "Cannot connect with the Tags Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -110,6 +130,22 @@ export default async function handler(
 							error: "Mongo: Creating document error: " + error.message,
 						});
 					});
+
+				if (discussionData.groupId) {
+					await groupsCollection.updateOne(
+						{
+							id: discussionData.groupId,
+						},
+						{
+							$inc: {
+								numberOfDiscussions: 1,
+							},
+							$set: {
+								updatedAt: discussionData.createdAt,
+							},
+						}
+					);
+				}
 
 				discussionData.discussionTags.map(async (tag) => {
 					await tagsCollection.updateOne(
@@ -207,6 +243,22 @@ export default async function handler(
 					await discussionVotesCollection.deleteMany({
 						discussionId: discussionData.id,
 					});
+
+				if (discussionData.groupId) {
+					await groupsCollection.updateOne(
+						{
+							id: discussionData.groupId,
+						},
+						{
+							$inc: {
+								numberOfDiscussions: -1,
+							},
+							$set: {
+								updatedAt: discussionData.createdAt,
+							},
+						}
+					);
+				}
 
 				discussionData.discussionTags.map(async (tag) => {
 					await tagsCollection.updateOne(

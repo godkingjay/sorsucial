@@ -1,5 +1,4 @@
 import React from "react";
-import { CurrentDirectory } from "./Layout";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -16,17 +15,18 @@ import {
 } from "react-icons/bs";
 import { HiOutlineUserGroup, HiUserGroup } from "react-icons/hi";
 import { IoImages, IoImagesOutline } from "react-icons/io5";
+import { useRecoilState } from "recoil";
+import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 
 type UserPageLayoutProps = {
 	children: React.ReactNode;
-	currentDirectory: CurrentDirectory;
 };
 
-const UserPageLayout: React.FC<UserPageLayoutProps> = ({
-	children,
-	currentDirectory,
-}) => {
+const UserPageLayout: React.FC<UserPageLayoutProps> = ({ children }) => {
 	const { userStateValue } = useUser();
+
+	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
+		useRecoilState(currentDirectoryState);
 
 	const router = useRouter();
 
@@ -47,9 +47,9 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									className="user-nav-bar-item"
 									title="Posts"
 									data-active={
-										!currentDirectory.third ||
-										currentDirectory.third === "posts" ||
-										currentDirectory.third === ""
+										!currentDirectoryStateValue.third ||
+										currentDirectoryStateValue.third === "posts" ||
+										currentDirectoryStateValue.third === ""
 									}
 								>
 									<p className="text">Posts</p>
@@ -63,7 +63,9 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									href={`/user/${userStateValue.userPage.user.uid}/discussions/`}
 									className="user-nav-bar-item"
 									title="Discussions"
-									data-active={currentDirectory.third === "discussions"}
+									data-active={
+										currentDirectoryStateValue.third === "discussions"
+									}
 								>
 									<p className="text">Discussions</p>
 									<div className="icon-container">
@@ -76,7 +78,7 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									href={`/user/${userStateValue.userPage.user.uid}/groups/`}
 									className="user-nav-bar-item"
 									title="Groups"
-									data-active={currentDirectory.third === "groups"}
+									data-active={currentDirectoryStateValue.third === "groups"}
 								>
 									<p className="text">Groups</p>
 									<div className="icon-container">
@@ -89,7 +91,7 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									href={`/user/${userStateValue.userPage.user.uid}/gallery/`}
 									className="user-nav-bar-item"
 									title="Gallery"
-									data-active={currentDirectory.third === "gallery"}
+									data-active={currentDirectoryStateValue.third === "gallery"}
 								>
 									<p className="text">Gallery</p>
 									<div className="icon-container">
@@ -102,7 +104,9 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									href={`/user/${userStateValue.userPage.user.uid}/connections/`}
 									className="user-nav-bar-item"
 									title="Connections"
-									data-active={currentDirectory.third === "connections"}
+									data-active={
+										currentDirectoryStateValue.third === "connections"
+									}
 								>
 									<p className="text">Connections</p>
 									<div className="icon-container">
@@ -115,7 +119,7 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({
 									href={`/user/${userStateValue.userPage.user.uid}/about/`}
 									className="user-nav-bar-item"
 									title="About"
-									data-active={currentDirectory.third === "about"}
+									data-active={currentDirectoryStateValue.third === "about"}
 								>
 									<p className="text">About</p>
 									<div className="icon-container">

@@ -48,3 +48,19 @@ export const navigationBarState = atom({
 	key: "navigationBarState",
 	default: defaultNavigationBarState,
 });
+
+export interface CurrentDirectory {
+	main?: string;
+	second?: string;
+	third?: string;
+	fourth?: string;
+}
+
+export const defaultCurrentDirectory: CurrentDirectory = {
+	main: "",
+};
+
+export const currentDirectoryState = atom<CurrentDirectory>({
+	key: "currentDirectoryState",
+	default: defaultCurrentDirectory,
+});

@@ -130,7 +130,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
 					<>
 						<LimitedBodyLayout>
 							<div className="flex flex-col md:flex-row">
-								<div className="md:sticky md:top-28 h-max pt-4 pl-4 pr-4 md:pr-0">
+								<div className="md:sticky md:top-[104px] h-max pt-4 pl-4 pr-4 md:pr-0">
 									<div className="relative h-full flex-1 flex flex-col gap-x-2 rounded-lg shadow-page-box-1 bg-white p-1 md:w-40">
 										<Link
 											href={`/groups/${groupStateValue.currentGroup.group.id}/members/`}

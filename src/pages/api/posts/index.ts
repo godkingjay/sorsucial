@@ -1,3 +1,4 @@
+import groupDb from "@/lib/db/groupDb";
 import postDb from "@/lib/db/postDb";
 import tagDb from "@/lib/db/tagDb";
 import userDb from "@/lib/db/userDb";
@@ -35,12 +36,16 @@ export default async function handler(
 ) {
 	try {
 		const { apiKeysCollection, usersCollection } = await userDb();
+
 		const {
 			postsCollection,
 			postLikesCollection,
 			postCommentsCollection,
 			postCommentLikesCollection,
 		} = await postDb();
+
+		const { groupsCollection } = await groupDb();
+
 		const { tagsCollection } = await tagDb();
 
 		const {
@@ -75,6 +80,10 @@ export default async function handler(
 			!postCommentLikesCollection
 		) {
 			res.status(401).json({ error: "Cannot connect with the Post Database!" });
+		}
+
+		if (!groupsCollection) {
+			res.status(401).json({ error: "Cannot connect with the Group Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -132,6 +141,22 @@ export default async function handler(
 					...postData,
 					_id: objectId,
 				});
+
+				if (postData.groupId) {
+					await groupsCollection.updateOne(
+						{
+							id: postData.groupId,
+						},
+						{
+							$inc: {
+								numberOfPosts: 1,
+							},
+							$set: {
+								updatedAt: postData.createdAt,
+							},
+						}
+					);
+				}
 
 				postData.postTags?.map(async (tag) => {
 					await tagsCollection.updateOne(
@@ -312,6 +337,22 @@ export default async function handler(
 				const deleteState = await postsCollection.deleteOne({
 					id: postData.id,
 				});
+
+				if (postData.groupId) {
+					await groupsCollection.updateOne(
+						{
+							id: postData.groupId,
+						},
+						{
+							$inc: {
+								numberOfPosts: -1,
+							},
+							$set: {
+								updatedAt: postData.createdAt,
+							},
+						}
+					);
+				}
 
 				postData.postTags?.map(async (tag) => {
 					await tagsCollection.updateOne(

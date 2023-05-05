@@ -10,6 +10,7 @@ import LoadingScreen from "../Skeleton/LoadingScreen";
 import { useRecoilState } from "recoil";
 import {
 	NavigationBarState,
+	currentDirectoryState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
 import AdminModals from "../Modal/AdminModals";
@@ -20,16 +21,10 @@ type LayoutProps = {
 	children: React.ReactNode;
 };
 
-export type CurrentDirectory = {
-	main?: string;
-	second?: string;
-	third?: string;
-};
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-	const [currentDirectory, setCurrentDirectory] = useState<CurrentDirectory>({
-		main: "",
-	});
+	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
+		useRecoilState(currentDirectoryState);
+
 	const {
 		authUser,
 		loadingUser,
@@ -77,7 +72,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	useEffect(() => {
 		const directory = router.pathname.split("/");
 		const mainDirectory = directory[1];
-		setCurrentDirectory({
+		setCurrentDirectoryStateValue({
 			main: directory[1],
 			second: directory[2],
 			third: directory[3],
@@ -119,9 +114,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 								userStateValue={userStateValue}
 							/>
 						)}
-						<PageContainerLayout currentDirectory={currentDirectory}>
-							{children}
-						</PageContainerLayout>
+						<PageContainerLayout>{children}</PageContainerLayout>
 					</div>
 				</>
 			)}

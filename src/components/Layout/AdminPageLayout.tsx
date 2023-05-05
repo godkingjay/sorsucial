@@ -1,19 +1,20 @@
 import React, { useEffect, useRef } from "react";
 import AdminNavigation from "../Controls/AdminNavigation";
-import { NavigationBarState } from "@/atoms/navigationBarAtom";
-import { SetterOrUpdater } from "recoil";
+import {
+	NavigationBarState,
+	currentDirectoryState,
+} from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater, useRecoilState } from "recoil";
 import { NextRouter } from "next/router";
 import { User } from "firebase/auth";
 import { UserState } from "@/atoms/userAtom";
 import LoadingScreen from "../Skeleton/LoadingScreen";
-import { CurrentDirectory } from "./Layout";
 
 type AdminPageLayoutProps = {
 	children: React.ReactNode;
 	navigationBarStateValue: NavigationBarState;
 	setNavigationBarStateValue: SetterOrUpdater<NavigationBarState>;
 	router: NextRouter;
-	currentDirectory: CurrentDirectory;
 	loadingUser: boolean;
 	authLoading: boolean;
 	authUser?: User | null;
@@ -26,22 +27,24 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 	navigationBarStateValue,
 	setNavigationBarStateValue,
 	router,
-	currentDirectory,
 	loadingUser,
 	authLoading,
 	authUser,
 	userStateValue,
 	userMounted,
 }) => {
+	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
+		useRecoilState(currentDirectoryState);
+
 	const componentDidMount = useRef(false);
 
 	useEffect(() => {
-		if (currentDirectory.second) {
+		if (currentDirectoryStateValue.second) {
 			const isPathOfAdmin = [
 				"manage-users",
 				"manage-groups",
 				"manage-requests",
-			].includes(currentDirectory.second);
+			].includes(currentDirectoryStateValue.second);
 
 			if (isPathOfAdmin) {
 				setNavigationBarStateValue((prev) => ({
@@ -49,7 +52,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 					adminPageNavBar: {
 						...prev.adminPageNavBar,
 						current:
-							currentDirectory.second as NavigationBarState["adminPageNavBar"]["current"],
+							currentDirectoryStateValue.second as NavigationBarState["adminPageNavBar"]["current"],
 					},
 				}));
 			} else {
@@ -65,7 +68,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
 				},
 			}));
 		}
-	}, [currentDirectory]);
+	}, [currentDirectoryStateValue]);
 
 	useEffect(() => {
 		if (

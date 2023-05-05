@@ -2,7 +2,6 @@ import React from "react";
 import GroupPageHeader from "../Group/GroupPageHeader";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
-import { CurrentDirectory } from "./Layout";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import LimitedBodyLayout from "./LimitedBodyLayout";
@@ -17,18 +16,20 @@ import {
 	BsPostcardFill,
 } from "react-icons/bs";
 import { IoImages, IoImagesOutline } from "react-icons/io5";
+import { useRecoilState } from "recoil";
+import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 
 type GroupPageProps = {
 	children: React.ReactNode;
-	currentDirectory: CurrentDirectory;
 };
 
-const GroupPageLayout: React.FC<GroupPageProps> = ({
-	children,
-	currentDirectory,
-}) => {
+const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
 	const { userStateValue } = useUser();
 	const { groupStateValue } = useGroup();
+
+	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
+		useRecoilState(currentDirectoryState);
+
 	const router = useRouter();
 	const { groupId } = router.query;
 
@@ -51,9 +52,9 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										className="group-nav-bar-item"
 										title="Posts"
 										data-active={
-											!currentDirectory.third ||
-											currentDirectory.third === "posts" ||
-											currentDirectory.third === ""
+											!currentDirectoryStateValue.third ||
+											currentDirectoryStateValue.third === "posts" ||
+											currentDirectoryStateValue.third === ""
 										}
 									>
 										<p className="text">Posts</p>
@@ -67,7 +68,9 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										href={`/groups/${groupStateValue.currentGroup.group.id}/discussions/`}
 										className="group-nav-bar-item"
 										title="Discussions"
-										data-active={currentDirectory.third === "discussions"}
+										data-active={
+											currentDirectoryStateValue.third === "discussions"
+										}
 									>
 										<p className="text">Discussions</p>
 										<div className="icon-container">
@@ -80,7 +83,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										href={`/groups/${groupStateValue.currentGroup.group.id}/gallery/`}
 										className="group-nav-bar-item"
 										title="Gallery"
-										data-active={currentDirectory.third === "gallery"}
+										data-active={currentDirectoryStateValue.third === "gallery"}
 									>
 										<p className="text">Gallery</p>
 										<div className="icon-container">
@@ -93,7 +96,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										href={`/groups/${groupStateValue.currentGroup.group.id}/members/`}
 										className="group-nav-bar-item"
 										title="Members"
-										data-active={currentDirectory.third === "members"}
+										data-active={currentDirectoryStateValue.third === "members"}
 									>
 										<p className="text">Members</p>
 										<div className="icon-container">
@@ -106,7 +109,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({
 										href={`/groups/${groupStateValue.currentGroup.group.id}/about/`}
 										className="group-nav-bar-item"
 										title="About"
-										data-active={currentDirectory.third === "about"}
+										data-active={currentDirectoryStateValue.third === "about"}
 									>
 										<p className="text">About</p>
 										<div className="icon-container">

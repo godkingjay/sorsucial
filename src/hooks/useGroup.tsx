@@ -9,7 +9,7 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { QueryGroupsSortBy } from "@/lib/types/api";
+import { APIEndpointGroupsParams, QueryGroupsSortBy } from "@/lib/types/api";
 
 const useGroup = () => {
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
@@ -529,17 +529,24 @@ const useGroup = () => {
 		async ({
 			privacy = "public" as SiteGroup["privacy"],
 			tags = undefined as string | undefined,
+			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
 			sortBy = "latest" as QueryGroupsSortBy,
 		}) => {
 			try {
 				let refGroup;
+				let refIndex;
 
 				switch (sortBy) {
 					case "latest": {
-						const refIndex = groupStateValueMemo.groups.reduceRight(
+						refIndex = groupStateValueMemo.groups.reduceRight(
 							(acc, group, index) => {
-								if (group.index[sortBy] && acc === -1) {
+								if (
+									(creatorId ? group.group.creatorId === creatorId : true) &&
+									group.group.privacy === privacy &&
+									group.index[sortBy] &&
+									acc === -1
+								) {
 									return index;
 								}
 
@@ -554,6 +561,7 @@ const useGroup = () => {
 
 					default: {
 						refGroup = null;
+						break;
 					}
 				}
 
@@ -564,6 +572,7 @@ const useGroup = () => {
 							userId: authUser?.uid,
 							privacy: privacy,
 							tags: tags,
+							creatorId: creatorId,
 							creator: creator,
 							lastIndex: refGroup?.index[sortBy] || -1,
 							fromMembers:
@@ -573,7 +582,8 @@ const useGroup = () => {
 							fromDiscussions:
 								refGroup?.group.numberOfDiscussions || Number.MAX_SAFE_INTEGER,
 							fromDate: refGroup?.group.createdAt || null,
-						},
+							sortBy: sortBy,
+						} as Partial<APIEndpointGroupsParams>,
 					})
 					.then((res) => res.data)
 					.catch((err) => {

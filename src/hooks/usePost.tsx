@@ -572,7 +572,15 @@ const usePost = () => {
 			 * 	      			/files
 			 * 	      				/fileId
 			 */
-			const storageRef = ref(clientStorage, `posts/${post.id}/files/${fileId}`);
+			const fileExtension = file.name.slice(file.name.lastIndexOf("."));
+			const fileNameWithoutExtension = file.name.slice(
+				0,
+				file.name.lastIndexOf(".")
+			);
+			const storageRef = ref(
+				clientStorage,
+				`posts/${post.id}/files/${fileNameWithoutExtension}-${fileId}${fileExtension}`
+			);
 
 			/**
 			 * Fetch the file from the url.

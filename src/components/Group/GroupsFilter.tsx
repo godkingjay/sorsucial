@@ -121,52 +121,54 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 
 	return (
 		<>
-			{!userMounted || firstLoadingGroups ? (
-				<>
+			<div className="flex flex-col gap-y-4">
+				{!userMounted || firstLoadingGroups ? (
 					<>
-						<GroupCardSkeleton index={filteredGroupsLength + 1} />
-						<GroupCardSkeleton index={filteredGroupsLength + 2} />
-						<GroupCardSkeleton index={filteredGroupsLength + 3} />
-						<GroupCardSkeleton index={filteredGroupsLength + 4} />
-						<GroupCardSkeleton index={filteredGroupsLength + 5} />
+						<>
+							<GroupCardSkeleton index={filteredGroupsLength + 1} />
+							<GroupCardSkeleton index={filteredGroupsLength + 2} />
+							<GroupCardSkeleton index={filteredGroupsLength + 3} />
+							<GroupCardSkeleton index={filteredGroupsLength + 4} />
+							<GroupCardSkeleton index={filteredGroupsLength + 5} />
+						</>
 					</>
-				</>
-			) : (
-				<>
-					{groupCreation && <GroupCreationListener />}
-					{filter && <PageFilter />}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						{filteredGroupsLength > 0 && (
-							<>
-								{filteredGroups.map((group, index) => (
-									<React.Fragment key={group.group.id}>
-										<GroupCard
-											groupData={group}
-											index={index}
-										/>
-									</React.Fragment>
-								))}
-							</>
+				) : (
+					<>
+						{groupCreation && <GroupCreationListener />}
+						{filter && <PageFilter />}
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							{filteredGroupsLength > 0 && (
+								<>
+									{filteredGroups.map((group, index) => (
+										<React.Fragment key={group.group.id}>
+											<GroupCard
+												groupData={group}
+												index={index}
+											/>
+										</React.Fragment>
+									))}
+								</>
+							)}
+							{loadingGroups && (
+								<>
+									<GroupCardSkeleton index={filteredGroupsLength + 1} />
+									<GroupCardSkeleton index={filteredGroupsLength + 2} />
+									<GroupCardSkeleton index={filteredGroupsLength + 3} />
+									<GroupCardSkeleton index={filteredGroupsLength + 4} />
+									<GroupCardSkeleton index={filteredGroupsLength + 5} />
+								</>
+							)}
+						</div>
+						{!endReached && groupsMounted && filteredGroupsLength > 0 && (
+							<VisibleInViewPort
+								disabled={endReached || loadingGroups || firstLoadingGroups}
+								onVisible={handleFetchGroups}
+							></VisibleInViewPort>
 						)}
-						{loadingGroups && (
-							<>
-								<GroupCardSkeleton index={filteredGroupsLength + 1} />
-								<GroupCardSkeleton index={filteredGroupsLength + 2} />
-								<GroupCardSkeleton index={filteredGroupsLength + 3} />
-								<GroupCardSkeleton index={filteredGroupsLength + 4} />
-								<GroupCardSkeleton index={filteredGroupsLength + 5} />
-							</>
-						)}
-					</div>
-					{!endReached && groupsMounted && filteredGroupsLength > 0 && (
-						<VisibleInViewPort
-							disabled={endReached || loadingGroups || firstLoadingGroups}
-							onVisible={handleFetchGroups}
-						></VisibleInViewPort>
-					)}
-					{endReached && <PageEnd message="End of Groups" />}
-				</>
-			)}
+						{endReached && <PageEnd message="End of Groups" />}
+					</>
+				)}
+			</div>
 		</>
 	);
 };

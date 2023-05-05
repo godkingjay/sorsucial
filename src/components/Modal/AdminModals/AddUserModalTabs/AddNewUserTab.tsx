@@ -287,9 +287,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						className={`auth-input-container
 										${newUserForm.password ? "auth-input-container-filled" : ""}
 									`}
-						data-error={
-							newUserFormError.password && newUserForm.password !== ""
-						}
+						data-error={newUserFormError.password && newUserForm.password !== ""}
 						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
@@ -403,9 +401,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 						className={`auth-input-container
 										${newUserForm.lastName ? "auth-input-container-filled" : ""}
 									`}
-						data-error={
-							newUserFormError.lastName && newUserForm.lastName !== ""
-						}
+						data-error={newUserFormError.lastName && newUserForm.lastName !== ""}
 						onClick={handleInputTextClick}
 					>
 						<div className="auth-input-text required-field">
@@ -662,6 +658,7 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 					(!newUserForm.email && !newUserFormError.email) ||
 					!newUserForm.password ||
 					newUserForm.password.length < 8 ||
+					newUserFormError.password ||
 					!newUserForm.firstName ||
 					!newUserForm.lastName ||
 					!newUserForm.roles?.length ||

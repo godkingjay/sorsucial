@@ -1,5 +1,8 @@
 import { GroupData } from "@/atoms/groupAtom";
-import { QueryGroupsSortBy } from "./../../../lib/types/api";
+import {
+	APIEndpointGroupsParams,
+	QueryGroupsSortBy,
+} from "./../../../lib/types/api";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
@@ -21,8 +24,9 @@ export default async function handler(
 			apiKey,
 			userId,
 			privacy = "public" as SiteGroup["privacy"],
-			tags,
-			creator,
+			tags = undefined,
+			creatorId = undefined,
+			creator = undefined,
 			lastIndex = "-1",
 			fromMembers = Number.MAX_SAFE_INTEGER.toString(),
 			fromPosts = Number.MAX_SAFE_INTEGER.toString(),
@@ -30,7 +34,7 @@ export default async function handler(
 			fromDate = new Date().toISOString(),
 			sortBy = "latest" as QueryGroupsSortBy,
 			limit = "10",
-		} = req.body || req.query;
+		}: Partial<APIEndpointGroupsParams> = req.body || req.query;
 
 		if (!apiKey) {
 			return res.status(400).json({ error: "No API key provided!" });
@@ -77,12 +81,10 @@ export default async function handler(
 					switch (sortBy) {
 						case "latest": {
 							groups = await getSortByLatest({
-								privacy: privacy,
-								fromDate:
-									typeof fromDate === "string"
-										? fromDate
-										: fromDate.toISOString(),
-								limit: limit,
+								creatorId,
+								privacy,
+								fromDate,
+								limit,
 							});
 							break;
 						}
@@ -116,7 +118,12 @@ export default async function handler(
 							creator: creatorData || null,
 							userJoin: userJoinData || null,
 							index: {
-								[sortBy]: parseInt(lastIndex) + groups.indexOf(groupDoc) + 1,
+								[sortBy]:
+									(typeof lastIndex === "string"
+										? parseInt(lastIndex)
+										: lastIndex) +
+									groups.indexOf(groupDoc) +
+									1,
 							},
 						} as Partial<GroupData>;
 					})
@@ -142,24 +149,31 @@ export default async function handler(
 }
 
 const getSortByLatest = async ({
-	privacy = "public" as SiteGroup["privacy"],
-	fromDate = new Date().toISOString() as string,
-	limit = "10",
-}) => {
+	creatorId,
+	privacy,
+	fromDate,
+	limit = 10,
+}: Partial<APIEndpointGroupsParams>) => {
 	const { groupsCollection } = await groupDb();
+
+	let query: any = {
+		privacy: privacy,
+		createdAt: {
+			$lt: typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
+		},
+	};
+
+	if (creatorId) {
+		query.creatorId = creatorId;
+	}
 
 	return groupsCollection
 		? await groupsCollection
-				.find({
-					privacy: privacy,
-					createdAt: {
-						$lt: fromDate,
-					},
-				})
+				.find(query)
 				.sort({
 					createdAt: -1,
 				})
-				.limit(parseInt(limit as string))
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
 				.toArray()
 		: [];
 };

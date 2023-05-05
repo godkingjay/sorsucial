@@ -1,7 +1,10 @@
 import { UserState } from "@/atoms/userAtom";
+import GroupsFilter from "@/components/Group/GroupsFilter";
 import UserPageLoader from "@/components/User/UserPageLoader";
+import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -14,13 +17,39 @@ const UserPageGroupsPage: React.FC<UserPageGroupsPageProps> = ({
 	userPageData,
 	loadingPage = true,
 }) => {
+	const { userStateValue } = useUser();
+	const router = useRouter();
+	const { userId } = router.query;
+
 	return (
 		<>
 			<UserPageLoader
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<div>User Groups Page</div>
+				{userStateValue.userPage?.user.uid === userId && (
+					<GroupsFilter
+						groupCreation={userStateValue.user.uid === userId}
+						filter={true}
+						creatorId={userId}
+						privacy="public"
+						sortBy="latest"
+						pageEnd="End of Groups"
+						filterOptions={{
+							filterType: "groups",
+							options: {
+								creatorId: true,
+								creator: true,
+								privacy: true,
+								tags: true,
+								members: true,
+								date: true,
+								posts: true,
+								discussions: true,
+							},
+						}}
+					/>
+				)}
 			</UserPageLoader>
 		</>
 	);

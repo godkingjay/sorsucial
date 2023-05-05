@@ -2569,6 +2569,46 @@
 		}
 	}
 
+	.user-role {
+		@apply text-2xs px-4 py-1 border rounded-full bg-gray-50 border-gray-300 text-gray-500;
+
+		&:hover {
+			@apply bg-gray-100;
+		}
+
+		&[data-role="admin"] {
+			@apply bg-red-50 border-red-300 text-red-500;
+
+			&:hover {
+				@apply bg-red-100;
+			}
+		}
+
+		&[data-role="student"] {
+			@apply bg-blue-50 border-blue-300 text-blue-500;
+
+			&:hover {
+				@apply bg-blue-100;
+			}
+		}
+
+		&[data-role="instructor"] {
+			@apply bg-purple-50 border-purple-300 text-purple-500;
+
+			&:hover {
+				@apply bg-purple-100;
+			}
+		}
+
+		&[data-role="staff"] {
+			@apply bg-green-50 border-green-300 text-green-500;
+
+			&:hover {
+				@apply bg-green-100;
+			}
+		}
+	}
+
 	.modal-container {
 		animation: entrance-animation-float-up 0.25s ease-in-out;
 		@apply w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto;

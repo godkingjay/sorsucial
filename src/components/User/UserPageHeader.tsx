@@ -44,6 +44,17 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 								<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
 							</Link>
 						</div>
+						<div className="flex flex-row gap-x-2 gap-y-1 flex-wrap mt-1">
+							{userData.user.roles.map((role) => (
+								<p
+									key={role}
+									className="user-role"
+									data-role={role}
+								>
+									{role.split("")[0].toUpperCase() + role.slice(1).toLowerCase()}
+								</p>
+							))}
+						</div>
 					</div>
 				</div>
 			</div>

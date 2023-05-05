@@ -246,6 +246,7 @@ const PostCard: React.FC<PostCardProps> = ({ postData }) => {
 			{postData.post.postFiles.length > 0 && (
 				<PostFiles postFiles={postData.post.postFiles} />
 			)}
+			{postData.post.postLinks.length > 0 && <PostLinks postData={postData} />}
 			{postData.post.postTags && postData.post.postTags.length > 0 && (
 				<div className="flex flex-row gap-x-4 mx-4 px-4 py-2 bg-gray-50 rounded-lg mb-2 shadow-sm">
 					<p className="py-2 font-bold text-gray-500 text-sm">Tags:</p>
@@ -257,7 +258,6 @@ const PostCard: React.FC<PostCardProps> = ({ postData }) => {
 					</div>
 				</div>
 			)}
-			{postData.post.postLinks.length > 0 && <PostLinks postData={postData} />}
 			<PostLikeAndCommentDetails
 				userLike={postData.userLike}
 				numberOfLikes={postData.post.numberOfLikes}

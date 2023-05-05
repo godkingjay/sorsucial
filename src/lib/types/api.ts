@@ -1,4 +1,5 @@
 import { SiteDiscussion } from "../interfaces/discussion";
+import { SiteGroup } from "../interfaces/group";
 import { SitePost } from "../interfaces/post";
 import { SiteUser } from "../interfaces/user";
 
@@ -44,6 +45,7 @@ export type APIEndpointDiscussionsParams = {
 	privacy: SiteDiscussion["privacy"];
 	groupId?: string;
 	tags?: string;
+	creatorId?: string;
 	creator?: string;
 	isOpen?: string | boolean;
 	lastIndex?: string | number;
@@ -53,6 +55,22 @@ export type APIEndpointDiscussionsParams = {
 	fromReplies?: string | number;
 	fromDate?: string | Date;
 	sortBy: QueryDiscussionsSortBy;
+	limit?: string | number;
+};
+
+export type APIEndpointGroupsParams = {
+	apiKey: string;
+	userId: string;
+	privacy: SiteGroup["privacy"];
+	tags?: string;
+	creatorId?: string;
+	creator?: string;
+	lastIndex?: string | number;
+	fromMembers?: string | number;
+	fromPosts?: string | number;
+	fromDiscussions?: string | number;
+	fromDate?: string | Date;
+	sortBy: QueryGroupsSortBy;
 	limit?: string | number;
 };
 

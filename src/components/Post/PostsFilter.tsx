@@ -10,7 +10,7 @@ import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import PostCreationListener from "./PostCreationListener";
-import PageFilter from "../Controls/PageFilter";
+import PageFilter, { PageFilterProps } from "../Controls/PageFilter";
 
 type PostsFilterProps = {
 	postType: SitePost["postType"];
@@ -23,12 +23,7 @@ type PostsFilterProps = {
 	creator?: string;
 	tags?: string;
 	pageEnd?: string;
-	filterOptions?: {
-		creatorId: boolean;
-		creator: boolean;
-		tags: boolean;
-		address: boolean;
-	};
+	filterOptions?: PageFilterProps["filterOptions"];
 };
 
 const PostsFilter: React.FC<PostsFilterProps> = ({
@@ -43,10 +38,18 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	postCreation = false,
 	filter = false,
 	filterOptions = {
-		creatorId: false,
-		creator: false,
-		tags: false,
-		address: false,
+		filterType: "posts",
+		options: {
+			postType: false,
+			privacy: false,
+			creatorId: false,
+			creator: false,
+			groupId: false,
+			tags: false,
+			likes: false,
+			comments: false,
+			date: false,
+		},
 	},
 }) => {
 	const { userStateValue, userMounted } = useUser();

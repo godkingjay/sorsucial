@@ -8,15 +8,14 @@ import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
-type GroupPageMembersPageProps = {
+type GroupPageMembersRequestsPageProps = {
 	groupPageData: GroupState["currentGroup"];
 	loadingPage: boolean;
 };
 
-const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
-	groupPageData,
-	loadingPage = true,
-}) => {
+const GroupPageMembersRequestsPage: React.FC<
+	GroupPageMembersRequestsPageProps
+> = ({ groupPageData, loadingPage = true }) => {
 	const { groupStateValue } = useGroup();
 	const router = useRouter();
 	const { groupId } = router.query;
@@ -62,7 +61,7 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 	);
 };
 
-export default GroupPageMembersPage;
+export default GroupPageMembersRequestsPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {

@@ -8,12 +8,12 @@ import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
-type GroupPageMembersPageProps = {
+type GroupPageMembersBannedPageProps = {
 	groupPageData: GroupState["currentGroup"];
 	loadingPage: boolean;
 };
 
-const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
+const GroupPageMembersBannedPage: React.FC<GroupPageMembersBannedPageProps> = ({
 	groupPageData,
 	loadingPage = true,
 }) => {
@@ -53,7 +53,9 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
-								<div className="grid grid-cols-2 gap-4">{renderItems()}</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									{renderItems()}
+								</div>
 							</>
 						)}
 				</GroupPageLoader>
@@ -62,7 +64,7 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 	);
 };
 
-export default GroupPageMembersPage;
+export default GroupPageMembersBannedPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {

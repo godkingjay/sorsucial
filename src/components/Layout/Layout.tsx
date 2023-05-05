@@ -76,6 +76,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 			main: directory[1],
 			second: directory[2],
 			third: directory[3],
+			fourth: directory[4],
 		});
 		setNavigationBarStateValue((prev) => ({
 			...prev,

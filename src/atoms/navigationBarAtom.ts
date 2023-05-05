@@ -53,6 +53,7 @@ export interface CurrentDirectory {
 	main?: string;
 	second?: string;
 	third?: string;
+	fourth?: string;
 }
 
 export const defaultCurrentDirectory: CurrentDirectory = {

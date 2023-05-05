@@ -2569,6 +2569,40 @@
 		}
 	}
 
+	.group-members-nav-item {
+		@apply px-4 py-2 flex flex-row items-center gap-x-2 text-left font-semibold text-sm text-gray-500 rounded-md;
+
+		.icon-container {
+			@apply h-4 w-4;
+
+			.icon {
+				@apply h-full w-full;
+			}
+		}
+
+		&:hover,
+		&:focus-within {
+			@apply bg-gray-100;
+		}
+
+		&[data-active="true"] {
+			@apply bg-blue-100 text-blue-500;
+		}
+
+		&[data-banned] {
+			@apply text-red-500;
+
+			&:hover,
+			&:focus-within {
+				@apply bg-red-100;
+			}
+
+			&[data-active="true"] {
+				@apply bg-red-100 text-red-500;
+			}
+		}
+	}
+
 	.user-role {
 		@apply text-2xs px-4 py-1 border rounded-full bg-gray-50 border-gray-300 text-gray-500;
 

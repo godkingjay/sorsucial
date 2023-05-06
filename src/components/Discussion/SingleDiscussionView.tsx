@@ -141,32 +141,28 @@ const SingleDiscussionView: React.FC<SingleDiscussionViewProps> = ({
 					}
 				/>
 			</Head>
-			<main className="flex flex-col flex-1 py-4 px-4">
-				<LimitedBodyLayout>
-					<section className="flex flex-col gap-y-4">
-						{loadingDiscussion || fetchingDiscussionUserData || !userMounted ? (
-							<>
-								<DiscussionCardSkeleton />
-							</>
+			<section className="page-wrapper">
+				{loadingDiscussion || fetchingDiscussionUserData || !userMounted ? (
+					<>
+						<DiscussionCardSkeleton />
+					</>
+				) : (
+					<>
+						{!discussionStateValue.currentDiscussion ? (
+							<PostDiscussionNotFound type={type} />
 						) : (
 							<>
-								{!discussionStateValue.currentDiscussion ? (
-									<PostDiscussionNotFound type={type} />
-								) : (
-									<>
-										{discussionStateValue.currentDiscussion.discussion.id ===
-											discussionId && (
-											<DiscussionCard
-												discussionData={discussionStateValue.currentDiscussion}
-											/>
-										)}
-									</>
+								{discussionStateValue.currentDiscussion.discussion.id ===
+									discussionId && (
+									<DiscussionCard
+										discussionData={discussionStateValue.currentDiscussion}
+									/>
 								)}
 							</>
 						)}
-					</section>
-				</LimitedBodyLayout>
-			</main>
+					</>
+				)}
+			</section>
 		</>
 	);
 };

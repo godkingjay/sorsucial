@@ -127,25 +127,21 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 					}
 				/>
 			</Head>
-			<div className="flex flex-col px-4 py-4">
-				<LimitedBodyLayout>
-					{loadingGroup || !userMounted || fetchingGroupUserData ? (
+			{loadingGroup || !userMounted || fetchingGroupUserData ? (
+				<>
+					<p>Loading Group</p>
+				</>
+			) : (
+				<>
+					{!groupStateValue.currentGroup ? (
 						<>
-							<p>Loading Group</p>
+							<p>Group Not Found</p>
 						</>
 					) : (
-						<>
-							{!groupStateValue.currentGroup ? (
-								<>
-									<p>Group Not Found</p>
-								</>
-							) : (
-								<>{children && children}</>
-							)}
-						</>
+						<>{children && children}</>
 					)}
-				</LimitedBodyLayout>
-			</div>
+				</>
+			)}
 		</>
 	);
 };

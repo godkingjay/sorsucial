@@ -140,7 +140,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	return (
 		<>
-			<div className="flex flex-col gap-y-4">
+			<div className="page-wrapper">
 				{!userMounted || firstLoadingPosts ? (
 					<>
 						<>

@@ -1,4 +1,12 @@
 @layer components {
+	.page-wrapper {
+		@apply flex flex-col sm:px-4 py-4 gap-y-2 sm:gap-y-4;
+	}
+
+	.page-box-1 {
+		@apply bg-white shadow-page-box-1 sm:rounded-lg;
+	}
+
 	.divider {
 		@apply w-full h-[1px] bg-gray-200;
 	}

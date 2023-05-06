@@ -1,6 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import { PostData, PostState } from "@/atoms/postAtom";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import SinglePostView from "@/components/Post/SinglePostView";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
@@ -32,13 +33,15 @@ const GroupPostView: React.FC<GroupPostViewProps> = ({
 				groupPageData={groupPageData}
 				loadingGroup={loadingPage}
 			>
-				{groupStateValue.currentGroup?.group.id === groupId && (
-					<SinglePostView
-						loadingPost={loadingPage}
-						postPageData={postPageData}
-						type="group-post"
-					/>
-				)}
+				<LimitedBodyLayout>
+					{groupStateValue.currentGroup?.group.id === groupId && (
+						<SinglePostView
+							loadingPost={loadingPage}
+							postPageData={postPageData}
+							type="group-post"
+						/>
+					)}
+				</LimitedBodyLayout>
 			</GroupPageLoader>
 		</>
 	);

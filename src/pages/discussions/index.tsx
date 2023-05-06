@@ -11,17 +11,15 @@ const DiscussionsPage: React.FC<DiscussionsPageProps> = () => {
 			<Head>
 				<title>Discussions | SorSUcial</title>
 			</Head>
-			<main className="flex flex-col flex-1 py-4 px-4">
-				<LimitedBodyLayout>
-					<DiscussionsFilter
-						privacy="public"
-						discussionType="discussion"
-						sortBy="latest"
-						discussionCreation={true}
-						filter={true}
-					/>
-				</LimitedBodyLayout>
-			</main>
+			<LimitedBodyLayout>
+				<DiscussionsFilter
+					privacy="public"
+					discussionType="discussion"
+					sortBy="latest"
+					discussionCreation={true}
+					filter={true}
+				/>
+			</LimitedBodyLayout>
 		</>
 	);
 };

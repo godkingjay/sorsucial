@@ -11,32 +11,30 @@ export default function Home() {
 			<Head>
 				<title>Announcements | SorSUcial</title>
 			</Head>
-			<main className="flex flex-col flex-1 py-4 px-4">
-				<LimitedBodyLayout>
-					<PostsFilter
-						postType="announcement"
-						postCreation={userStateValue.user.roles.includes("admin")}
-						filter={false}
-						privacy="public"
-						sortBy="latest"
-						pageEnd="End of Feeds"
-						filterOptions={{
-							filterType: "posts",
-							options: {
-								postType: false,
-								privacy: false,
-								creatorId: true,
-								creator: true,
-								groupId: false,
-								tags: true,
-								likes: true,
-								comments: true,
-								date: true,
-							},
-						}}
-					/>
-				</LimitedBodyLayout>
-			</main>
+			<LimitedBodyLayout>
+				<PostsFilter
+					postType="announcement"
+					postCreation={userStateValue.user.roles.includes("admin")}
+					filter={false}
+					privacy="public"
+					sortBy="latest"
+					pageEnd="End of Feeds"
+					filterOptions={{
+						filterType: "posts",
+						options: {
+							postType: false,
+							privacy: false,
+							creatorId: true,
+							creator: true,
+							groupId: false,
+							tags: true,
+							likes: true,
+							comments: true,
+							date: true,
+						},
+					}}
+				/>
+			</LimitedBodyLayout>
 		</>
 	);
 }

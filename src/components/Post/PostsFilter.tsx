@@ -62,6 +62,15 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const filteredPostsLength = filteredPosts.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
 
+	const sortByIndex =
+		sortBy +
+		(postType ? `-${postType}` : "") +
+		(privacy ? `-${privacy}` : "") +
+		(groupId ? `-${groupId}` : "") +
+		(creatorId ? `-${creatorId}` : "") +
+		(creator ? `-${creator}` : "") +
+		(tags ? `-${tags}` : "");
+
 	const router = useRouter();
 	const { userId } = router.query;
 
@@ -80,8 +89,8 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 					post.post.privacy === privacy &&
 					post.post.postType === postType &&
 					post.index &&
-					post.index[sortBy] !== undefined &&
-					post.index[sortBy] >= 0
+					post.index[sortByIndex] !== undefined &&
+					post.index[sortByIndex] >= 0
 			)
 		);
 	}, [
@@ -92,7 +101,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		regexCreator,
 		privacy,
 		postType,
-		sortBy,
+		sortByIndex,
 	]);
 
 	const handleFetchPosts = useCallback(async () => {
@@ -114,7 +123,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 			console.log("Hook: fetching posts Error: ", error.message);
 		}
 		setLoadingPosts(false);
-	}, [fetchPosts, groupId, postType, privacy, sortBy]);
+	}, [creator, creatorId, fetchPosts, groupId, postType, privacy, sortBy, tags]);
 
 	const handleFirstFetchPosts = useCallback(async () => {
 		setFirstLoadingPosts(true);

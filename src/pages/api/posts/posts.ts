@@ -163,7 +163,13 @@ export default async function handler(
 							creator: creatorData || null,
 							userLike: userLikeData || null,
 							index: {
-								[sortBy]:
+								[sortBy +
+								(postType ? `-${postType}` : "") +
+								(privacy ? `-${privacy}` : "") +
+								(groupId ? `-${groupId}` : "") +
+								(creatorId ? `-${creatorId}` : "") +
+								(creator ? `-${creator}` : "") +
+								(tags ? `-${tags}` : "")]:
 									(typeof lastIndex === "string"
 										? parseInt(lastIndex)
 										: lastIndex) +

@@ -952,9 +952,9 @@ const usePost = () => {
 			postType = "feed" as SitePost["postType"],
 			privacy = "public" as SitePost["privacy"],
 			groupId = undefined as string | undefined,
-			tags = undefined as string | undefined,
 			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
+			tags = undefined as string | undefined,
 			sortBy = "latest" as QueryPostsSortBy,
 		}) => {
 			/**
@@ -965,6 +965,14 @@ const usePost = () => {
 			try {
 				let refPost;
 				let refIndex;
+				const sortByIndex =
+					sortBy +
+					(postType ? `-${postType}` : "") +
+					(privacy ? `-${privacy}` : "") +
+					(groupId ? `-${groupId}` : "") +
+					(creatorId ? `-${creatorId}` : "") +
+					(creator ? `-${creator}` : "") +
+					(tags ? `-${tags}` : "");
 
 				switch (sortBy) {
 					case "latest": {
@@ -974,7 +982,7 @@ const usePost = () => {
 								(creatorId ? post.post.creatorId === creatorId : true) &&
 								post.post.postType === postType &&
 								post.post.privacy === privacy &&
-								post.index[sortBy] &&
+								post.index[sortByIndex] &&
 								acc === -1
 							) {
 								return index;
@@ -1067,9 +1075,15 @@ const usePost = () => {
 								if (existingPost) {
 									posts.splice(postIndex, 1);
 
+									const indices = {
+										...post.index,
+										...existingPost.index,
+									};
+
 									return {
-										...existingPost,
 										...post,
+										...existingPost,
+										index: indices,
 									};
 								} else {
 									return post;

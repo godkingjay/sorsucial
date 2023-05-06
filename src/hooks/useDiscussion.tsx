@@ -106,6 +106,28 @@ const useDiscussion = () => {
 					);
 				});
 
+			function createDiscussionIndex() {
+				const index = {
+					newest: 0,
+					["latest" +
+					(newDiscussionData.discussionType
+						? `-${newDiscussionData.discussionType}`
+						: "") +
+					(newDiscussionData.privacy ? `-${newDiscussionData.privacy}` : "") +
+					(newDiscussionData.groupId ? `-${newDiscussionData.groupId}` : "")]: 0,
+					["latest" +
+					(newDiscussionData.discussionType
+						? `-${newDiscussionData.discussionType}`
+						: "") +
+					(newDiscussionData.privacy ? `-${newDiscussionData.privacy}` : "") +
+					(newDiscussionData.groupId ? `-${newDiscussionData.groupId}` : "") +
+					(newDiscussionData.creatorId
+						? `-${newDiscussionData.creatorId}`
+						: "")]: 0,
+				};
+				return index;
+			}
+
 			if (newDiscussionData) {
 				setDiscussionStateValue(
 					(prev) =>
@@ -115,10 +137,7 @@ const useDiscussion = () => {
 								{
 									discussion: newDiscussionData,
 									creator: userStateValue.user,
-									index: {
-										newest: 0,
-										latest: 0,
-									},
+									index: createDiscussionIndex(),
 								},
 								...prev.discussions,
 							],

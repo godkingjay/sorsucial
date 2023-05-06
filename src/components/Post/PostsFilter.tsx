@@ -138,8 +138,6 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		handleFilterPosts();
 	}, [postStateValue]);
 
-	console.log(postStateValue);
-
 	return (
 		<>
 			<div className="flex flex-col gap-y-4">

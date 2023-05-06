@@ -1,9 +1,9 @@
-import clientPromise from "../mongodb";
+import mongoDb from "./db";
 
 export default async function tagDb() {
-	const client = await clientPromise;
-	const db = client.db("sorsu-db");
-	const tagsCollection = db.collection("tags");
+	const { sorsuDb } = await mongoDb();
+
+	const tagsCollection = sorsuDb.collection("tags");
 
 	return {
 		tagsCollection,

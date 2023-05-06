@@ -1,12 +1,14 @@
-import clientPromise from "../mongodb";
+import mongoDb from "./db";
 
 export default async function discussionDb() {
-	const client = await clientPromise;
-	const db = client.db("sorsu-db");
-	const discussionsCollection = db.collection("discussions");
-	const discussionVotesCollection = db.collection("discussion-votes");
-	const discussionRepliesCollection = db.collection("discussion-replies");
-	const discussionReplyVotesCollection = db.collection("discussion-reply-votes");
+	const { sorsuDb } = await mongoDb();
+
+	const discussionsCollection = sorsuDb.collection("discussions");
+	const discussionVotesCollection = sorsuDb.collection("discussion-votes");
+	const discussionRepliesCollection = sorsuDb.collection("discussion-replies");
+	const discussionReplyVotesCollection = sorsuDb.collection(
+		"discussion-reply-votes"
+	);
 	return {
 		discussionsCollection,
 		discussionVotesCollection,

@@ -1,11 +1,11 @@
-import clientPromise from "../mongodb";
+import mongoDb from "./db";
 
 export default async function userDb() {
-	const client = await clientPromise;
-	const db = client.db("sorsu-db");
-	const apiKeysCollection = db.collection("api-keys");
-	const usersCollection = db.collection("users");
-	const userProfilePhotosCollection = db.collection("user-profile-photos");
+	const { sorsuDb } = await mongoDb();
+
+	const apiKeysCollection = sorsuDb.collection("api-keys");
+	const usersCollection = sorsuDb.collection("users");
+	const userProfilePhotosCollection = sorsuDb.collection("user-profile-photos");
 
 	return {
 		apiKeysCollection,

@@ -106,6 +106,28 @@ const useDiscussion = () => {
 					);
 				});
 
+			function createDiscussionIndex() {
+				const index = {
+					newest: 0,
+					["latest" +
+					(newDiscussionData.discussionType
+						? `-${newDiscussionData.discussionType}`
+						: "") +
+					(newDiscussionData.privacy ? `-${newDiscussionData.privacy}` : "") +
+					(newDiscussionData.groupId ? `-${newDiscussionData.groupId}` : "")]: 0,
+					["latest" +
+					(newDiscussionData.discussionType
+						? `-${newDiscussionData.discussionType}`
+						: "") +
+					(newDiscussionData.privacy ? `-${newDiscussionData.privacy}` : "") +
+					(newDiscussionData.groupId ? `-${newDiscussionData.groupId}` : "") +
+					(newDiscussionData.creatorId
+						? `-${newDiscussionData.creatorId}`
+						: "")]: 0,
+				};
+				return index;
+			}
+
 			if (newDiscussionData) {
 				setDiscussionStateValue(
 					(prev) =>
@@ -115,10 +137,7 @@ const useDiscussion = () => {
 								{
 									discussion: newDiscussionData,
 									creator: userStateValue.user,
-									index: {
-										newest: 0,
-										latest: 0,
-									},
+									index: createDiscussionIndex(),
 								},
 								...prev.discussions,
 							],
@@ -585,31 +604,31 @@ const useDiscussion = () => {
 	const fetchDiscussions = async ({
 		discussionType = "discussion" as SiteDiscussion["discussionType"],
 		privacy = "public" as SiteDiscussion["privacy"],
+		groupId = undefined as string | undefined,
 		creatorId = undefined as string | undefined,
 		creator = undefined as string | undefined,
-		groupId = undefined as string | undefined,
 		tags = undefined as string | undefined,
-		isOpen = true as SiteDiscussion["isOpen"],
+		isOpen = undefined as undefined | boolean,
 		sortBy = "latest" as QueryDiscussionsSortBy,
 	}) => {
 		try {
 			let refDiscussion;
 			let refIndex;
+			const sortByIndex =
+				sortBy +
+				(discussionType ? `-${discussionType}` : "") +
+				(privacy ? `-${privacy}` : "") +
+				(groupId ? `-${groupId}` : "") +
+				(creatorId ? `-${creatorId}` : "") +
+				(creator ? `-${creator}` : "") +
+				(tags ? `-${tags}` : "") +
+				(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "");
 
 			switch (sortBy) {
 				case "latest": {
 					refIndex = discussionStateValue.discussions.reduceRight(
 						(acc, discussion, index) => {
-							if (
-								(creatorId
-									? discussion.discussion.creatorId === creatorId
-									: true) &&
-								(groupId ? discussion.discussion.groupId === groupId : true) &&
-								discussion.discussion.discussionType === discussionType &&
-								discussion.discussion.privacy === privacy &&
-								discussion?.index[sortBy] &&
-								acc === -1
-							) {
+							if (discussion?.index[sortByIndex] && acc === -1) {
 								return index;
 							}
 
@@ -628,7 +647,11 @@ const useDiscussion = () => {
 				}
 			}
 
-			const discussions: DiscussionData[] = await axios
+			const {
+				discussions,
+			}: {
+				discussions: DiscussionData[];
+			} = await axios
 				.get(apiConfig.apiEndpoint + "/discussions/discussions", {
 					params: {
 						apiKey: userStateValue.api?.keys[0].key,
@@ -658,7 +681,7 @@ const useDiscussion = () => {
 							: new Date().toISOString(),
 					} as Partial<APIEndpointDiscussionsParams>,
 				})
-				.then((response) => response.data.discussions)
+				.then((response) => response.data)
 				.catch((error: any) => {
 					throw new Error(
 						`=>API (GET - Discussions): Getting Discussions Error:\n${error.message}`
@@ -681,9 +704,15 @@ const useDiscussion = () => {
 							if (existingDiscussion) {
 								discussions.splice(discussionIndex, 1);
 
+								const indices = {
+									...discussion.index,
+									...existingDiscussion.index,
+								};
+
 								return {
-									...existingDiscussion,
 									...discussion,
+									...existingDiscussion,
+									index: indices,
 								};
 							} else {
 								return discussion;

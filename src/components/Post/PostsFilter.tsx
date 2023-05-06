@@ -62,38 +62,35 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const filteredPostsLength = filteredPosts.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
 
+	const sortByIndex =
+		sortBy +
+		(postType ? `-${postType}` : "") +
+		(privacy ? `-${privacy}` : "") +
+		(groupId ? `-${groupId}` : "") +
+		(creatorId ? `-${postType === "announcement" ? "sorsu" : creatorId}` : "") +
+		(creator ? `-${postType === "announcement" ? "sorsu" : creator}` : "") +
+		(tags ? `-${tags}` : "");
+
 	const router = useRouter();
 	const { userId } = router.query;
 
 	const handleFilterPosts = useCallback(() => {
 		setFilteredPosts(
-			postStateValue.posts.filter(
-				(post) =>
-					(creatorId ? post.post.creatorId === creatorId : true) &&
-					(groupId ? post.post.groupId === groupId : true) &&
-					(creator
-						? post.creator?.firstName.match(regexCreator) ||
-						  post.creator?.lastName.match(regexCreator) ||
-						  post.creator?.middleName?.match(regexCreator) ||
-						  post.creator?.email.match(regexCreator)
-						: true) &&
-					post.post.privacy === privacy &&
-					post.post.postType === postType &&
-					post.index &&
-					post.index[sortBy] !== undefined &&
-					post.index[sortBy] >= 0
-			)
+			postStateValue.posts
+				.filter(
+					(post) =>
+						(creator
+							? post.creator?.firstName.match(regexCreator) ||
+							  post.creator?.lastName.match(regexCreator) ||
+							  post.creator?.middleName?.match(regexCreator) ||
+							  post.creator?.email.match(regexCreator)
+							: true) &&
+						post.index[sortByIndex] !== undefined &&
+						post.index[sortByIndex] >= 0
+				)
+				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 		);
-	}, [
-		postStateValue.posts,
-		creatorId,
-		groupId,
-		creator,
-		regexCreator,
-		privacy,
-		postType,
-		sortBy,
-	]);
+	}, [postStateValue.posts, creator, regexCreator, sortByIndex]);
 
 	const handleFetchPosts = useCallback(async () => {
 		setLoadingPosts(true);
@@ -114,7 +111,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 			console.log("Hook: fetching posts Error: ", error.message);
 		}
 		setLoadingPosts(false);
-	}, [fetchPosts, groupId, postType, privacy, sortBy]);
+	}, [creator, creatorId, fetchPosts, groupId, postType, privacy, sortBy, tags]);
 
 	const handleFirstFetchPosts = useCallback(async () => {
 		setFirstLoadingPosts(true);

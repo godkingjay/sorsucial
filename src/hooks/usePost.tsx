@@ -355,6 +355,34 @@ const usePost = () => {
 				if (postForm.poll) {
 				}
 
+				function createPostIndex() {
+					const index = {
+						newest: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "")]: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "") +
+						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "") +
+						(newPostData.creatorId
+							? `-${
+									newPostData.postType === "announcement"
+										? "sorsu"
+										: newPostData.creatorId
+							  }`
+							: "") +
+						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
+					};
+					return index;
+				}
+
 				/**
 				 * Update the post in the recoil state.
 				 *
@@ -373,10 +401,7 @@ const usePost = () => {
 										updatedAt: new Date().toISOString(),
 									},
 									creator: userStateValue.user,
-									index: {
-										newest: 0,
-										latest: 0,
-									},
+									index: createPostIndex(),
 								},
 								...prev.posts,
 							],
@@ -952,9 +977,9 @@ const usePost = () => {
 			postType = "feed" as SitePost["postType"],
 			privacy = "public" as SitePost["privacy"],
 			groupId = undefined as string | undefined,
-			tags = undefined as string | undefined,
 			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
+			tags = undefined as string | undefined,
 			sortBy = "latest" as QueryPostsSortBy,
 		}) => {
 			/**
@@ -965,18 +990,23 @@ const usePost = () => {
 			try {
 				let refPost;
 				let refIndex;
+				const sortByIndex =
+					sortBy +
+					(postType ? `-${postType}` : "") +
+					(privacy ? `-${privacy}` : "") +
+					(groupId ? `-${groupId}` : "") +
+					(creatorId
+						? `-${postType === "announcement" ? "sorsu" : creatorId}`
+						: "") +
+					(creator
+						? `-${postType === "announcement" ? "sorsu" : creator}`
+						: "") +
+					(tags ? `-${tags}` : "");
 
 				switch (sortBy) {
 					case "latest": {
 						refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
-							if (
-								(groupId ? post.post.groupId === groupId : true) &&
-								(creatorId ? post.post.creatorId === creatorId : true) &&
-								post.post.postType === postType &&
-								post.post.privacy === privacy &&
-								post.index[sortBy] &&
-								acc === -1
-							) {
+							if (post.index[sortByIndex] && acc === -1) {
 								return index;
 							}
 
@@ -1067,9 +1097,15 @@ const usePost = () => {
 								if (existingPost) {
 									posts.splice(postIndex, 1);
 
+									const indices = {
+										...post.index,
+										...existingPost.index,
+									};
+
 									return {
-										...existingPost,
 										...post,
+										...existingPost,
+										index: indices,
 									};
 								} else {
 									return post;

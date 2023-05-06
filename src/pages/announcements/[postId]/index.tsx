@@ -1,17 +1,8 @@
 import { PostState } from "@/atoms/postAtom";
-import PostDiscussionNotFound from "@/components/Error/PostDiscussionNotFound";
-import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
-import PostCard from "@/components/Post/PostCard";
 import SinglePostView from "@/components/Post/SinglePostView";
-import PostCardSkeleton from "@/components/Skeleton/Post/PostCardSkeleton";
-import usePost from "@/hooks/usePost";
-import useUser from "@/hooks/useUser";
-import { siteDetails } from "@/lib/host";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
 type Props = {

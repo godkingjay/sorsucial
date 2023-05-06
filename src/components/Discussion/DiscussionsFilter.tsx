@@ -71,35 +71,33 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 	const regexCreator = new RegExp(creator || "", "i");
 	const router = useRouter();
 
+	const sortByIndex =
+		sortBy +
+		(discussionType ? `-${discussionType}` : "") +
+		(privacy ? `-${privacy}` : "") +
+		(groupId ? `-${groupId}` : "") +
+		(creatorId ? `-${creatorId}` : "") +
+		(creator ? `-${creator}` : "") +
+		(tags ? `-${tags}` : "") +
+		(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "");
+
 	const handleFilterDiscussions = useCallback(() => {
 		setFilteredDiscussions(
-			discussionStateValue.discussions.filter(
-				(discussion) =>
-					(creatorId ? discussion.discussion.creatorId === creatorId : true) &&
-					(creator
-						? discussion.creator?.firstName.match(regexCreator) ||
-						  discussion.creator?.lastName.match(regexCreator) ||
-						  discussion.creator?.middleName?.match(regexCreator) ||
-						  discussion.creator?.email.match(regexCreator)
-						: true) &&
-					(groupId ? discussion.discussion.groupId === groupId : true) &&
-					discussion.discussion.privacy === privacy &&
-					discussion.discussion.discussionType === discussionType &&
-					discussion.index &&
-					discussion.index[sortBy] !== undefined &&
-					discussion.index[sortBy] >= 0
-			)
+			discussionStateValue.discussions
+				.filter(
+					(discussion) =>
+						(creator
+							? discussion.creator?.firstName.match(regexCreator) ||
+							  discussion.creator?.lastName.match(regexCreator) ||
+							  discussion.creator?.middleName?.match(regexCreator) ||
+							  discussion.creator?.email.match(regexCreator)
+							: true) &&
+						discussion.index[sortByIndex] !== undefined &&
+						discussion.index[sortByIndex] >= 0
+				)
+				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 		);
-	}, [
-		discussionStateValue.discussions,
-		creatorId,
-		creator,
-		regexCreator,
-		groupId,
-		privacy,
-		discussionType,
-		sortBy,
-	]);
+	}, [discussionStateValue.discussions, creator, regexCreator, sortByIndex]);
 
 	const handleFetchDiscussions = useCallback(async () => {
 		setLoadingDiscussions(true);
@@ -119,7 +117,15 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 			console.log("Hook: fetching discussions Error: ", error.message);
 		}
 		setLoadingDiscussions(false);
-	}, [discussionType, fetchDiscussions, groupId, isOpen, privacy, sortBy]);
+	}, [
+		creatorId,
+		discussionType,
+		fetchDiscussions,
+		groupId,
+		isOpen,
+		privacy,
+		sortBy,
+	]);
 
 	const handleFirstFetchDiscussions = useCallback(async () => {
 		setFirstLoadingDiscussions(true);

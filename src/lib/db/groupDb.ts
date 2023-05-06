@@ -1,5 +1,4 @@
-import { GroupMember, SiteGroup } from "../interfaces/group";
-import clientPromise from "../mongodb";
+import mongoDb from "./db";
 
 /**
  * This function is responsible for returning the collections for the group database.
@@ -16,32 +15,25 @@ import clientPromise from "../mongodb";
  * @see {@link groupDb}
  */
 export default async function groupDb() {
-	/**
-	 * This constant is used to store the client connection to the database.
-	 */
-	const client = await clientPromise;
-	/**
-	 * This constant is used to store the database.
-	 */
-	const db = client.db("sorsu-db");
+	const { sorsuDb } = await mongoDb();
 	/**
 	 * This constant is used to store the groups collection.
 	 *
 	 * @type {Collection<SiteGroup>}
 	 */
-	const groupsCollection = db.collection("groups");
+	const groupsCollection = sorsuDb.collection("groups");
 	/**
 	 * This constant is used to store the group members collection.
 	 *
 	 * @type {Collection<GroupMember>}
 	 */
-	const groupMembersCollection = db.collection("group-members");
+	const groupMembersCollection = sorsuDb.collection("group-members");
 	/**
 	 * This constant is used to store the group images collection.
 	 *
 	 * @type {Collection<GroupImage>}
 	 */
-	const groupImagesCollection = db.collection("group-images");
+	const groupImagesCollection = sorsuDb.collection("group-images");
 
 	return {
 		groupsCollection,

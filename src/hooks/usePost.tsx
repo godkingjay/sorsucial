@@ -355,6 +355,34 @@ const usePost = () => {
 				if (postForm.poll) {
 				}
 
+				function createPostIndex() {
+					const index = {
+						newest: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "")]: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "") +
+						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
+						["latest" +
+						(newPostData.postType ? `-${newPostData.postType}` : "") +
+						(newPostData.privacy ? `-${newPostData.privacy}` : "") +
+						(newPostData.groupId ? `-${newPostData.groupId}` : "") +
+						(newPostData.creatorId
+							? `-${
+									newPostData.postType === "announcement"
+										? "sorsu"
+										: newPostData.creatorId
+							  }`
+							: "") +
+						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
+					};
+					return index;
+				}
+
 				/**
 				 * Update the post in the recoil state.
 				 *
@@ -373,10 +401,7 @@ const usePost = () => {
 										updatedAt: new Date().toISOString(),
 									},
 									creator: userStateValue.user,
-									index: {
-										newest: 0,
-										latest: 0,
-									},
+									index: createPostIndex(),
 								},
 								...prev.posts,
 							],

@@ -76,17 +76,19 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	const handleFilterPosts = useCallback(() => {
 		setFilteredPosts(
-			postStateValue.posts.filter(
-				(post) =>
-					(creator
-						? post.creator?.firstName.match(regexCreator) ||
-						  post.creator?.lastName.match(regexCreator) ||
-						  post.creator?.middleName?.match(regexCreator) ||
-						  post.creator?.email.match(regexCreator)
-						: true) &&
-					post.index[sortByIndex] !== undefined &&
-					post.index[sortByIndex] >= 0
-			)
+			postStateValue.posts
+				.filter(
+					(post) =>
+						(creator
+							? post.creator?.firstName.match(regexCreator) ||
+							  post.creator?.lastName.match(regexCreator) ||
+							  post.creator?.middleName?.match(regexCreator) ||
+							  post.creator?.email.match(regexCreator)
+							: true) &&
+						post.index[sortByIndex] !== undefined &&
+						post.index[sortByIndex] >= 0
+				)
+				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 		);
 	}, [postStateValue.posts, creator, regexCreator, sortByIndex]);
 

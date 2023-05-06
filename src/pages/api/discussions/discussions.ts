@@ -30,7 +30,7 @@ export default async function handler(
 			tags = undefined,
 			creatorId = undefined,
 			creator = undefined,
-			isOpen = true,
+			isOpen = undefined,
 			lastIndex = "-1",
 			fromVotes = Number.MAX_SAFE_INTEGER.toString(),
 			fromUpVotes = Number.MAX_SAFE_INTEGER.toString(),
@@ -128,7 +128,14 @@ export default async function handler(
 							creator: creatorData,
 							userVote: userVoteData,
 							index: {
-								[sortBy]:
+								[sortBy +
+								(discussionType ? `-${discussionType}` : "") +
+								(privacy ? `-${privacy}` : "") +
+								(groupId ? `-${groupId}` : "") +
+								(creatorId ? `-${creatorId}` : "") +
+								(creator ? `-${creator}` : "") +
+								(tags ? `-${tags}` : "") +
+								(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "")]:
 									(typeof lastIndex === "string"
 										? parseInt(lastIndex)
 										: lastIndex) +
@@ -187,11 +194,14 @@ const getSortByLatest = async ({
 	let query: any = {
 		discussionType: discussionType,
 		privacy: privacy,
-		isOpen: typeof isOpen === "string" ? isOpen === "true" : isOpen,
 		createdAt: {
 			$lt: fromDate,
 		},
 	};
+
+	if (isOpen !== undefined) {
+		query.isOpen = isOpen;
+	}
 
 	if (creatorId) {
 		query.creatorId = creatorId;

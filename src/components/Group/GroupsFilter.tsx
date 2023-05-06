@@ -16,6 +16,7 @@ type GroupsFilterProps = {
 	filter?: boolean;
 	sortBy: QueryGroupsSortBy;
 	privacy: SiteGroup["privacy"];
+	userPageId?: string;
 	creatorId?: string;
 	creator?: string;
 	tags?: string;
@@ -26,6 +27,7 @@ type GroupsFilterProps = {
 const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	groupCreation = false,
 	filter = false,
+	userPageId = undefined,
 	creatorId = undefined,
 	creator = undefined,
 	tags = undefined,
@@ -56,24 +58,29 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	const filteredGroupsLength = filteredGroups.length || -1;
 	const regexCreator = new RegExp(creator || "", "i");
 
+	const sortByIndex =
+		sortBy +
+		(privacy ? `-${privacy}` : "") +
+		(userPageId ? `-${userPageId}` : "") +
+		(creatorId ? `-${creatorId}` : "") +
+		(creator ? `-${creator}` : "") +
+		(tags ? `-${tags}` : "");
+
 	const handleFilterGroups = useCallback(() => {
 		setFilteredGroups(
 			groupStateValue.groups.filter(
 				(group) =>
-					(creatorId ? group.group.creatorId === creatorId : true) &&
 					(creator
 						? group.creator?.firstName.match(regexCreator) ||
 						  group.creator?.lastName.match(regexCreator) ||
 						  group.creator?.middleName?.match(regexCreator) ||
 						  group.creator?.email.match(regexCreator)
 						: true) &&
-					group.group.privacy === privacy &&
-					group.index &&
-					group.index[sortBy] !== undefined &&
-					group.index[sortBy] >= 0
+					group.index[sortByIndex] !== undefined &&
+					group.index[sortByIndex] >= 0
 			)
 		);
-	}, [groupStateValue.groups, privacy, sortBy]);
+	}, [creator, groupStateValue.groups, regexCreator, sortByIndex]);
 
 	const handleFetchGroups = useCallback(async () => {
 		setLoadingGroups(true);
@@ -85,6 +92,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 				creator,
 				tags,
 			});
+
 			if (fetchedGroupLength !== undefined) {
 				setEndReached(fetchedGroupLength < 10 ? true : false);
 			}
@@ -92,7 +100,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 			console.log("Hook: fetching groups Error: ", error.message);
 		}
 		setLoadingGroups(false);
-	}, [fetchGroups]);
+	}, [creator, creatorId, fetchGroups, privacy, sortBy, tags]);
 
 	const handleFirstFetchGroups = useCallback(async () => {
 		setFirstLoadingGroups(true);

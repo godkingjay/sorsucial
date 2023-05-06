@@ -25,6 +25,7 @@ export default async function handler(
 			userId,
 			privacy = "public" as SiteGroup["privacy"],
 			tags = undefined,
+			userPageId = undefined,
 			creatorId = undefined,
 			creator = undefined,
 			lastIndex = "-1",
@@ -118,7 +119,12 @@ export default async function handler(
 							creator: creatorData || null,
 							userJoin: userJoinData || null,
 							index: {
-								[sortBy]:
+								[sortBy +
+								(privacy ? `-${privacy}` : "") +
+								(userPageId ? `-${userPageId}` : "") +
+								(creatorId ? `-${creatorId}` : "") +
+								(creator ? `-${creator}` : "") +
+								(tags ? `-${tags}` : "")]:
 									(typeof lastIndex === "string"
 										? parseInt(lastIndex)
 										: lastIndex) +

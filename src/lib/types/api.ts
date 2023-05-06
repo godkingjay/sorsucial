@@ -63,6 +63,7 @@ export type APIEndpointGroupsParams = {
 	userId: string;
 	privacy: SiteGroup["privacy"];
 	tags?: string;
+	userPageId?: string;
 	creatorId?: string;
 	creator?: string;
 	lastIndex?: string | number;

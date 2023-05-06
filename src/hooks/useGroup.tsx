@@ -101,6 +101,17 @@ const useGroup = () => {
 						}
 					}
 
+					function createGroupIndex() {
+						const index = {
+							newest: 0,
+							["latest" + (groupData.privacy ? `-${groupData.privacy}` : "")]: 0,
+							["latest" +
+							(groupData.privacy ? `-${groupData.privacy}` : "") +
+							(groupData.creatorId ? `-${groupData.creatorId}` : "")]: 0,
+						};
+						return index;
+					}
+
 					setGroupStateValueMemo(
 						(prev) =>
 							({
@@ -110,10 +121,7 @@ const useGroup = () => {
 										group: groupData,
 										creator: userStateValue.user,
 										userJoin: groupMemberData,
-										index: {
-											newest: 0,
-											latest: 0,
-										},
+										index: createGroupIndex(),
 									},
 									...prev.groups,
 								],
@@ -527,26 +535,29 @@ const useGroup = () => {
 
 	const fetchGroups = useCallback(
 		async ({
+			sortBy = "latest" as QueryGroupsSortBy,
 			privacy = "public" as SiteGroup["privacy"],
-			tags = undefined as string | undefined,
+			userPageId = undefined as string | undefined,
 			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
-			sortBy = "latest" as QueryGroupsSortBy,
+			tags = undefined as string | undefined,
 		}) => {
 			try {
 				let refGroup;
 				let refIndex;
+				const sortByIndex =
+					sortBy +
+					(privacy ? `-${privacy}` : "") +
+					(userPageId ? `-${userPageId}` : "") +
+					(creatorId ? `-${creatorId}` : "") +
+					(creator ? `-${creator}` : "") +
+					(tags ? `-${tags}` : "");
 
 				switch (sortBy) {
 					case "latest": {
 						refIndex = groupStateValueMemo.groups.reduceRight(
 							(acc, group, index) => {
-								if (
-									(creatorId ? group.group.creatorId === creatorId : true) &&
-									group.group.privacy === privacy &&
-									group.index[sortBy] &&
-									acc === -1
-								) {
+								if (group.index[sortByIndex] && acc === -1) {
 									return index;
 								}
 
@@ -572,6 +583,7 @@ const useGroup = () => {
 							userId: authUser?.uid,
 							privacy: privacy,
 							tags: tags,
+							userPageId: userPageId,
 							creatorId: creatorId,
 							creator: creator,
 							lastIndex: refGroup?.index[sortBy] || -1,
@@ -592,6 +604,8 @@ const useGroup = () => {
 						);
 					});
 
+				const fetchedLength = groups.length;
+
 				if (groups.length) {
 					setGroupStateValueMemo((prev) => ({
 						...prev,
@@ -607,9 +621,15 @@ const useGroup = () => {
 								if (existingGroup) {
 									groups.splice(groupIndex, 1);
 
+									const indices = {
+										...groupData.index,
+										...existingGroup.index,
+									};
+
 									return {
-										...existingGroup,
 										...groupData,
+										...existingGroup,
+										index: indices,
 									};
 								} else {
 									return groupData;
@@ -621,7 +641,7 @@ const useGroup = () => {
 					console.log("Mongo: No groups found!");
 				}
 
-				return groups.length;
+				return fetchedLength;
 			} catch (error: any) {
 				console.log(`=>MONGO: Error while fetching groups:\n${error.message}`);
 			}

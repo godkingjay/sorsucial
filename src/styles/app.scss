@@ -1,12 +1,4 @@
 @layer components {
-	.page-wrapper {
-		@apply flex flex-col sm:px-4 py-4 gap-y-2 sm:gap-y-4;
-	}
-
-	.page-box-1 {
-		@apply bg-white shadow-page-box-1 sm:rounded-lg;
-	}
-
 	.divider {
 		@apply w-full h-[1px] bg-gray-200;
 	}
@@ -531,7 +523,7 @@
 	}
 
 	.post-creation-listener {
-		@apply bg-white px-4 py-2 gap-y-2 shadow-page-box-1 rounded-lg flex flex-col;
+		@apply px-4 py-2 gap-y-2 flex flex-col;
 	}
 
 	.post-creation-listener-head {
@@ -1188,7 +1180,7 @@
 	}
 
 	.post-card {
-		@apply flex flex-col shadow-page-box-1 bg-white rounded-lg relative;
+		@apply flex flex-col relative;
 	}
 
 	.post-dropdown-menu-wrapper {
@@ -1815,7 +1807,7 @@
 	}
 
 	.discussion-creation-listener {
-		@apply bg-white px-4 py-2 gap-y-2 shadow-page-box-1 rounded-lg flex flex-col;
+		@apply px-4 py-2 gap-y-2 flex flex-col;
 
 		.discussion-creation-listener-head {
 			@apply flex flex-row h-12 gap-x-4;
@@ -2660,5 +2652,13 @@
 		&::after {
 			@apply absolute content-[""] bottom-0 w-full h-full left-0 bg-gradient-to-t from-[rgba(255,255,255,_1)_20%] to-[rgba(255,255,255,_0)_80%] pointer-events-none;
 		}
+	}
+
+	.page-wrapper {
+		@apply flex flex-col sm:px-4 py-4 gap-y-4;
+	}
+
+	.page-box-1 {
+		@apply bg-white shadow-page-box-1 sm:rounded-lg;
 	}
 }

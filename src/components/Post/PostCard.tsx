@@ -224,9 +224,9 @@ const PostCard: React.FC<PostCardProps> = ({ postData }) => {
 	};
 
 	return (
-		<div className="post-card entrance-animation-slide-from-right">
+		<div className="post-card page-box-1 entrance-animation-slide-from-right">
 			{!isSinglePostPage() && postData.postDeleted && (
-				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 rounded-t-lg">
+				<div className="duration-200 entrance-animation-float-down z-[250] items-center font-semibold bg-red-500 sm:rounded-t-lg">
 					<ErrorBannerTextXs message="This post no longer exist. It may have been deleted by the creator or an admin." />
 				</div>
 			)}

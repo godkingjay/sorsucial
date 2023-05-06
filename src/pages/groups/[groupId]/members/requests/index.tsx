@@ -1,5 +1,6 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
@@ -44,7 +45,7 @@ const GroupPageMembersRequestsPage: React.FC<
 
 	return (
 		<>
-			<div className="flex-1">
+			<LimitedBodyLayout>
 				<GroupPageLoader
 					groupPageData={groupPageData}
 					loadingGroup={loadingPage}
@@ -52,11 +53,13 @@ const GroupPageMembersRequestsPage: React.FC<
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
-								<div className="grid grid-cols-2 gap-4">{renderItems()}</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-4">
+									{renderItems()}
+								</div>
 							</>
 						)}
 				</GroupPageLoader>
-			</div>
+			</LimitedBodyLayout>
 		</>
 	);
 };

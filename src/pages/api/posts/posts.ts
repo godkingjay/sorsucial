@@ -167,8 +167,12 @@ export default async function handler(
 								(postType ? `-${postType}` : "") +
 								(privacy ? `-${privacy}` : "") +
 								(groupId ? `-${groupId}` : "") +
-								(creatorId ? `-${creatorId}` : "") +
-								(creator ? `-${creator}` : "") +
+								(creatorId
+									? `-${postType === "announcement" ? "sorsu" : creatorId}`
+									: "") +
+								(creator
+									? `-${postType === "announcement" ? "sorsu" : creator}`
+									: "") +
 								(tags ? `-${tags}` : "")]:
 									(typeof lastIndex === "string"
 										? parseInt(lastIndex)

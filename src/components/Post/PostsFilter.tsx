@@ -67,8 +67,8 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		(postType ? `-${postType}` : "") +
 		(privacy ? `-${privacy}` : "") +
 		(groupId ? `-${groupId}` : "") +
-		(creatorId ? `-${creatorId}` : "") +
-		(creator ? `-${creator}` : "") +
+		(creatorId ? `-${postType === "announcement" ? "sorsu" : creatorId}` : "") +
+		(creator ? `-${postType === "announcement" ? "sorsu" : creator}` : "") +
 		(tags ? `-${tags}` : "");
 
 	const router = useRouter();

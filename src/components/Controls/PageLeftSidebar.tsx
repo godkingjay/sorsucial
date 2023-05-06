@@ -37,10 +37,10 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 	return (
 		<>
 			<div
-				className="z-[590] hidden fixed w-full h-full data-[open=true]:block"
+				className="z-[590] duration-200 pointer-events-none opacity-0 fixed w-full h-full data-[open=true]:opacity-100 data-[open=true]:pointer-events-auto"
 				data-open={navigationBarStateValue.pageLeftSidebar.open}
 			>
-				<div className="sticky h-full w-full bg-black bg-opacity-20 top-0"></div>
+				<div className="sticky h-full w-full bg-black bg-opacity-40 top-0"></div>
 			</div>
 			<div className="z-[600] w-14 h-full sticky top-0">
 				<div className="sticky top-14 w-max h-full page-left-sidebar-wrapper">

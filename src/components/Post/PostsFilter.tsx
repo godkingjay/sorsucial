@@ -78,31 +78,17 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		setFilteredPosts(
 			postStateValue.posts.filter(
 				(post) =>
-					(creatorId ? post.post.creatorId === creatorId : true) &&
-					(groupId ? post.post.groupId === groupId : true) &&
 					(creator
 						? post.creator?.firstName.match(regexCreator) ||
 						  post.creator?.lastName.match(regexCreator) ||
 						  post.creator?.middleName?.match(regexCreator) ||
 						  post.creator?.email.match(regexCreator)
 						: true) &&
-					post.post.privacy === privacy &&
-					post.post.postType === postType &&
-					post.index &&
 					post.index[sortByIndex] !== undefined &&
 					post.index[sortByIndex] >= 0
 			)
 		);
-	}, [
-		postStateValue.posts,
-		creatorId,
-		groupId,
-		creator,
-		regexCreator,
-		privacy,
-		postType,
-		sortByIndex,
-	]);
+	}, [postStateValue.posts, creator, regexCreator, sortByIndex]);
 
 	const handleFetchPosts = useCallback(async () => {
 		setLoadingPosts(true);

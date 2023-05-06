@@ -977,14 +977,7 @@ const usePost = () => {
 				switch (sortBy) {
 					case "latest": {
 						refIndex = postStateValue.posts.reduceRight((acc, post, index) => {
-							if (
-								(groupId ? post.post.groupId === groupId : true) &&
-								(creatorId ? post.post.creatorId === creatorId : true) &&
-								post.post.postType === postType &&
-								post.post.privacy === privacy &&
-								post.index[sortByIndex] &&
-								acc === -1
-							) {
+							if (post.index[sortByIndex] && acc === -1) {
 								return index;
 							}
 

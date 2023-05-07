@@ -596,7 +596,7 @@ const useGroup = () => {
 							userPageId: userPageId,
 							creatorId: creatorId,
 							creator: creator,
-							lastIndex: refGroup?.index[sortBy] || -1,
+							lastIndex: refGroup?.index[sortByIndex] || -1,
 							fromMembers:
 								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
 							fromPosts:
@@ -656,14 +656,19 @@ const useGroup = () => {
 				console.log(`=>MONGO: Error while fetching groups:\n${error.message}`);
 			}
 		},
-		[groupStateValueMemo]
+		[
+			authUser?.uid,
+			groupStateValueMemo.groups,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+		]
 	);
 
 	const fetchGroupMembers = useCallback(
 		async ({
 			sortBy = "accepted-desc" as QueryGroupMembersSortBy,
 			groupId = "" as string,
-			roles = undefined as GroupMember["roles"] | undefined,
+			roles = ["member"] as GroupMember["roles"],
 		}) => {
 			try {
 				if (!groupStateValueMemo.currentGroup) {
@@ -671,29 +676,26 @@ const useGroup = () => {
 				}
 
 				let refGroupMember: GroupMemberData | null;
-				let refIndex: number;
+				let refIndex: number = -1;
 
 				const sortByIndex =
 					sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
 
 				switch (sortBy) {
 					case "accepted-desc": {
-						refIndex =
-							groupStateValueMemo.currentGroup?.members?.reduceRight(
-								(acc, member, index) => {
-									if (member.index[sortByIndex] && acc === -1) {
-										return index;
-									}
+						refIndex = groupStateValueMemo.currentGroup?.members?.reduceRight(
+							(acc, member, index) => {
+								if (member.index[sortByIndex] >= 0 && acc === -1) {
+									return index;
+								}
 
-									return acc;
-								},
-								-1
-							) || -1;
+								return acc;
+							},
+							-1
+						);
 
 						refGroupMember =
-							refIndex >= 0
-								? groupStateValueMemo.currentGroup?.members[refIndex]
-								: null;
+							groupStateValueMemo.currentGroup?.members[refIndex] || null;
 
 						break;
 					}
@@ -714,7 +716,7 @@ const useGroup = () => {
 							apiKey: userStateValue.api?.keys[0].key,
 							userId: authUser?.uid,
 							sortBy: sortBy,
-							lastIndex: refGroupMember?.index[sortBy] || -1,
+							lastIndex: refGroupMember?.index[sortByIndex] || -1,
 							groupId: groupId,
 							roles: roles,
 							fromUpdated: refGroupMember?.member?.updatedAt || null,
@@ -780,7 +782,12 @@ const useGroup = () => {
 				);
 			}
 		},
-		[groupStateValueMemo]
+		[
+			authUser?.uid,
+			groupStateValueMemo.currentGroup,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+		]
 	);
 
 	const fetchUserJoin = useCallback(async (groupId: string, userId: string) => {

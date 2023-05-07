@@ -150,7 +150,7 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 
 	useEffect(() => {
 		handleFilterDiscussions();
-	}, [discussionStateValue]);
+	}, [discussionStateValue, sortByIndex]);
 
 	return (
 		<>

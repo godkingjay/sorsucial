@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { PageFilterProps } from "../Controls/PageFilter";
+import PageFilter, { PageFilterProps } from "../Controls/PageFilter";
 import { GroupMember } from "@/lib/interfaces/group";
 import { QueryGroupMembersSortBy } from "@/lib/types/api";
 import useGroup from "@/hooks/useGroup";
 import useUser from "@/hooks/useUser";
 import { GroupMemberData } from "@/atoms/groupAtom";
+import VisibleInViewPort from "../Events/VisibleInViewPort";
+import PageEnd from "../Banner/PageBanner/PageEnd";
 
 type MembersFilterProps = {
 	addMember: boolean;
@@ -58,22 +60,25 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 	}, [groupStateValue.currentGroup?.members, sortByIndex]);
 
 	const handleFetchGroupMembers = useCallback(async () => {
-		setLoadingGroupMembers(true);
 		try {
-			const fetchedGroupMembersLength = await fetchGroupMembers({
-				sortBy,
-				groupId,
-				roles,
-			});
+			if (!loadingGroupMembers) {
+				setLoadingGroupMembers(true);
 
-			if (fetchedGroupMembersLength !== undefined) {
-				setEndReached(fetchedGroupMembersLength < 10 ? true : false);
+				const fetchedGroupMembersLength = await fetchGroupMembers({
+					sortBy,
+					groupId,
+					roles,
+				});
+
+				if (fetchedGroupMembersLength !== undefined) {
+					setEndReached(fetchedGroupMembersLength < 2 ? true : false);
+				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching group members Error: ", error.message);
 		}
 		setLoadingGroupMembers(false);
-	}, [fetchGroupMembers, groupId, roles, sortBy]);
+	}, [fetchGroupMembers, groupId, loadingGroupMembers, roles, sortBy]);
 
 	const handleFirstFetchGroupMembers = useCallback(async () => {
 		setFirstLoadingGroupMembers(true);
@@ -85,9 +90,29 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 		setFirstLoadingGroupMembers(false);
 	}, [handleFetchGroupMembers]);
 
-	useEffect(() => {
-		handleFilterGroupMembers();
-	}, [groupStateValue.currentGroup]);
+	const renderLoading = () => {
+		const result = [];
+
+		for (let i = 0; i < 10; i++) {
+			result.push(
+				<div
+					key={i}
+					className="bg-white rounded-lg shadow-page-box-1 p-4 flex flex-row gap-x-2"
+				>
+					<div className="h-16 w-16 rounded-full skeleton-color animate-pulse"></div>
+					<div className="flex flex-1 flex-col gap-y-2">
+						<div className="h-3 w-full rounded-full skeleton-color"></div>
+						<div className="h-2 w-[50%] rounded-full skeleton-color"></div>
+						<div className="my-2 flex flex-col gap-y-1">
+							<div className="h-2 w-full rounded-full skeleton-color"></div>
+						</div>
+					</div>
+				</div>
+			);
+		}
+
+		return result;
+	};
 
 	useEffect(() => {
 		if (userMounted) {
@@ -100,7 +125,50 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 		}
 	}, [userMounted]);
 
-	return <div>MembersFilter</div>;
+	useEffect(() => {
+		handleFilterGroupMembers();
+	}, [groupStateValue.currentGroup?.members]);
+
+	return (
+		<>
+			<div className="page-wrapper">
+				{!userMounted || firstLoadingGroupMembers ? (
+					<>
+						<div className="grid grid-cols-1 md:grid-cols-2">
+							{renderLoading()}
+						</div>
+					</>
+				) : (
+					<>
+						{filter && <PageFilter />}
+						<div className="gap-x-4 gap-y-4 grid grid-cols-`">
+							{filteredGroupMembersLength > 0 && (
+								<>
+									{filteredGroupMembers.map((member, index) => (
+										<React.Fragment key={member.member.userId}>
+											<p>{member.user?.uid}</p>
+										</React.Fragment>
+									))}
+								</>
+							)}
+						</div>
+						{loadingGroupMembers && <>{renderLoading()}</>}
+						{!endReached &&
+							groupMembersMounted &&
+							filteredGroupMembersLength > 0 && (
+								<VisibleInViewPort
+									disabled={
+										endReached || loadingGroupMembers || firstLoadingGroupMembers
+									}
+									onVisible={handleFetchGroupMembers}
+								></VisibleInViewPort>
+							)}
+						{endReached && <PageEnd message="End of Members" />}
+					</>
+				)}
+			</div>
+		</>
+	);
 };
 
 export default MembersFilter;

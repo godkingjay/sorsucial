@@ -20,15 +20,17 @@ export default async function handler(
 			apiKey,
 			userId,
 			groupId,
-			roles = ["member"],
+			roles: rawRoles = ["member"],
 			lastIndex = "-1",
 			fromAccepted = new Date().toISOString(),
-			fromRejected = new Date().toISOString(),
 			fromRequested = new Date().toISOString(),
 			fromUpdated = new Date().toISOString(),
+			fromRejected = new Date().toISOString(),
 			sortBy = "accepted-desc",
-			limit = 10,
+			limit = 2,
 		}: APIEndpointGroupMembersGroupParams = req.body || req.query;
+
+		const roles = typeof rawRoles === "string" ? JSON.parse(rawRoles) : rawRoles;
 
 		if (!apiKey) {
 			return res
@@ -95,6 +97,7 @@ export default async function handler(
 								fromAccepted,
 								limit,
 							});
+
 							break;
 						}
 
@@ -117,7 +120,7 @@ export default async function handler(
 					members.map(async (memberDoc) => {
 						const member = memberDoc as unknown as GroupMember;
 						const user = (await usersCollection.findOne({
-							id: member.userId,
+							uid: member.userId,
 						})) as unknown as SiteUser;
 
 						return {
@@ -174,7 +177,7 @@ const getSortByAccepted = async ({
 			$all: roles,
 		},
 		acceptedAt: {
-			$lte:
+			$lt:
 				typeof fromAccepted === "string"
 					? fromAccepted
 					: fromAccepted?.toISOString(),

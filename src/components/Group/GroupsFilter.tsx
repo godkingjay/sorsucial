@@ -68,17 +68,19 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 
 	const handleFilterGroups = useCallback(() => {
 		setFilteredGroups(
-			groupStateValue.groups.filter(
-				(group) =>
-					(creator
-						? group.creator?.firstName.match(regexCreator) ||
-						  group.creator?.lastName.match(regexCreator) ||
-						  group.creator?.middleName?.match(regexCreator) ||
-						  group.creator?.email.match(regexCreator)
-						: true) &&
-					group.index[sortByIndex] !== undefined &&
-					group.index[sortByIndex] >= 0
-			)
+			groupStateValue.groups
+				.filter(
+					(group) =>
+						(creator
+							? group.creator?.firstName.match(regexCreator) ||
+							  group.creator?.lastName.match(regexCreator) ||
+							  group.creator?.middleName?.match(regexCreator) ||
+							  group.creator?.email.match(regexCreator)
+							: true) &&
+						group.index[sortByIndex] !== undefined &&
+						group.index[sortByIndex] >= 0
+				)
+				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 		);
 	}, [creator, groupStateValue.groups, regexCreator, sortByIndex]);
 
@@ -113,10 +115,6 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	}, [handleFetchGroups]);
 
 	useEffect(() => {
-		handleFilterGroups();
-	}, [groupStateValue]);
-
-	useEffect(() => {
 		if (userMounted) {
 			if (!groupsMounted.current) {
 				groupsMounted.current = true;
@@ -126,6 +124,10 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 			}
 		}
 	}, [userMounted]);
+
+	useEffect(() => {
+		handleFilterGroups();
+	}, [groupStateValue, sortByIndex]);
 
 	return (
 		<>

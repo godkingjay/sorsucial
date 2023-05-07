@@ -104,6 +104,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 				tags: tags,
 				groupId: groupId,
 			});
+
 			if (fetchedPostsLength !== undefined) {
 				setEndReached(fetchedPostsLength < 10 ? true : false);
 			}
@@ -136,7 +137,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	useEffect(() => {
 		handleFilterPosts();
-	}, [postStateValue]);
+	}, [postStateValue, sortByIndex]);
 
 	return (
 		<>
@@ -160,10 +161,9 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 						{filteredPostsLength > 0 && (
 							<>
 								{filteredPosts.map((post, index) => (
-									<PostCard
-										key={post.post.id}
-										postData={post}
-									/>
+									<React.Fragment key={post.post.id}>
+										<PostCard postData={post} />
+									</React.Fragment>
 								))}
 							</>
 						)}

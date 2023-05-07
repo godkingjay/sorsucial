@@ -1,5 +1,5 @@
 import { SiteDiscussion } from "../interfaces/discussion";
-import { SiteGroup } from "../interfaces/group";
+import { GroupMember, SiteGroup } from "../interfaces/group";
 import { SitePost } from "../interfaces/post";
 import { SiteUser } from "../interfaces/user";
 
@@ -72,6 +72,20 @@ export type APIEndpointGroupsParams = {
 	fromDiscussions?: string | number;
 	fromDate?: string | Date;
 	sortBy: QueryGroupsSortBy;
+	limit?: string | number;
+};
+
+export type APIEndpointMembersGroupParams = {
+	apiKey: string;
+	userId: string;
+	groupId: string;
+	roles?: GroupMember["roles"];
+	lastIndex?: string | number;
+	fromAccepted?: string | Date;
+	fromRejected?: string | Date;
+	fromRequested?: string | Date;
+	fromUpdated?: string | Date;
+	sortBy: QueryGroupMembersSortBy;
 	limit?: string | number;
 };
 
@@ -195,4 +209,18 @@ export type QueryGroupsSortBy =
 	| "top-rank-asc"
 	| "top-rank-desc"
 	| "newest"
+	| string;
+
+export type QueryGroupMembersSortBy =
+	| "latest"
+	| "name-asc"
+	| "name-desc"
+	| "accepted-asc"
+	| "accepted-desc"
+	| "rejected-asc"
+	| "rejected-desc"
+	| "requested-asc"
+	| "requested-desc"
+	| "updated-asc"
+	| "updated-desc"
 	| string;

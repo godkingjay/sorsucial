@@ -25,11 +25,13 @@ const SingleDiscussionPage: React.FC<SingleDiscussionPageProps> = ({
 }) => {
 	return (
 		<>
-			<SingleDiscussionView
-				discussionPageData={discussionPageData}
-				loadingDiscussion={loadingPage}
-				type="discussion"
-			/>
+			<LimitedBodyLayout>
+				<SingleDiscussionView
+					discussionPageData={discussionPageData}
+					loadingDiscussion={loadingPage}
+					type="discussion"
+				/>
+			</LimitedBodyLayout>
 		</>
 	);
 };

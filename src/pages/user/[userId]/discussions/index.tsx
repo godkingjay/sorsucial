@@ -1,5 +1,6 @@
 import { UserState } from "@/atoms/userAtom";
 import DiscussionsFilter from "@/components/Discussion/DiscussionsFilter";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
@@ -23,36 +24,38 @@ const UserPageDiscussionsPage: React.FC<UserPageDiscussionsPageProps> = ({
 
 	return (
 		<>
-			<UserPageLoader
-				userPageData={userPageData}
-				loadingUser={loadingPage}
-			>
-				{userStateValue.userPage?.user.uid === userId && (
-					<DiscussionsFilter
-						discussionType="discussion"
-						discussionCreation={userStateValue.user.uid === userId}
-						filter={true}
-						privacy="public"
-						creatorId={userId}
-						sortBy="latest"
-						filterOptions={{
-							filterType: "discussions",
-							options: {
-								discussionType: false,
-								privacy: false,
-								isOpen: false,
-								creatorId: false,
-								creator: false,
-								groupId: false,
-								tags: false,
-								votes: false,
-								replies: false,
-								date: false,
-							},
-						}}
-					/>
-				)}
-			</UserPageLoader>
+			<LimitedBodyLayout>
+				<UserPageLoader
+					userPageData={userPageData}
+					loadingUser={loadingPage}
+				>
+					{userStateValue.userPage?.user.uid === userId && (
+						<DiscussionsFilter
+							discussionType="discussion"
+							discussionCreation={userStateValue.user.uid === userId}
+							filter={true}
+							privacy="public"
+							creatorId={userId}
+							sortBy="latest"
+							filterOptions={{
+								filterType: "discussions",
+								options: {
+									discussionType: false,
+									privacy: false,
+									isOpen: false,
+									creatorId: false,
+									creator: false,
+									groupId: false,
+									tags: false,
+									votes: false,
+									replies: false,
+									date: false,
+								},
+							}}
+						/>
+					)}
+				</UserPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

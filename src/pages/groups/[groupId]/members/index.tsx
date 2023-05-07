@@ -1,5 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import MembersFilter from "@/components/Member/MembersFilter";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
@@ -21,31 +23,9 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 	const router = useRouter();
 	const { groupId } = router.query;
 
-	const renderItems = () => {
-		const result = [];
-		for (let i = 0; i < 20; i++) {
-			result.push(
-				<div
-					key={i}
-					className="bg-white rounded-lg shadow-page-box-1 p-4 flex flex-row gap-x-2"
-				>
-					<div className="h-16 w-16 rounded-full skeleton-color animate-pulse"></div>
-					<div className="flex flex-1 flex-col gap-y-2">
-						<div className="h-3 w-full rounded-full skeleton-color"></div>
-						<div className="h-2 w-[50%] rounded-full skeleton-color"></div>
-						<div className="my-2 flex flex-col gap-y-1">
-							<div className="h-2 w-full rounded-full skeleton-color"></div>
-						</div>
-					</div>
-				</div>
-			);
-		}
-		return result;
-	};
-
 	return (
 		<>
-			<div className="flex-1">
+			<LimitedBodyLayout>
 				<GroupPageLoader
 					groupPageData={groupPageData}
 					loadingGroup={loadingPage}
@@ -53,11 +33,24 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
-								<div className="grid grid-cols-2 gap-4">{renderItems()}</div>
+								<MembersFilter
+									addMember={true}
+									filter={true}
+									groupId={groupId as string}
+									sortBy="accepted-desc"
+									roles={["member"]}
+									filterOptions={{
+										filterType: "group-members",
+										options: {
+											roles: true,
+											date: true,
+										},
+									}}
+								/>
 							</>
 						)}
 				</GroupPageLoader>
-			</div>
+			</LimitedBodyLayout>
 		</>
 	);
 };

@@ -34,11 +34,13 @@ const FeedPostView: React.FC<FeedPostViewProps> = ({
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<SinglePostView
-					loadingPost={loadingPage}
-					postPageData={postPageData}
-					type="user-post"
-				/>
+				<LimitedBodyLayout>
+					<SinglePostView
+						loadingPost={loadingPage}
+						postPageData={postPageData}
+						type="user-post"
+					/>
+				</LimitedBodyLayout>
 			</UserPageLoader>
 		</>
 	);

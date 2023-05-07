@@ -1,4 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostsFilter from "@/components/Post/PostsFilter";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import useUser from "@/hooks/useUser";
@@ -23,35 +24,37 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 
 	return (
 		<>
-			<UserPageLoader
-				userPageData={userPageData}
-				loadingUser={loadingPage}
-			>
-				{userStateValue.userPage?.user.uid === userId && (
-					<PostsFilter
-						postType="feed"
-						postCreation={userStateValue.user.uid === userId}
-						filter={true}
-						privacy="public"
-						creatorId={userId}
-						sortBy="latest"
-						filterOptions={{
-							filterType: "posts",
-							options: {
-								postType: false,
-								privacy: false,
-								creatorId: false,
-								creator: false,
-								groupId: false,
-								tags: true,
-								likes: true,
-								comments: true,
-								date: true,
-							},
-						}}
-					/>
-				)}
-			</UserPageLoader>
+			<LimitedBodyLayout>
+				<UserPageLoader
+					userPageData={userPageData}
+					loadingUser={loadingPage}
+				>
+					{userStateValue.userPage?.user.uid === userId && (
+						<PostsFilter
+							postType="feed"
+							postCreation={userStateValue.user.uid === userId}
+							filter={true}
+							privacy="public"
+							creatorId={userId}
+							sortBy="latest"
+							filterOptions={{
+								filterType: "posts",
+								options: {
+									postType: false,
+									privacy: false,
+									creatorId: false,
+									creator: false,
+									groupId: false,
+									tags: true,
+									likes: true,
+									comments: true,
+									date: true,
+								},
+							}}
+						/>
+					)}
+				</UserPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

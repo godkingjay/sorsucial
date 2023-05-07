@@ -1065,7 +1065,7 @@ const usePost = () => {
 							creatorId: creatorId,
 							creator: creator,
 							sortBy: sortBy,
-							lastIndex: refPost ? refPost.index[sortBy] : -1,
+							lastIndex: refPost ? refPost.index[sortByIndex] : -1,
 							fromLikes: refPost
 								? refPost.post.numberOfLikes + 1
 								: Number.MAX_SAFE_INTEGER,
@@ -1080,10 +1080,12 @@ const usePost = () => {
 						throw new Error(`API (GET): Getting posts error:\n ${err.message}`);
 					});
 
+				const fetchedLength = posts.length;
+
 				/**
 				 * If there are fetcher posts, append them to the current list of posts in postStateValue.
 				 */
-				if (posts.length) {
+				if (fetchedLength) {
 					setPostStateValue((prev) => ({
 						...prev,
 						posts: prev.posts
@@ -1122,7 +1124,7 @@ const usePost = () => {
 				 *
 				 * @returns {number} - The number of posts fetched.
 				 */
-				return posts.length;
+				return fetchedLength;
 			} catch (error: any) {
 				console.log("Mongo: Fetching Posts Error", error.message);
 			}

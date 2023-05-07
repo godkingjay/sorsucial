@@ -1,4 +1,9 @@
-import { GroupData, GroupState, groupState } from "@/atoms/groupAtom";
+import {
+	GroupData,
+	GroupMemberData,
+	GroupState,
+	groupState,
+} from "@/atoms/groupAtom";
 import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
 import React, { useCallback, useMemo } from "react";
 import { useRecoilState } from "recoil";
@@ -9,7 +14,12 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { APIEndpointGroupsParams, QueryGroupsSortBy } from "@/lib/types/api";
+import {
+	APIEndpointGroupsParams,
+	APIEndpointGroupMembersGroupParams,
+	QueryGroupMembersSortBy,
+	QueryGroupsSortBy,
+} from "@/lib/types/api";
 
 const useGroup = () => {
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
@@ -101,6 +111,17 @@ const useGroup = () => {
 						}
 					}
 
+					function createGroupIndex() {
+						const index = {
+							newest: 0,
+							["latest" + (groupData.privacy ? `-${groupData.privacy}` : "")]: 0,
+							["latest" +
+							(groupData.privacy ? `-${groupData.privacy}` : "") +
+							(groupData.creatorId ? `-${groupData.creatorId}` : "")]: 0,
+						};
+						return index;
+					}
+
 					setGroupStateValueMemo(
 						(prev) =>
 							({
@@ -110,10 +131,7 @@ const useGroup = () => {
 										group: groupData,
 										creator: userStateValue.user,
 										userJoin: groupMemberData,
-										index: {
-											newest: 0,
-											latest: 0,
-										},
+										index: createGroupIndex(),
 									},
 									...prev.groups,
 								],
@@ -527,26 +545,29 @@ const useGroup = () => {
 
 	const fetchGroups = useCallback(
 		async ({
+			sortBy = "latest" as QueryGroupsSortBy,
 			privacy = "public" as SiteGroup["privacy"],
-			tags = undefined as string | undefined,
+			userPageId = undefined as string | undefined,
 			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,
-			sortBy = "latest" as QueryGroupsSortBy,
+			tags = undefined as string | undefined,
 		}) => {
 			try {
 				let refGroup;
 				let refIndex;
+				const sortByIndex =
+					sortBy +
+					(privacy ? `-${privacy}` : "") +
+					(userPageId ? `-${userPageId}` : "") +
+					(creatorId ? `-${creatorId}` : "") +
+					(creator ? `-${creator}` : "") +
+					(tags ? `-${tags}` : "");
 
 				switch (sortBy) {
 					case "latest": {
 						refIndex = groupStateValueMemo.groups.reduceRight(
 							(acc, group, index) => {
-								if (
-									(creatorId ? group.group.creatorId === creatorId : true) &&
-									group.group.privacy === privacy &&
-									group.index[sortBy] &&
-									acc === -1
-								) {
+								if (group.index[sortByIndex] && acc === -1) {
 									return index;
 								}
 
@@ -572,9 +593,10 @@ const useGroup = () => {
 							userId: authUser?.uid,
 							privacy: privacy,
 							tags: tags,
+							userPageId: userPageId,
 							creatorId: creatorId,
 							creator: creator,
-							lastIndex: refGroup?.index[sortBy] || -1,
+							lastIndex: refGroup?.index[sortByIndex] || -1,
 							fromMembers:
 								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
 							fromPosts:
@@ -592,6 +614,8 @@ const useGroup = () => {
 						);
 					});
 
+				const fetchedLength = groups.length;
+
 				if (groups.length) {
 					setGroupStateValueMemo((prev) => ({
 						...prev,
@@ -607,9 +631,15 @@ const useGroup = () => {
 								if (existingGroup) {
 									groups.splice(groupIndex, 1);
 
+									const indices = {
+										...groupData.index,
+										...existingGroup.index,
+									};
+
 									return {
-										...existingGroup,
 										...groupData,
+										...existingGroup,
+										index: indices,
 									};
 								} else {
 									return groupData;
@@ -621,12 +651,143 @@ const useGroup = () => {
 					console.log("Mongo: No groups found!");
 				}
 
-				return groups.length;
+				return fetchedLength;
 			} catch (error: any) {
 				console.log(`=>MONGO: Error while fetching groups:\n${error.message}`);
 			}
 		},
-		[groupStateValueMemo]
+		[
+			authUser?.uid,
+			groupStateValueMemo.groups,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+		]
+	);
+
+	const fetchGroupMembers = useCallback(
+		async ({
+			sortBy = "accepted-desc" as QueryGroupMembersSortBy,
+			groupId = "" as string,
+			roles = ["member"] as GroupMember["roles"],
+		}) => {
+			try {
+				if (!groupStateValueMemo.currentGroup) {
+					return;
+				}
+
+				let refGroupMember: GroupMemberData | null;
+				let refIndex: number = -1;
+
+				const sortByIndex =
+					sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
+
+				switch (sortBy) {
+					case "accepted-desc": {
+						refIndex = groupStateValueMemo.currentGroup?.members?.reduceRight(
+							(acc, member, index) => {
+								if (member.index[sortByIndex] >= 0 && acc === -1) {
+									return index;
+								}
+
+								return acc;
+							},
+							-1
+						);
+
+						refGroupMember =
+							groupStateValueMemo.currentGroup?.members[refIndex] || null;
+
+						break;
+					}
+
+					default: {
+						refGroupMember = null;
+						break;
+					}
+				}
+
+				const {
+					members,
+				}: {
+					members: GroupMemberData[];
+				} = await axios
+					.get(apiConfig.apiEndpoint + "/groups/members/members/", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser?.uid,
+							sortBy: sortBy,
+							lastIndex: refGroupMember?.index[sortByIndex] || -1,
+							groupId: groupId,
+							roles: roles,
+							fromUpdated: refGroupMember?.member?.updatedAt || null,
+							fromRequested: refGroupMember?.member?.requestedAt || null,
+							fromAccepted: refGroupMember?.member?.acceptedAt || null,
+							fromRejected: refGroupMember?.member?.rejectedAt || null,
+						} as Partial<APIEndpointGroupMembersGroupParams>,
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`=>API (GET): Getting Group Members error:\n${error.message}`
+						);
+					});
+
+				const fetchedLength = members.length;
+
+				if (fetchedLength) {
+					setGroupStateValueMemo((prev) => ({
+						...prev,
+						currentGroup: prev.currentGroup
+							? {
+									...prev.currentGroup,
+									members: prev.currentGroup.members
+										.map((memberData) => {
+											const memberIndex = members.findIndex(
+												(member) =>
+													member.member.userId === memberData.member.userId
+											);
+
+											const existingMember =
+												memberIndex !== -1 ? members[memberIndex] : null;
+
+											if (existingMember) {
+												members.splice(memberIndex, 1);
+
+												const indices = {
+													...memberData.index,
+													...existingMember.index,
+												};
+
+												return {
+													...memberData,
+													...existingMember,
+													index: indices,
+												};
+											} else {
+												return memberData;
+											}
+										})
+										.concat(members),
+							  }
+							: prev.currentGroup,
+					}));
+				} else {
+					console.log("Mongo: No members found!");
+				}
+
+				return fetchedLength;
+			} catch (error: any) {
+				console.log(
+					`=>MONGO: Error while fetching group members:\n${error.message}`
+				);
+			}
+		},
+		[
+			authUser?.uid,
+			groupStateValueMemo.currentGroup,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+		]
 	);
 
 	const fetchUserJoin = useCallback(async (groupId: string, userId: string) => {
@@ -659,6 +820,7 @@ const useGroup = () => {
 		createGroup,
 		onJoinGroup,
 		fetchGroups,
+		fetchGroupMembers,
 		fetchUserJoin,
 	};
 };

@@ -2,6 +2,7 @@ import { DiscussionData, DiscussionState } from "@/atoms/discussionAtom";
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import SingleDiscussionView from "@/components/Discussion/SingleDiscussionView";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import discussionDb from "@/lib/db/discussionDb";
 import groupDb from "@/lib/db/groupDb";
@@ -28,18 +29,20 @@ const GroupDiscussionView: React.FC<GroupDiscussionProps> = ({
 
 	return (
 		<>
-			<GroupPageLoader
-				groupPageData={groupPageData}
-				loadingGroup={loadingPage}
-			>
-				{groupStateValue.currentGroup?.group.id === groupId && (
-					<SingleDiscussionView
-						discussionPageData={discussionPageData}
-						loadingDiscussion={loadingPage}
-						type="group-discussion"
-					/>
-				)}
-			</GroupPageLoader>
+			<LimitedBodyLayout>
+				<GroupPageLoader
+					groupPageData={groupPageData}
+					loadingGroup={loadingPage}
+				>
+					{groupStateValue.currentGroup?.group.id === groupId && (
+						<SingleDiscussionView
+							discussionPageData={discussionPageData}
+							loadingDiscussion={loadingPage}
+							type="group-discussion"
+						/>
+					)}
+				</GroupPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

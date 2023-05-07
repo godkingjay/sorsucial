@@ -56,25 +56,21 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName} | Profile`}
 				</title>
 			</Head>
-			<div className="flex flex-col px-4 py-4">
-				<LimitedBodyLayout>
-					{loadingUser || !userMounted || fetchingCurrentUserData ? (
+			{loadingUser || !userMounted || fetchingCurrentUserData ? (
+				<>
+					<p>Loading User</p>
+				</>
+			) : (
+				<>
+					{!userStateValue.userPage ? (
 						<>
-							<p>Loading User</p>
+							<p>User Not Found</p>
 						</>
 					) : (
-						<>
-							{!userStateValue.userPage ? (
-								<>
-									<p>User Not Found</p>
-								</>
-							) : (
-								<>{children && children}</>
-							)}
-						</>
+						<>{children && children}</>
 					)}
-				</LimitedBodyLayout>
-			</div>
+				</>
+			)}
 		</>
 	);
 };

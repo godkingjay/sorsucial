@@ -1,4 +1,5 @@
 import { PostState } from "@/atoms/postAtom";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import SinglePostView from "@/components/Post/SinglePostView";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
@@ -16,11 +17,13 @@ const AnnouncementView: React.FC<Props> = ({
 }) => {
 	return (
 		<>
-			<SinglePostView
-				loadingPost={loadingPage}
-				postPageData={postPageData}
-				type="announcement"
-			/>
+			<LimitedBodyLayout>
+				<SinglePostView
+					loadingPost={loadingPage}
+					postPageData={postPageData}
+					type="announcement"
+				/>
+			</LimitedBodyLayout>
 		</>
 	);
 };

@@ -1,6 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import DiscussionsFilter from "@/components/Discussion/DiscussionsFilter";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
@@ -24,23 +25,25 @@ const GroupPageDiscussionsPage: React.FC<GroupPageDiscussionsPageProps> = ({
 
 	return (
 		<>
-			<GroupPageLoader
-				groupPageData={groupPageData}
-				loadingGroup={loadingPage}
-			>
-				{groupStateValue.currentGroup?.group.id === groupId && (
-					<>
-						<DiscussionsFilter
-							discussionType="group"
-							privacy={groupStateValue.currentGroup?.group.privacy || "public"}
-							sortBy="latest"
-							groupId={groupStateValue.currentGroup?.group.id}
-							discussionCreation={true}
-							filter={true}
-						/>
-					</>
-				)}
-			</GroupPageLoader>
+			<LimitedBodyLayout>
+				<GroupPageLoader
+					groupPageData={groupPageData}
+					loadingGroup={loadingPage}
+				>
+					{groupStateValue.currentGroup?.group.id === groupId && (
+						<>
+							<DiscussionsFilter
+								discussionType="group"
+								privacy={groupStateValue.currentGroup?.group.privacy || "public"}
+								sortBy="latest"
+								groupId={groupStateValue.currentGroup?.group.id}
+								discussionCreation={true}
+								filter={true}
+							/>
+						</>
+					)}
+				</GroupPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

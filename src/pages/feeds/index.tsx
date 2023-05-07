@@ -11,34 +11,30 @@ const FeedsPage: React.FC<FeedsPageProps> = () => {
 			<Head>
 				<title>Feeds | SorSUcial</title>
 			</Head>
-			<main className="flex flex-col flex-1 py-4 px-4">
-				<LimitedBodyLayout>
-					<section className="flex flex-col gap-y-4">
-						<PostFilter
-							postType="feed"
-							postCreation={true}
-							filter={true}
-							privacy="public"
-							sortBy="latest"
-							pageEnd="End of Feeds"
-							filterOptions={{
-								filterType: "posts",
-								options: {
-									postType: false,
-									privacy: true,
-									creatorId: true,
-									creator: true,
-									groupId: false,
-									tags: true,
-									likes: true,
-									comments: true,
-									date: true,
-								},
-							}}
-						/>
-					</section>
-				</LimitedBodyLayout>
-			</main>
+			<LimitedBodyLayout>
+				<PostFilter
+					postType="feed"
+					postCreation={true}
+					filter={true}
+					privacy="public"
+					sortBy="latest"
+					pageEnd="End of Feeds"
+					filterOptions={{
+						filterType: "posts",
+						options: {
+							postType: false,
+							privacy: true,
+							creatorId: true,
+							creator: true,
+							groupId: false,
+							tags: true,
+							likes: true,
+							comments: true,
+							date: true,
+						},
+					}}
+				/>
+			</LimitedBodyLayout>
 		</>
 	);
 };

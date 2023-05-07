@@ -24,7 +24,9 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 		discussionCreationModalState
 	);
 
-	const handleDiscussionCreationModal = (tab: DiscussionCreationModalState["tab"]) => {
+	const handleDiscussionCreationModal = (
+		tab: DiscussionCreationModalState["tab"]
+	) => {
 		setDiscussionCreationModalStateValue((prev) => ({
 			...prev,
 			open: true,
@@ -34,7 +36,7 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 	};
 
 	return (
-		<div className="discussion-creation-listener entrance-animation-slide-from-right">
+		<div className="discussion-creation-listener page-box-1 entrance-animation-slide-from-right">
 			<div className="discussion-creation-listener-head">
 				<Link
 					href={`/user/${userStateValue.user.uid}`}
@@ -71,7 +73,8 @@ const DiscussionCreationListener: React.FC<DiscussionCreationListenerProps> = ({
 							<p className="label">
 								{discussionType === "discussion" &&
 									"What are your thoughts on this topic?"}
-								{discussionType === "group" && "Want to discuss this topic together?"}
+								{discussionType === "group" &&
+									"Want to discuss this topic together?"}
 							</p>
 						</div>
 					</button>

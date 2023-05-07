@@ -115,29 +115,25 @@ const SinglePostView: React.FC<SinglePostViewProps> = ({
 					}
 				/>
 			</Head>
-			<main className="flex flex-col flex-1 py-4 px-4">
-				<LimitedBodyLayout>
-					<section className="flex flex-col gap-y-4">
-						{loadingPost || fetchingPostUserData || !userMounted ? (
-							<>
-								<PostCardSkeleton />
-							</>
+			<section className="page-wrapper">
+				{loadingPost || fetchingPostUserData || !userMounted ? (
+					<>
+						<PostCardSkeleton />
+					</>
+				) : (
+					<>
+						{!postStateValue.currentPost ? (
+							<PostDiscussionNotFound type={type} />
 						) : (
 							<>
-								{!postStateValue.currentPost ? (
-									<PostDiscussionNotFound type={type} />
-								) : (
-									<>
-										{postStateValue.currentPost.post.id === postId && (
-											<PostCard postData={postStateValue.currentPost!} />
-										)}
-									</>
+								{postStateValue.currentPost.post.id === postId && (
+									<PostCard postData={postStateValue.currentPost!} />
 								)}
 							</>
 						)}
-					</section>
-				</LimitedBodyLayout>
-			</main>
+					</>
+				)}
+			</section>
 		</>
 	);
 };

@@ -1,5 +1,6 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostsFilter from "@/components/Post/PostsFilter";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
@@ -24,35 +25,37 @@ const GroupPage: React.FC<GroupPageProps> = ({
 
 	return (
 		<>
-			<GroupPageLoader
-				groupPageData={groupPageData}
-				loadingGroup={loadingPage}
-			>
-				{groupStateValue.currentGroup?.group.id === groupId && (
-					<PostsFilter
-						postType="group"
-						postCreation={true}
-						filter={true}
-						groupId={groupStateValue.currentGroup?.group.id}
-						privacy={groupStateValue.currentGroup?.group.privacy!}
-						sortBy="latest"
-						filterOptions={{
-							filterType: "posts",
-							options: {
-								postType: false,
-								privacy: false,
-								creatorId: true,
-								creator: true,
-								groupId: false,
-								tags: true,
-								likes: true,
-								comments: true,
-								date: true,
-							},
-						}}
-					/>
-				)}
-			</GroupPageLoader>
+			<LimitedBodyLayout>
+				<GroupPageLoader
+					groupPageData={groupPageData}
+					loadingGroup={loadingPage}
+				>
+					{groupStateValue.currentGroup?.group.id === groupId && (
+						<PostsFilter
+							postType="group"
+							postCreation={true}
+							filter={true}
+							groupId={groupStateValue.currentGroup?.group.id}
+							privacy={groupStateValue.currentGroup?.group.privacy!}
+							sortBy="latest"
+							filterOptions={{
+								filterType: "posts",
+								options: {
+									postType: false,
+									privacy: false,
+									creatorId: true,
+									creator: true,
+									groupId: false,
+									tags: true,
+									likes: true,
+									comments: true,
+									date: true,
+								},
+							}}
+						/>
+					)}
+				</GroupPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

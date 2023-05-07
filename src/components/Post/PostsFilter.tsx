@@ -93,25 +93,38 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	}, [postStateValue.posts, creator, regexCreator, sortByIndex]);
 
 	const handleFetchPosts = useCallback(async () => {
-		setLoadingPosts(true);
 		try {
-			const fetchedPostsLength = await fetchPosts({
-				postType: postType,
-				privacy: privacy,
-				sortBy: sortBy,
-				creatorId: creatorId,
-				creator: creator,
-				tags: tags,
-				groupId: groupId,
-			});
-			if (fetchedPostsLength !== undefined) {
-				setEndReached(fetchedPostsLength < 10 ? true : false);
+			if (!loadingPosts) {
+				setLoadingPosts(true);
+				const fetchedPostsLength = await fetchPosts({
+					postType: postType,
+					privacy: privacy,
+					sortBy: sortBy,
+					creatorId: creatorId,
+					creator: creator,
+					tags: tags,
+					groupId: groupId,
+				});
+
+				if (fetchedPostsLength !== undefined) {
+					setEndReached(fetchedPostsLength < 10 ? true : false);
+				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching posts Error: ", error.message);
 		}
 		setLoadingPosts(false);
-	}, [creator, creatorId, fetchPosts, groupId, postType, privacy, sortBy, tags]);
+	}, [
+		creator,
+		creatorId,
+		fetchPosts,
+		groupId,
+		loadingPosts,
+		postType,
+		privacy,
+		sortBy,
+		tags,
+	]);
 
 	const handleFirstFetchPosts = useCallback(async () => {
 		setFirstLoadingPosts(true);
@@ -136,11 +149,11 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	useEffect(() => {
 		handleFilterPosts();
-	}, [postStateValue]);
+	}, [postStateValue, sortByIndex]);
 
 	return (
 		<>
-			<div className="flex flex-col gap-y-4">
+			<div className="page-wrapper">
 				{!userMounted || firstLoadingPosts ? (
 					<>
 						<>
@@ -160,10 +173,9 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 						{filteredPostsLength > 0 && (
 							<>
 								{filteredPosts.map((post, index) => (
-									<PostCard
-										key={post.post.id}
-										postData={post}
-									/>
+									<React.Fragment key={post.post.id}>
+										<PostCard postData={post} />
+									</React.Fragment>
 								))}
 							</>
 						)}

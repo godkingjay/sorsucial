@@ -1,5 +1,6 @@
 import { UserState } from "@/atoms/userAtom";
 import GroupsFilter from "@/components/Group/GroupsFilter";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
@@ -23,34 +24,36 @@ const UserPageGroupsPage: React.FC<UserPageGroupsPageProps> = ({
 
 	return (
 		<>
-			<UserPageLoader
-				userPageData={userPageData}
-				loadingUser={loadingPage}
-			>
-				{userStateValue.userPage?.user.uid === userId && (
-					<GroupsFilter
-						groupCreation={userStateValue.user.uid === userId}
-						filter={true}
-						creatorId={userId}
-						privacy="public"
-						sortBy="latest"
-						pageEnd="End of Groups"
-						filterOptions={{
-							filterType: "groups",
-							options: {
-								creatorId: true,
-								creator: true,
-								privacy: true,
-								tags: true,
-								members: true,
-								date: true,
-								posts: true,
-								discussions: true,
-							},
-						}}
-					/>
-				)}
-			</UserPageLoader>
+			<LimitedBodyLayout>
+				<UserPageLoader
+					userPageData={userPageData}
+					loadingUser={loadingPage}
+				>
+					{userStateValue.userPage?.user.uid === userId && (
+						<GroupsFilter
+							groupCreation={userStateValue.user.uid === userId}
+							filter={true}
+							creatorId={userId}
+							privacy="public"
+							sortBy="latest"
+							pageEnd="End of Groups"
+							filterOptions={{
+								filterType: "groups",
+								options: {
+									creatorId: true,
+									creator: true,
+									privacy: true,
+									tags: true,
+									members: true,
+									date: true,
+									posts: true,
+									discussions: true,
+								},
+							}}
+						/>
+					)}
+				</UserPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

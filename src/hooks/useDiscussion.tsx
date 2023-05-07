@@ -663,7 +663,7 @@ const useDiscussion = () => {
 						creatorId: creatorId,
 						creator: creator,
 						isOpen,
-						lastIndex: refDiscussion ? refDiscussion?.index[sortBy] : -1,
+						lastIndex: refDiscussion ? refDiscussion?.index[sortByIndex] : -1,
 						fromVotes: refDiscussion
 							? refDiscussion?.discussion.numberOfVotes + 1
 							: Number.MAX_SAFE_INTEGER,

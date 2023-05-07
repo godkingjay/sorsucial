@@ -75,7 +75,7 @@ export type APIEndpointGroupsParams = {
 	limit?: string | number;
 };
 
-export type APIEndpointMembersGroupParams = {
+export type APIEndpointGroupMembersGroupParams = {
 	apiKey: string;
 	userId: string;
 	groupId: string;

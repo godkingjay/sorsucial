@@ -4,7 +4,7 @@ import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { GroupMember } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
-import { APIEndpointMembersGroupParams } from "@/lib/types/api";
+import { APIEndpointGroupMembersGroupParams } from "@/lib/types/api";
 import { Document, WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -28,7 +28,7 @@ export default async function handler(
 			fromUpdated = new Date().toISOString(),
 			sortBy = "accepted-desc",
 			limit = 10,
-		}: APIEndpointMembersGroupParams = req.body || req.query;
+		}: APIEndpointGroupMembersGroupParams = req.body || req.query;
 
 		if (!apiKey) {
 			return res
@@ -163,7 +163,7 @@ const getSortByAccepted = async ({
 	sortBy,
 	limit = 10,
 }: Pick<
-	APIEndpointMembersGroupParams,
+	APIEndpointGroupMembersGroupParams,
 	"groupId" | "roles" | "fromAccepted" | "sortBy" | "limit"
 >) => {
 	const { groupMembersCollection } = await groupDb();

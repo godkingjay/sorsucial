@@ -1,4 +1,9 @@
-import { GroupData, GroupState, groupState } from "@/atoms/groupAtom";
+import {
+	GroupData,
+	GroupMemberData,
+	GroupState,
+	groupState,
+} from "@/atoms/groupAtom";
 import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
 import React, { useCallback, useMemo } from "react";
 import { useRecoilState } from "recoil";
@@ -9,7 +14,12 @@ import axios from "axios";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { APIEndpointGroupsParams, QueryGroupsSortBy } from "@/lib/types/api";
+import {
+	APIEndpointGroupsParams,
+	APIEndpointGroupMembersGroupParams,
+	QueryGroupMembersSortBy,
+	QueryGroupsSortBy,
+} from "@/lib/types/api";
 
 const useGroup = () => {
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
@@ -649,6 +659,130 @@ const useGroup = () => {
 		[groupStateValueMemo]
 	);
 
+	const fetchGroupMembers = useCallback(
+		async ({
+			sortBy = "accepted-desc" as QueryGroupMembersSortBy,
+			groupId = "" as string,
+			roles = undefined as GroupMember["roles"] | undefined,
+		}) => {
+			try {
+				if (!groupStateValueMemo.currentGroup) {
+					return;
+				}
+
+				let refGroupMember: GroupMemberData | null;
+				let refIndex: number;
+
+				const sortByIndex =
+					sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
+
+				switch (sortBy) {
+					case "accepted-desc": {
+						refIndex =
+							groupStateValueMemo.currentGroup?.members?.reduceRight(
+								(acc, member, index) => {
+									if (member.index[sortByIndex] && acc === -1) {
+										return index;
+									}
+
+									return acc;
+								},
+								-1
+							) || -1;
+
+						refGroupMember =
+							refIndex >= 0
+								? groupStateValueMemo.currentGroup?.members[refIndex]
+								: null;
+
+						break;
+					}
+
+					default: {
+						refGroupMember = null;
+						break;
+					}
+				}
+
+				const {
+					members,
+				}: {
+					members: GroupMemberData[];
+				} = await axios
+					.get(apiConfig.apiEndpoint + "/groups/members/members/", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser?.uid,
+							sortBy: sortBy,
+							lastIndex: refGroupMember?.index[sortBy] || -1,
+							groupId: groupId,
+							roles: roles,
+							fromUpdated: refGroupMember?.member?.updatedAt || null,
+							fromRequested: refGroupMember?.member?.requestedAt || null,
+							fromAccepted: refGroupMember?.member?.acceptedAt || null,
+							fromRejected: refGroupMember?.member?.rejectedAt || null,
+						} as Partial<APIEndpointGroupMembersGroupParams>,
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`=>API (GET): Getting Group Members error:\n${error.message}`
+						);
+					});
+
+				const fetchedLength = members.length;
+
+				if (fetchedLength) {
+					setGroupStateValueMemo((prev) => ({
+						...prev,
+						currentGroup: prev.currentGroup
+							? {
+									...prev.currentGroup,
+									members: prev.currentGroup.members
+										.map((memberData) => {
+											const memberIndex = members.findIndex(
+												(member) =>
+													member.member.userId === memberData.member.userId
+											);
+
+											const existingMember =
+												memberIndex !== -1 ? members[memberIndex] : null;
+
+											if (existingMember) {
+												members.splice(memberIndex, 1);
+
+												const indices = {
+													...memberData.index,
+													...existingMember.index,
+												};
+
+												return {
+													...memberData,
+													...existingMember,
+													index: indices,
+												};
+											} else {
+												return memberData;
+											}
+										})
+										.concat(members),
+							  }
+							: prev.currentGroup,
+					}));
+				} else {
+					console.log("Mongo: No members found!");
+				}
+
+				return fetchedLength;
+			} catch (error: any) {
+				console.log(
+					`=>MONGO: Error while fetching group members:\n${error.message}`
+				);
+			}
+		},
+		[groupStateValueMemo]
+	);
+
 	const fetchUserJoin = useCallback(async (groupId: string, userId: string) => {
 		try {
 			const { userJoin } = await axios
@@ -679,6 +813,7 @@ const useGroup = () => {
 		createGroup,
 		onJoinGroup,
 		fetchGroups,
+		fetchGroupMembers,
 		fetchUserJoin,
 	};
 };

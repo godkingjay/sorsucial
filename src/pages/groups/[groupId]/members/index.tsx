@@ -1,6 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import MembersFilter from "@/components/Member/MembersFilter";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
@@ -54,6 +55,20 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
+								<MembersFilter
+									addMember={true}
+									filter={true}
+									groupId={groupId as string}
+									sortBy="accepted-desc"
+									roles={["member"]}
+									filterOptions={{
+										filterType: "group-members",
+										options: {
+											roles: true,
+											date: true,
+										},
+									}}
+								/>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-4">
 									{renderItems()}
 								</div>

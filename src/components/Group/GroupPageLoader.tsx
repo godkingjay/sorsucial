@@ -54,6 +54,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 					currentGroup: {
 						...groupPageData,
 						userJoin: userJoin,
+						members: [],
 					},
 				}));
 			}

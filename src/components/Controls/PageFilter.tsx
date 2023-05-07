@@ -4,7 +4,7 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GiSevenPointedStar } from "react-icons/gi";
 import { GoGraph } from "react-icons/go";
 
-export type UserFilterOptions = {
+export type UsersFilterOptions = {
 	match: boolean;
 	groupId: boolean;
 	roles: boolean;
@@ -15,7 +15,7 @@ export type UserFilterOptions = {
 	birthDate: boolean;
 };
 
-export type PostFilterOptions = {
+export type PostsFilterOptions = {
 	postType: boolean;
 	privacy: boolean;
 	creatorId: boolean;
@@ -27,7 +27,7 @@ export type PostFilterOptions = {
 	date: boolean;
 };
 
-export type DiscussionFilterOptions = {
+export type DiscussionsFilterOptions = {
 	discussionType: boolean;
 	privacy: boolean;
 	creatorId: boolean;
@@ -40,7 +40,7 @@ export type DiscussionFilterOptions = {
 	date: boolean;
 };
 
-export type GroupFilterOptions = {
+export type GroupsFilterOptions = {
 	privacy: boolean;
 	creatorId: boolean;
 	creator: boolean;
@@ -51,23 +51,32 @@ export type GroupFilterOptions = {
 	date: boolean;
 };
 
+export type GroupMembersFilterOptions = {
+	roles: boolean;
+	date: boolean;
+};
+
 export type PageFilterProps = {
 	filterOptions?:
 		| {
 				filterType: "users";
-				options: UserFilterOptions;
+				options: UsersFilterOptions;
 		  }
 		| {
 				filterType: "posts";
-				options: PostFilterOptions;
+				options: PostsFilterOptions;
 		  }
 		| {
 				filterType: "discussions";
-				options: DiscussionFilterOptions;
+				options: DiscussionsFilterOptions;
 		  }
 		| {
 				filterType: "groups";
-				options: GroupFilterOptions;
+				options: GroupsFilterOptions;
+		  }
+		| {
+				filterType: "group-members";
+				options: GroupMembersFilterOptions;
 		  };
 };
 

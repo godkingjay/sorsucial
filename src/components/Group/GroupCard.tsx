@@ -52,7 +52,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 			data-top={index < 3}
 		>
 			<div
-				className="shadow-page-box-1 flex-1 flex flex-col page-box-1  entrance-animation-slide-from-right relative"
+				className="shadow-page-box-1 flex-1 flex flex-col bg-white rounded-lg entrance-animation-slide-from-right relative"
 				data-order={index + 1}
 			>
 				{groupData.groupDeleted && (
@@ -92,7 +92,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ groupData, index }) => {
 						</div>
 						<div className="flex flex-row gap-x-2">
 							<div className="text-2xs text-gray-500 inline-flex items-center gap-x-1">
-								Created by{" "}
+								<p className="hidden sm:inline">Created by </p>
 								<div className="inline-flex flex-row h-4 w-4">
 									<UserIcon user={groupData.creator} />
 								</div>

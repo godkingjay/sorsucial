@@ -1123,6 +1123,11 @@ const usePost = () => {
 								})
 								.concat(posts),
 						}));
+
+						// setPostStateValue((prev) => ({
+						// 	...prev,
+						// 	posts: [...prev.posts, ...posts],
+						// }));
 					} else {
 						console.log("Mongo: No posts found!");
 					}
@@ -1140,9 +1145,8 @@ const usePost = () => {
 				}
 			} catch (error: any) {
 				console.log("Mongo: Fetching Posts Error", error.message);
-				return null;
-			} finally {
 				setFetchingPostsFor("");
+				return null;
 			}
 		},
 		[

@@ -48,16 +48,6 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 		},
 	},
 }) => {
-	const { groupStateValue, fetchGroups } = useGroup();
-	const { userStateValue, userMounted } = useUser();
-	const [loadingGroups, setLoadingGroups] = useState(false);
-	const [firstLoadingGroups, setFirstLoadingGroups] = useState(false);
-	const [endReached, setEndReached] = useState(false);
-	const groupsMounted = useRef(false);
-	const [filteredGroups, setFilteredGroups] = useState<GroupData[]>([]);
-	const filteredGroupsLength = filteredGroups.length || -1;
-	const regexCreator = new RegExp(creator || "", "i");
-
 	const sortByIndex =
 		sortBy +
 		(privacy ? `-${privacy}` : "") +
@@ -66,57 +56,65 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 		(creator ? `-${creator}` : "") +
 		(tags ? `-${tags}` : "");
 
-	const handleFilterGroups = useCallback(() => {
-		setFilteredGroups(
-			groupStateValue.groups
-				.filter(
-					(group) =>
-						(creator
-							? group.creator?.firstName.match(regexCreator) ||
-							  group.creator?.lastName.match(regexCreator) ||
-							  group.creator?.middleName?.match(regexCreator) ||
-							  group.creator?.email.match(regexCreator)
-							: true) &&
-						group.index[sortByIndex] !== undefined &&
-						group.index[sortByIndex] >= 0
-				)
-				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
-		);
-	}, [creator, groupStateValue.groups, regexCreator, sortByIndex]);
+	const { groupStateValue, fetchGroups } = useGroup();
+
+	const { userStateValue, userMounted } = useUser();
+
+	const [loadingGroups, setLoadingGroups] = useState(false);
+	const [firstLoadingGroups, setFirstLoadingGroups] = useState(false);
+	const [endReached, setEndReached] = useState(false);
+	const [filteredGroupsLength, setFilteredGroupsLength] = useState(
+		groupStateValue.groups.filter(
+			(group) =>
+				group.index[sortByIndex] !== undefined && group.index[sortByIndex] >= 0
+		).length
+	);
+
+	const groupsMounted = useRef(false);
+
+	const regexCreator = new RegExp(creator || "", "i");
 
 	const handleFetchGroups = useCallback(async () => {
-		setLoadingGroups(true);
 		try {
-			const fetchedGroupLength = await fetchGroups({
-				privacy,
-				sortBy,
-				creatorId,
-				creator,
-				tags,
-			});
+			if (!loadingGroups) {
+				setLoadingGroups(true);
 
-			if (fetchedGroupLength !== undefined) {
-				setEndReached(fetchedGroupLength < 10 ? true : false);
+				const fetchedGroupLength = await fetchGroups({
+					privacy,
+					sortBy,
+					creatorId,
+					creator,
+					tags,
+				});
+
+				if (fetchedGroupLength !== undefined && fetchedGroupLength !== null) {
+					setEndReached(fetchedGroupLength < 10 ? true : false);
+					setLoadingGroups(false);
+				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching groups Error: ", error.message);
+			setLoadingGroups(false);
 		}
-		setLoadingGroups(false);
-	}, [creator, creatorId, fetchGroups, privacy, sortBy, tags]);
+	}, [creator, creatorId, fetchGroups, loadingGroups, privacy, sortBy, tags]);
 
 	const handleFirstFetchGroups = useCallback(async () => {
-		setFirstLoadingGroups(true);
 		try {
-			await handleFetchGroups();
+			if (!firstLoadingGroups) {
+				setFirstLoadingGroups(true);
+				await handleFetchGroups();
+
+				setFirstLoadingGroups(false);
+			}
 		} catch (error: any) {
 			console.log("First Fetch: fetching groups Error: ", error.message);
+			setFirstLoadingGroups(false);
 		}
-		setFirstLoadingGroups(false);
-	}, [handleFetchGroups]);
+	}, [firstLoadingGroups, handleFetchGroups]);
 
 	useEffect(() => {
 		if (userMounted) {
-			if (!groupsMounted.current) {
+			if (!groupsMounted.current && fetchGroups.length <= 0) {
 				groupsMounted.current = true;
 				handleFirstFetchGroups();
 			} else {
@@ -125,31 +123,31 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 		}
 	}, [userMounted]);
 
-	useEffect(() => {
-		handleFilterGroups();
-	}, [groupStateValue, sortByIndex]);
-
 	return (
 		<>
 			<div className="page-wrapper">
 				{!userMounted || firstLoadingGroups ? (
 					<>
-						<>
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							<GroupCardSkeleton index={filteredGroupsLength + 1} />
 							<GroupCardSkeleton index={filteredGroupsLength + 2} />
 							<GroupCardSkeleton index={filteredGroupsLength + 3} />
 							<GroupCardSkeleton index={filteredGroupsLength + 4} />
 							<GroupCardSkeleton index={filteredGroupsLength + 5} />
-						</>
+						</div>
 					</>
 				) : (
 					<>
-						{groupCreation && <GroupCreationListener />}
+						<div className="px-4 sm:px-0">
+							{groupCreation && <GroupCreationListener />}
+						</div>
 						{filter && <PageFilter />}
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{filteredGroupsLength > 0 && (
-								<>
-									{filteredGroups.map((group, index) => (
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+							<>
+								{groupStateValue.groups
+									.filter((group) => group.index[sortByIndex] >= 0)
+									.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+									.map((group, index) => (
 										<React.Fragment key={group.group.id}>
 											<GroupCard
 												groupData={group}
@@ -157,25 +155,54 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 											/>
 										</React.Fragment>
 									))}
-								</>
-							)}
-							{loadingGroups && (
-								<>
-									<GroupCardSkeleton index={filteredGroupsLength + 1} />
-									<GroupCardSkeleton index={filteredGroupsLength + 2} />
-									<GroupCardSkeleton index={filteredGroupsLength + 3} />
-									<GroupCardSkeleton index={filteredGroupsLength + 4} />
-									<GroupCardSkeleton index={filteredGroupsLength + 5} />
-								</>
-							)}
+							</>
+							{/* {(loadingGroups ||
+								!endReached) && (
+									<>
+										<GroupCardSkeleton index={filteredGroupsLength + 1} />
+										<GroupCardSkeleton index={filteredGroupsLength + 2} />
+										<GroupCardSkeleton index={filteredGroupsLength + 3} />
+										<GroupCardSkeleton index={filteredGroupsLength + 4} />
+										<GroupCardSkeleton index={filteredGroupsLength + 5} />
+									</>
+								)} */}
 						</div>
-						{!endReached && groupsMounted && filteredGroupsLength > 0 && (
+						<>
 							<VisibleInViewPort
-								disabled={endReached || loadingGroups || firstLoadingGroups}
-								onVisible={handleFetchGroups}
-							></VisibleInViewPort>
-						)}
-						{endReached && <PageEnd message="End of Groups" />}
+								disabled={
+									loadingGroups ||
+									firstLoadingGroups ||
+									endReached ||
+									!userMounted ||
+									!groupsMounted
+								}
+								onVisible={() =>
+									loadingGroups ||
+									firstLoadingGroups ||
+									endReached ||
+									!userMounted ||
+									!groupsMounted
+										? () => {}
+										: handleFetchGroups()
+								}
+							>
+								{endReached ? (
+									<>
+										<PageEnd message={pageEnd || "End of Groups"} />
+									</>
+								) : (
+									<>
+										<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+											<GroupCardSkeleton index={filteredGroupsLength + 1} />
+											<GroupCardSkeleton index={filteredGroupsLength + 2} />
+											<GroupCardSkeleton index={filteredGroupsLength + 3} />
+											<GroupCardSkeleton index={filteredGroupsLength + 4} />
+											<GroupCardSkeleton index={filteredGroupsLength + 5} />
+										</div>
+									</>
+								)}
+							</VisibleInViewPort>
+						</>
 					</>
 				)}
 			</div>

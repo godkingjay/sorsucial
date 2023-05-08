@@ -55,22 +55,6 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 		},
 	},
 }) => {
-	const { userStateValue, userMounted } = useUser();
-	const { discussionStateValue, fetchDiscussions } = useDiscussion();
-
-	const [filteredDiscussions, setFilteredDiscussions] = useState<
-		DiscussionData[]
-	>([]);
-	const [loadingDiscussions, setLoadingDiscussions] = useState(false);
-	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
-	const [endReached, setEndReached] = useState(false);
-
-	const discussionsMounted = useRef(false);
-
-	const filteredDiscussionsLength = filteredDiscussions.length || -1;
-	const regexCreator = new RegExp(creator || "", "i");
-	const router = useRouter();
-
 	const sortByIndex =
 		sortBy +
 		(discussionType ? `-${discussionType}` : "") +
@@ -81,61 +65,73 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 		(tags ? `-${tags}` : "") +
 		(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "");
 
-	const handleFilterDiscussions = useCallback(() => {
-		setFilteredDiscussions(
-			discussionStateValue.discussions
-				.filter(
-					(discussion) =>
-						(creator
-							? discussion.creator?.firstName.match(regexCreator) ||
-							  discussion.creator?.lastName.match(regexCreator) ||
-							  discussion.creator?.middleName?.match(regexCreator) ||
-							  discussion.creator?.email.match(regexCreator)
-							: true) &&
-						discussion.index[sortByIndex] !== undefined &&
-						discussion.index[sortByIndex] >= 0
-				)
-				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
-		);
-	}, [discussionStateValue.discussions, creator, regexCreator, sortByIndex]);
+	const { userStateValue, userMounted } = useUser();
+	const { discussionStateValue, fetchDiscussions } = useDiscussion();
+
+	const [loadingDiscussions, setLoadingDiscussions] = useState(false);
+	const [firstLoadingDiscussions, setFirstLoadingDiscussions] = useState(false);
+	const [endReached, setEndReached] = useState(false);
+
+	const [filteredDiscussionsLength, setFilteredDiscussionsLength] = useState(
+		discussionStateValue.discussions.filter(
+			(discussion) => discussion.index[sortByIndex] >= 0
+		).length
+	);
+
+	const discussionsMounted = useRef(false);
+
+	const regexCreator = new RegExp(creator || "", "i");
+	const router = useRouter();
 
 	const handleFetchDiscussions = useCallback(async () => {
-		setLoadingDiscussions(true);
 		try {
-			const fetchedDiscussionsLength = await fetchDiscussions({
-				discussionType: discussionType,
-				privacy: privacy,
-				sortBy: sortBy,
-				creatorId: creatorId,
-				groupId: groupId,
-				isOpen: isOpen,
-			});
-			if (fetchedDiscussionsLength !== undefined) {
-				setEndReached(fetchedDiscussionsLength < 10 ? true : false);
+			if (!loadingDiscussions) {
+				setLoadingDiscussions(true);
+
+				const fetchedDiscussionsLength = await fetchDiscussions({
+					discussionType: discussionType,
+					privacy: privacy,
+					sortBy: sortBy,
+					creatorId: creatorId,
+					groupId: groupId,
+					isOpen: isOpen,
+				});
+				if (
+					fetchedDiscussionsLength !== null &&
+					fetchedDiscussionsLength !== undefined
+				) {
+					setEndReached(fetchedDiscussionsLength < 10 ? true : false);
+					setLoadingDiscussions(false);
+				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching discussions Error: ", error.message);
+			setLoadingDiscussions(false);
 		}
-		setLoadingDiscussions(false);
 	}, [
 		creatorId,
 		discussionType,
 		fetchDiscussions,
 		groupId,
 		isOpen,
+		loadingDiscussions,
 		privacy,
 		sortBy,
 	]);
 
 	const handleFirstFetchDiscussions = useCallback(async () => {
-		setFirstLoadingDiscussions(true);
 		try {
-			await handleFetchDiscussions();
+			if (!firstLoadingDiscussions) {
+				setFirstLoadingDiscussions(true);
+
+				await handleFetchDiscussions();
+				setFirstLoadingDiscussions(false);
+			}
 		} catch (error: any) {
 			console.log("First Fetch: fetching discussions Error: ", error.message);
+			setFirstLoadingDiscussions(false);
 		}
-		setFirstLoadingDiscussions(false);
-	}, [handleFetchDiscussions]);
+	}, [firstLoadingDiscussions, handleFetchDiscussions]);
 
 	useEffect(() => {
 		if (userMounted) {
@@ -146,11 +142,7 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 				discussionsMounted.current = true;
 			}
 		}
-	}, [filteredDiscussionsLength, handleFirstFetchDiscussions, userMounted]);
-
-	useEffect(() => {
-		handleFilterDiscussions();
-	}, [discussionStateValue, sortByIndex]);
+	}, [userMounted]);
 
 	return (
 		<>
@@ -171,16 +163,17 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 							/>
 						)}
 						{filter && <PageFilter />}
-						{filteredDiscussionsLength > 0 && (
-							<>
-								{filteredDiscussions.map((discussion, index) => (
+						<>
+							{discussionStateValue.discussions
+								.filter((discussion) => discussion.index[sortByIndex] >= 0)
+								.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+								.map((discussion, index) => (
 									<React.Fragment key={discussion.discussion.id}>
 										<DiscussionCard discussionData={discussion} />
 									</React.Fragment>
 								))}
-							</>
-						)}
-						{loadingDiscussions && (
+						</>
+						{/* {loadingDiscussions && (
 							<>
 								<DiscussionCardSkeleton />
 								<DiscussionCardSkeleton />
@@ -198,7 +191,40 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 									/>
 								</>
 							)}
-						{endReached && <PageEnd message={pageEnd || "End of Discussions"} />}
+						{endReached && <PageEnd message={pageEnd || "End of Discussions"} />} */}
+						<>
+							<VisibleInViewPort
+								disabled={
+									loadingDiscussions ||
+									firstLoadingDiscussions ||
+									endReached ||
+									!userMounted ||
+									!discussionsMounted
+								}
+								onVisible={() =>
+									loadingDiscussions ||
+									firstLoadingDiscussions ||
+									endReached ||
+									!userMounted ||
+									!discussionsMounted
+										? () => {}
+										: handleFetchDiscussions()
+								}
+							>
+								<div className="flex flex-col gap-y-4">
+									{endReached ? (
+										<>
+											<PageEnd message={pageEnd || "End of Discussions"} />
+										</>
+									) : (
+										<>
+											<DiscussionCardSkeleton />
+											<DiscussionCardSkeleton />
+										</>
+									)}
+								</div>
+							</VisibleInViewPort>
+						</>
 					</>
 				)}
 			</div>

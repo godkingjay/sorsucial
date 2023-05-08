@@ -33,31 +33,22 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 		},
 	},
 }) => {
-	const { groupStateValue, fetchGroupMembers } = useGroup();
+	const sortByIndex =
+		sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
+
 	const { userStateValue, userMounted } = useUser();
+
+	const { groupStateValue, fetchGroupMembers } = useGroup();
+
 	const [loadingGroupMembers, setLoadingGroupMembers] = useState(false);
 	const [firstLoadingGroupMembers, setFirstLoadingGroupMembers] =
 		useState(false);
 	const [endReached, setEndReached] = useState(false);
+
+	const [filteredGroupMembersLength, setFilteredGroupMembersLength] = useState(
+		groupStateValue.currentGroup?.members?.length || 0
+	);
 	const groupMembersMounted = useRef(false);
-	const [filteredGroupMembers, setFilteredGroupMembers] = useState<
-		GroupMemberData[]
-	>([]);
-
-	const filteredGroupMembersLength = filteredGroupMembers.length || -1;
-
-	const sortByIndex =
-		sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
-
-	const handleFilterGroupMembers = useCallback(() => {
-		setFilteredGroupMembers(
-			groupStateValue.currentGroup?.members?.filter(
-				(member) =>
-					member.index[sortByIndex] !== undefined &&
-					member.index[sortByIndex] >= 0
-			) || []
-		);
-	}, [groupStateValue.currentGroup?.members, sortByIndex]);
 
 	const handleFetchGroupMembers = useCallback(async () => {
 		try {
@@ -70,14 +61,18 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 					roles,
 				});
 
-				if (fetchedGroupMembersLength !== undefined) {
-					setEndReached(fetchedGroupMembersLength < 2 ? true : false);
+				if (
+					fetchedGroupMembersLength !== undefined &&
+					fetchedGroupMembersLength !== null
+				) {
+					setEndReached(fetchedGroupMembersLength < 10 ? true : false);
+					setLoadingGroupMembers(false);
 				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching group members Error: ", error.message);
+			setLoadingGroupMembers(false);
 		}
-		setLoadingGroupMembers(false);
 	}, [fetchGroupMembers, groupId, loadingGroupMembers, roles, sortBy]);
 
 	const handleFirstFetchGroupMembers = useCallback(async () => {
@@ -90,10 +85,10 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 		setFirstLoadingGroupMembers(false);
 	}, [handleFetchGroupMembers]);
 
-	const renderLoading = () => {
+	const renderLoading = (count: number = 10) => {
 		const result = [];
 
-		for (let i = 0; i < 10; i++) {
+		for (let i = 0; i < count; i++) {
 			result.push(
 				<div
 					key={i}
@@ -116,7 +111,7 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 
 	useEffect(() => {
 		if (userMounted) {
-			if (!groupMembersMounted.current) {
+			if (!groupMembersMounted.current && filteredGroupMembersLength === 0) {
 				groupMembersMounted.current = true;
 				handleFirstFetchGroupMembers();
 			} else {
@@ -125,45 +120,62 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 		}
 	}, [userMounted]);
 
-	useEffect(() => {
-		handleFilterGroupMembers();
-	}, [groupStateValue.currentGroup?.members]);
-
 	return (
 		<>
 			<div className="page-wrapper">
 				{!userMounted || firstLoadingGroupMembers ? (
 					<>
 						<div className="grid grid-cols-1 md:grid-cols-2">
-							{renderLoading()}
+							{renderLoading(10)}
 						</div>
 					</>
 				) : (
 					<>
 						{filter && <PageFilter />}
-						<div className="gap-x-4 gap-y-4 grid grid-cols-`">
-							{filteredGroupMembersLength > 0 && (
-								<>
-									{filteredGroupMembers.map((member, index) => (
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+							<>
+								{groupStateValue.currentGroup?.members
+									.filter((member) => member.index[sortByIndex] >= 0)
+									.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+									.map((member, index) => (
 										<React.Fragment key={member.member.userId}>
 											<p>{member.user?.uid}</p>
 										</React.Fragment>
 									))}
-								</>
-							)}
+							</>
 						</div>
-						{loadingGroupMembers && <>{renderLoading()}</>}
-						{!endReached &&
-							groupMembersMounted &&
-							filteredGroupMembersLength > 0 && (
-								<VisibleInViewPort
-									disabled={
-										endReached || loadingGroupMembers || firstLoadingGroupMembers
-									}
-									onVisible={handleFetchGroupMembers}
-								></VisibleInViewPort>
-							)}
-						{endReached && <PageEnd message="End of Members" />}
+						<>
+							<VisibleInViewPort
+								disabled={
+									loadingGroupMembers ||
+									firstLoadingGroupMembers ||
+									endReached ||
+									!userMounted ||
+									!groupMembersMounted
+								}
+								onVisible={() =>
+									loadingGroupMembers ||
+									firstLoadingGroupMembers ||
+									endReached ||
+									!userMounted ||
+									!groupMembersMounted
+										? () => {}
+										: handleFetchGroupMembers()
+								}
+							>
+								{endReached ? (
+									<>
+										<PageEnd message={pageEnd || "End of Group Members"} />
+									</>
+								) : (
+									<>
+										<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+											{renderLoading(10)}
+										</div>
+									</>
+								)}
+							</VisibleInViewPort>
+						</>
 					</>
 				)}
 			</div>

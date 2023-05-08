@@ -5,7 +5,7 @@ import {
 	groupState,
 } from "@/atoms/groupAtom";
 import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { GroupImage, GroupMember, SiteGroup } from "@/lib/interfaces/group";
@@ -22,8 +22,13 @@ import {
 } from "@/lib/types/api";
 
 const useGroup = () => {
-	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
 	const { authUser, userStateValue } = useUser();
+
+	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
+
+	const [fetchingGroupsFor, setFetchingGroupsFor] = useState("");
+
+	const [fetchingGroupMembersFor, setFetchingGroupMembersFor] = useState("");
 
 	const groupStateValueMemo = useMemo(() => groupStateValue, [groupStateValue]);
 
@@ -563,101 +568,114 @@ const useGroup = () => {
 					(creator ? `-${creator}` : "") +
 					(tags ? `-${tags}` : "");
 
-				switch (sortBy) {
-					case "latest": {
-						refIndex = groupStateValueMemo.groups.reduceRight(
-							(acc, group, index) => {
-								if (group.index[sortByIndex] && acc === -1) {
-									return index;
-								}
+				if (fetchingGroupsFor !== sortByIndex) {
+					setFetchingGroupsFor(sortByIndex);
 
-								return acc;
-							},
-							-1
-						);
+					switch (sortBy) {
+						case "latest": {
+							refIndex = groupStateValueMemo.groups.reduceRight(
+								(acc, group, index) => {
+									if (group.index[sortByIndex] && acc === -1) {
+										return index;
+									}
 
-						refGroup = groupStateValueMemo.groups[refIndex] || null;
-						break;
+									return acc;
+								},
+								-1
+							);
+
+							refGroup = groupStateValueMemo.groups[refIndex] || null;
+							break;
+						}
+
+						default: {
+							refGroup = null;
+							break;
+						}
 					}
 
-					default: {
-						refGroup = null;
-						break;
+					const { groups }: { groups: GroupData[] } = await axios
+						.get(apiConfig.apiEndpoint + "/groups/groups", {
+							params: {
+								apiKey: userStateValue.api?.keys[0].key,
+								userId: authUser?.uid,
+								privacy: privacy,
+								tags: tags,
+								userPageId: userPageId,
+								creatorId: creatorId,
+								creator: creator,
+								lastIndex: refGroup?.index[sortByIndex] || -1,
+								fromMembers:
+									refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
+								fromPosts:
+									refGroup?.group.numberOfPosts || Number.MAX_SAFE_INTEGER,
+								fromDiscussions:
+									refGroup?.group.numberOfDiscussions || Number.MAX_SAFE_INTEGER,
+								fromDate: refGroup?.group.createdAt || null,
+								sortBy: sortBy,
+							} as Partial<APIEndpointGroupsParams>,
+						})
+						.then((res) => res.data)
+						.catch((err) => {
+							throw new Error(
+								`=>API (GET): Getting Groups error:\n${err.message}`
+							);
+						});
+
+					const fetchedLength = groups.length || 0;
+
+					if (groups.length) {
+						setGroupStateValueMemo((prev) => ({
+							...prev,
+							groups: prev.groups
+								.map((groupData) => {
+									const groupIndex = groups.findIndex(
+										(group) => group.group.id === groupData.group.id
+									);
+
+									const existingGroup =
+										groupIndex !== -1 ? groups[groupIndex] : null;
+
+									if (existingGroup) {
+										groups.splice(groupIndex, 1);
+
+										const indices = {
+											...groupData.index,
+											...existingGroup.index,
+										};
+
+										return {
+											...groupData,
+											...existingGroup,
+											index: indices,
+										};
+									} else {
+										return groupData;
+									}
+								})
+								.concat(groups),
+						}));
+					} else {
+						console.log("Mongo: No groups found!");
 					}
-				}
 
-				const { groups }: { groups: GroupData[] } = await axios
-					.get(apiConfig.apiEndpoint + "/groups/groups", {
-						params: {
-							apiKey: userStateValue.api?.keys[0].key,
-							userId: authUser?.uid,
-							privacy: privacy,
-							tags: tags,
-							userPageId: userPageId,
-							creatorId: creatorId,
-							creator: creator,
-							lastIndex: refGroup?.index[sortByIndex] || -1,
-							fromMembers:
-								refGroup?.group.numberOfMembers || Number.MAX_SAFE_INTEGER,
-							fromPosts:
-								refGroup?.group.numberOfPosts || Number.MAX_SAFE_INTEGER,
-							fromDiscussions:
-								refGroup?.group.numberOfDiscussions || Number.MAX_SAFE_INTEGER,
-							fromDate: refGroup?.group.createdAt || null,
-							sortBy: sortBy,
-						} as Partial<APIEndpointGroupsParams>,
-					})
-					.then((res) => res.data)
-					.catch((err) => {
-						throw new Error(
-							`=>API (GET): Getting Groups error:\n${err.message}`
-						);
-					});
+					setFetchingGroupsFor("");
 
-				const fetchedLength = groups.length;
-
-				if (groups.length) {
-					setGroupStateValueMemo((prev) => ({
-						...prev,
-						groups: prev.groups
-							.map((groupData) => {
-								const groupIndex = groups.findIndex(
-									(group) => group.group.id === groupData.group.id
-								);
-
-								const existingGroup =
-									groupIndex !== -1 ? groups[groupIndex] : null;
-
-								if (existingGroup) {
-									groups.splice(groupIndex, 1);
-
-									const indices = {
-										...groupData.index,
-										...existingGroup.index,
-									};
-
-									return {
-										...groupData,
-										...existingGroup,
-										index: indices,
-									};
-								} else {
-									return groupData;
-								}
-							})
-							.concat(groups),
-					}));
+					return fetchedLength;
 				} else {
-					console.log("Mongo: No groups found!");
+					return null;
 				}
-
-				return fetchedLength;
 			} catch (error: any) {
 				console.log(`=>MONGO: Error while fetching groups:\n${error.message}`);
+
+				setFetchingGroupsFor("");
+
+				return null;
 			}
 		},
 		[
 			authUser?.uid,
+			fetchingGroupsFor,
 			groupStateValueMemo.groups,
 			setGroupStateValueMemo,
 			userStateValue.api?.keys,
@@ -681,109 +699,121 @@ const useGroup = () => {
 				const sortByIndex =
 					sortBy + `-${groupId}` + (roles ? `-${roles.join("_")}` : "");
 
-				switch (sortBy) {
-					case "accepted-desc": {
-						refIndex = groupStateValueMemo.currentGroup?.members?.reduceRight(
-							(acc, member, index) => {
-								if (member.index[sortByIndex] >= 0 && acc === -1) {
-									return index;
-								}
+				if (fetchingGroupMembersFor !== sortByIndex) {
+					setFetchingGroupMembersFor(sortByIndex);
 
-								return acc;
-							},
-							-1
-						);
+					switch (sortBy) {
+						case "accepted-desc": {
+							refIndex = groupStateValueMemo.currentGroup?.members?.reduceRight(
+								(acc, member, index) => {
+									if (member.index[sortByIndex] >= 0 && acc === -1) {
+										return index;
+									}
 
-						refGroupMember =
-							groupStateValueMemo.currentGroup?.members[refIndex] || null;
+									return acc;
+								},
+								-1
+							);
 
-						break;
+							refGroupMember =
+								groupStateValueMemo.currentGroup?.members[refIndex] || null;
+
+							break;
+						}
+
+						default: {
+							refGroupMember = null;
+							break;
+						}
 					}
 
-					default: {
-						refGroupMember = null;
-						break;
+					const {
+						members,
+					}: {
+						members: GroupMemberData[];
+					} = await axios
+						.get(apiConfig.apiEndpoint + "/groups/members/members/", {
+							params: {
+								apiKey: userStateValue.api?.keys[0].key,
+								userId: authUser?.uid,
+								sortBy: sortBy,
+								lastIndex: refGroupMember?.index[sortByIndex] || -1,
+								groupId: groupId,
+								roles: roles,
+								fromUpdated: refGroupMember?.member?.updatedAt || null,
+								fromRequested: refGroupMember?.member?.requestedAt || null,
+								fromAccepted: refGroupMember?.member?.acceptedAt || null,
+								fromRejected: refGroupMember?.member?.rejectedAt || null,
+							} as Partial<APIEndpointGroupMembersGroupParams>,
+						})
+						.then((response) => response.data)
+						.catch((error: any) => {
+							throw new Error(
+								`=>API (GET): Getting Group Members error:\n${error.message}`
+							);
+						});
+
+					const fetchedLength = members.length || 0;
+
+					if (fetchedLength) {
+						setGroupStateValueMemo((prev) => ({
+							...prev,
+							currentGroup: prev.currentGroup
+								? {
+										...prev.currentGroup,
+										members: prev.currentGroup.members
+											.map((memberData) => {
+												const memberIndex = members.findIndex(
+													(member) =>
+														member.member.userId === memberData.member.userId
+												);
+
+												const existingMember =
+													memberIndex !== -1 ? members[memberIndex] : null;
+
+												if (existingMember) {
+													members.splice(memberIndex, 1);
+
+													const indices = {
+														...memberData.index,
+														...existingMember.index,
+													};
+
+													return {
+														...memberData,
+														...existingMember,
+														index: indices,
+													};
+												} else {
+													return memberData;
+												}
+											})
+											.concat(members),
+								  }
+								: prev.currentGroup,
+						}));
+					} else {
+						console.log("Mongo: No members found!");
 					}
-				}
 
-				const {
-					members,
-				}: {
-					members: GroupMemberData[];
-				} = await axios
-					.get(apiConfig.apiEndpoint + "/groups/members/members/", {
-						params: {
-							apiKey: userStateValue.api?.keys[0].key,
-							userId: authUser?.uid,
-							sortBy: sortBy,
-							lastIndex: refGroupMember?.index[sortByIndex] || -1,
-							groupId: groupId,
-							roles: roles,
-							fromUpdated: refGroupMember?.member?.updatedAt || null,
-							fromRequested: refGroupMember?.member?.requestedAt || null,
-							fromAccepted: refGroupMember?.member?.acceptedAt || null,
-							fromRejected: refGroupMember?.member?.rejectedAt || null,
-						} as Partial<APIEndpointGroupMembersGroupParams>,
-					})
-					.then((response) => response.data)
-					.catch((error: any) => {
-						throw new Error(
-							`=>API (GET): Getting Group Members error:\n${error.message}`
-						);
-					});
+					setFetchingGroupMembersFor("");
 
-				const fetchedLength = members.length;
-
-				if (fetchedLength) {
-					setGroupStateValueMemo((prev) => ({
-						...prev,
-						currentGroup: prev.currentGroup
-							? {
-									...prev.currentGroup,
-									members: prev.currentGroup.members
-										.map((memberData) => {
-											const memberIndex = members.findIndex(
-												(member) =>
-													member.member.userId === memberData.member.userId
-											);
-
-											const existingMember =
-												memberIndex !== -1 ? members[memberIndex] : null;
-
-											if (existingMember) {
-												members.splice(memberIndex, 1);
-
-												const indices = {
-													...memberData.index,
-													...existingMember.index,
-												};
-
-												return {
-													...memberData,
-													...existingMember,
-													index: indices,
-												};
-											} else {
-												return memberData;
-											}
-										})
-										.concat(members),
-							  }
-							: prev.currentGroup,
-					}));
+					return fetchedLength;
 				} else {
-					console.log("Mongo: No members found!");
+					return null;
 				}
-
-				return fetchedLength;
 			} catch (error: any) {
 				console.log(
 					`=>MONGO: Error while fetching group members:\n${error.message}`
 				);
+
+				setFetchingGroupMembersFor("");
+				return null;
 			}
 		},
 		[
 			authUser?.uid,
+			fetchingGroupMembersFor,
 			groupStateValueMemo.currentGroup,
 			setGroupStateValueMemo,
 			userStateValue.api?.keys,

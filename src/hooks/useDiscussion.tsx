@@ -4,7 +4,7 @@ import {
 	discussionOptionsState,
 	discussionState,
 } from "@/atoms/discussionAtom";
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
 import { CreateDiscussionType } from "@/components/Modal/DiscussionCreationModal";
@@ -27,6 +27,8 @@ const useDiscussion = () => {
 	const { authUser, userStateValue } = useUser();
 
 	const { groupStateValue, setGroupStateValue } = useGroup();
+
+	const [fetchingDiscussionsFor, setFetchingDiscussionsFor] = useState("");
 
 	const actionDeletedDiscussion = (
 		discussionDeleted: boolean,
@@ -612,8 +614,8 @@ const useDiscussion = () => {
 		sortBy = "latest" as QueryDiscussionsSortBy,
 	}) => {
 		try {
-			let refDiscussion;
-			let refIndex;
+			let refDiscussion: DiscussionData | null;
+			let refIndex: number;
 			const sortByIndex =
 				sortBy +
 				(discussionType ? `-${discussionType}` : "") +
@@ -624,109 +626,121 @@ const useDiscussion = () => {
 				(tags ? `-${tags}` : "") +
 				(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "");
 
-			switch (sortBy) {
-				case "latest": {
-					refIndex = discussionStateValue.discussions.reduceRight(
-						(acc, discussion, index) => {
-							if (discussion?.index[sortByIndex] && acc === -1) {
-								return index;
-							}
+			if (fetchingDiscussionsFor !== sortByIndex) {
+				setFetchingDiscussionsFor(sortByIndex);
 
-							return acc;
-						},
-						-1
-					);
+				switch (sortBy) {
+					case "latest": {
+						refIndex = discussionStateValue.discussions.reduceRight(
+							(acc, discussion, index) => {
+								if (discussion?.index[sortByIndex] && acc === -1) {
+									return index;
+								}
 
-					refDiscussion = discussionStateValue.discussions[refIndex] || null;
-					break;
+								return acc;
+							},
+							-1
+						);
+
+						refDiscussion = discussionStateValue.discussions[refIndex] || null;
+						break;
+					}
+
+					default: {
+						refDiscussion = null;
+						break;
+					}
 				}
 
-				default: {
-					refDiscussion = null;
-					break;
+				const {
+					discussions,
+				}: {
+					discussions: DiscussionData[];
+				} = await axios
+					.get(apiConfig.apiEndpoint + "/discussions/discussions", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: authUser?.uid,
+							discussionType: discussionType,
+							privacy: privacy,
+							groupId: groupId,
+							tags: tags,
+							creatorId: creatorId,
+							creator: creator,
+							isOpen,
+							lastIndex: refDiscussion ? refDiscussion?.index[sortByIndex] : -1,
+							fromVotes: refDiscussion
+								? refDiscussion?.discussion.numberOfVotes + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromUpVotes: refDiscussion
+								? refDiscussion?.discussion.numberOfUpVotes + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromDownVotes: refDiscussion
+								? refDiscussion?.discussion.numberOfDownVotes + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromReplies: refDiscussion
+								? refDiscussion?.discussion.numberOfReplies + 1
+								: Number.MAX_SAFE_INTEGER,
+							fromDate: refDiscussion
+								? refDiscussion?.discussion.createdAt
+								: new Date().toISOString(),
+						} as Partial<APIEndpointDiscussionsParams>,
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`=>API (GET - Discussions): Getting Discussions Error:\n${error.message}`
+						);
+					});
+
+				const fetchedLength = discussions.length || 0;
+
+				if (fetchedLength) {
+					setDiscussionStateValue((prev) => ({
+						...prev,
+						discussions: prev.discussions
+							.map((discussion) => {
+								const discussionIndex = discussions.findIndex(
+									(discussionData) =>
+										discussionData.discussion.id === discussion.discussion.id
+								);
+
+								const existingDiscussion =
+									discussionIndex !== -1 ? discussions[discussionIndex] : null;
+
+								if (existingDiscussion) {
+									discussions.splice(discussionIndex, 1);
+
+									const indices = {
+										...discussion.index,
+										...existingDiscussion.index,
+									};
+
+									return {
+										...discussion,
+										...existingDiscussion,
+										index: indices,
+									};
+								} else {
+									return discussion;
+								}
+							})
+							.concat(discussions),
+					}));
+				} else {
+					console.log("Mongo: No Discussions Found!");
 				}
-			}
 
-			const {
-				discussions,
-			}: {
-				discussions: DiscussionData[];
-			} = await axios
-				.get(apiConfig.apiEndpoint + "/discussions/discussions", {
-					params: {
-						apiKey: userStateValue.api?.keys[0].key,
-						userId: authUser?.uid,
-						discussionType: discussionType,
-						privacy: privacy,
-						groupId: groupId,
-						tags: tags,
-						creatorId: creatorId,
-						creator: creator,
-						isOpen,
-						lastIndex: refDiscussion ? refDiscussion?.index[sortByIndex] : -1,
-						fromVotes: refDiscussion
-							? refDiscussion?.discussion.numberOfVotes + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromUpVotes: refDiscussion
-							? refDiscussion?.discussion.numberOfUpVotes + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromDownVotes: refDiscussion
-							? refDiscussion?.discussion.numberOfDownVotes + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromReplies: refDiscussion
-							? refDiscussion?.discussion.numberOfReplies + 1
-							: Number.MAX_SAFE_INTEGER,
-						fromDate: refDiscussion
-							? refDiscussion?.discussion.createdAt
-							: new Date().toISOString(),
-					} as Partial<APIEndpointDiscussionsParams>,
-				})
-				.then((response) => response.data)
-				.catch((error: any) => {
-					throw new Error(
-						`=>API (GET - Discussions): Getting Discussions Error:\n${error.message}`
-					);
-				});
+				setFetchingDiscussionsFor("");
 
-			if (discussions.length) {
-				setDiscussionStateValue((prev) => ({
-					...prev,
-					discussions: prev.discussions
-						.map((discussion) => {
-							const discussionIndex = discussions.findIndex(
-								(discussionData) =>
-									discussionData.discussion.id === discussion.discussion.id
-							);
-
-							const existingDiscussion =
-								discussionIndex !== -1 ? discussions[discussionIndex] : null;
-
-							if (existingDiscussion) {
-								discussions.splice(discussionIndex, 1);
-
-								const indices = {
-									...discussion.index,
-									...existingDiscussion.index,
-								};
-
-								return {
-									...discussion,
-									...existingDiscussion,
-									index: indices,
-								};
-							} else {
-								return discussion;
-							}
-						})
-						.concat(discussions),
-				}));
+				return fetchedLength;
 			} else {
-				console.log("Mongo: No Discussions Found!");
+				return null;
 			}
-
-			return discussions.length;
 		} catch (error: any) {
 			console.log(`=>Mongo: Fetching Discussions Error:\n${error.message}`);
+			setFetchingDiscussionsFor("");
+			return null;
 		}
 	};
 

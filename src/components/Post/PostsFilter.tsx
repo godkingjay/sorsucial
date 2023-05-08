@@ -63,13 +63,10 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 
 	const { userStateValue, userMounted } = useUser();
 	const { postStateValue, fetchPosts } = usePost();
-	const [filteredPosts, setFilteredPosts] = useState<PostData[]>(
-		postStateValue.posts
-			.filter((post) => post.index[sortByIndex] >= 0)
-			.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+	const [filteredPostsLength, setFilteredPostsLength] = useState<number>(
+		postStateValue.posts.filter((post) => post.index[sortByIndex] >= 0).length ||
+			0
 	);
-
-	const [filteringPosts, setFilteringPosts] = useState(false);
 	const [loadingPosts, setLoadingPosts] = useState(false);
 	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
 	const [endReached, setEndReached] = useState(false);
@@ -79,23 +76,9 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	const router = useRouter();
 	const { userId } = router.query;
 
-	const handleFilterPosts = useCallback(async () => {
-		if (!filteringPosts) {
-			setFilteringPosts(true);
-
-			setFilteredPosts(
-				postStateValue.posts
-					.filter((post) => post.index[sortByIndex] >= 0)
-					.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
-			);
-
-			setFilteringPosts(false);
-		}
-	}, [filteringPosts, postStateValue.posts, sortByIndex]);
-
 	const handleFetchPosts = useCallback(async () => {
 		try {
-			if (!loadingPosts && !filteringPosts) {
+			if (!loadingPosts) {
 				setLoadingPosts(true);
 
 				const fetchedPostsLength = await fetchPosts({
@@ -119,7 +102,6 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		}
 	}, [
 		loadingPosts,
-		filteringPosts,
 		fetchPosts,
 		postType,
 		privacy,
@@ -144,14 +126,8 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 	}, [firstLoadingPosts, handleFetchPosts]);
 
 	useEffect(() => {
-		if (!filteringPosts && !loadingPosts) {
-			handleFilterPosts();
-		}
-	}, [filteringPosts, loadingPosts, handleFilterPosts, postStateValue.posts]);
-
-	useEffect(() => {
 		if (userMounted) {
-			if (!postsMounted.current && filteredPosts.length <= 0) {
+			if (!postsMounted.current && filteredPostsLength <= 0) {
 				postsMounted.current = true;
 				handleFirstFetchPosts();
 			} else {
@@ -180,19 +156,22 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 						)}
 						{filter && <PageFilter />}
 						<>
-							{filteredPosts.map((post, index) => (
-								<React.Fragment key={post.post.id}>
-									<PostCard postData={post} />
-								</React.Fragment>
-							))}
+							{postStateValue.posts
+								.filter((post) => post.index[sortByIndex] >= 0)
+								.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+								.map((post, index) => (
+									<React.Fragment key={post.post.id}>
+										<PostCard postData={post} />
+									</React.Fragment>
+								))}
 						</>
-						{(loadingPosts || filteringPosts) && !endReached && (
+						{/* {loadingPosts && !endReached && (
 							<>
 								<PostCardSkeleton />
 								<PostCardSkeleton />
 							</>
-						)}
-						{!loadingPosts &&
+						)} */}
+						{/* {!loadingPosts &&
 							!firstLoadingPosts &&
 							!endReached &&
 							userMounted &&
@@ -202,7 +181,6 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 										disabled={
 											loadingPosts ||
 											firstLoadingPosts ||
-											filteringPosts ||
 											endReached ||
 											!userMounted ||
 											!postsMounted
@@ -218,8 +196,46 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 										}
 									/>
 								</>
-							)}
-						{endReached ? (
+							)} */}
+						<>
+							<VisibleInViewPort
+								disabled={
+									loadingPosts ||
+									firstLoadingPosts ||
+									endReached ||
+									!userMounted ||
+									!postsMounted
+								}
+								onVisible={() =>
+									loadingPosts ||
+									firstLoadingPosts ||
+									endReached ||
+									!userMounted ||
+									!postsMounted
+										? () => {}
+										: handleFetchPosts()
+								}
+							>
+								<div className="flex flex-col gap-y-4">
+									{endReached ? (
+										<>
+											<PageEnd message={pageEnd || "End of Posts"} />
+										</>
+									) : (
+										<>
+											<PostCardSkeleton />
+											<PostCardSkeleton />
+										</>
+									)}
+								</div>
+							</VisibleInViewPort>
+						</>
+						{/* {endReached && (
+							<>
+								<PageEnd message={pageEnd || "End of Posts"} />
+							</>
+						)} */}
+						{/* {endReached ? (
 							<>
 								<PageEnd message={pageEnd || "End of Posts"} />
 							</>
@@ -228,7 +244,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 								<PostCardSkeleton />
 								<PostCardSkeleton />
 							</>
-						)}
+						)} */}
 					</>
 				)}
 			</div>

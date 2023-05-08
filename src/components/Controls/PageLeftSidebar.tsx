@@ -60,6 +60,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 								}
 								className="open-close-button"
 								onClick={handleOpen}
+								tabIndex={
+									window.matchMedia("(max-width: 640px)").matches &&
+									!navigationBarStateValue.pageLeftSidebar.open
+										? -1
+										: 0
+								}
 							>
 								<div className="label-container">
 									<p className="label">SorSUcial</p>
@@ -92,6 +98,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 										data-active={
 											navigationBarStateValue.pageLeftSidebar.current === "admin"
 										}
+										tabIndex={
+											window.matchMedia("(max-width: 640px)").matches &&
+											!navigationBarStateValue.pageLeftSidebar.open
+												? -1
+												: 0
+										}
 									>
 										<div className="icon-container">
 											<MdAdminPanelSettings className="icon" />
@@ -120,6 +132,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 									data-active={
 										navigationBarStateValue.pageLeftSidebar.current === ""
 									}
+									tabIndex={
+										window.matchMedia("(max-width: 640px)").matches &&
+										!navigationBarStateValue.pageLeftSidebar.open
+											? -1
+											: 0
+									}
 								>
 									<div className="icon-container">
 										<FaBullhorn className="icon" />
@@ -137,6 +155,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 									role="button"
 									data-active={
 										navigationBarStateValue.pageLeftSidebar.current === "feeds"
+									}
+									tabIndex={
+										window.matchMedia("(max-width: 640px)").matches &&
+										!navigationBarStateValue.pageLeftSidebar.open
+											? -1
+											: 0
 									}
 								>
 									<div className="icon-container">
@@ -157,6 +181,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 										navigationBarStateValue.pageLeftSidebar.current ===
 										"discussions"
 									}
+									tabIndex={
+										window.matchMedia("(max-width: 640px)").matches &&
+										!navigationBarStateValue.pageLeftSidebar.open
+											? -1
+											: 0
+									}
 								>
 									<div className="icon-container">
 										<RiDiscussFill className="icon" />
@@ -174,6 +204,12 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 									role="button"
 									data-active={
 										navigationBarStateValue.pageLeftSidebar.current === "groups"
+									}
+									tabIndex={
+										window.matchMedia("(max-width: 640px)").matches &&
+										!navigationBarStateValue.pageLeftSidebar.open
+											? -1
+											: 0
 									}
 								>
 									<div className="icon-container">

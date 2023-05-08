@@ -26,8 +26,10 @@ const useUser = () => {
 	const [user, loading, error] = useAuthState(clientAuth);
 	const [loadingUser, setLoadingUser] = useState(false);
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
+
 	const router = useRouter();
 	const currentUserMounted = useRef(false);
+
 	const resetUserStateValue = useResetRecoilState(userState);
 	const resetNavigationBarStateValue = useResetRecoilState(navigationBarState);
 	const resetAdminStateValue = useResetRecoilState(adminState);
@@ -280,37 +282,42 @@ const useUser = () => {
 	 *
 	 */
 	const setCurrentUserState = useCallback(async () => {
-		setLoadingUser(true);
 		try {
-			if (userMemo) {
-				const { userData, userAPI } = await axios
-					.post(apiConfig.apiEndpoint + "/auth/signin", {
-						privateKey: apiConfig.privateKey,
-						userId: userMemo.uid,
-					})
-					.then((res) => res.data)
-					.catch((error) => {
-						console.log("API: Get User Error: ", error.message);
-					});
+			if (!loadingUser && !userStateValue.api) {
+				setLoadingUser(true);
 
-				if (userData) {
-					setUserStateValueMemo((prev) => ({
-						...prev,
-						user: userData,
-						api: userAPI,
-					}));
+				if (userMemo) {
+					const { userData, userAPI } = await axios
+						.post(apiConfig.apiEndpoint + "/auth/signin", {
+							privateKey: apiConfig.privateKey,
+							userId: userMemo.uid,
+						})
+						.then((res) => res.data)
+						.catch((error) => {
+							console.log("API: Get User Error: ", error.message);
+						});
+
+					if (userData) {
+						setUserStateValueMemo((prev) => ({
+							...prev,
+							user: userData,
+							api: userAPI,
+						}));
+					} else {
+						console.log("Mongo: User does not exist in the database!");
+					}
 				} else {
-					console.log("Mongo: User does not exist in the database!");
+					console.log("Firebase Auth: User is not logged in !");
 				}
-			} else {
-				console.log("Firebase Auth: User is not logged in !");
+				setLoadingUser(false);
 			}
 		} catch (error: any) {
-			console.log("Setting Current User State Error !");
+			console.log(
+				`=>Mongo: Setting Current User State Error:\n${error.message}`
+			);
+			setLoadingUser(false);
 		}
-
-		setLoadingUser(false);
-	}, [setUserStateValueMemo, userMemo]);
+	}, [loadingUser, setUserStateValueMemo, userMemo, userStateValue.api]);
 
 	/**
 	 * ~ ██████╗ ███████╗███████╗███████╗████████╗    ██╗   ██╗███████╗███████╗██████╗     ███████╗████████╗ █████╗ ████████╗███████╗
@@ -381,7 +388,14 @@ const useUser = () => {
 			currentUserMounted.current = true;
 			setCurrentUserState();
 		}
-	}, [userMemo, loading, setCurrentUserState]);
+	}, [
+		userMemo,
+		loading,
+		setCurrentUserState,
+		loadingUser,
+		userStateValue.user.uid,
+		router,
+	]);
 
 	useEffect(() => {
 		if (

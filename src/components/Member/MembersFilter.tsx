@@ -125,7 +125,7 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 			<div className="page-wrapper">
 				{!userMounted || firstLoadingGroupMembers ? (
 					<>
-						<div className="grid grid-cols-1 md:grid-cols-2">
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							{renderLoading(10)}
 						</div>
 					</>

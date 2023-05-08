@@ -158,6 +158,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 						<>
 							{postStateValue.posts
 								.filter((post) => post.index[sortByIndex] >= 0)
+								.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 								.map((post, index) => (
 									<React.Fragment key={post.post.id}>
 										<PostCard postData={post} />

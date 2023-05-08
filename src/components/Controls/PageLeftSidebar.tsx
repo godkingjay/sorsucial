@@ -12,6 +12,7 @@ import { HiUserGroup } from "react-icons/hi";
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { SetterOrUpdater } from "recoil";
 import { UserState } from "@/atoms/userAtom";
+import { AiOutlineMenu } from "react-icons/ai";
 
 type PageLeftSidebarProps = {
 	navigationBarStateValue: NavigationBarState;
@@ -42,8 +43,11 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 			>
 				<div className="sticky h-full w-full bg-black bg-opacity-40 top-0"></div>
 			</div>
-			<div className="z-[600] w-14 h-full sticky top-0">
-				<div className="sticky top-14 w-max h-full page-left-sidebar-wrapper">
+			<div className="z-[600] w-0 sm:w-14 h-full sticky top-0">
+				<div
+					className="sticky -translate-x-14 sm:translate-x-0 top-14 w-max h-full page-left-sidebar-wrapper data-[open='true']:translate-x-0 group"
+					data-open={navigationBarStateValue.pageLeftSidebar.open}
+				>
 					<div
 						className="page-left-sidebar"
 						data-open={navigationBarStateValue.pageLeftSidebar.open}
@@ -182,6 +186,18 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 							</li>
 						</ul>
 					</div>
+					<button
+						type="button"
+						title={
+							navigationBarStateValue.pageLeftSidebar.open ? "Close" : "Open"
+						}
+						className="sm:hidden absolute top-8 translate-y-[-50%] left-[100%] p-2 bg-logo-500 shadow-md hover:bg-logo-400 focus:bg-logo-400 text-white rounded-r-full"
+						onClick={handleOpen}
+					>
+						<div className="h-6 w-6">
+							<AiOutlineMenu className="h-full w-full" />
+						</div>
+					</button>
 				</div>
 			</div>
 		</>

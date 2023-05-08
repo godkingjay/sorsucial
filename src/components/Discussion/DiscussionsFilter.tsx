@@ -166,6 +166,7 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 						<>
 							{discussionStateValue.discussions
 								.filter((discussion) => discussion.index[sortByIndex] >= 0)
+								.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 								.map((discussion, index) => (
 									<React.Fragment key={discussion.discussion.id}>
 										<DiscussionCard discussionData={discussion} />

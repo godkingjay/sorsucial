@@ -52,16 +52,6 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		},
 	},
 }) => {
-	const { userStateValue, userMounted } = useUser();
-	const { postStateValue, fetchPosts } = usePost();
-	const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
-	const [loadingPosts, setLoadingPosts] = useState(false);
-	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
-	const [endReached, setEndReached] = useState(false);
-	const postsMounted = useRef(false);
-	const filteredPostsLength = filteredPosts.length || -1;
-	const regexCreator = new RegExp(creator || "", "i");
-
 	const sortByIndex =
 		sortBy +
 		(postType ? `-${postType}` : "") +
@@ -71,31 +61,43 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		(creator ? `-${postType === "announcement" ? "sorsu" : creator}` : "") +
 		(tags ? `-${tags}` : "");
 
+	const { userStateValue, userMounted } = useUser();
+	const { postStateValue, fetchPosts } = usePost();
+	const [filteredPosts, setFilteredPosts] = useState<PostData[]>(
+		postStateValue.posts
+			.filter((post) => post.index[sortByIndex] >= 0)
+			.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+	);
+
+	const [filteringPosts, setFilteringPosts] = useState(false);
+	const [loadingPosts, setLoadingPosts] = useState(false);
+	const [firstLoadingPosts, setFirstLoadingPosts] = useState(false);
+	const [endReached, setEndReached] = useState(false);
+	const postsMounted = useRef(false);
+	const regexCreator = new RegExp(creator || "", "i");
+
 	const router = useRouter();
 	const { userId } = router.query;
 
-	const handleFilterPosts = useCallback(() => {
-		setFilteredPosts(
-			postStateValue.posts
-				.filter(
-					(post) =>
-						(creator
-							? post.creator?.firstName.match(regexCreator) ||
-							  post.creator?.lastName.match(regexCreator) ||
-							  post.creator?.middleName?.match(regexCreator) ||
-							  post.creator?.email.match(regexCreator)
-							: true) &&
-						post.index[sortByIndex] !== undefined &&
-						post.index[sortByIndex] >= 0
-				)
-				.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
-		);
-	}, [postStateValue.posts, creator, regexCreator, sortByIndex]);
+	const handleFilterPosts = useCallback(async () => {
+		if (!filteringPosts) {
+			setFilteringPosts(true);
+
+			setFilteredPosts(
+				postStateValue.posts
+					.filter((post) => post.index[sortByIndex] >= 0)
+					.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
+			);
+
+			setFilteringPosts(false);
+		}
+	}, [filteringPosts, postStateValue.posts, sortByIndex]);
 
 	const handleFetchPosts = useCallback(async () => {
 		try {
-			if (!loadingPosts) {
+			if (!loadingPosts && !filteringPosts) {
 				setLoadingPosts(true);
+
 				const fetchedPostsLength = await fetchPosts({
 					postType: postType,
 					privacy: privacy,
@@ -106,50 +108,57 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 					groupId: groupId,
 				});
 
-				if (fetchedPostsLength !== undefined) {
+				if (fetchedPostsLength !== null && fetchedPostsLength !== undefined) {
 					setEndReached(fetchedPostsLength < 10 ? true : false);
+					setLoadingPosts(false);
 				}
 			}
 		} catch (error: any) {
 			console.log("Hook: fetching posts Error: ", error.message);
+			setLoadingPosts(false);
 		}
-		setLoadingPosts(false);
 	}, [
-		creator,
-		creatorId,
-		fetchPosts,
-		groupId,
 		loadingPosts,
+		filteringPosts,
+		fetchPosts,
 		postType,
 		privacy,
 		sortBy,
+		creatorId,
+		creator,
 		tags,
+		groupId,
 	]);
 
 	const handleFirstFetchPosts = useCallback(async () => {
-		setFirstLoadingPosts(true);
 		try {
-			await handleFetchPosts();
+			if (!firstLoadingPosts) {
+				setFirstLoadingPosts(true);
+				await handleFetchPosts();
+				setFirstLoadingPosts(false);
+			}
 		} catch (error: any) {
 			console.log("First Fetch: fetching posts Error: ", error.message);
+			setFirstLoadingPosts(false);
 		}
-		setFirstLoadingPosts(false);
-	}, [handleFetchPosts]);
+	}, [firstLoadingPosts, handleFetchPosts]);
+
+	useEffect(() => {
+		if (!filteringPosts && !loadingPosts) {
+			handleFilterPosts();
+		}
+	}, [filteringPosts, loadingPosts, handleFilterPosts, postStateValue.posts]);
 
 	useEffect(() => {
 		if (userMounted) {
-			if (!postsMounted.current && filteredPostsLength <= 0) {
+			if (!postsMounted.current && filteredPosts.length <= 0) {
 				postsMounted.current = true;
 				handleFirstFetchPosts();
 			} else {
 				postsMounted.current = true;
 			}
 		}
-	}, [filteredPostsLength, handleFirstFetchPosts, userMounted]);
-
-	useEffect(() => {
-		handleFilterPosts();
-	}, [postStateValue, sortByIndex]);
+	}, [userMounted]);
 
 	return (
 		<>
@@ -170,30 +179,56 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 							/>
 						)}
 						{filter && <PageFilter />}
-						{filteredPostsLength > 0 && (
-							<>
-								{filteredPosts.map((post, index) => (
-									<React.Fragment key={post.post.id}>
-										<PostCard postData={post} />
-									</React.Fragment>
-								))}
-							</>
-						)}
-						{loadingPosts && (
+						<>
+							{filteredPosts.map((post, index) => (
+								<React.Fragment key={post.post.id}>
+									<PostCard postData={post} />
+								</React.Fragment>
+							))}
+						</>
+						{(loadingPosts || filteringPosts) && !endReached && (
 							<>
 								<PostCardSkeleton />
 								<PostCardSkeleton />
 							</>
 						)}
-						{!endReached && postsMounted && filteredPostsLength > 0 && (
+						{!loadingPosts &&
+							!firstLoadingPosts &&
+							!endReached &&
+							userMounted &&
+							postsMounted && (
+								<>
+									<VisibleInViewPort
+										disabled={
+											loadingPosts ||
+											firstLoadingPosts ||
+											filteringPosts ||
+											endReached ||
+											!userMounted ||
+											!postsMounted
+										}
+										onVisible={() =>
+											loadingPosts ||
+											firstLoadingPosts ||
+											endReached ||
+											!userMounted ||
+											!postsMounted
+												? () => {}
+												: handleFetchPosts()
+										}
+									/>
+								</>
+							)}
+						{endReached ? (
 							<>
-								<VisibleInViewPort
-									disabled={endReached || loadingPosts || firstLoadingPosts}
-									onVisible={() => handleFetchPosts()}
-								/>
+								<PageEnd message={pageEnd || "End of Posts"} />
+							</>
+						) : (
+							<>
+								<PostCardSkeleton />
+								<PostCardSkeleton />
 							</>
 						)}
-						{endReached && <PageEnd message={pageEnd || "End of Posts"} />}
 					</>
 				)}
 			</div>

@@ -27,7 +27,7 @@ export default async function handler(
 			fromUpdated = new Date().toISOString(),
 			fromRejected = new Date().toISOString(),
 			sortBy = "accepted-desc",
-			limit = 2,
+			limit = 10,
 		}: APIEndpointGroupMembersGroupParams = req.body || req.query;
 
 		const roles = typeof rawRoles === "string" ? JSON.parse(rawRoles) : rawRoles;

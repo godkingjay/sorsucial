@@ -128,19 +128,21 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 			<div className="page-wrapper">
 				{!userMounted || firstLoadingGroups ? (
 					<>
-						<>
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							<GroupCardSkeleton index={filteredGroupsLength + 1} />
 							<GroupCardSkeleton index={filteredGroupsLength + 2} />
 							<GroupCardSkeleton index={filteredGroupsLength + 3} />
 							<GroupCardSkeleton index={filteredGroupsLength + 4} />
 							<GroupCardSkeleton index={filteredGroupsLength + 5} />
-						</>
+						</div>
 					</>
 				) : (
 					<>
-						{groupCreation && <GroupCreationListener />}
+						<div className="px-4">
+							{groupCreation && <GroupCreationListener />}
+						</div>
 						{filter && <PageFilter />}
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							<>
 								{groupStateValue.groups
 									.filter((group) => group.index[sortByIndex] >= 0)
@@ -190,7 +192,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 									</>
 								) : (
 									<>
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 											<GroupCardSkeleton index={filteredGroupsLength + 1} />
 											<GroupCardSkeleton index={filteredGroupsLength + 2} />
 											<GroupCardSkeleton index={filteredGroupsLength + 3} />

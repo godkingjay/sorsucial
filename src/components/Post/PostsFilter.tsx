@@ -164,13 +164,13 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 									</React.Fragment>
 								))}
 						</>
-						{loadingPosts && !endReached && (
+						{/* {loadingPosts && !endReached && (
 							<>
 								<PostCardSkeleton />
 								<PostCardSkeleton />
 							</>
-						)}
-						{!loadingPosts &&
+						)} */}
+						{/* {!loadingPosts &&
 							!firstLoadingPosts &&
 							!endReached &&
 							userMounted &&
@@ -195,8 +195,46 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 										}
 									/>
 								</>
-							)}
-						{endReached ? (
+							)} */}
+						<>
+							<VisibleInViewPort
+								disabled={
+									loadingPosts ||
+									firstLoadingPosts ||
+									endReached ||
+									!userMounted ||
+									!postsMounted
+								}
+								onVisible={() =>
+									loadingPosts ||
+									firstLoadingPosts ||
+									endReached ||
+									!userMounted ||
+									!postsMounted
+										? () => {}
+										: handleFetchPosts()
+								}
+							>
+								<div className="flex flex-col gap-y-4">
+									{endReached ? (
+										<>
+											<PageEnd message={pageEnd || "End of Posts"} />
+										</>
+									) : (
+										<>
+											<PostCardSkeleton />
+											<PostCardSkeleton />
+										</>
+									)}
+								</div>
+							</VisibleInViewPort>
+						</>
+						{/* {endReached && (
+							<>
+								<PageEnd message={pageEnd || "End of Posts"} />
+							</>
+						)} */}
+						{/* {endReached ? (
 							<>
 								<PageEnd message={pageEnd || "End of Posts"} />
 							</>
@@ -205,7 +243,7 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 								<PostCardSkeleton />
 								<PostCardSkeleton />
 							</>
-						)}
+						)} */}
 					</>
 				)}
 			</div>

@@ -8,6 +8,7 @@ import { GroupMemberData } from "@/atoms/groupAtom";
 import VisibleInViewPort from "../Events/VisibleInViewPort";
 import PageEnd from "../Banner/PageBanner/PageEnd";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
+import MemberCard from "./MemberCard";
 
 type MembersFilterProps = {
 	addMember: boolean;
@@ -130,7 +131,7 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 									.sort((a, b) => a.index[sortByIndex] - b.index[sortByIndex])
 									.map((member, index) => (
 										<React.Fragment key={member.member.userId}>
-											<p>{member.user?.uid}</p>
+											<MemberCard memberData={member} />
 										</React.Fragment>
 									))}
 							</>

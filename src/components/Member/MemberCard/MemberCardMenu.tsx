@@ -22,7 +22,11 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 		groupOptionsStateValue,
 		setGroupOptionsStateValue,
 		onRequestAction,
+		removeMember,
 	} = useGroup();
+
+	const groupMemberRoles = memberData.member.roles;
+	const userMemberRoles = groupStateValue.currentGroup?.userJoin?.roles;
 
 	const [inAction, setInAction] = useState<boolean>(false);
 
@@ -58,8 +62,23 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 				setInAction(false);
 			}
 		},
-		[]
+		[inAction, memberData, onRequestAction]
 	);
+
+	const handleRemoveMember = useCallback(async () => {
+		try {
+			if (!inAction) {
+				setInAction(true);
+
+				await removeMember(memberData);
+
+				setInAction(false);
+			}
+		} catch (error: any) {
+			console.log(`=>Hook: Hook Remove Member Error:\n${error.message}`);
+			setInAction(false);
+		}
+	}, []);
 
 	return (
 		<>
@@ -111,61 +130,95 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 						<p className="label">View User</p>
 					</div>
 				</Link>
-				{(memberData.member.roles.includes("pending") ||
-					memberData.member.roles.includes("rejected")) &&
-					(groupStateValue.currentGroup?.userJoin?.roles.includes("owner") ||
-						groupStateValue.currentGroup?.userJoin?.roles.includes("admin") ||
-						groupStateValue.currentGroup?.userJoin?.roles.includes(
-							"moderator"
-						)) && (
-						<>
-							<button
-								type="button"
-								title="Accept Request"
-								className="member-menu-item"
-								aria-label="accept"
-								disabled={inAction}
-								tabIndex={
-									groupOptionsStateValue.memberMenu === memberData.member.userId
-										? 0
-										: -1
-								}
-								onClick={() => !inAction && handleRequestAction("accept")}
-							>
-								<div className="icon-container">
-									<BsCheck2 className="icon stroke-2" />
-								</div>
-								<div className="label-container">
-									<p className="label">Accept</p>
-								</div>
-							</button>
-							{memberData.member.roles.includes("pending") && (
-								<>
-									<button
-										type="button"
-										title="Reject Request"
-										className="member-menu-item"
-										aria-label="reject"
-										disabled={inAction}
-										tabIndex={
-											groupOptionsStateValue.memberMenu ===
-											memberData.member.userId
-												? 0
-												: -1
-										}
-										onClick={() => !inAction && handleRequestAction("reject")}
-									>
-										<div className="icon-container">
-											<RxCross1 className="icon stroke-1" />
-										</div>
-										<div className="label-container">
-											<p className="label">Reject</p>
-										</div>
-									</button>
-								</>
-							)}
-						</>
-					)}
+				{(userMemberRoles?.includes("owner") ||
+					userMemberRoles?.includes("admin") ||
+					userMemberRoles?.includes("moderator")) && (
+					<>
+						{(groupMemberRoles.includes("owner") ||
+						groupMemberRoles.includes("admin")
+							? userMemberRoles.includes("owner")
+							: groupMemberRoles.includes("moderator")
+							? userMemberRoles.includes("admin")
+							: groupMemberRoles.includes("member")
+							? userMemberRoles.includes("moderator")
+							: false) && (
+							<>
+								<button
+									type="button"
+									title="Remove"
+									className="member-menu-item"
+									aria-label="reject"
+									disabled={inAction}
+									tabIndex={
+										groupOptionsStateValue.memberMenu ===
+										memberData.member.userId
+											? 0
+											: -1
+									}
+									onClick={() => !inAction && handleRemoveMember()}
+								>
+									<div className="icon-container">
+										<RxCross1 className="icon stroke-1" />
+									</div>
+									<div className="label-container">
+										<p className="label">Remove</p>
+									</div>
+								</button>
+							</>
+						)}
+						{(groupMemberRoles?.includes("pending") ||
+							groupMemberRoles?.includes("rejected")) && (
+							<>
+								<button
+									type="button"
+									title="Accept Request"
+									className="member-menu-item"
+									aria-label="accept"
+									disabled={inAction}
+									tabIndex={
+										groupOptionsStateValue.memberMenu ===
+										memberData.member.userId
+											? 0
+											: -1
+									}
+									onClick={() => !inAction && handleRequestAction("accept")}
+								>
+									<div className="icon-container">
+										<BsCheck2 className="icon stroke-2" />
+									</div>
+									<div className="label-container">
+										<p className="label">Accept</p>
+									</div>
+								</button>
+								{groupMemberRoles?.includes("pending") && (
+									<>
+										<button
+											type="button"
+											title="Reject Request"
+											className="member-menu-item"
+											aria-label="reject"
+											disabled={inAction}
+											tabIndex={
+												groupOptionsStateValue.memberMenu ===
+												memberData.member.userId
+													? 0
+													: -1
+											}
+											onClick={() => !inAction && handleRequestAction("reject")}
+										>
+											<div className="icon-container">
+												<RxCross1 className="icon stroke-1" />
+											</div>
+											<div className="label-container">
+												<p className="label">Reject</p>
+											</div>
+										</button>
+									</>
+								)}
+							</>
+						)}
+					</>
+				)}
 			</div>
 		</>
 	);

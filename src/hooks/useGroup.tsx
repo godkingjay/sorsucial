@@ -960,29 +960,113 @@ const useGroup = () => {
 		]
 	);
 
-	const fetchUserJoin = useCallback(async (groupId: string, userId: string) => {
-		try {
-			const { userJoin } = await axios
-				.get(apiConfig.apiEndpoint + "/groups/members/", {
-					params: {
-						apiKey: userStateValue.api?.keys[0].key,
-						groupId: groupId,
-						userId: userId,
-					},
-				})
-				.then((response) => response.data)
-				.catch((error: any) => {
-					throw new Error(
-						`=>API (GET): Getting User Join error:\n${error.message}`
-					);
-				});
+	const fetchUserJoin = useCallback(
+		async (groupId: string, userId: string) => {
+			try {
+				const { userJoin } = await axios
+					.get(apiConfig.apiEndpoint + "/groups/members/", {
+						params: {
+							apiKey: userStateValue.api?.keys[0].key,
+							groupId: groupId,
+							userId: userId,
+						},
+					})
+					.then((response) => response.data)
+					.catch((error: any) => {
+						throw new Error(
+							`=>API (GET): Getting User Join error:\n${error.message}`
+						);
+					});
 
-			return userJoin || null;
-		} catch (error: any) {
-			console.log(`=>MONGO: Error while fetching user join:\n${error.message}`);
-			return null;
-		}
-	}, []);
+				return userJoin || null;
+			} catch (error: any) {
+				console.log(
+					`=>MONGO: Error while fetching user join:\n${error.message}`
+				);
+				return null;
+			}
+		},
+		[userStateValue.api?.keys]
+	);
+
+	const removeMember = useCallback(
+		async (groupMember: GroupMemberData) => {
+			try {
+				if (authUser?.uid) {
+					const removeFromState = () => {
+						setGroupStateValue((prev) => ({
+							...prev,
+							groups: prev.groups.map((group) => {
+								if (group.group.id === groupMember.member.groupId) {
+									return {
+										...group,
+										group: {
+											...group.group,
+											numberOfMembers: group.group.numberOfMembers - 1,
+										},
+									};
+								}
+
+								return group;
+							}),
+							currentGroup:
+								prev.currentGroup?.group.id === groupMember.member.groupId
+									? {
+											...prev.currentGroup,
+											group: {
+												...prev.currentGroup.group,
+												numberOfMembers:
+													prev.currentGroup.group.numberOfMembers - 1,
+											},
+											members: prev.currentGroup.members.filter(
+												(member) =>
+													member.member.userId !== groupMember.member.userId
+											),
+									  }
+									: prev.currentGroup,
+						}));
+					};
+
+					const {
+						isDeleted,
+					}: {
+						isDeleted: boolean;
+						leaveStatus: "cancel" | "leave";
+					} = await axios
+						.delete(apiConfig.apiEndpoint + "/groups/members/", {
+							data: {
+								apiKey: userStateValue.api?.keys[0].key,
+								groupId: groupMember.member.groupId,
+								userId: groupMember.member.userId,
+							},
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							const { groupDeleted, success } = error.response.data;
+
+							if (!success) {
+								removeFromState();
+							}
+
+							if (groupDeleted) {
+								actionGroupDeleted(groupDeleted, groupMember.member.groupId);
+							}
+
+							throw new Error(
+								`=>API: Group Member Deletion Error:\n${error.message}`
+							);
+						});
+
+					if (isDeleted) {
+						removeFromState();
+					}
+				}
+			} catch (error: any) {
+				console.log(`=>MONGO: Error while removing member:\n${error.message}`);
+			}
+		},
+		[authUser?.uid, setGroupStateValue]
+	);
 
 	return {
 		groupStateValue: groupStateValueMemo,
@@ -995,6 +1079,7 @@ const useGroup = () => {
 		fetchGroups,
 		fetchGroupMembers,
 		fetchUserJoin,
+		removeMember,
 	};
 };
 

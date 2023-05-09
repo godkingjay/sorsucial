@@ -3,6 +3,7 @@ import React from "react";
 import UserIcon from "../Icons/UserIcon";
 import Link from "next/link";
 import moment from "moment";
+import MemberCardMenu from "./MemberCard/MemberCardMenu";
 
 type MemberCardProps = {
 	memberData: GroupMemberData;
@@ -10,7 +11,7 @@ type MemberCardProps = {
 
 const MemberCard: React.FC<MemberCardProps> = ({ memberData }) => {
 	return (
-		<div className="shadow-page-box-1 bg-white rounded-lg p-4 flex flex-col entrance-animation-slide-from-right">
+		<div className="shadow-page-box-1 bg-white rounded-lg p-4 flex flex-col entrance-animation-slide-from-right relative">
 			<div className="flex flex-row gap-x-4">
 				<div className="h-16 w-16 flex">
 					<UserIcon user={memberData.user} />
@@ -55,6 +56,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ memberData }) => {
 					</div>
 				</div>
 			</div>
+			<MemberCardMenu memberData={memberData} />
 		</div>
 	);
 };

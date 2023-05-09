@@ -3,6 +3,7 @@ import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { GroupMember, SiteGroup } from "@/lib/interfaces/group";
 import { SiteUser } from "@/lib/interfaces/user";
+import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -34,6 +35,7 @@ export default async function handler(
 			apiKey,
 			groupId,
 			userId,
+			action = undefined as "join" | "accept" | "reject" | undefined,
 			groupMemberData: rawGroupMemberData,
 		} = req.body || req.query;
 
@@ -47,10 +49,11 @@ export default async function handler(
 		 * @property {string} [profilePicture] - A URL to the profile picture of the group member.
 		 * @type {GroupMember}
 		 */
-		const groupMemberData: GroupMember =
+		const groupMemberData = (
 			typeof rawGroupMemberData === "string"
 				? JSON.parse(rawGroupMemberData)
-				: rawGroupMemberData;
+				: rawGroupMemberData
+		) as GroupMember;
 
 		/**
 		 * Checks if API key was provided and verifies it.
@@ -268,6 +271,70 @@ export default async function handler(
 				break;
 			}
 
+			case "GET": {
+				if (!userId || !groupId) {
+					return res.status(400).json({ error: "Missing required parameter" });
+				}
+
+				const groupMemberData = (await groupMembersCollection.findOne({
+					groupId: groupId,
+					userId: userId,
+				})) as unknown as GroupMember;
+
+				return res.status(200).json({
+					userJoin: groupMemberData,
+				});
+
+				break;
+			}
+
+			case "PUT": {
+				if (!groupMemberData) {
+					return res.status(400).json({ error: "Missing required parameter" });
+				}
+
+				const existingGroupMember = (await groupMembersCollection.findOne({
+					userId: groupMemberData.userId,
+					groupId: groupMemberData.groupId,
+				})) as unknown as GroupMember;
+
+				if (!existingGroupMember) {
+					return res.status(404).json({ error: "Group member not found" });
+				}
+
+				const { _id, ...mutableGroupMemberData } =
+					groupMemberData as GroupMember & { _id?: ObjectId };
+
+				const updatedGroupMember = await groupMembersCollection.findOneAndUpdate(
+					{
+						userId: groupMemberData.userId,
+						groupId: groupMemberData.groupId,
+					},
+					{
+						$set: mutableGroupMemberData,
+					}
+				);
+
+				if (action === "accept") {
+					await groupsCollection.updateOne(
+						{
+							id: groupMemberData.groupId,
+						},
+						{
+							$inc: {
+								numberOfMembers: 1,
+							},
+						}
+					);
+				}
+
+				return res.status(200).json({
+					isUpdated: updatedGroupMember.ok,
+				});
+
+				break;
+			}
+
 			case "DELETE": {
 				try {
 					/**
@@ -396,23 +463,6 @@ export default async function handler(
 				} catch (error: any) {
 					return res.status(500).json({ error: error.message });
 				}
-			}
-
-			case "GET": {
-				if (!userId || !groupId) {
-					return res.status(400).json({ error: "Missing required parameter" });
-				}
-
-				const groupMemberData = (await groupMembersCollection.findOne({
-					groupId: groupId,
-					userId: userId,
-				})) as unknown as GroupMember;
-
-				return res.status(200).json({
-					userJoin: groupMemberData,
-				});
-
-				break;
 			}
 
 			default: {

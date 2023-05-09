@@ -1,7 +1,7 @@
 import { GroupMemberData } from "@/atoms/groupAtom";
 import useGroup from "@/hooks/useGroup";
 import Link from "next/link";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
 	BsCheck2,
 	BsCheckLg,
@@ -17,7 +17,14 @@ type MemberCardMenuProps = {
 };
 
 const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
-	const { groupOptionsStateValue, setGroupOptionsStateValue } = useGroup();
+	const {
+		groupStateValue,
+		groupOptionsStateValue,
+		setGroupOptionsStateValue,
+		onRequestAction,
+	} = useGroup();
+
+	const [inAction, setInAction] = useState<boolean>(false);
 
 	const handleMemberOptions = () => {
 		if (groupOptionsStateValue.memberMenu === memberData.member.userId) {
@@ -32,6 +39,27 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 			}));
 		}
 	};
+
+	const handleRequestAction = useCallback(
+		async (action: "accept" | "reject") => {
+			try {
+				if (!inAction) {
+					setInAction(true);
+
+					onRequestAction({
+						action: action,
+						memberData: memberData,
+					});
+
+					setInAction(false);
+				}
+			} catch (error: any) {
+				console.log(`=>Hook: Hook User Request Action Error:\n${error.message}`);
+				setInAction(false);
+			}
+		},
+		[]
+	);
 
 	return (
 		<>
@@ -70,6 +98,11 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 					href={`/user/${memberData.member.userId}`}
 					title="View User"
 					className="member-menu-item"
+					tabIndex={
+						groupOptionsStateValue.memberMenu === memberData.member.userId
+							? 0
+							: -1
+					}
 				>
 					<div className="icon-container">
 						<BsEyeFill className="icon" />
@@ -78,36 +111,61 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 						<p className="label">View User</p>
 					</div>
 				</Link>
-				{memberData.member.roles.includes("pending") && (
-					<>
-						<button
-							type="button"
-							title="Accept Request"
-							className="member-menu-item"
-							aria-label="accept"
-						>
-							<div className="icon-container">
-								<BsCheck2 className="icon stroke-2" />
-							</div>
-							<div className="label-container">
-								<p className="label">Accept</p>
-							</div>
-						</button>
-						<button
-							type="button"
-							title="Reject Request"
-							className="member-menu-item"
-							aria-label="reject"
-						>
-							<div className="icon-container">
-								<RxCross1 className="icon stroke-1" />
-							</div>
-							<div className="label-container">
-								<p className="label">Reject</p>
-							</div>
-						</button>
-					</>
-				)}
+				{(memberData.member.roles.includes("pending") ||
+					memberData.member.roles.includes("rejected")) &&
+					(groupStateValue.currentGroup?.userJoin?.roles.includes("owner") ||
+						groupStateValue.currentGroup?.userJoin?.roles.includes("admin") ||
+						groupStateValue.currentGroup?.userJoin?.roles.includes(
+							"moderator"
+						)) && (
+						<>
+							<button
+								type="button"
+								title="Accept Request"
+								className="member-menu-item"
+								aria-label="accept"
+								disabled={inAction}
+								tabIndex={
+									groupOptionsStateValue.memberMenu === memberData.member.userId
+										? 0
+										: -1
+								}
+								onClick={() => !inAction && handleRequestAction("accept")}
+							>
+								<div className="icon-container">
+									<BsCheck2 className="icon stroke-2" />
+								</div>
+								<div className="label-container">
+									<p className="label">Accept</p>
+								</div>
+							</button>
+							{memberData.member.roles.includes("pending") && (
+								<>
+									<button
+										type="button"
+										title="Reject Request"
+										className="member-menu-item"
+										aria-label="reject"
+										disabled={inAction}
+										tabIndex={
+											groupOptionsStateValue.memberMenu ===
+											memberData.member.userId
+												? 0
+												: -1
+										}
+										onClick={() => !inAction && handleRequestAction("reject")}
+									>
+										<div className="icon-container">
+											<RxCross1 className="icon stroke-1" />
+										</div>
+										<div className="label-container">
+											<p className="label">Reject</p>
+										</div>
+									</button>
+								</>
+							)}
+						</>
+					)}
 			</div>
 		</>
 	);

@@ -559,7 +559,112 @@ const useGroup = () => {
 				console.log(`=>Mongo: Join Group Error:\n${error.message}`);
 			}
 		},
-		[groupStateValueMemo]
+		[
+			actionGroupDeleted,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+			userStateValue.user.uid,
+		]
+	);
+
+	const onRequestAction = useCallback(
+		async ({
+			action = undefined as "accept" | "reject" | undefined,
+			memberData = undefined as GroupMemberData | undefined,
+		}) => {
+			try {
+				if (authUser && action) {
+					const date = new Date();
+
+					const newGroupMember: Partial<GroupMember> = {
+						...memberData?.member,
+					};
+
+					let indices = {};
+
+					if (action === "accept") {
+						newGroupMember.roles = ["member"];
+						newGroupMember.updatedAt = date;
+						newGroupMember.acceptedAt = date;
+
+						indices = {
+							...indices,
+							["accepted-desc" +
+							`-${newGroupMember.groupId}` +
+							(newGroupMember.roles
+								? `-${newGroupMember.roles.join("_")}`
+								: "")]: 0,
+						};
+					} else {
+						newGroupMember.roles = ["rejected"];
+						newGroupMember.updatedAt = date;
+						newGroupMember.rejectedAt = date;
+
+						indices = {
+							...indices,
+							["rejected-desc" +
+							`-${newGroupMember.groupId}` +
+							(newGroupMember.roles
+								? `-${newGroupMember.roles.join("_")}`
+								: "")]: 0,
+						};
+					}
+
+					const { isUpdated } = await axios
+						.put(apiConfig.apiEndpoint + "/groups/members/", {
+							apiKey: userStateValue.api?.keys[0].key,
+							userId: newGroupMember.userId,
+							groupId: newGroupMember.groupId,
+							action: action,
+							groupMemberData: newGroupMember,
+						})
+						.then((response) => response.data)
+						.catch((error) => {
+							throw new Error(
+								`=>API: Group Member Update Error:\n${error.message}`
+							);
+						});
+
+					if (isUpdated) {
+						setGroupStateValueMemo((prev) => ({
+							...prev,
+							groups: prev.groups.map((group) => {
+								if (group.group.id !== newGroupMember.groupId) {
+									return group;
+								} else {
+									return {
+										...group,
+										group: {
+											...group.group,
+											numberOfMembers: group.group.numberOfMembers + 1,
+										},
+									};
+								}
+							}),
+							currentGroup: prev.currentGroup
+								? {
+										...prev.currentGroup,
+										members: prev.currentGroup.members.map((member) => {
+											if (member.member.userId !== newGroupMember.userId) {
+												return member;
+											} else {
+												return {
+													...member,
+													member: newGroupMember as GroupMember,
+													index: indices,
+												};
+											}
+										}),
+								  }
+								: prev.currentGroup,
+						}));
+					}
+				}
+			} catch (error: any) {
+				console.log(`=>Mongo: Request Action Error:\n${error.message}`);
+			}
+		},
+		[authUser, setGroupStateValueMemo, userStateValue.api?.keys]
 	);
 
 	const fetchGroups = useCallback(
@@ -886,6 +991,7 @@ const useGroup = () => {
 		setGroupOptionsStateValue: setGroupOptionsStateValueMemo,
 		createGroup,
 		onJoinGroup,
+		onRequestAction,
 		fetchGroups,
 		fetchGroupMembers,
 		fetchUserJoin,

@@ -32,56 +32,56 @@ export default async function handler(
 
 		const roles = typeof rawRoles === "string" ? JSON.parse(rawRoles) : rawRoles;
 
-		if (!apiKey) {
-			return res
-				.status(400)
-				.json({ message: "Bad Request(400): API key is missing." });
-		}
+		// if (!apiKey) {
+		// 	return res
+		// 		.status(400)
+		// 		.json({ message: "Bad Request(400): API key is missing." });
+		// }
 
-		if (!apiKeysCollection) {
-			return res.status(500).json({
-				message:
-					"Internal Server Error(500): Unable to connect to the API keys database.",
-			});
-		}
+		// if (!apiKeysCollection) {
+		// 	return res.status(500).json({
+		// 		message:
+		// 			"Internal Server Error(500): Unable to connect to the API keys database.",
+		// 	});
+		// }
 
-		if (!usersCollection) {
-			return res.status(500).json({
-				error:
-					"Internal Server Error(500): Unable to connect to the Users database.",
-			});
-		}
+		// if (!usersCollection) {
+		// 	return res.status(500).json({
+		// 		error:
+		// 			"Internal Server Error(500): Unable to connect to the Users database.",
+		// 	});
+		// }
 
-		if (!groupMembersCollection) {
-			return res.status(500).json({
-				error:
-					"Internal Server Error(500): Unable to connect to the Groups database.",
-			});
-		}
+		// if (!groupMembersCollection) {
+		// 	return res.status(500).json({
+		// 		error:
+		// 			"Internal Server Error(500): Unable to connect to the Groups database.",
+		// 	});
+		// }
 
-		const userAPI = (await apiKeysCollection.findOne({
-			"keys.key": apiKey,
-		})) as unknown as SiteUserAPI;
+		// const userAPI = (await apiKeysCollection.findOne({
+		// 	"keys.key": apiKey,
+		// })) as unknown as SiteUserAPI;
 
-		if (!userAPI) {
-			return res
-				.status(401)
-				.json({ error: "Unauthorized(401): Invalid API key!" });
-		}
+		// if (!userAPI) {
+		// 	return res
+		// 		.status(401)
+		// 		.json({ error: "Unauthorized(401): Invalid API key!" });
+		// }
 
-		const userData = (await usersCollection.findOne({
-			uid: userId,
-		})) as unknown as SiteUser;
+		// const userData = (await usersCollection.findOne({
+		// 	uid: userId,
+		// })) as unknown as SiteUser;
 
-		if (!userData) {
-			return res.status(404).json({ error: "Not Found(404): Invalid user ID!" });
-		}
+		// if (!userData) {
+		// 	return res.status(404).json({ error: "Not Found(404): Invalid user ID!" });
+		// }
 
-		if (userAPI.userId !== userData.uid) {
-			return res
-				.status(403)
-				.json({ error: "Forbidden(403): Invalid user ID pr API Key!" });
-		}
+		// if (userAPI.userId !== userData.uid) {
+		// 	return res
+		// 		.status(403)
+		// 		.json({ error: "Forbidden(403): Invalid user ID pr API Key!" });
+		// }
 
 		switch (req.method) {
 			case "GET": {
@@ -95,6 +95,18 @@ export default async function handler(
 								roles,
 								sortBy,
 								fromAccepted,
+								limit,
+							});
+
+							break;
+						}
+
+						case "requested-desc": {
+							members = await getSortByRequested({
+								groupId,
+								roles,
+								sortBy,
+								fromRequested,
 								limit,
 							});
 
@@ -189,6 +201,42 @@ const getSortByAccepted = async ({
 				.find(query)
 				.sort({
 					acceptedAt: -1,
+				})
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
+				.toArray()
+		: [];
+};
+
+const getSortByRequested = async ({
+	groupId,
+	roles,
+	fromRequested,
+	sortBy,
+	limit = 10,
+}: Pick<
+	APIEndpointGroupMembersGroupParams,
+	"groupId" | "roles" | "fromRequested" | "sortBy" | "limit"
+>) => {
+	const { groupMembersCollection } = await groupDb();
+
+	let query: any = {
+		groupId,
+		roles: {
+			$all: roles,
+		},
+		requestedAt: {
+			$lt:
+				typeof fromRequested === "string"
+					? fromRequested
+					: fromRequested?.toISOString(),
+		},
+	};
+
+	return groupMembersCollection
+		? await groupMembersCollection
+				.find(query)
+				.sort({
+					requestedAt: -1,
 				})
 				.limit(typeof limit === "string" ? parseInt(limit) : limit)
 				.toArray()

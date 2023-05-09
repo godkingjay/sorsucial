@@ -722,10 +722,20 @@ const useGroup = () => {
 								},
 								-1
 							);
+							break;
+						}
 
-							refGroupMember =
-								groupStateValueMemo.currentGroup?.members[refIndex] || null;
+						case "requested-desc": {
+							refIndex = groupStateValueMemo.currentGroup?.members?.reduceRight(
+								(acc, member, index) => {
+									if (member.index[sortByIndex] >= 0 && acc === -1) {
+										return index;
+									}
 
+									return acc;
+								},
+								-1
+							);
 							break;
 						}
 
@@ -734,6 +744,9 @@ const useGroup = () => {
 							break;
 						}
 					}
+
+					refGroupMember =
+						groupStateValueMemo.currentGroup?.members[refIndex] || null;
 
 					const {
 						members,
@@ -747,7 +760,7 @@ const useGroup = () => {
 								sortBy: sortBy,
 								lastIndex: refGroupMember?.index[sortByIndex] || -1,
 								groupId: groupId,
-								roles: roles,
+								roles: JSON.stringify(roles) as any,
 								fromUpdated: refGroupMember?.member?.updatedAt || null,
 								fromRequested: refGroupMember?.member?.requestedAt || null,
 								fromAccepted: refGroupMember?.member?.acceptedAt || null,

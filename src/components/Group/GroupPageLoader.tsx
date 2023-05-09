@@ -126,11 +126,11 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 				};
 
 				return (
-					<>
-						<div className="px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div className="p-4 md:px-8">
+						<div className="md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							{renderMembersLoading(10)}
 						</div>
-					</>
+					</div>
 				);
 
 				break;

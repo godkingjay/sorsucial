@@ -10,7 +10,7 @@ type MemberCardProps = {
 
 const MemberCard: React.FC<MemberCardProps> = ({ memberData }) => {
 	return (
-		<div className="shadow-page-box-1 bg-white rounded-lg p-4 flex flex-col">
+		<div className="shadow-page-box-1 bg-white rounded-lg p-4 flex flex-col entrance-animation-slide-from-right">
 			<div className="flex flex-row gap-x-4">
 				<div className="h-16 w-16 flex">
 					<UserIcon user={memberData.user} />
@@ -30,8 +30,17 @@ const MemberCard: React.FC<MemberCardProps> = ({ memberData }) => {
 						)}
 					</p>
 					<p className="text-2xs text-gray-500">
-						Member since{" "}
-						{moment(memberData.member.acceptedAt).format("MMMM DD, YYYY")}
+						{memberData.member.acceptedAt ? (
+							<>
+								Member since{" "}
+								{moment(memberData.member.acceptedAt).format("MMMM DD, YYYY")}
+							</>
+						) : (
+							<>
+								Requested on{" "}
+								{moment(memberData.member.requestedAt).format("MMMM DD, YYYY")}
+							</>
+						)}
 					</p>
 					<div className="flex flex-row gap-x-2 gap-y-1 flex-wrap mt-1">
 						{memberData.member.roles.map((role) => (

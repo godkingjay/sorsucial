@@ -2603,6 +2603,79 @@
 		}
 	}
 
+	.member-user-role {
+		@apply text-3xs px-2 py-0.5 border rounded-full bg-gray-50 border-gray-300 text-gray-500;
+
+		&:hover {
+			@apply bg-gray-100;
+		}
+
+		&[data-role="owner"] {
+			@apply bg-purple-50 border-purple-300 text-purple-500;
+
+			&:hover {
+				@apply bg-purple-100;
+			}
+		}
+
+		&[data-role="admin"] {
+			@apply bg-red-50 border-red-300 text-red-500;
+
+			&:hover {
+				@apply bg-red-100;
+			}
+		}
+
+		&[data-role="moderator"] {
+			@apply bg-green-50 border-green-300 text-green-500;
+
+			&:hover {
+				@apply bg-green-100;
+			}
+		}
+		&[data-role="pending"] {
+			@apply bg-blue-50 border-blue-300 text-blue-500;
+
+			&:hover {
+				@apply bg-blue-100;
+			}
+		}
+	}
+
+	.member-menu-item {
+		@apply px-2 py-1 text-gray-500 font-semibold text-sm w-full text-left truncate rounded-md flex flex-row gap-x-2 items-center;
+
+		.icon-container {
+			@apply h-4 w-4;
+
+			.icon {
+				@apply h-full w-full;
+			}
+		}
+
+		&:hover,
+		&:focus {
+			@apply bg-blue-100 text-blue-500;
+		}
+
+		&[aria-label="accept"] {
+			@apply text-green-500;
+
+			&:hover,
+			&:focus {
+				@apply bg-green-100 text-green-700;
+			}
+		}
+		&[aria-label="reject"] {
+			@apply text-red-500;
+
+			&:hover,
+			&:focus {
+				@apply bg-red-100 text-red-700;
+			}
+		}
+	}
+
 	.user-role {
 		@apply text-2xs px-4 py-1 border rounded-full bg-gray-50 border-gray-300 text-gray-500;
 

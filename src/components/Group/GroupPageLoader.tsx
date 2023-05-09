@@ -6,6 +6,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import LimitedBodyLayout from "../Layout/LimitedBodyLayout";
+import { useRecoilValue } from "recoil";
+import { currentDirectoryState } from "@/atoms/navigationBarAtom";
+import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
+import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
+import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 
 type GroupPageLoaderProps = {
 	children?: React.ReactNode;
@@ -18,6 +23,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 	loadingGroup,
 	groupPageData,
 }) => {
+	const { third: currentGroupPage = "" } = useRecoilValue(currentDirectoryState);
 	const { userStateValue, userMounted } = useUser();
 	const { groupStateValue, setGroupStateValue, fetchUserJoin } = useGroup();
 	const [fetchingGroupUserData, setFetchingGroupUserData] = useState(true);
@@ -79,6 +85,69 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 		}
 	}, [userMounted]);
 
+	const renderLoadingPage = () => {
+		switch (currentGroupPage) {
+			case "":
+			case "posts": {
+				return (
+					<>
+						<PostCardSkeleton />
+						<PostCardSkeleton />
+					</>
+				);
+
+				break;
+			}
+
+			case "discussions": {
+				return (
+					<>
+						<DiscussionCardSkeleton />
+						<DiscussionCardSkeleton />
+					</>
+				);
+
+				break;
+			}
+
+			case "members": {
+				const renderMembersLoading = (count: number = 10) => {
+					const result = [];
+
+					for (let i = 0; i < count; i++) {
+						result.push(
+							<React.Fragment key={i}>
+								<MemberCardSkeleton />
+							</React.Fragment>
+						);
+					}
+
+					return result;
+				};
+
+				return (
+					<div className="p-4 md:px-8">
+						<div className="md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+							{renderMembersLoading(10)}
+						</div>
+					</div>
+				);
+
+				break;
+			}
+
+			default: {
+				return (
+					<>
+						<p>Loading</p>
+					</>
+				);
+
+				break;
+			}
+		}
+	};
+
 	return (
 		<>
 			<Head>
@@ -129,9 +198,7 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 				/>
 			</Head>
 			{loadingGroup || !userMounted || fetchingGroupUserData ? (
-				<>
-					<p>Loading Group</p>
-				</>
+				<>{renderLoadingPage()}</>
 			) : (
 				<>
 					{!groupStateValue.currentGroup ? (

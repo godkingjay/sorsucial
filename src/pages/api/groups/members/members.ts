@@ -101,6 +101,18 @@ export default async function handler(
 							break;
 						}
 
+						case "requested-desc": {
+							members = await getSortByRequested({
+								groupId,
+								roles,
+								sortBy,
+								fromRequested,
+								limit,
+							});
+
+							break;
+						}
+
 						default: {
 							return res
 								.status(400)
@@ -189,6 +201,42 @@ const getSortByAccepted = async ({
 				.find(query)
 				.sort({
 					acceptedAt: -1,
+				})
+				.limit(typeof limit === "string" ? parseInt(limit) : limit)
+				.toArray()
+		: [];
+};
+
+const getSortByRequested = async ({
+	groupId,
+	roles,
+	fromRequested,
+	sortBy,
+	limit = 10,
+}: Pick<
+	APIEndpointGroupMembersGroupParams,
+	"groupId" | "roles" | "fromRequested" | "sortBy" | "limit"
+>) => {
+	const { groupMembersCollection } = await groupDb();
+
+	let query: any = {
+		groupId,
+		roles: {
+			$all: roles,
+		},
+		requestedAt: {
+			$lt:
+				typeof fromRequested === "string"
+					? fromRequested
+					: fromRequested?.toISOString(),
+		},
+	};
+
+	return groupMembersCollection
+		? await groupMembersCollection
+				.find(query)
+				.sort({
+					requestedAt: -1,
 				})
 				.limit(typeof limit === "string" ? parseInt(limit) : limit)
 				.toArray()

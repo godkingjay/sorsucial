@@ -82,7 +82,7 @@ const MemberCardMenu: React.FC<MemberCardMenuProps> = ({ memberData }) => {
 
 	return (
 		<>
-			<div className="flex flex-row justify-end">
+			<div className="flex flex-row justify-end mt-auto">
 				<button
 					type="button"
 					title="Member Menu"

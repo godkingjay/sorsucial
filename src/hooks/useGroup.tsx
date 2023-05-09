@@ -558,6 +558,10 @@ const useGroup = () => {
 			tags = undefined as string | undefined,
 		}) => {
 			try {
+				if (!authUser) {
+					throw new Error("You must be logged in to fetch groups!");
+				}
+
 				let refGroup;
 				let refIndex;
 				const sortByIndex =
@@ -674,7 +678,7 @@ const useGroup = () => {
 			}
 		},
 		[
-			authUser?.uid,
+			authUser,
 			fetchingGroupsFor,
 			groupStateValueMemo.groups,
 			setGroupStateValueMemo,
@@ -689,6 +693,10 @@ const useGroup = () => {
 			roles = ["member"] as GroupMember["roles"],
 		}) => {
 			try {
+				if (!authUser) {
+					throw new Error("You must be logged in to fetch group members!");
+				}
+
 				if (!groupStateValueMemo.currentGroup) {
 					return;
 				}
@@ -812,7 +820,7 @@ const useGroup = () => {
 			}
 		},
 		[
-			authUser?.uid,
+			authUser,
 			fetchingGroupMembersFor,
 			groupStateValueMemo.currentGroup,
 			setGroupStateValueMemo,

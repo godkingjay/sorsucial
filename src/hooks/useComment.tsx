@@ -412,6 +412,10 @@ const useComment = () => {
 	const fetchComments = useCallback(
 		async ({ postId, commentForId }: fetchCommentsParamsType) => {
 			try {
+				if (!authUser) {
+					throw new Error("You must be logged in to fetch comments!");
+				}
+
 				if (postStateValue.currentPost !== null) {
 					const lastIndex = postStateValue.currentPost.postComments.reduceRight(
 						(acc, comment, index) => {
@@ -473,7 +477,7 @@ const useComment = () => {
 				console.log(`MONGO: Error while fetching comments:\n${error.message}`);
 			}
 		},
-		[authUser?.uid, postStateValue.currentPost, setPostStateValue]
+		[authUser, postStateValue.currentPost, setPostStateValue]
 	);
 
 	/**

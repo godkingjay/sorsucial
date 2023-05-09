@@ -990,6 +990,10 @@ const usePost = () => {
 			 * If there is an error, then throw an error.
 			 */
 			try {
+				if (!authUser) {
+					throw new Error("You must be logged in to fetch posts");
+				}
+
 				let refPost;
 				let refIndex;
 				const sortByIndex =
@@ -1150,7 +1154,7 @@ const usePost = () => {
 			}
 		},
 		[
-			authUser?.uid,
+			authUser,
 			fetchingPostsFor,
 			postStateValue.posts,
 			setPostStateValue,

@@ -3,6 +3,23 @@ import { SiteUser } from "@/lib/interfaces/user";
 import { QueryGroupsSortBy, QueryGroupMembersSortBy } from "@/lib/types/api";
 import { atom } from "recoil";
 
+export interface GroupOptionsState {
+	menu: string;
+	share: string;
+	memberMenu: string;
+}
+
+export const defaultGroupOptionsState: GroupOptionsState = {
+	menu: "",
+	share: "",
+	memberMenu: "",
+};
+
+export const postOptionsState = atom<GroupOptionsState>({
+	key: "postOptionsState",
+	default: defaultGroupOptionsState,
+});
+
 export interface GroupMemberData {
 	user: SiteUser | null;
 	member: GroupMember;

@@ -2,6 +2,7 @@ import {
 	GroupData,
 	GroupMemberData,
 	GroupState,
+	groupOptionsState,
 	groupState,
 } from "@/atoms/groupAtom";
 import { CreateGroupType } from "@/components/Modal/GroupCreationModal";
@@ -26,6 +27,9 @@ const useGroup = () => {
 
 	const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
 
+	const [groupOptionsStateValue, setGroupOptionsStateValue] =
+		useRecoilState(groupOptionsState);
+
 	const [fetchingGroupsFor, setFetchingGroupsFor] = useState("");
 
 	const [fetchingGroupMembersFor, setFetchingGroupMembersFor] = useState("");
@@ -35,6 +39,16 @@ const useGroup = () => {
 	const setGroupStateValueMemo = useMemo(
 		() => setGroupStateValue,
 		[setGroupStateValue]
+	);
+
+	const groupOptionsStateValueMemo = useMemo(
+		() => groupOptionsStateValue,
+		[groupOptionsStateValue]
+	);
+
+	const setGroupOptionsStateValueMemo = useMemo(
+		() => setGroupOptionsStateValue,
+		[setGroupOptionsStateValue]
 	);
 
 	const actionGroupDeleted = useCallback(
@@ -868,6 +882,8 @@ const useGroup = () => {
 	return {
 		groupStateValue: groupStateValueMemo,
 		setGroupStateValue: setGroupStateValueMemo,
+		groupOptionsStateValue: groupOptionsStateValueMemo,
+		setGroupOptionsStateValue: setGroupOptionsStateValueMemo,
 		createGroup,
 		onJoinGroup,
 		fetchGroups,

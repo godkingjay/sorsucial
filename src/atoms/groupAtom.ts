@@ -15,8 +15,8 @@ export const defaultGroupOptionsState: GroupOptionsState = {
 	memberMenu: "",
 };
 
-export const postOptionsState = atom<GroupOptionsState>({
-	key: "postOptionsState",
+export const groupOptionsState = atom<GroupOptionsState>({
+	key: "groupOptionsState",
 	default: defaultGroupOptionsState,
 });
 

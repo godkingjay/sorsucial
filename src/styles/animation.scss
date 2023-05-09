@@ -44,6 +44,23 @@
 	}
 }
 
+@keyframes animate-sliding-t-r {
+	0% {
+		transform: translateX(-100%);
+		opacity: 50%;
+	}
+	25% {
+		opacity: 100%;
+	}
+	50% {
+		opacity: 50%;
+	}
+	100% {
+		transform: translateX(100%);
+		opacity: 100%;
+	}
+}
+
 @keyframes waving-animation-1 {
 	0% {
 		transform: rotate(0deg);
@@ -72,6 +89,10 @@
 }
 
 @layer components {
+	.animate-sliding-t-r {
+		animation: animate-sliding-t-r 1.5s infinite;
+	}
+
 	.modal-animation {
 		animation: entrance-animation-float-up 0.25s ease-in-out;
 	}

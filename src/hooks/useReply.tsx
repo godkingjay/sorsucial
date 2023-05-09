@@ -438,6 +438,10 @@ const useReply = () => {
 		replyForId,
 	}: fetchReplyParamsType) => {
 		try {
+			if (!authUser) {
+				throw new Error("You must be logged in to fetch replies!");
+			}
+
 			if (discussionStateValue.currentDiscussion !== null) {
 				const lastIndex =
 					discussionStateValue.currentDiscussion.discussionReplies.reduceRight(

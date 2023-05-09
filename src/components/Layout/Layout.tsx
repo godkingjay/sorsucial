@@ -16,6 +16,7 @@ import {
 import AdminModals from "../Modal/AdminModals";
 import AdminPageLayout from "./AdminPageLayout";
 import PageContainerLayout from "./PageContainerLayout";
+import LoadingBar from "../Events/LoadingBar";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -89,6 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
+			<LoadingBar />
 			{(authLoading && !authUser && loadingUser) ||
 			(loadingUser && !userStateValue.user.uid && authLoading) ||
 			loadingUser ||

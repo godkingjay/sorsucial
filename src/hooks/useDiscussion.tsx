@@ -614,6 +614,10 @@ const useDiscussion = () => {
 		sortBy = "latest" as QueryDiscussionsSortBy,
 	}) => {
 		try {
+			if (!authUser) {
+				throw new Error("You must be logged in to fetch discussions!");
+			}
+
 			let refDiscussion: DiscussionData | null;
 			let refIndex: number;
 			const sortByIndex =

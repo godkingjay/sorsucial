@@ -7,6 +7,7 @@ import useUser from "@/hooks/useUser";
 import { GroupMemberData } from "@/atoms/groupAtom";
 import VisibleInViewPort from "../Events/VisibleInViewPort";
 import PageEnd from "../Banner/PageBanner/PageEnd";
+import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 
 type MembersFilterProps = {
 	addMember: boolean;
@@ -90,19 +91,9 @@ const MembersFilter: React.FC<MembersFilterProps> = ({
 
 		for (let i = 0; i < count; i++) {
 			result.push(
-				<div
-					key={i}
-					className="bg-white rounded-lg shadow-page-box-1 p-4 flex flex-row gap-x-2"
-				>
-					<div className="h-16 w-16 rounded-full skeleton-color animate-pulse"></div>
-					<div className="flex flex-1 flex-col gap-y-2">
-						<div className="h-3 w-full rounded-full skeleton-color"></div>
-						<div className="h-2 w-[50%] rounded-full skeleton-color"></div>
-						<div className="my-2 flex flex-col gap-y-1">
-							<div className="h-2 w-full rounded-full skeleton-color"></div>
-						</div>
-					</div>
-				</div>
+				<React.Fragment key={i}>
+					<MemberCardSkeleton />
+				</React.Fragment>
 			);
 		}
 

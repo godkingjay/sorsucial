@@ -53,7 +53,7 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 						? "Loading..."
 						: !userStateValue.userPage
 						? "User not Found!"
-						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName} | Profile`}
+						: `${userStateValue.userPage.user.firstName} ${userStateValue.userPage.user.lastName} | SorSUcial`}
 				</title>
 			</Head>
 			{loadingUser || !userMounted || fetchingCurrentUserData ? (

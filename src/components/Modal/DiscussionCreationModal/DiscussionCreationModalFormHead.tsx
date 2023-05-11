@@ -63,14 +63,22 @@ const DiscussionCreationModalFormHead: React.FC<
 								? [
 										discussionPrivacyOptions.find(
 											(privacy) =>
-												privacy.label ===
+												privacy.value ===
 												groupStateValue.currentGroup?.group.privacy
 										) || discussionPrivacyOptions[0],
 								  ]
 								: discussionPrivacyOptions
 						}
+						defaultValue={
+							discussionType === "group"
+								? discussionPrivacyOptions.find(
+										(privacy) =>
+											privacy.value ===
+											groupStateValue.currentGroup?.group.privacy
+								  )
+								: discussionPrivacyOptions[0]
+						}
 						onSelect={handleSelectPrivacy}
-						defaultValue={discussionPrivacyOptions[0]}
 						disabled={disabled}
 					/>
 				</div>

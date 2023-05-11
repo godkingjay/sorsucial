@@ -155,25 +155,36 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 					<>
 						{postCreation && (
 							<>
-								{groupStateValue.currentGroup?.group.privacy === "public" ? (
+								{postType === "group" ? (
 									<>
-										<PostCreationListener
-											postType={postType}
-											useStateValue={userStateValue}
-										/>
-									</>
-								) : (
-									<>
-										{groupStateValue.currentGroup?.userJoin?.roles?.includes(
-											"member"
-										) && (
+										{groupStateValue.currentGroup?.group.privacy === "public" ? (
 											<>
 												<PostCreationListener
 													postType={postType}
 													useStateValue={userStateValue}
 												/>
 											</>
+										) : (
+											<>
+												{groupStateValue.currentGroup?.userJoin?.roles?.includes(
+													"member"
+												) && (
+													<>
+														<PostCreationListener
+															postType={postType}
+															useStateValue={userStateValue}
+														/>
+													</>
+												)}
+											</>
 										)}
+									</>
+								) : (
+									<>
+										<PostCreationListener
+											postType={postType}
+											useStateValue={userStateValue}
+										/>
 									</>
 								)}
 							</>

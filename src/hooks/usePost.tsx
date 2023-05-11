@@ -382,6 +382,9 @@ const usePost = () => {
 							: "") +
 						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
 					};
+
+					console.log(index);
+
 					return index;
 				}
 

@@ -162,25 +162,36 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 					<>
 						{discussionCreation && (
 							<>
-								{groupStateValue.currentGroup?.group.privacy === "public" ? (
+								{discussionType === "group" ? (
 									<>
-										<DiscussionCreationListener
-											discussionType={discussionType}
-											useStateValue={userStateValue}
-										/>
-									</>
-								) : (
-									<>
-										{groupStateValue.currentGroup?.userJoin?.roles.includes(
-											"member"
-										) && (
+										{groupStateValue.currentGroup?.group.privacy === "public" ? (
 											<>
 												<DiscussionCreationListener
 													discussionType={discussionType}
 													useStateValue={userStateValue}
 												/>
 											</>
+										) : (
+											<>
+												{groupStateValue.currentGroup?.userJoin?.roles.includes(
+													"member"
+												) && (
+													<>
+														<DiscussionCreationListener
+															discussionType={discussionType}
+															useStateValue={userStateValue}
+														/>
+													</>
+												)}
+											</>
 										)}
+									</>
+								) : (
+									<>
+										<DiscussionCreationListener
+											discussionType={discussionType}
+											useStateValue={userStateValue}
+										/>
 									</>
 								)}
 							</>

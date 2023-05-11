@@ -34,7 +34,6 @@ const UserPageGroupsPage: React.FC<UserPageGroupsPageProps> = ({
 							groupCreation={userStateValue.user.uid === userId}
 							filter={true}
 							creatorId={userId}
-							privacy="public"
 							sortBy="latest"
 							pageEnd="End of Groups"
 							filterOptions={{

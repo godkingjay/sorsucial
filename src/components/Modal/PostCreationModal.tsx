@@ -145,11 +145,16 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 		postTags: [],
 		postType: postCreationModalStateValue.postType,
 		groupId:
-			groupStateValue.currentGroup?.group.id === groupId
+			groupStateValue.currentGroup?.group.id === groupId &&
+			postCreationModalStateValue.postType === "group"
 				? groupId?.toString()
 				: undefined,
 		isCommentable: true,
-		privacy: "public",
+		privacy:
+			postCreationModalStateValue.postType === "group" &&
+			groupStateValue.currentGroup
+				? groupStateValue.currentGroup.group.privacy
+				: "public",
 		imagesOrVideos: [],
 		files: [],
 		links: [],

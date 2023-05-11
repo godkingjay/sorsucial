@@ -15,7 +15,7 @@ type GroupsFilterProps = {
 	groupCreation?: boolean;
 	filter?: boolean;
 	sortBy: QueryGroupsSortBy;
-	privacy: SiteGroup["privacy"];
+	privacy?: SiteGroup["privacy"];
 	userPageId?: string;
 	creatorId?: string;
 	creator?: string;
@@ -32,7 +32,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 	creator = undefined,
 	tags = undefined,
 	sortBy = "latest",
-	privacy = "public",
+	privacy,
 	pageEnd,
 	filterOptions = {
 		filterType: "groups",

@@ -61,13 +61,21 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 								? [
 										postPrivacyOptions.find(
 											(privacy) =>
-												privacy.label ===
+												privacy.value ===
 												groupStateValue.currentGroup?.group.privacy
 										) || postPrivacyOptions[0],
 								  ]
 								: postPrivacyOptions
 						}
-						defaultValue={postPrivacyOptions[0]}
+						defaultValue={
+							postType === "group"
+								? postPrivacyOptions.find(
+										(privacy) =>
+											privacy.value ===
+											groupStateValue.currentGroup?.group.privacy
+								  )
+								: postPrivacyOptions[0]
+						}
 						disabled={disabled}
 						onSelect={handleSelectPrivacy}
 					/>

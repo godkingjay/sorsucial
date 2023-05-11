@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import PostCreationListener from "./PostCreationListener";
 import PageFilter, { PageFilterProps } from "../Controls/PageFilter";
+import useGroup from "@/hooks/useGroup";
 
 type PostsFilterProps = {
 	postType: SitePost["postType"];
@@ -62,7 +63,11 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 		(tags ? `-${tags}` : "");
 
 	const { userStateValue, userMounted } = useUser();
+
+	const { groupStateValue } = useGroup();
+
 	const { postStateValue, fetchPosts } = usePost();
+
 	const [filteredPostsLength, setFilteredPostsLength] = useState<number>(
 		postStateValue.posts.filter((post) => post.index[sortByIndex] >= 0).length ||
 			0
@@ -149,10 +154,40 @@ const PostsFilter: React.FC<PostsFilterProps> = ({
 				) : (
 					<>
 						{postCreation && (
-							<PostCreationListener
-								postType={postType}
-								useStateValue={userStateValue}
-							/>
+							<>
+								{postType === "group" ? (
+									<>
+										{groupStateValue.currentGroup?.group.privacy === "public" ? (
+											<>
+												<PostCreationListener
+													postType={postType}
+													useStateValue={userStateValue}
+												/>
+											</>
+										) : (
+											<>
+												{groupStateValue.currentGroup?.userJoin?.roles?.includes(
+													"member"
+												) && (
+													<>
+														<PostCreationListener
+															postType={postType}
+															useStateValue={userStateValue}
+														/>
+													</>
+												)}
+											</>
+										)}
+									</>
+								) : (
+									<>
+										<PostCreationListener
+											postType={postType}
+											useStateValue={userStateValue}
+										/>
+									</>
+								)}
+							</>
 						)}
 						{filter && <PageFilter />}
 						<>

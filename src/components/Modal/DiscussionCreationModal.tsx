@@ -14,6 +14,7 @@ import DiscussionCreationModalFormHead from "./DiscussionCreationModal/Discussio
 import useDiscussion from "@/hooks/useDiscussion";
 import AddTags from "../Form/Tag/AddTags";
 import { useRouter } from "next/router";
+import useGroup from "@/hooks/useGroup";
 
 type DiscussionCreationModalProps = {
 	discussionCreationModalStateValue: DiscussionCreationModalState;
@@ -56,15 +57,27 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 	userStateValue,
 }) => {
 	const router = useRouter();
+
+	const { groupStateValue } = useGroup();
+
 	const { groupId } = router.query;
+
 	const { createDiscussion } = useDiscussion();
 	const defaultCreateDiscussionForm: CreateDiscussionType = {
 		discussionTitle: "",
 		discussionBody: "",
-		groupId: (groupId as string) || undefined,
+		groupId:
+			groupStateValue.currentGroup?.group.id === groupId &&
+			discussionCreationModalStateValue.discussionType === "group"
+				? groupId?.toString()
+				: undefined,
 		discussionTags: [],
 		discussionType: discussionCreationModalStateValue.discussionType,
-		privacy: "public",
+		privacy:
+			discussionCreationModalStateValue.discussionType === "group" &&
+			groupStateValue.currentGroup
+				? groupStateValue.currentGroup.group.privacy
+				: "public",
 		isOpen: true,
 	};
 	const [discussionTags, setDiscussionTags] = useState<string[]>([]);

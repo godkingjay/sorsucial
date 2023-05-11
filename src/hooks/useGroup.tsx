@@ -670,7 +670,7 @@ const useGroup = () => {
 	const fetchGroups = useCallback(
 		async ({
 			sortBy = "latest" as QueryGroupsSortBy,
-			privacy = "public" as SiteGroup["privacy"],
+			privacy = undefined as SiteGroup["privacy"] | undefined,
 			userPageId = undefined as string | undefined,
 			creatorId = undefined as string | undefined,
 			creator = undefined as string | undefined,

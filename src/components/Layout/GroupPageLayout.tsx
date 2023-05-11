@@ -21,6 +21,7 @@ import {
 import { IoImages, IoImagesOutline } from "react-icons/io5";
 import { useRecoilState } from "recoil";
 import { currentDirectoryState } from "@/atoms/navigationBarAtom";
+import GroupPageMembersNavigation from "./GroupPageLayout/GroupPageMembersNavigation";
 
 type GroupPageProps = {
 	children: React.ReactNode;
@@ -130,52 +131,19 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
 					<>
 						<LimitedBodyLayout>
 							<div className="flex flex-col md:flex-row">
-								<div className="md:sticky md:top-[104px] h-max pt-4 pl-4 pr-4 md:pr-0">
-									<div className="relative h-full flex-1 flex flex-col gap-x-2 rounded-lg shadow-page-box-1 bg-white p-1 md:w-40">
-										<Link
-											href={`/groups/${groupStateValue.currentGroup.group.id}/members/`}
-											title="Members"
-											className="group-members-nav-item"
-											data-active={
-												(currentDirectoryStateValue.fourth === "" ||
-													!currentDirectoryStateValue.fourth) &&
-												currentDirectoryStateValue.third === "members"
-											}
-										>
-											<div className="icon-container">
-												<BsFillPeopleFill className="icon" />
-											</div>
-											<p>Members</p>
-										</Link>
-										<Link
-											href={`/groups/${groupStateValue.currentGroup.group.id}/members/requests/`}
-											title="Requests"
-											className="group-members-nav-item"
-											data-active={
-												currentDirectoryStateValue.fourth === "requests"
-											}
-										>
-											<div className="icon-container">
-												<BsPersonFillExclamation className="icon" />
-											</div>
-											<p>Requests</p>
-										</Link>
-										<Link
-											href={`/groups/${groupStateValue.currentGroup.group.id}/members/banned/`}
-											title="Banned"
-											className="group-members-nav-item"
-											data-active={
-												currentDirectoryStateValue.fourth === "banned"
-											}
-											data-banned
-										>
-											<div className="icon-container">
-												<BsPersonFillSlash className="icon" />
-											</div>
-											<p>Banned</p>
-										</Link>
-									</div>
-								</div>
+								{groupStateValue.currentGroup.userJoin?.roles?.includes(
+									"member"
+								) ? (
+									<>
+										<GroupPageMembersNavigation />
+									</>
+								) : groupStateValue.currentGroup.group.privacy !== "private" ? (
+									<>
+										<GroupPageMembersNavigation />
+									</>
+								) : (
+									<></>
+								)}
 								{children}
 							</div>
 						</LimitedBodyLayout>

@@ -173,12 +173,25 @@ export default async function handler(
 					 * it sets the joinStatus variable to "added", indicating that the member is being added
 					 * to the group for the first time.
 					 */
-					const joinStatus: "accepted" | "added" = existingMember
+					const joinStatus: "accepted" | "added" | "pending" = existingMember
 						? existingMember.roles.includes("pending") ||
 						  existingMember.roles.includes("rejected")
 							? "accepted"
 							: "added"
-						: "added";
+						: groupData.privacy !== "public" &&
+						  groupMemberData.roles.includes("member")
+						? "added"
+						: "pending";
+
+					if (existingMember?.roles.includes("member")) {
+						return res.status(201).json({
+							success: true,
+							groupMemberData: {
+								...existingMember,
+							} as Partial<GroupMember>,
+							joinStatus: "added",
+						});
+					}
 
 					/**
 					 * This code is updating or inserting a new document into the `groupMembersCollection` in the
@@ -217,7 +230,7 @@ export default async function handler(
 					 */
 					const upsertedId = result.value?._id;
 
-					if (!existingMember || joinStatus === "added") {
+					if (joinStatus === "added") {
 						/**
 						 * This code is updating the `numberOfMembers` property of the group
 						 * document in the `groupsCollection` database. It is using the `updateOne`

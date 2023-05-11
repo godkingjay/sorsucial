@@ -61,7 +61,7 @@ export type APIEndpointDiscussionsParams = {
 export type APIEndpointGroupsParams = {
 	apiKey: string;
 	userId: string;
-	privacy: SiteGroup["privacy"];
+	privacy: SiteGroup["privacy"] | undefined;
 	tags?: string;
 	userPageId?: string;
 	creatorId?: string;

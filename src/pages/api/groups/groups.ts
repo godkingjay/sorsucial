@@ -23,7 +23,7 @@ export default async function handler(
 		const {
 			apiKey,
 			userId,
-			privacy = "public" as SiteGroup["privacy"],
+			privacy = undefined,
 			tags = undefined,
 			userPageId = undefined,
 			creatorId = undefined,
@@ -163,11 +163,14 @@ const getSortByLatest = async ({
 	const { groupsCollection } = await groupDb();
 
 	let query: any = {
-		privacy: privacy,
 		createdAt: {
 			$lt: typeof fromDate === "string" ? fromDate : fromDate?.toISOString(),
 		},
 	};
+
+	if (privacy) {
+		query.privacy = privacy;
+	}
 
 	if (creatorId) {
 		query.creatorId = creatorId;

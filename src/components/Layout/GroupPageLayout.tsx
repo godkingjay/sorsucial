@@ -137,7 +137,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
 									<>
 										<GroupPageMembersNavigation />
 									</>
-								) : groupStateValue.currentGroup.group.privacy === "public" ? (
+								) : groupStateValue.currentGroup.group.privacy !== "private" ? (
 									<>
 										<GroupPageMembersNavigation />
 									</>

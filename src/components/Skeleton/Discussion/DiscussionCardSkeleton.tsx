@@ -5,7 +5,7 @@ type DiscussionCardSkeletonProps = {};
 
 const DiscussionCardSkeleton: React.FC<DiscussionCardSkeletonProps> = () => {
 	return (
-		<div className="shadow-page-box-1 bg-white rounded-lg flex flex-col entrance-animation-slide-from-right">
+		<div className="shadow-page-box-1 page-box-1 flex flex-col entrance-animation-slide-from-right">
 			<div className="flex flex-row text-gray-300">
 				<div className="flex flex-col items-center p-2 bg-gray-100 rounded-l-lg">
 					<div className="flex flex-col items-center animate-pulse">

@@ -4,19 +4,23 @@ import { BiCommentDetail } from "react-icons/bi";
 import { PostCommentFormType } from "./PostComments";
 import UserIcon from "@/components/Icons/UserIcon";
 import useUser from "@/hooks/useUser";
+import { FiLoader } from "react-icons/fi";
 
 type CommentBoxProps = {
 	commentForm: PostCommentFormType;
 	setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>;
 	commentLevel: number;
 	commentForId: string;
-	submitting: boolean;
+	commenting: boolean;
+	setCommenting: React.Dispatch<React.SetStateAction<boolean>>;
 	commentBoxRef: React.RefObject<HTMLTextAreaElement>;
 	setShowComments?: React.Dispatch<React.SetStateAction<boolean>>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commenting: boolean,
+		setCommenting: React.Dispatch<React.SetStateAction<boolean>>,
 		commentForId: string,
 		commentLevel: number
 	) => void;
@@ -31,7 +35,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	setCommentForm,
 	commentLevel,
 	commentForId,
-	submitting,
+	commenting,
+	setCommenting,
 	commentBoxRef,
 	setShowComments,
 	onChange,
@@ -41,7 +46,15 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		onSubmit(event, commentForm, setCommentForm, commentForId, commentLevel);
+		onSubmit(
+			event,
+			commentForm,
+			setCommentForm,
+			commenting,
+			setCommenting,
+			commentForId,
+			commentLevel
+		);
 		if (setShowComments) {
 			setShowComments(true);
 		}
@@ -50,7 +63,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2 entrance-animation-slide-from-right"
-			onSubmit={(event) => handleSubmit(event)}
+			onSubmit={(event) => !commenting && handleSubmit(event)}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
 				<div className="flex flex-row relative">
@@ -79,22 +92,34 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 								event.currentTarget.scrollHeight + "px";
 						}}
 						value={commentForm.commentText}
-						disabled={submitting}
+						disabled={commenting}
 						ref={commentBoxRef}
 					></textarea>
 					<div className="flex flex-row items-center justify-end flex-wrap p-2">
 						<button
 							type="submit"
 							title="Create Comment"
-							className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={submitting || commentForm.commentText.length === 0}
+							className="flex flex-row items-center gap-x-2 page-button w-12 xs:w-44 px-4 py-2 h-8 text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={commenting || commentForm.commentText.length === 0}
 						>
 							<div className="h-4 w-4 aspect-square">
-								<BiCommentDetail className="h-full w-full" />
+								{commenting ? (
+									<>
+										<FiLoader className="h-full w-full" />
+									</>
+								) : (
+									<>
+										<BiCommentDetail className="h-full w-full" />
+									</>
+								)}
 							</div>
-							<div className="hidden xs:flex h-full flex-row items-center">
-								<p>Create Comment</p>
-							</div>
+							{!commenting && (
+								<>
+									<div className="hidden xs:flex h-full flex-row items-center">
+										<p>Create Comment</p>
+									</div>
+								</>
+							)}
 						</button>
 					</div>
 				</div>

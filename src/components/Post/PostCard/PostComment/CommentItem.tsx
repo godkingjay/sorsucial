@@ -1,6 +1,6 @@
 import { PostCommentData, PostData } from "@/atoms/postAtom";
 import UserIcon from "@/components/Icons/UserIcon";
-import React, { useEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import CommentBox from "./CommentBox";
 import { PostCommentFormType } from "./PostComments";
 import moment from "moment";
@@ -11,7 +11,6 @@ import useUser from "@/hooks/useUser";
 
 type CommentItemProps = {
 	currentPost: PostData;
-	submitting: boolean;
 	commentData: PostCommentData;
 	parentShowCommentBox: boolean;
 	fetchPostComments: (
@@ -33,6 +32,8 @@ type CommentItemProps = {
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commenting: boolean,
+		setCommenting: React.Dispatch<React.SetStateAction<boolean>>,
 		commentForId: string,
 		commentLevel: number
 	) => void;
@@ -46,7 +47,6 @@ const maxCommentLevel = 3;
 
 const CommentItem: React.FC<CommentItemProps> = ({
 	currentPost,
-	submitting,
 	commentData,
 	parentShowCommentBox,
 	fetchPostComments,
@@ -65,6 +65,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	});
 	const [showComments, setShowComments] = useState(false);
 	const [showCommentBox, setShowCommentBox] = useState(false);
+	const [commenting, setCommenting] = useState(false);
 	const [loadingComments, setLoadingComments] = useState(false);
 	const [deletingComment, setDeletingComment] = useState(false);
 	const remainingReplies = currentPost.postComments.filter(
@@ -208,6 +209,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
 					</div>
 					{showComments && (
 						<div className="flex flex-col gap-y-2">
+							{commenting && (
+								<>
+									<PostCommentItemSkeleton
+										commentLevel={commentData.comment.commentLevel + 1}
+										parentShowCommentBox={true}
+									/>
+								</>
+							)}
 							{currentPost?.postComments
 								.filter(
 									(comment) =>
@@ -219,7 +228,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									<React.Fragment key={comment.comment.id}>
 										<CommentItem
 											currentPost={currentPost}
-											submitting={submitting}
 											commentData={comment}
 											parentShowCommentBox={showCommentBox}
 											fetchPostComments={fetchPostComments}
@@ -276,7 +284,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
 								setCommentForm={setPostCommentForm}
 								commentForId={commentData.comment.id}
 								commentLevel={commentData.comment.commentLevel + 1}
-								submitting={submitting}
+								commenting={commenting}
+								setCommenting={setCommenting}
 								commentBoxRef={commentBoxRef}
 								setShowComments={setShowComments}
 								onSubmit={onSubmit}

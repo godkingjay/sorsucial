@@ -1,5 +1,7 @@
 import { GroupData, GroupState } from "@/atoms/groupAtom";
+import GroupAboutCard from "@/components/Group/GroupAboutCard";
 import GroupPageLoader from "@/components/Group/GroupPageLoader";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import useGroup from "@/hooks/useGroup";
 import groupDb from "@/lib/db/groupDb";
 import userDb from "@/lib/db/userDb";
@@ -23,16 +25,18 @@ const GroupPageAboutPage: React.FC<GroupPageAboutPageProps> = ({
 
 	return (
 		<>
-			<GroupPageLoader
-				groupPageData={groupPageData}
-				loadingGroup={loadingPage}
-			>
-				{groupStateValue.currentGroup?.group.id === groupId && (
-					<>
-						<p>Group About Page</p>
-					</>
-				)}
-			</GroupPageLoader>
+			<LimitedBodyLayout>
+				<GroupPageLoader
+					groupPageData={groupPageData}
+					loadingGroup={loadingPage}
+				>
+					{groupStateValue.currentGroup?.group.id === groupId && (
+						<>
+							<GroupAboutCard />
+						</>
+					)}
+				</GroupPageLoader>
+			</LimitedBodyLayout>
 		</>
 	);
 };

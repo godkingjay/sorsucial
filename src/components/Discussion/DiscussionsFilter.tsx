@@ -11,6 +11,7 @@ import DiscussionCard from "./DiscussionCard";
 import { useRouter } from "next/router";
 import VisibleInViewPort from "../Events/VisibleInViewPort";
 import PageEnd from "../Banner/PageBanner/PageEnd";
+import useGroup from "@/hooks/useGroup";
 
 type DiscussionsFilterProps = {
 	discussionType: SiteDiscussion["discussionType"];
@@ -66,6 +67,9 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 		(isOpen !== undefined ? `-${isOpen ? "open" : "close"}` : "");
 
 	const { userStateValue, userMounted } = useUser();
+
+	const { groupStateValue } = useGroup();
+
 	const { discussionStateValue, fetchDiscussions } = useDiscussion();
 
 	const [loadingDiscussions, setLoadingDiscussions] = useState(false);
@@ -157,10 +161,29 @@ const DiscussionsFilter: React.FC<DiscussionsFilterProps> = ({
 				) : (
 					<>
 						{discussionCreation && (
-							<DiscussionCreationListener
-								discussionType={discussionType}
-								useStateValue={userStateValue}
-							/>
+							<>
+								{groupStateValue.currentGroup?.group.privacy === "public" ? (
+									<>
+										<DiscussionCreationListener
+											discussionType={discussionType}
+											useStateValue={userStateValue}
+										/>
+									</>
+								) : (
+									<>
+										{groupStateValue.currentGroup?.userJoin?.roles.includes(
+											"member"
+										) && (
+											<>
+												<DiscussionCreationListener
+													discussionType={discussionType}
+													useStateValue={userStateValue}
+												/>
+											</>
+										)}
+									</>
+								)}
+							</>
 						)}
 						{filter && <PageFilter />}
 						<>

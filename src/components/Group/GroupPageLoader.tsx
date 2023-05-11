@@ -11,6 +11,7 @@ import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
+import { BiLockAlt } from "react-icons/bi";
 
 type GroupPageLoaderProps = {
 	children?: React.ReactNode;
@@ -90,10 +91,10 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 			case "":
 			case "posts": {
 				return (
-					<>
+					<div className="page-wrapper">
 						<PostCardSkeleton />
 						<PostCardSkeleton />
-					</>
+					</div>
 				);
 
 				break;
@@ -101,10 +102,10 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 
 			case "discussions": {
 				return (
-					<>
+					<div className="page-wrapper">
 						<DiscussionCardSkeleton />
 						<DiscussionCardSkeleton />
-					</>
+					</div>
 				);
 
 				break;
@@ -206,7 +207,33 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 							<p>Group Not Found</p>
 						</>
 					) : (
-						<>{children && children}</>
+						<>
+							{groupStateValue.currentGroup.group.privacy === "private" &&
+							!groupStateValue.currentGroup.userJoin?.roles?.includes(
+								"member"
+							) ? (
+								<>
+									<div className="page-wrapper">
+										<div className="shadow-page-box-1 page-box-1 p-4 flex flex-col items-center gap-y-4">
+											<div className="h-32 w-32 p-6 rounded-full bg-gray-100 text-gray-700">
+												<BiLockAlt className="h-full w-full" />
+											</div>
+											<div className="text-center flex flex-col gap-y-2 pb-8 max-w-sm">
+												<p className="font-bold text-gray-700 text-3xl">
+													{groupStateValue.currentGroup.group.name}
+												</p>
+												<p className="text-gray-500">
+													Is a private group. You must be a member to view its
+													contents.
+												</p>
+											</div>
+										</div>
+									</div>
+								</>
+							) : (
+								<>{children && children}</>
+							)}
+						</>
 					)}
 				</>
 			)}

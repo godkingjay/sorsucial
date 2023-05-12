@@ -25,11 +25,11 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
@@ -49,8 +49,8 @@ const GroupPageMembersPage: React.FC<GroupPageMembersPageProps> = ({
 								/>
 							</>
 						)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

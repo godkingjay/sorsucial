@@ -25,18 +25,18 @@ const GroupPageAboutPage: React.FC<GroupPageAboutPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup?.group.id === groupId && (
 						<>
 							<GroupAboutCard />
 						</>
 					)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

@@ -210,7 +210,9 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 				/>
 			</Head>
 			{loadingGroup || !userMounted || fetchingGroupUserData ? (
-				<>{renderLoadingPage()}</>
+				<>
+					<LimitedBodyLayout>{renderLoadingPage()}</LimitedBodyLayout>
+				</>
 			) : (
 				<>
 					{!groupStateValue.currentGroup ? (

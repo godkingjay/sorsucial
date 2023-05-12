@@ -29,11 +29,11 @@ const GroupDiscussionView: React.FC<GroupDiscussionProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup?.group.id === groupId && (
 						<SingleDiscussionView
 							discussionPageData={discussionPageData}
@@ -41,8 +41,8 @@ const GroupDiscussionView: React.FC<GroupDiscussionProps> = ({
 							type="group-discussion"
 						/>
 					)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

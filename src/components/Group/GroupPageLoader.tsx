@@ -94,23 +94,41 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 		switch (currentGroupPage) {
 			case "":
 			case "posts": {
-				return (
-					<div className="page-wrapper">
-						<PostCardSkeleton />
-						<PostCardSkeleton />
-					</div>
-				);
+				const renderPostsLoading = (count: number = 4) => {
+					const result = [];
+
+					for (let i = 0; i < count; i++) {
+						result.push(
+							<React.Fragment key={i}>
+								<PostCardSkeleton />
+							</React.Fragment>
+						);
+					}
+
+					return result;
+				};
+
+				return <div className="page-wrapper">{renderPostsLoading(4)}</div>;
 
 				break;
 			}
 
 			case "discussions": {
-				return (
-					<div className="page-wrapper">
-						<DiscussionCardSkeleton />
-						<DiscussionCardSkeleton />
-					</div>
-				);
+				const renderDiscussionsLoading = (count: number = 4) => {
+					const result = [];
+
+					for (let i = 0; i < count; i++) {
+						result.push(
+							<React.Fragment key={i}>
+								<PostCardSkeleton />
+							</React.Fragment>
+						);
+					}
+
+					return result;
+				};
+
+				return <div className="page-wrapper">{renderDiscussionsLoading(4)}</div>;
 
 				break;
 			}

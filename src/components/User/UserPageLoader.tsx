@@ -145,7 +145,9 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 				</title>
 			</Head>
 			{loadingUser || !userMounted || fetchingCurrentUserData ? (
-				<>{renderLoadingPage()}</>
+				<>
+					<LimitedBodyLayout>{renderLoadingPage()}</LimitedBodyLayout>
+				</>
 			) : (
 				<>
 					{!userStateValue.userPage ? (

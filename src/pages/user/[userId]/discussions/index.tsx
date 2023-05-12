@@ -24,11 +24,11 @@ const UserPageDiscussionsPage: React.FC<UserPageDiscussionsPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<UserPageLoader
-					userPageData={userPageData}
-					loadingUser={loadingPage}
-				>
+			<UserPageLoader
+				userPageData={userPageData}
+				loadingUser={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{userStateValue.userPage?.user.uid === userId && (
 						<DiscussionsFilter
 							discussionType="discussion"
@@ -54,8 +54,8 @@ const UserPageDiscussionsPage: React.FC<UserPageDiscussionsPageProps> = ({
 							}}
 						/>
 					)}
-				</UserPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</UserPageLoader>
 		</>
 	);
 };

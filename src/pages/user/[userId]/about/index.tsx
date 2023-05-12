@@ -1,4 +1,5 @@
 import { UserState } from "@/atoms/userAtom";
+import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
@@ -20,7 +21,9 @@ const UserPageAboutPage: React.FC<UserPageAboutPageProps> = ({
 				userPageData={userPageData}
 				loadingUser={loadingPage}
 			>
-				<div>User About Page</div>
+				<LimitedBodyLayout>
+					<div>User About Page</div>
+				</LimitedBodyLayout>
 			</UserPageLoader>
 		</>
 	);

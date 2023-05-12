@@ -30,7 +30,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		authUser,
 		loadingUser,
 		authLoading,
-		setLoadingUser,
 		userStateValue,
 		logOutUser,
 		userMounted,
@@ -91,10 +90,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	return (
 		<main className="scroll-y-style flex flex-col max-h-screen h-screen overflow-y-auto relative bg-gray-100">
 			<LoadingBar />
-			{(authLoading && !authUser && loadingUser) ||
-			(loadingUser && !userStateValue.user.uid && authLoading) ||
+			{(!userMounted && currentDirectoryStateValue.main !== "auth") ||
+			authLoading ||
 			loadingUser ||
-			authLoading ? (
+			(authUser && !userMounted) ? (
 				<>
 					<LoadingScreen />
 				</>

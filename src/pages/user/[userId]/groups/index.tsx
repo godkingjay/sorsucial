@@ -24,11 +24,11 @@ const UserPageGroupsPage: React.FC<UserPageGroupsPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<UserPageLoader
-					userPageData={userPageData}
-					loadingUser={loadingPage}
-				>
+			<UserPageLoader
+				userPageData={userPageData}
+				loadingUser={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{userStateValue.userPage?.user.uid === userId && (
 						<GroupsFilter
 							groupCreation={userStateValue.user.uid === userId}
@@ -51,8 +51,8 @@ const UserPageGroupsPage: React.FC<UserPageGroupsPageProps> = ({
 							}}
 						/>
 					)}
-				</UserPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</UserPageLoader>
 		</>
 	);
 };

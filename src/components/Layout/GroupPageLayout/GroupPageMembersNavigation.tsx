@@ -48,7 +48,7 @@ const GroupPageMembersNavigation: React.FC<
 							</div>
 							<p>Requests</p>
 						</Link>
-						<Link
+						{/* <Link
 							href={`/groups/${groupStateValue.currentGroup.group.id}/members/banned/`}
 							title="Banned"
 							className="group-members-nav-item"
@@ -59,7 +59,7 @@ const GroupPageMembersNavigation: React.FC<
 								<BsPersonFillSlash className="icon" />
 							</div>
 							<p>Banned</p>
-						</Link>
+						</Link> */}
 					</div>
 				</div>
 			)}

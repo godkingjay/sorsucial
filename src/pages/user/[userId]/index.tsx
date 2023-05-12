@@ -24,11 +24,11 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<UserPageLoader
-					userPageData={userPageData}
-					loadingUser={loadingPage}
-				>
+			<UserPageLoader
+				userPageData={userPageData}
+				loadingUser={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{userStateValue.userPage?.user.uid === userId && (
 						<PostsFilter
 							postType="feed"
@@ -53,8 +53,8 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 							}}
 						/>
 					)}
-				</UserPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</UserPageLoader>
 		</>
 	);
 };

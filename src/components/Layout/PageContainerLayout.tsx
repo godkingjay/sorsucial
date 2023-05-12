@@ -2,15 +2,11 @@ import React from "react";
 import AdminPageLayout from "./AdminPageLayout";
 import MainPageLayout from "./MainPageLayout";
 import {
-	NavigationBarState,
 	currentDirectoryState,
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
-import { SetterOrUpdater, useRecoilState } from "recoil";
-import { NextRouter, useRouter } from "next/router";
-import { User } from "firebase/auth";
-import { UserState } from "@/atoms/userAtom";
-import LoadingScreen from "../Skeleton/LoadingScreen";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useRouter } from "next/router";
 import GroupPageLayout from "./GroupPageLayout";
 import useUser from "@/hooks/useUser";
 import UserPageLayout from "./UserPageLayout";
@@ -22,8 +18,7 @@ type PageContainerLayoutProps = {
 const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 	children,
 }) => {
-	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
-		useRecoilState(currentDirectoryState);
+	const currentDirectoryStateValue = useRecoilValue(currentDirectoryState);
 
 	const {
 		authUser,

@@ -196,11 +196,11 @@ const RightNav: React.FC<RightNavProps> = ({
 					handleMenuDropdown={handleMenuDropdown}
 					handleMenuCreateClick={handleMenuCreateClick}
 				/>
-				<NotificationDropdown
+				{/* <NotificationDropdown
 					userStateValue={userStateValue}
 					navigationBarStateValue={navigationBarStateValue}
 					handleNotificationDropdown={handleNotificationDropdown}
-				/>
+				/> */}
 				<UserDropdown
 					userStateValue={userStateValue}
 					navigationBarStateValue={navigationBarStateValue}

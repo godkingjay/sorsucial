@@ -46,17 +46,19 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		onSubmit(
-			event,
-			commentForm,
-			setCommentForm,
-			commenting,
-			setCommenting,
-			commentForId,
-			commentLevel
-		);
-		if (setShowComments) {
-			setShowComments(true);
+		if (!commenting) {
+			onSubmit(
+				event,
+				commentForm,
+				setCommentForm,
+				commenting,
+				setCommenting,
+				commentForId,
+				commentLevel
+			);
+			if (setShowComments) {
+				setShowComments(true);
+			}
 		}
 	};
 

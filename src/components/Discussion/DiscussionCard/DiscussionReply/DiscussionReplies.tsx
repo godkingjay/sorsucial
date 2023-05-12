@@ -148,10 +148,16 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 			setReplyForm: React.Dispatch<
 				React.SetStateAction<DiscussionReplyFormType>
 			>,
+			replying: boolean,
+			setReplying: React.Dispatch<React.SetStateAction<boolean>>,
 			replyForId: string,
 			replyLevel: number
 		) => {
 			event.preventDefault();
+
+			if (replying) {
+				return;
+			}
 
 			try {
 				if (!creatingReply) {
@@ -165,14 +171,12 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 						...prev,
 						replyText: "",
 					}));
-				} else {
-					console.log("Hook: Already creating reply");
+					setCreatingReply(false);
 				}
 			} catch (error) {
 				console.log("Hook: Error while creating comment: ", error);
+				setCreatingReply(false);
 			}
-
-			setCreatingReply(false);
 		},
 		[createReply, creatingReply]
 	);
@@ -221,6 +225,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 										/>
 									</div>
 								)}
+								{creatingReply && (
+									<>
+										<DiscussionReplyItemSkeleton
+											replyLevel={0}
+											parentShowReplyBox={false}
+										/>
+									</>
+								)}
 								{currentDiscussion.discussionReplies
 									.filter(
 										(reply) =>
@@ -232,7 +244,6 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											<ReplyItem
 												currentDiscussion={currentDiscussion}
 												replyData={reply}
-												submitting={creatingReply}
 												fetchDiscussionReplies={fetchDiscussionReplies}
 												parentShowReplyBox={true}
 												handleReplyVote={handleReplyVote}
@@ -279,7 +290,8 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											setReplyForm={setDiscussionReplyForm}
 											replyLevel={0}
 											replyForId={currentDiscussion.discussion.id}
-											submitting={creatingReply}
+											replying={creatingReply}
+											setReplying={setCreatingReply}
 											replyBoxRef={replyBoxRef}
 											onSubmit={handleReplySubmit}
 											onChange={handleInputChange}

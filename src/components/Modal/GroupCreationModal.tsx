@@ -32,7 +32,7 @@ export type CreateGroupType = {
 	image: ImageOrVideoType | null;
 };
 
-export const groupPrivacyOptions: RadioSelectionOption[] = [
+export const GroupPrivacy: RadioSelectionOption[] = [
 	{
 		label: "Public",
 		value: "public",
@@ -205,7 +205,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 						<RadioSelection
 							required={true}
 							title="Group Privacy"
-							options={groupPrivacyOptions}
+							options={GroupPrivacy}
 							selected={createGroupForm.privacy}
 							onChange={handleSelectPrivacy}
 							disabled={creatingGroup}

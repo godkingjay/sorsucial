@@ -132,6 +132,11 @@ export default async function handler(
 			});
 		}
 
+		const userMemberData = (await groupMembersCollection.findOne({
+			groupId: groupId || groupMemberData.groupId,
+			userId: userAPI.userId,
+		})) as unknown as GroupMember;
+
 		switch (req.method) {
 			/**
 			 * This is a case statement that handles the HTTP POST request method.
@@ -408,9 +413,9 @@ export default async function handler(
 					 */
 					if (userData.uid !== existingMember.userId) {
 						if (!userData.roles.includes("admin")) {
-							if (!existingMember.roles.includes("owner")) {
-								if (!existingMember.roles.includes("admin")) {
-									if (!existingMember.roles.includes("moderator")) {
+							if (!userMemberData.roles.includes("owner")) {
+								if (!userMemberData.roles.includes("admin")) {
+									if (!userMemberData.roles.includes("moderator")) {
 										return res.status(403).json({
 											success: false,
 											error: "You do not have permission to perform this action",

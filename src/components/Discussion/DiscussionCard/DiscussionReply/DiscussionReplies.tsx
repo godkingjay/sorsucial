@@ -43,7 +43,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	const [creatingReply, setCreatingReply] = React.useState(false);
 	const [firstLoadingReplies, setFirstLoadingReplies] = React.useState(false);
 	const [loadingReplies, setLoadingReplies] = React.useState(true);
-	const componentDidMount = React.useRef(false);
+	const repliesMounted = React.useRef(false);
 
 	const fetchDiscussionReplies = useCallback(
 		async (
@@ -148,14 +148,20 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 			setReplyForm: React.Dispatch<
 				React.SetStateAction<DiscussionReplyFormType>
 			>,
+			replying: boolean,
+			setReplying: React.Dispatch<React.SetStateAction<boolean>>,
 			replyForId: string,
 			replyLevel: number
 		) => {
 			event.preventDefault();
 
+			if (replying) {
+				return;
+			}
+
 			try {
-				if (!creatingReply) {
-					setCreatingReply(true);
+				if (!replying) {
+					setReplying(true);
 					await createReply({
 						...replyForm,
 						replyForId,
@@ -165,16 +171,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 						...prev,
 						replyText: "",
 					}));
-				} else {
-					console.log("Hook: Already creating reply");
+					setReplying(false);
 				}
 			} catch (error) {
 				console.log("Hook: Error while creating comment: ", error);
+				setReplying(false);
 			}
-
-			setCreatingReply(false);
 		},
-		[createReply, creatingReply]
+		[createReply]
 	);
 
 	const handleInputChange = (
@@ -188,11 +192,11 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	};
 
 	useEffect(() => {
-		if (userMounted && !componentDidMount.current) {
-			componentDidMount.current = true;
+		if (userMounted && !repliesMounted.current) {
+			repliesMounted.current = true;
 			firstFetchReplies();
 		}
-	}, [userMounted, componentDidMount.current]);
+	}, [userMounted, repliesMounted.current]);
 
 	return (
 		<>
@@ -221,6 +225,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 										/>
 									</div>
 								)}
+								{creatingReply && (
+									<>
+										<DiscussionReplyItemSkeleton
+											replyLevel={0}
+											parentShowReplyBox={false}
+										/>
+									</>
+								)}
 								{currentDiscussion.discussionReplies
 									.filter(
 										(reply) =>
@@ -232,7 +244,6 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											<ReplyItem
 												currentDiscussion={currentDiscussion}
 												replyData={reply}
-												submitting={creatingReply}
 												fetchDiscussionReplies={fetchDiscussionReplies}
 												parentShowReplyBox={true}
 												handleReplyVote={handleReplyVote}
@@ -279,7 +290,8 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 											setReplyForm={setDiscussionReplyForm}
 											replyLevel={0}
 											replyForId={currentDiscussion.discussion.id}
-											submitting={creatingReply}
+											replying={creatingReply}
+											setReplying={setCreatingReply}
 											replyBoxRef={replyBoxRef}
 											onSubmit={handleReplySubmit}
 											onChange={handleInputChange}

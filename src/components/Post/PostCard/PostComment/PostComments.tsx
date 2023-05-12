@@ -131,11 +131,12 @@ const PostComments: React.FC<PostCommentsProps> = ({
 				if (!deleting) {
 					setDeleting(true);
 					await deleteComment(comment);
+					setDeleting(false);
 				}
 			} catch (error: any) {
 				console.log("Hook: Error while deleting comment: ", error.message);
+				setDeleting(false);
 			}
-			setDeleting(false);
 		},
 		[deleteComment]
 	);
@@ -144,33 +145,36 @@ const PostComments: React.FC<PostCommentsProps> = ({
 		event: React.FormEvent<HTMLFormElement>,
 		commentForm: PostCommentFormType,
 		setCommentForm: React.Dispatch<React.SetStateAction<PostCommentFormType>>,
+		commenting: boolean,
+		setCommenting: React.Dispatch<React.SetStateAction<boolean>>,
 		commentForId: string,
 		commentLevel: number
 	) => {
 		event.preventDefault();
 
-		if (creatingComment) return;
-
-		setCreatingComment(true);
+		if (commenting) return;
 
 		try {
-			await createComment(
-				{
-					...commentForm,
-					commentForId,
-					commentLevel,
-				},
-				userStateValue.user
-			);
-			setCommentForm((prev) => ({
-				...prev,
-				commentText: "",
-			}));
+			if (!commenting) {
+				setCommenting(true);
+				await createComment(
+					{
+						...commentForm,
+						commentForId,
+						commentLevel,
+					},
+					userStateValue.user
+				);
+				setCommentForm((prev) => ({
+					...prev,
+					commentText: "",
+				}));
+				setCommenting(false);
+			}
 		} catch (error) {
 			console.log("Hook: Error while creating comment: ", error);
+			setCommenting(false);
 		}
-
-		setCreatingComment(false);
 	};
 
 	const handleInputChange = (
@@ -218,6 +222,14 @@ const PostComments: React.FC<PostCommentsProps> = ({
 										/>
 									</div>
 								)}
+								{creatingComment && (
+									<>
+										<PostCommentItemSkeleton
+											commentLevel={0}
+											parentShowCommentBox={true}
+										/>
+									</>
+								)}
 								{currentPost?.postComments
 									.filter(
 										(comment) =>
@@ -228,7 +240,6 @@ const PostComments: React.FC<PostCommentsProps> = ({
 										<React.Fragment key={comment.comment.id}>
 											<CommentItem
 												currentPost={currentPost}
-												submitting={creatingComment}
 												commentData={comment}
 												parentShowCommentBox={true}
 												fetchPostComments={fetchPostComments}
@@ -277,7 +288,8 @@ const PostComments: React.FC<PostCommentsProps> = ({
 										commentForId={currentPost?.post.id}
 										onChange={handleInputChange}
 										onSubmit={handleCommentSubmit}
-										submitting={creatingComment}
+										commenting={creatingComment}
+										setCommenting={setCreatingComment}
 										commentBoxRef={commentBoxRef}
 									/>
 								)}

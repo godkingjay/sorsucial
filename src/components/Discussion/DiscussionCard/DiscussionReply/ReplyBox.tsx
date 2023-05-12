@@ -4,19 +4,23 @@ import React from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { DiscussionReplyFormType } from "./DiscussionReplies";
 import useUser from "@/hooks/useUser";
+import { FiLoader } from "react-icons/fi";
 
 type ReplyBoxProps = {
 	replyForm: DiscussionReplyFormType;
 	setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>;
 	replyLevel: number;
 	replyForId: string;
-	submitting: boolean;
+	replying: boolean;
+	setReplying: React.Dispatch<React.SetStateAction<boolean>>;
 	replyBoxRef: React.RefObject<HTMLTextAreaElement>;
 	setShowReplies?: React.Dispatch<React.SetStateAction<boolean>>;
 	onSubmit: (
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
 		setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>,
+		replying: boolean,
+		setReplying: React.Dispatch<React.SetStateAction<boolean>>,
 		replyForId: string,
 		replyLevel: number
 	) => void;
@@ -31,7 +35,8 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 	setReplyForm,
 	replyLevel,
 	replyForId,
-	submitting,
+	replying,
+	setReplying,
 	replyBoxRef,
 	setShowReplies,
 	onSubmit,
@@ -42,8 +47,16 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		if (!submitting) {
-			await onSubmit(event, replyForm, setReplyForm, replyForId, replyLevel);
+		if (!replying) {
+			await onSubmit(
+				event,
+				replyForm,
+				setReplyForm,
+				replying,
+				setReplying,
+				replyForId,
+				replyLevel
+			);
 			if (setShowReplies) {
 				setShowReplies(true);
 			}
@@ -53,7 +66,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 	return (
 		<form
 			className="w-full flex flex-col gap-y-2 entrance-animation-slide-from-right"
-			onSubmit={(event) => handleSubmit(event)}
+			onSubmit={(event) => !replying && handleSubmit(event)}
 		>
 			<div className="flex flex-row min-h-[40px] gap-x-2 relative">
 				<div className="flex flex-row relative">
@@ -82,22 +95,34 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({
 								event.currentTarget.scrollHeight + "px";
 						}}
 						value={replyForm.replyText}
-						disabled={submitting}
+						disabled={replying}
 						ref={replyBoxRef}
 					></textarea>
 					<div className="flex flex-row items-center justify-end flex-wrap p-2">
 						<button
 							type="submit"
 							title="Create Reply"
-							className="flex flex-row items-center gap-x-2 page-button w-max px-4 py-2 h-max text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
-							disabled={submitting || replyForm.replyText.length === 0}
+							className="flex flex-row items-center gap-x-2 page-button w-12 xs:w-44 px-4 py-2 h-8 text-xs ml-auto bg-blue-500 border-blue-500 hover:bg-blue-600 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600"
+							disabled={replying || replyForm.replyText.length === 0}
 						>
 							<div className="h-4 w-4 aspect-square">
-								<BiCommentDetail className="h-full w-full" />
+								{replying ? (
+									<>
+										<FiLoader className="h-full w-full" />
+									</>
+								) : (
+									<>
+										<BiCommentDetail className="h-full w-full" />
+									</>
+								)}
 							</div>
-							<div className="hidden xs:flex h-full flex-row items-center">
-								<p>Create Reply</p>
-							</div>
+							{!replying && (
+								<>
+									<div className="hidden xs:flex h-full flex-row items-center">
+										<p>Create Reply</p>
+									</div>
+								</>
+							)}
 						</button>
 					</div>
 				</div>

@@ -4,7 +4,7 @@ type PostCardSkeletonProps = {};
 
 const PostCardSkeleton: React.FC<PostCardSkeletonProps> = () => {
 	return (
-		<div className="shadow-page-box-1 bg-white rounded-lg flex flex-col gap-y-2 entrance-animation-slide-from-right">
+		<div className="shadow-page-box-1 page-box-1 flex flex-col gap-y-2 entrance-animation-slide-from-right">
 			<div className="pt-4 px-4 flex flex-1 flex-row items-center gap-x-4 animate-pulse">
 				<div className="h-12 w-12 aspect-square skeleton-color rounded-full"></div>
 				<div className="flex flex-col flex-1 gap-2">

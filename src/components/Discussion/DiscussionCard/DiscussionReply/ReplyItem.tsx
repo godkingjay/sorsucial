@@ -25,7 +25,6 @@ import useInput from "@/hooks/useInput";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
-	submitting: boolean;
 	replyData: DiscussionReplyData;
 	parentShowReplyBox: boolean;
 	fetchDiscussionReplies: (
@@ -48,6 +47,8 @@ type ReplyItemProps = {
 		event: React.FormEvent<HTMLFormElement>,
 		replyForm: DiscussionReplyFormType,
 		setReplyForm: React.Dispatch<React.SetStateAction<DiscussionReplyFormType>>,
+		replying: boolean,
+		setReplying: React.Dispatch<React.SetStateAction<boolean>>,
 		replyForId: string,
 		replyLevel: number
 	) => void;
@@ -61,7 +62,6 @@ const maxReplyLevel = 3;
 
 const ReplyItem: React.FC<ReplyItemProps> = ({
 	currentDiscussion,
-	submitting,
 	replyData,
 	parentShowReplyBox,
 	fetchDiscussionReplies,
@@ -85,6 +85,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	const [showReplies, setShowReplies] = useState(false);
 	const [showReplyBox, setShowReplyBox] = useState(false);
 	const [loadingReplies, setLoadingReplies] = useState(false);
+	const [creatingReply, setCreatingReply] = useState(false);
 	const [deletingReply, setDeletingReply] = useState(false);
 	const remainingReplies = currentDiscussion.discussionReplies.filter(
 		(reply) => reply.reply.replyForId === replyData.reply.id
@@ -358,8 +359,16 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 							<div className="border-l-2 h-full w-0 bg-transparent"></div>
 						</div>
 					</div>
-					{showReplies && (
+					{showReplies && replyData.reply.numberOfReplies > 0 && (
 						<div className="flex flex-col gap-y-2">
+							{creatingReply && (
+								<>
+									<DiscussionReplyItemSkeleton
+										replyLevel={replyData.reply.replyLevel + 1}
+										parentShowReplyBox={showReplyBox}
+									/>
+								</>
+							)}
 							{currentDiscussion?.discussionReplies
 								.filter(
 									(reply) =>
@@ -370,7 +379,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 									<React.Fragment key={reply.reply.id}>
 										<ReplyItem
 											currentDiscussion={currentDiscussion}
-											submitting={submitting}
 											replyData={reply}
 											parentShowReplyBox={showReplyBox}
 											fetchDiscussionReplies={fetchDiscussionReplies}
@@ -425,7 +433,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 								setReplyForm={setDiscussionReplyForm}
 								replyForId={replyData.reply.id}
 								replyLevel={replyData.reply.replyLevel + 1}
-								submitting={submitting}
+								replying={creatingReply}
+								setReplying={setCreatingReply}
 								replyBoxRef={replyBoxRef}
 								setShowReplies={setShowReplies}
 								onSubmit={onSubmit}

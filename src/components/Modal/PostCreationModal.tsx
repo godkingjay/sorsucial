@@ -101,7 +101,7 @@ export type CreatePostType = {
 	poll: CreatePostPollType | null;
 };
 
-export const postPrivacyOptions: DropdownOption[] = [
+export const PostPrivacy: DropdownOption[] = [
 	{
 		label: "Public",
 		value: "public",

@@ -207,7 +207,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 							</div>
 						)}
 					</div>
-					{showComments && (
+					{showComments && commentData.comment.numberOfReplies && (
 						<div className="flex flex-col gap-y-2">
 							{commenting && (
 								<>

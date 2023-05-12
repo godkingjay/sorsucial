@@ -32,21 +32,27 @@ export type CreateGroupType = {
 	image: ImageOrVideoType | null;
 };
 
-export const groupPrivacyOptions: RadioSelectionOption[] = [
+export const GroupPrivacy: (RadioSelectionOption & { description: string })[] = [
 	{
 		label: "Public",
 		value: "public",
 		icon: <MdPublic className="w-full h-full" />,
+		description:
+			"Anyone can view the group and its contents without restrictions.",
 	},
 	{
 		label: "Restricted",
 		value: "restricted",
 		icon: <FaEye className="w-full h-full" />,
+		description:
+			"Anyone can view the group and its contents, but only members can post and interact within the group.",
 	},
 	{
 		label: "Private",
 		value: "private",
 		icon: <FaLock className="w-full h-full" />,
+		description:
+			"Access to the group is restricted and only members who have been granted permission by the group administrator can view its contents.",
 	},
 ];
 
@@ -205,7 +211,7 @@ const GroupCreationModal: React.FC<GroupCreationModalProps> = ({
 						<RadioSelection
 							required={true}
 							title="Group Privacy"
-							options={groupPrivacyOptions}
+							options={GroupPrivacy}
 							selected={createGroupForm.privacy}
 							onChange={handleSelectPrivacy}
 							disabled={creatingGroup}

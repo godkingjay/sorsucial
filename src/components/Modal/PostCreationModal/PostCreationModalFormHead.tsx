@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
-import { postPrivacyOptions } from "../PostCreationModal";
+import { PostPrivacy } from "../PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
 import { SitePost } from "@/lib/interfaces/post";
 import useGroup from "@/hooks/useGroup";
@@ -56,25 +56,25 @@ const PostCreationModalFormHead: React.FC<PostCreationModalFormHeadProps> = ({
 					<CustomDropdown
 						options={
 							postType === "announcement"
-								? postPrivacyOptions.slice(0, 1)
+								? PostPrivacy.slice(0, 1)
 								: postType === "group"
 								? [
-										postPrivacyOptions.find(
+										PostPrivacy.find(
 											(privacy) =>
 												privacy.value ===
 												groupStateValue.currentGroup?.group.privacy
-										) || postPrivacyOptions[0],
+										) || PostPrivacy[0],
 								  ]
-								: postPrivacyOptions
+								: PostPrivacy
 						}
 						defaultValue={
 							postType === "group"
-								? postPrivacyOptions.find(
+								? PostPrivacy.find(
 										(privacy) =>
 											privacy.value ===
 											groupStateValue.currentGroup?.group.privacy
 								  )
-								: postPrivacyOptions[0]
+								: PostPrivacy[0]
 						}
 						disabled={disabled}
 						onSelect={handleSelectPrivacy}

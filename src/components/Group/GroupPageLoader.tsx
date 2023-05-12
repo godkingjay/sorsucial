@@ -12,6 +12,8 @@ import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 import { BiLockAlt } from "react-icons/bi";
+import GroupAboutCardSkeleton from "../Skeleton/Group/GroupAboutCardSkeleton";
+import GroupHeaderSkeleton from "../Skeleton/Group/GroupHeaderSkeleton";
 
 type GroupPageLoaderProps = {
 	children?: React.ReactNode;
@@ -29,6 +31,8 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 	const { groupStateValue, setGroupStateValue, fetchUserJoin } = useGroup();
 	const [fetchingGroupUserData, setFetchingGroupUserData] = useState(true);
 	const router = useRouter();
+
+	const { groupId } = router.query;
 
 	const fetchGroupUserData = useCallback(async () => {
 		setFetchingGroupUserData(true);
@@ -137,6 +141,16 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 				break;
 			}
 
+			case "about": {
+				return (
+					<div className="p-4">
+						<GroupAboutCardSkeleton />
+					</div>
+				);
+
+				break;
+			}
+
 			default: {
 				return (
 					<>
@@ -199,7 +213,14 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 				/>
 			</Head>
 			{loadingGroup || !userMounted || fetchingGroupUserData ? (
-				<>{renderLoadingPage()}</>
+				<>
+					{groupStateValue.currentGroup?.group.id !== groupId && (
+						<>
+							<GroupHeaderSkeleton />
+						</>
+					)}
+					<LimitedBodyLayout>{renderLoadingPage()}</LimitedBodyLayout>
+				</>
 			) : (
 				<>
 					{!groupStateValue.currentGroup ? (

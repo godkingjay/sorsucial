@@ -25,11 +25,11 @@ const GroupPage: React.FC<GroupPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup?.group.id === groupId && (
 						<PostsFilter
 							postType="group"
@@ -54,8 +54,8 @@ const GroupPage: React.FC<GroupPageProps> = ({
 							}}
 						/>
 					)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

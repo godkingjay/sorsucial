@@ -46,11 +46,11 @@ const GroupPageMembersBannedPage: React.FC<GroupPageMembersBannedPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup &&
 						groupStateValue.currentGroup?.group.id === groupId && (
 							<>
@@ -59,8 +59,8 @@ const GroupPageMembersBannedPage: React.FC<GroupPageMembersBannedPageProps> = ({
 								</div>
 							</>
 						)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

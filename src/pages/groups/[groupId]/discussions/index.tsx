@@ -25,11 +25,11 @@ const GroupPageDiscussionsPage: React.FC<GroupPageDiscussionsPageProps> = ({
 
 	return (
 		<>
-			<LimitedBodyLayout>
-				<GroupPageLoader
-					groupPageData={groupPageData}
-					loadingGroup={loadingPage}
-				>
+			<GroupPageLoader
+				groupPageData={groupPageData}
+				loadingGroup={loadingPage}
+			>
+				<LimitedBodyLayout>
 					{groupStateValue.currentGroup?.group.id === groupId && (
 						<>
 							<DiscussionsFilter
@@ -42,8 +42,8 @@ const GroupPageDiscussionsPage: React.FC<GroupPageDiscussionsPageProps> = ({
 							/>
 						</>
 					)}
-				</GroupPageLoader>
-			</LimitedBodyLayout>
+				</LimitedBodyLayout>
+			</GroupPageLoader>
 		</>
 	);
 };

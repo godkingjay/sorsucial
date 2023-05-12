@@ -12,6 +12,7 @@ import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 import { BiLockAlt } from "react-icons/bi";
+import GroupAboutCardSkeleton from "../Skeleton/Group/GroupAboutCardSkeleton";
 
 type GroupPageLoaderProps = {
 	children?: React.ReactNode;
@@ -131,6 +132,16 @@ const GroupPageLoader: React.FC<GroupPageLoaderProps> = ({
 						<div className="md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 							{renderMembersLoading(10)}
 						</div>
+					</div>
+				);
+
+				break;
+			}
+
+			case "about": {
+				return (
+					<div className="p-4">
+						<GroupAboutCardSkeleton />
 					</div>
 				);
 

@@ -11,6 +11,10 @@ import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleto
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 import UserHeaderSkeleton from "../Skeleton/User/UserHeaderSkeleton";
 import GroupCardSkeleton from "../Skeleton/Group/GroupCardSkeleton";
+import { BsPersonExclamation } from "react-icons/bs";
+import Link from "next/link";
+import { RxCaretRight } from "react-icons/rx";
+import UserNotFound from "../Error/UserNotFound";
 
 type UserPageLoaderProps = {
 	children?: React.ReactNode;
@@ -48,13 +52,13 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 			);
 		}
 		setFetchingCurrentUserData(false);
-	}, []);
+	}, [setUserStateValue, userPageData]);
 
 	useEffect(() => {
 		if (userMounted) {
 			fetchCurrentUserData();
 		}
-	}, [userMounted]);
+	}, [userMounted, userId]);
 
 	const renderLoadingPage = () => {
 		switch (currentGroupPage) {
@@ -187,9 +191,11 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 				</>
 			) : (
 				<>
-					{!userStateValue.userPage ? (
+					{!userStateValue.userPage && !fetchingCurrentUserData ? (
 						<>
-							<p>User Not Found</p>
+							<LimitedBodyLayout>
+								<UserNotFound />
+							</LimitedBodyLayout>
 						</>
 					) : (
 						<>{children && children}</>

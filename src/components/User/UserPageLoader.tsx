@@ -9,6 +9,7 @@ import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
 import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
+import UserHeaderSkeleton from "../Skeleton/User/UserHeaderSkeleton";
 
 type UserPageLoaderProps = {
 	children?: React.ReactNode;
@@ -28,6 +29,8 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 	const [fetchingCurrentUserData, setFetchingCurrentUserData] = useState(true);
 
 	const router = useRouter();
+
+	const { userId } = router.query;
 
 	const fetchCurrentUserData = useCallback(async () => {
 		setFetchingCurrentUserData(true);
@@ -146,6 +149,11 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 			</Head>
 			{loadingUser || !userMounted || fetchingCurrentUserData ? (
 				<>
+					{userStateValue.userPage?.user.uid !== userId && (
+						<>
+							<UserHeaderSkeleton />
+						</>
+					)}
 					<LimitedBodyLayout>{renderLoadingPage()}</LimitedBodyLayout>
 				</>
 			) : (

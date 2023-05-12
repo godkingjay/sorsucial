@@ -43,7 +43,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	const [creatingReply, setCreatingReply] = React.useState(false);
 	const [firstLoadingReplies, setFirstLoadingReplies] = React.useState(false);
 	const [loadingReplies, setLoadingReplies] = React.useState(true);
-	const componentDidMount = React.useRef(false);
+	const repliesMounted = React.useRef(false);
 
 	const fetchDiscussionReplies = useCallback(
 		async (
@@ -160,8 +160,8 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 			}
 
 			try {
-				if (!creatingReply) {
-					setCreatingReply(true);
+				if (!replying) {
+					setReplying(true);
 					await createReply({
 						...replyForm,
 						replyForId,
@@ -171,14 +171,14 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 						...prev,
 						replyText: "",
 					}));
-					setCreatingReply(false);
+					setReplying(false);
 				}
 			} catch (error) {
 				console.log("Hook: Error while creating comment: ", error);
-				setCreatingReply(false);
+				setReplying(false);
 			}
 		},
-		[createReply, creatingReply]
+		[createReply]
 	);
 
 	const handleInputChange = (
@@ -192,11 +192,11 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 	};
 
 	useEffect(() => {
-		if (userMounted && !componentDidMount.current) {
-			componentDidMount.current = true;
+		if (userMounted && !repliesMounted.current) {
+			repliesMounted.current = true;
 			firstFetchReplies();
 		}
-	}, [userMounted, componentDidMount.current]);
+	}, [userMounted, repliesMounted.current]);
 
 	return (
 		<>

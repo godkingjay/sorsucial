@@ -359,7 +359,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 							<div className="border-l-2 h-full w-0 bg-transparent"></div>
 						</div>
 					</div>
-					{showReplies && (
+					{showReplies && replyData.reply.numberOfReplies > 0 && (
 						<div className="flex flex-col gap-y-2">
 							{creatingReply && (
 								<>

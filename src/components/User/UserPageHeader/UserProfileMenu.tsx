@@ -1,11 +1,12 @@
 import { UserData } from "@/atoms/userAtom";
-import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import useInput from "@/hooks/useInput";
 import useUser from "@/hooks/useUser";
 import { UserImage } from "@/lib/interfaces/user";
 import { validImageTypes } from "@/lib/types/validFiles";
 import Link from "next/link";
 import React, { useCallback, useRef, useState } from "react";
 import { BsPersonBoundingBox, BsThreeDots } from "react-icons/bs";
+import { FiLoader } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdInsertPhoto } from "react-icons/md";
 
@@ -86,38 +87,57 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					group-data-[open=false]:pointer-events-none group-data-[open=false]:opacity-0 group-data-[open=false]:translate-y-[8px]
 				"
 				>
-					<button
-						type="button"
-						title="Change Profile Photo"
-						className="user-menu-item"
-						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
-						onClick={() =>
-							!uploadingPhoto && uploadProfilePhotoRef.current?.click()
-						}
-					>
-						<div className="icon-container">
-							<BsPersonBoundingBox className="icon" />
-						</div>
-						<div className="label-container">
-							<p className="label">Change Profile Photo</p>
-						</div>
-					</button>
-					<button
-						type="button"
-						title="Change Cover Photo"
-						className="user-menu-item"
-						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
-						onClick={() =>
-							!uploadingPhoto && uploadCoverPhotoRef.current?.click()
-						}
-					>
-						<div className="icon-container">
-							<MdInsertPhoto className="icon" />
-						</div>
-						<div className="label-container">
-							<p className="label">Change Cover Photo</p>
-						</div>
-					</button>
+					{!uploadingPhoto ? (
+						<>
+							<button
+								type="button"
+								title="Change Profile Photo"
+								className="user-menu-item"
+								tabIndex={
+									userOptionsStateValue.menu === userData.user.uid ? 0 : -1
+								}
+								onClick={() =>
+									!uploadingPhoto && uploadProfilePhotoRef.current?.click()
+								}
+							>
+								<div className="icon-container">
+									<BsPersonBoundingBox className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Change Profile Photo</p>
+								</div>
+							</button>
+							<button
+								type="button"
+								title="Change Cover Photo"
+								className="user-menu-item"
+								tabIndex={
+									userOptionsStateValue.menu === userData.user.uid ? 0 : -1
+								}
+								onClick={() =>
+									!uploadingPhoto && uploadCoverPhotoRef.current?.click()
+								}
+							>
+								<div className="icon-container">
+									<MdInsertPhoto className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Change Cover Photo</p>
+								</div>
+							</button>
+						</>
+					) : (
+						<>
+							<div className="user-menu-item justify-center text-blue-500 animate-pulse pointer-events-none">
+								<div className="icon-container animate-spin">
+									<FiLoader className="icon" />
+								</div>
+								<div className="label-container">
+									<p className="label">Uploading Photo</p>
+								</div>
+							</div>
+						</>
+					)}
 					<Link
 						href={`/user/${userData.user.uid}/settings/`}
 						title="Settings"

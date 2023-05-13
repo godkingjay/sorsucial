@@ -90,7 +90,7 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 							<button
 								type="button"
 								title="Change Profile Photo"
-								className="user-menu-item"
+								className="group-menu-item"
 								tabIndex={
 									groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 								}
@@ -108,7 +108,7 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 							<button
 								type="button"
 								title="Change Cover Photo"
-								className="user-menu-item"
+								className="group-menu-item"
 								tabIndex={
 									groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 								}
@@ -126,7 +126,7 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 						</>
 					) : (
 						<>
-							<div className="user-menu-item justify-center text-blue-500 animate-pulse pointer-events-none">
+							<div className="group-menu-item justify-center text-blue-500 animate-pulse pointer-events-none">
 								<div className="icon-container animate-spin">
 									<FiLoader className="icon" />
 								</div>
@@ -136,21 +136,6 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 							</div>
 						</>
 					)}
-					<Link
-						href={`/user/${groupData.group.id}/settings/`}
-						title="Settings"
-						className="user-menu-item"
-						tabIndex={
-							groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
-						}
-					>
-						<div className="icon-container">
-							<IoSettingsOutline className="icon" />
-						</div>
-						<div className="label-container">
-							<p className="label">Settings</p>
-						</div>
-					</Link>
 				</div>
 			</div>
 			<input

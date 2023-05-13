@@ -46,17 +46,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 							title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
 						>
 							<div className="image-container">
-								{userStateValue.user.imageURL ? (
-									<Image
-										src={userStateValue.user.imageURL}
-										alt={userStateValue.user.firstName}
-										height={256}
-										width={256}
-										className="image"
-									/>
-								) : (
-									<FaUserCircle className="h-full w-full" />
-								)}
+								<UserIcon
+									user={userStateValue.user}
+									disabled={true}
+								/>
 							</div>
 							<div className="label-container">
 								<p className="label">{userStateValue.user.firstName}</p>

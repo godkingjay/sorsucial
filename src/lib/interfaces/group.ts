@@ -42,7 +42,7 @@ export interface SiteGroup {
 	numberOfPosts: number;
 	numberOfDiscussions: number;
 	image?: GroupImage;
-	coverImage?: GroupImage;
+	cover?: GroupImage;
 	lastPostAt?: Date;
 	lastDiscussionAt?: Date;
 	updatedAt: Date;

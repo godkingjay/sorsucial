@@ -1,6 +1,7 @@
 import { GroupData } from "@/atoms/groupAtom";
 import useGroup from "@/hooks/useGroup";
 import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import { GroupImage } from "@/lib/interfaces/group";
 import { validImageTypes } from "@/lib/types/validFiles";
 import Link from "next/link";
 import React, { useCallback, useRef, useState } from "react";
@@ -13,7 +14,8 @@ type GroupProfileMenuProps = {
 };
 
 const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
-	const { groupOptionsStateValue, setGroupOptionsStateValue } = useGroup();
+	const { groupOptionsStateValue, setGroupOptionsStateValue, changePhoto } =
+		useGroup();
 
 	const { uploadImageOrVideo } = useInput();
 
@@ -44,18 +46,20 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 					const image = await uploadImageOrVideo(event.target.files[0]);
 
 					if (image) {
+						await changePhoto({
+							image,
+							type: event.target.name as GroupImage["type"],
+						});
 					}
 
 					setUploadingPhoto(false);
 				}
 			} catch (error: any) {
-				console.log(
-					`=>Hook: Hook Fetch Current User Data Error:\n${error.message}`
-				);
+				console.log(`=>Hook: Change User Photo Error:\n${error.message}`);
 				setUploadingPhoto(false);
 			}
 		},
-		[uploadImageOrVideo, uploadingPhoto]
+		[changePhoto, uploadImageOrVideo, uploadingPhoto]
 	);
 
 	return (
@@ -135,7 +139,7 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 			</div>
 			<input
 				type="file"
-				name="profile"
+				name={"image" as GroupImage["type"]}
 				title="Upload Photo"
 				accept={validImageTypes.ext.join(",")}
 				ref={uploadProfilePhotoRef}
@@ -144,7 +148,7 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 			/>
 			<input
 				type="file"
-				name="cover"
+				name={"cover" as GroupImage["type"]}
 				title="Upload Photo"
 				accept={validImageTypes.ext.join(",")}
 				ref={uploadCoverPhotoRef}

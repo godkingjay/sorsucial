@@ -90,7 +90,7 @@ export default async function handler(
 					});
 
 				if (type === "cover" || type === "image") {
-					const newGroupState = await groupsCollection
+					await groupsCollection
 						.updateOne(
 							{
 								id: groupImageData.groupId,

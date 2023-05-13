@@ -32,10 +32,10 @@ const GroupPageHeader: React.FC<GroupPageHeaderProps> = ({ groupData }) => {
 		<div className="w-full flex flex-col items-center shadow-page-box-1 bg-white">
 			<div className="flex flex-col w-full max-w-5xl">
 				<div className="relative flex flex-col px-0 md:mx-8 aspect-[3/1] bg-gray-200 overflow-hidden md:rounded-b-2xl">
-					{groupData.group.coverImage ? (
+					{groupData.group.cover ? (
 						<>
 							<Image
-								src={groupData.group.coverImage.fileURL}
+								src={groupData.group.cover.fileURL}
 								alt={groupData.group.name}
 								sizes="(min-width: 1200px) 900px, (min-width: 768px) 700px, 100vw"
 								fill

@@ -1,8 +1,10 @@
 import { UserData, userOptionsState } from "@/atoms/userAtom";
 import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import useUser from "@/hooks/useUser";
+import { UserImage } from "@/lib/interfaces/user";
 import { validImageTypes } from "@/lib/types/validFiles";
 import Link from "next/link";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { BsPersonBoundingBox, BsThreeDots } from "react-icons/bs";
 import { FiLoader } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -14,8 +16,8 @@ type UserProfileMenuProps = {
 };
 
 const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
-	const [userOptionsStateValue, setOptionsStateValue] =
-		useRecoilState(userOptionsState);
+	const { userOptionsStateValue, setUserOptionsStateValue, changePhoto } =
+		useUser();
 
 	const { uploadImageOrVideo } = useInput();
 
@@ -27,21 +29,43 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 
 	const handleUserProfileMenu = () => {
 		if (userOptionsStateValue.menu === userData.user.uid) {
-			setOptionsStateValue((prev) => ({
+			setUserOptionsStateValue((prev) => ({
 				...prev,
 				menu: "",
 			}));
 		} else {
-			setOptionsStateValue((prev) => ({
+			setUserOptionsStateValue((prev) => ({
 				...prev,
 				menu: userData.user.uid,
 			}));
 		}
 	};
 
-	const handleUploadPhoto = async (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {};
+	const handleUploadPhoto = useCallback(
+		async (event: React.ChangeEvent<HTMLInputElement>) => {
+			try {
+				if (!uploadingPhoto && event.target.files && event.target.files[0]) {
+					setUploadingPhoto(true);
+					const image = await uploadImageOrVideo(event.target.files[0]);
+
+					if (image) {
+						await changePhoto({
+							image,
+							type: event.target.name as UserImage["type"],
+						});
+					}
+
+					setUploadingPhoto(false);
+				}
+			} catch (error: any) {
+				console.log(
+					`=>Hook: Hook Fetch Current User Data Error:\n${error.message}`
+				);
+				setUploadingPhoto(false);
+			}
+		},
+		[]
+	);
 
 	return (
 		<>

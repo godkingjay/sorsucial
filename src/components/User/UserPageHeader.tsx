@@ -4,7 +4,6 @@ import Image from "next/image";
 import React from "react";
 import UserIcon from "../Icons/UserIcon";
 import Link from "next/link";
-import { BsThreeDots } from "react-icons/bs";
 import UserProfileMenu from "./UserPageHeader/UserProfileMenu";
 
 type UserPageHeaderProps = {
@@ -38,7 +37,7 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 					</div>
 					<div className="flex-1 flex flex-col">
 						<div className="w-full flex flex-row gap-x-4 justify-between pr-0 md:pr-4">
-							<div className="flex-1 flex flex-col">
+							<div className="flex-1 flex flex-row">
 								<Link
 									href={`/user/${userData.user.uid}`}
 									className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"

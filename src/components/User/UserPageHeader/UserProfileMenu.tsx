@@ -1,6 +1,8 @@
 import { UserData, userOptionsState } from "@/atoms/userAtom";
+import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import { validImageTypes } from "@/lib/types/validFiles";
 import Link from "next/link";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { BsPersonBoundingBox, BsThreeDots } from "react-icons/bs";
 import { FiLoader } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -15,6 +17,14 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 	const [userOptionsStateValue, setOptionsStateValue] =
 		useRecoilState(userOptionsState);
 
+	const { uploadImageOrVideo } = useInput();
+
+	const [image, setImage] = useState<ImageOrVideoType>();
+	const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+	const uploadProfilePhotoRef = useRef<HTMLInputElement>(null);
+	const uploadCoverPhotoRef = useRef<HTMLInputElement>(null);
+
 	const handleUserProfileMenu = () => {
 		if (userOptionsStateValue.menu === userData.user.uid) {
 			setOptionsStateValue((prev) => ({
@@ -28,6 +38,10 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 			}));
 		}
 	};
+
+	const handleUploadPhoto = async (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {};
 
 	return (
 		<>
@@ -54,8 +68,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					<button
 						type="button"
 						title="Change Profile Photo"
-						className="user-menu-item relative"
+						className="user-menu-item"
 						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
+						onClick={() =>
+							!uploadingPhoto && uploadProfilePhotoRef.current?.click()
+						}
 					>
 						<div className="icon-container">
 							<BsPersonBoundingBox className="icon" />
@@ -67,8 +84,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					<button
 						type="button"
 						title="Change Cover Photo"
-						className="user-menu-item relative"
+						className="user-menu-item"
 						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
+						onClick={() =>
+							!uploadingPhoto && uploadCoverPhotoRef.current?.click()
+						}
 					>
 						<div className="icon-container">
 							<MdInsertPhoto className="icon" />
@@ -80,7 +100,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					<Link
 						href={`/user/${userData.user.uid}/settings/`}
 						title="Settings"
-						className="user-menu-item relative"
+						className="user-menu-item"
 						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
 					>
 						<div className="icon-container">
@@ -92,6 +112,24 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					</Link>
 				</div>
 			</div>
+			<input
+				type="file"
+				name="profile"
+				title="Upload Photo"
+				accept={validImageTypes.ext.join(",")}
+				ref={uploadProfilePhotoRef}
+				onChange={handleUploadPhoto}
+				hidden
+			/>
+			<input
+				type="file"
+				name="cover"
+				title="Upload Photo"
+				accept={validImageTypes.ext.join(",")}
+				ref={uploadCoverPhotoRef}
+				onChange={handleUploadPhoto}
+				hidden
+			/>
 		</>
 	);
 };

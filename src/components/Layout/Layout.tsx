@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import useUser from "@/hooks/useUser";
 import NavBar from "../NavBar/NavBar";
 import Modals from "../Modal/Modals";
 import PageLeftSidebar from "../Controls/PageLeftSidebar";
 import { useRouter } from "next/router";
-import MainPageLayout from "./MainPageLayout";
 import LoadingScreen from "../Skeleton/LoadingScreen";
-// import AdminPageLayout from "./AdminPageLayout";
 import { useRecoilState } from "recoil";
 import {
 	NavigationBarState,
@@ -14,7 +12,6 @@ import {
 	navigationBarState,
 } from "@/atoms/navigationBarAtom";
 import AdminModals from "../Modal/AdminModals";
-import AdminPageLayout from "./AdminPageLayout";
 import PageContainerLayout from "./PageContainerLayout";
 import LoadingBar from "../Events/LoadingBar";
 

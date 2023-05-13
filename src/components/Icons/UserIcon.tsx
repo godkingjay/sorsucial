@@ -6,16 +6,19 @@ import { FaUserCircle } from "react-icons/fa";
 
 type UserIconProps = {
 	user: SiteUser | null;
+	disabled?: boolean;
 };
 
-const UserIcon: React.FC<UserIconProps> = ({ user }) => {
+const UserIcon: React.FC<UserIconProps> = ({ user, disabled = false }) => {
 	return (
 		<>
 			{user ? (
 				<Link
 					href={`/user/${user.uid}`}
 					title={`${user.firstName} ${user.lastName}`}
-					className="h-full w-full relative aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
+					className="h-full w-full flex relative aspect-square rounded-full overflow-hidden border border-transparent text-gray-300 data-[disabled=true]:pointer-events-none"
+					data-disabled={disabled}
+					tabIndex={disabled ? -1 : 0}
 				>
 					{user.imageURL ? (
 						<Image

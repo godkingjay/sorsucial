@@ -1,8 +1,9 @@
 import { NavigationBarState } from "@/atoms/navigationBarAtom";
 import { UserState } from "@/atoms/userAtom";
+import UserIcon from "@/components/Icons/UserIcon";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { use } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { GoSignOut } from "react-icons/go";
 import { IoSettingsSharp } from "react-icons/io5";
@@ -28,18 +29,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 				className="h-11 w-11 rounded-full bg-gray-100 text-gray-300"
 				onClick={handleUserDropdown}
 			>
-				{userStateValue.user.imageURL ? (
-					<Image
-						src={userStateValue.user.imageURL}
-						alt="User Profile Picture"
-						width={48}
-						height={48}
-						loading="lazy"
-						className="rounded-full h-full w-full"
-					/>
-				) : (
-					<FaUserCircle className="h-full w-full bg-white" />
-				)}
+				<UserIcon
+					user={userStateValue.user}
+					disabled={true}
+				/>
 			</button>
 			<div
 				className="user-dropdown-wrapper !max-w-sm"

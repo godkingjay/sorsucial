@@ -5,6 +5,7 @@ import React from "react";
 import UserIcon from "../Icons/UserIcon";
 import Link from "next/link";
 import UserProfileMenu from "./UserPageHeader/UserProfileMenu";
+import { FaUserCircle } from "react-icons/fa";
 
 type UserPageHeaderProps = {
 	userData: UserData;

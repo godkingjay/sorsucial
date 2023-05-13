@@ -255,7 +255,9 @@ const useUser = () => {
 						imageDocRef.id,
 						"profile"
 					).catch((error: any) => {
-						console.log("Hook: Upload Profile Photo Error: ", error.message);
+						throw new Error(
+							`=>Hook: Upload User Photo Error:\n${error.message}`
+						);
 					});
 
 					if (userProfilePhoto) {
@@ -271,7 +273,7 @@ const useUser = () => {
 					})
 					.then((res) => res.data.newUser)
 					.catch((error) => {
-						console.log("API: Create User Error: ", error.message);
+						throw new Error(`=>API: Create User Error:\n${error.message}`);
 					});
 
 				setUserStateValueMemo((prev) => ({
@@ -310,7 +312,9 @@ const useUser = () => {
 						imageDocRef.id,
 						"profile"
 					).catch((error: any) => {
-						console.log("Hook: Upload Profile Photo Error: ", error.message);
+						throw new Error(
+							`=>Hook: Upload User Photo Error:\n${error.message}`
+						);
 					});
 
 					if (userPhoto) {
@@ -335,7 +339,7 @@ const useUser = () => {
 							})
 							.then((res) => res.data.newUser)
 							.catch((error) => {
-								console.log("API: Create User Error: ", error.message);
+								throw new Error(`=>API: Create User Error:\n${error.message}`);
 							});
 
 						switch (type) {
@@ -394,7 +398,14 @@ const useUser = () => {
 				console.log(`=>Mongo: Changing User Photo Error:\n${error.message}`);
 			}
 		},
-		[]
+		[
+			setUserStateValueMemo,
+			uploadUserPhoto,
+			user,
+			userMemo?.uid,
+			userStateValueMemo.api?.keys,
+			userStateValueMemo.user,
+		]
 	);
 
 	/**

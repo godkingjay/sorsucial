@@ -15,16 +15,16 @@ const UserIcon: React.FC<UserIconProps> = ({ user }) => {
 				<Link
 					href={`/user/${user.uid}`}
 					title={`${user.firstName} ${user.lastName}`}
-					className="h-full w-full aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
+					className="h-full w-full relative aspect-square rounded-full overflow-hidden border border-transparent text-gray-300"
 				>
 					{user.imageURL ? (
 						<Image
 							src={user.imageURL}
 							alt="User Profile Picture"
-							width={96}
-							height={96}
+							sizes="128px"
+							fill
 							loading="lazy"
-							className="h-full w-full"
+							className="w-full bg-center object-cover"
 						/>
 					) : (
 						<FaUserCircle className="h-full w-full bg-white" />

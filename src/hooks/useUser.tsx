@@ -136,7 +136,11 @@ const useUser = () => {
 	 * @return {*}
 	 */
 	const uploadProfilePhoto = useCallback(
-		async (image: CreateUserType["profilePhoto"], imageId: string) => {
+		async (
+			image: CreateUserType["profilePhoto"],
+			imageId: string,
+			type: UserImage["type"]
+		) => {
 			try {
 				const storageRef = ref(
 					clientStorage,
@@ -168,6 +172,7 @@ const useUser = () => {
 					userId: userMemo?.uid as string,
 					height: image?.height as number,
 					width: image?.width as number,
+					type: type,
 					fileName: image?.name as string,
 					fileType: image?.type as string,
 					filePath: storageRef.fullPath,
@@ -228,7 +233,8 @@ const useUser = () => {
 
 					const userProfilePhoto = await uploadProfilePhoto(
 						userData.profilePhoto,
-						imageDocRef.id
+						imageDocRef.id,
+						"profile"
 					).catch((error: any) => {
 						console.log("Hook: Upload Profile Photo Error: ", error.message);
 					});

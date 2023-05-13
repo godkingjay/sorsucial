@@ -19,7 +19,8 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 
 	const { uploadImageOrVideo } = useInput();
 
-	const [uploadingPhoto, setUploadingPhoto] = useState(false);
+	const [uploadingGroupPhoto, setUploadingGroupPhoto] = useState(false);
+	const [uploadingCoverPhoto, setUploadingCoverPhoto] = useState(false);
 
 	const uploadProfilePhotoRef = useRef<HTMLInputElement>(null);
 	const uploadCoverPhotoRef = useRef<HTMLInputElement>(null);
@@ -40,26 +41,47 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 
 	const handleUploadPhoto = useCallback(
 		async (event: React.ChangeEvent<HTMLInputElement>) => {
+			const { name: type } = event.target;
+
 			try {
-				if (!uploadingPhoto && event.target.files && event.target.files[0]) {
-					setUploadingPhoto(true);
+				if (
+					((type === "image" && !uploadingGroupPhoto) ||
+						(type === "cover" && !uploadingCoverPhoto)) &&
+					event.target.files &&
+					event.target.files[0]
+				) {
+					if (type === "image") {
+						setUploadingGroupPhoto(true);
+					} else if (type === "cover") {
+						setUploadingCoverPhoto(true);
+					}
+
 					const image = await uploadImageOrVideo(event.target.files[0]);
 
 					if (image) {
 						await changePhoto({
 							image,
-							type: event.target.name as GroupImage["type"],
+							type: type as GroupImage["type"],
 						});
 					}
 
-					setUploadingPhoto(false);
+					if (type === "image") {
+						setUploadingGroupPhoto(false);
+					} else if (type === "cover") {
+						setUploadingCoverPhoto(false);
+					}
 				}
 			} catch (error: any) {
 				console.log(`=>Hook: Change User Photo Error:\n${error.message}`);
-				setUploadingPhoto(false);
+
+				if (type === "image") {
+					setUploadingGroupPhoto(false);
+				} else if (type === "cover") {
+					setUploadingCoverPhoto(false);
+				}
 			}
 		},
-		[changePhoto, uploadImageOrVideo, uploadingPhoto]
+		[changePhoto, uploadImageOrVideo, uploadingCoverPhoto, uploadingGroupPhoto]
 	);
 
 	return (
@@ -92,7 +114,9 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 							groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 						}
 						onClick={() =>
-							!uploadingPhoto && uploadProfilePhotoRef.current?.click()
+							!uploadingGroupPhoto &&
+							!uploadingCoverPhoto &&
+							uploadProfilePhotoRef.current?.click()
 						}
 					>
 						<div className="icon-container">
@@ -110,7 +134,9 @@ const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
 							groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 						}
 						onClick={() =>
-							!uploadingPhoto && uploadCoverPhotoRef.current?.click()
+							!uploadingGroupPhoto &&
+							!uploadingCoverPhoto &&
+							uploadCoverPhotoRef.current?.click()
 						}
 					>
 						<div className="icon-container">

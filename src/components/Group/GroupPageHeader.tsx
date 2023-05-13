@@ -3,22 +3,16 @@ import ButtonJoinLeaveGroup from "./Buttons/ButtonJoinLeaveGroup";
 import moment from "moment";
 import { GroupData } from "@/atoms/groupAtom";
 import Image from "next/image";
-import { RiGroup2Fill } from "react-icons/ri";
-import { UserState } from "@/atoms/userAtom";
-import { HiOutlineCamera } from "react-icons/hi";
 import Link from "next/link";
 import useGroup from "@/hooks/useGroup";
 import GroupIcon from "../Icons/GroupIcon";
+import GroupProfileMenu from "./GroupPageHeader/GroupProfileMenu";
 
 type GroupPageHeaderProps = {
 	groupData: GroupData;
-	userStateValue: UserState;
 };
 
-const GroupPageHeader: React.FC<GroupPageHeaderProps> = ({
-	groupData,
-	userStateValue,
-}) => {
+const GroupPageHeader: React.FC<GroupPageHeaderProps> = ({ groupData }) => {
 	const { onJoinGroup } = useGroup();
 	const [joiningGroup, setJoiningGroup] = useState(false);
 
@@ -57,14 +51,22 @@ const GroupPageHeader: React.FC<GroupPageHeaderProps> = ({
 						<GroupIcon group={groupData.group} />
 					</div>
 					<div className="flex-1 flex flex-col">
-						<div className="w-full flex flex-row">
-							<Link
-								href={`/groups/${groupData.group.id}`}
-								className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"
-							>
-								{groupData.group.name}
-								<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
-							</Link>
+						<div className="w-full flex flex-row gap-x-4 justify-between pr-0 md:pr-4">
+							<div className="flex flex-row flex-1">
+								<Link
+									href={`/groups/${groupData.group.id}`}
+									className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"
+								>
+									{groupData.group.name}
+									<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
+								</Link>
+							</div>
+							{(groupData.userJoin?.roles.includes("owner") ||
+								groupData.userJoin?.roles.includes("admin")) && (
+								<>
+									<GroupProfileMenu groupData={groupData} />
+								</>
+							)}
 						</div>
 						<div className="flex flex-col">
 							<p className="font-semibold text-sm text-gray-500">

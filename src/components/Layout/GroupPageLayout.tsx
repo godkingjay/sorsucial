@@ -1,25 +1,9 @@
 import React from "react";
 import GroupPageHeader from "../Group/GroupPageHeader";
 import useGroup from "@/hooks/useGroup";
-import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import LimitedBodyLayout from "./LimitedBodyLayout";
-import {
-	BsChatLeftText,
-	BsChatLeftTextFill,
-	BsFillPeopleFill,
-	BsInfoCircle,
-	BsInfoCircleFill,
-	BsPeople,
-	BsPeopleFill,
-	BsPersonFillExclamation,
-	BsPersonFillSlash,
-	BsPostcard,
-	BsPostcardFill,
-} from "react-icons/bs";
-import { IoImages, IoImagesOutline } from "react-icons/io5";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 import GroupPageMembersNavigation from "./GroupPageLayout/GroupPageMembersNavigation";
 import GroupPageNavigation from "./GroupPageLayout/GroupPageNavigation";
@@ -29,11 +13,9 @@ type GroupPageProps = {
 };
 
 const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
-	const { userStateValue } = useUser();
 	const { groupStateValue } = useGroup();
 
-	const [currentDirectoryStateValue, setCurrentDirectoryStateValue] =
-		useRecoilState(currentDirectoryState);
+	const currentDirectoryStateValue = useRecoilValue(currentDirectoryState);
 
 	const router = useRouter();
 	const { groupId } = router.query;
@@ -45,10 +27,7 @@ const GroupPageLayout: React.FC<GroupPageProps> = ({ children }) => {
 					groupStateValue.currentGroup.group.id === groupId && (
 						<>
 							<div className="z-20 flex flex-col">
-								<GroupPageHeader
-									groupData={groupStateValue.currentGroup}
-									userStateValue={userStateValue}
-								/>
+								<GroupPageHeader groupData={groupStateValue.currentGroup} />
 							</div>
 							<GroupPageNavigation />
 						</>

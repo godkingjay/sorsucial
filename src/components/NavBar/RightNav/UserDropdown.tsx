@@ -45,11 +45,18 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 							className="user-dropdown-group"
 							title={`${userStateValue.user.firstName} ${userStateValue.user.lastName}`}
 						>
-							<div className="image-container">
-								<UserIcon
-									user={userStateValue.user}
-									disabled={true}
-								/>
+							<div className="image-container flex relative">
+								{userStateValue.user.imageURL ? (
+									<Image
+										src={userStateValue.user.imageURL}
+										alt={userStateValue.user.firstName}
+										sizes="256px"
+										fill
+										className="image !bg-center !object-cover"
+									/>
+								) : (
+									<FaUserCircle className="h-full w-full" />
+								)}
 							</div>
 							<div className="label-container">
 								<p className="label">{userStateValue.user.firstName}</p>

@@ -1,43 +1,45 @@
-import { SiteUser } from "@/lib/interfaces/user";
+import { SiteGroup } from "@/lib/interfaces/group";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { RiGroup2Fill } from "react-icons/ri";
 
-type UserIconProps = {
-	user: SiteUser | null;
+type GroupIconProps = {
+	group: SiteGroup | null;
 	disabled?: boolean;
 };
 
-const UserIcon: React.FC<UserIconProps> = ({ user, disabled = false }) => {
+const GroupIcon: React.FC<GroupIconProps> = ({ group, disabled = false }) => {
 	return (
 		<>
-			{user ? (
+			{group ? (
 				<Link
-					href={`/user/${user.uid}`}
-					title={`${user.firstName} ${user.lastName}`}
+					href={`/groups/${group.id}`}
+					title={`${group.name}`}
 					className="h-full w-full flex relative aspect-square rounded-full overflow-hidden border border-transparent text-gray-300 data-[disabled=true]:pointer-events-none"
+					data-disabled={disabled}
+					tabIndex={disabled ? -1 : 0}
 				>
-					{user.imageURL ? (
+					{group.image?.fileURL ? (
 						<Image
-							src={user.imageURL}
-							alt="User Profile Picture"
+							src={group.image?.fileURL}
+							alt={group.name}
 							sizes="128px"
 							fill
 							loading="lazy"
 							className="w-full bg-center object-cover"
 						/>
 					) : (
-						<FaUserCircle className="h-full w-full bg-white" />
+						<RiGroup2Fill className="h-full w-full" />
 					)}
 				</Link>
 			) : (
 				<div className="h-full w-full aspect-square rounded-full overflow-hidden border border-transparent text-gray-300">
-					<FaUserCircle className="h-full w-full bg-white" />
+					<RiGroup2Fill className="h-full w-full" />
 				</div>
 			)}
 		</>
 	);
 };
 
-export default UserIcon;
+export default GroupIcon;

@@ -21,6 +21,7 @@ import {
 	QueryGroupMembersSortBy,
 	QueryGroupsSortBy,
 } from "@/lib/types/api";
+import { ImageOrVideoType } from "./useInput";
 
 const useGroup = () => {
 	const { authUser, userStateValue } = useUser();
@@ -74,7 +75,7 @@ const useGroup = () => {
 						: prev.currentGroup,
 			}));
 		},
-		[]
+		[setGroupStateValueMemo]
 	);
 
 	const createGroup = useCallback(
@@ -161,7 +162,12 @@ const useGroup = () => {
 				console.log(`=>Mongo: Create Group Error:\n${error.message}`);
 			}
 		},
-		[groupStateValueMemo]
+		[
+			authUser?.uid,
+			setGroupStateValueMemo,
+			userStateValue.api?.keys,
+			userStateValue.user,
+		]
 	);
 
 	const uploadGroupImage = useCallback(
@@ -276,10 +282,10 @@ const useGroup = () => {
 					createdAt: date,
 				};
 
-				const { groupImageData } = await axios
+				const { groupImageData }: { groupImageData: GroupImage } = await axios
 					.post(apiConfig.apiEndpoint + "/groups/images/", {
 						apiKey: userStateValue.api?.keys[0].key,
-						type: "image" as GroupImage["type"],
+						type: type as GroupImage["type"],
 						groupImageData: newGroupImage,
 					})
 					.then((response) => response.data)
@@ -300,7 +306,115 @@ const useGroup = () => {
 
 			return null;
 		},
-		[groupStateValueMemo]
+		[userStateValue.api?.keys, userStateValue.user.uid]
+	);
+
+	const changePhoto = useCallback(
+		async ({
+			image = undefined as ImageOrVideoType | undefined,
+			type = undefined as GroupImage["type"] | undefined,
+		}) => {
+			try {
+				if (image && type && authUser && groupStateValue.currentGroup) {
+					const groupImageRef = doc(
+						collection(
+							clientDb,
+							`groups/${groupStateValue.currentGroup?.group.id}/images`
+						)
+					);
+
+					const groupImage = await uploadGroupImage(
+						groupStateValue.currentGroup?.group,
+						image,
+						groupImageRef.id,
+						type
+					).catch((error) => {
+						throw new Error(
+							`=>Hook: Group Image Upload Error:\n${error.message}`
+						);
+					});
+
+					if (groupImage) {
+						switch (type) {
+							case "image": {
+								setGroupStateValueMemo((prev) => ({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupImage.groupId) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													[type]: groupImage,
+												},
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										prev.currentGroup?.group.id === groupImage.groupId
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														[type]: groupImage,
+													},
+											  }
+											: prev.currentGroup,
+								}));
+
+								break;
+							}
+
+							case "cover": {
+								setGroupStateValueMemo((prev) => ({
+									...prev,
+									groups: prev.groups.map((group) => {
+										if (group.group.id === groupImage.groupId) {
+											return {
+												...group,
+												group: {
+													...group.group,
+													[type]: groupImage,
+												},
+											};
+										}
+
+										return group;
+									}),
+									currentGroup:
+										prev.currentGroup?.group.id === groupImage.groupId
+											? {
+													...prev.currentGroup,
+													group: {
+														...prev.currentGroup?.group,
+														[type]: groupImage,
+													},
+											  }
+											: prev.currentGroup,
+								}));
+
+								break;
+							}
+
+							default: {
+								throw new Error("Invalid Image Type!");
+								break;
+							}
+						}
+					}
+				}
+			} catch (error: any) {
+				console.log(`=>Mongo: Changing Group Photo Error:\n${error.message}`);
+			}
+		},
+		[
+			authUser,
+			groupStateValue.currentGroup,
+			setGroupStateValueMemo,
+			uploadGroupImage,
+		]
 	);
 
 	/**
@@ -1065,7 +1179,12 @@ const useGroup = () => {
 				console.log(`=>MONGO: Error while removing member:\n${error.message}`);
 			}
 		},
-		[authUser?.uid, setGroupStateValue]
+		[
+			actionGroupDeleted,
+			authUser?.uid,
+			setGroupStateValue,
+			userStateValue.api?.keys,
+		]
 	);
 
 	return {
@@ -1074,6 +1193,7 @@ const useGroup = () => {
 		groupOptionsStateValue: groupOptionsStateValueMemo,
 		setGroupOptionsStateValue: setGroupOptionsStateValueMemo,
 		createGroup,
+		changePhoto,
 		onJoinGroup,
 		onRequestAction,
 		fetchGroups,

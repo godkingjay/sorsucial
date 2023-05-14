@@ -42,7 +42,7 @@ export interface SiteGroup {
 	numberOfPosts: number;
 	numberOfDiscussions: number;
 	image?: GroupImage;
-	coverImage?: GroupImage;
+	cover?: GroupImage;
 	lastPostAt?: Date;
 	lastDiscussionAt?: Date;
 	updatedAt: Date;
@@ -109,7 +109,7 @@ export interface GroupMember {
  * @property {string} uploadedBy - The unique identifier of the user who uploaded the image.
  * @property {number} height - The height of the image.
  * @property {number} width - The width of the image.
- * @property {"image" | "cover"} type - The type of the image.
+ * @property {"image" | "cover" | "other"} type - The type of the image.
  * @property {string} filePath - The path of the image.
  * @property {string} fileName - The name of the image.
  * @property {string} fileType - The type of the image.
@@ -129,7 +129,7 @@ export interface GroupImage {
 	uploadedBy: string;
 	height: number;
 	width: number;
-	type: "image" | "cover";
+	type: "image" | "cover" | "other";
 	filePath: string;
 	fileName: string;
 	fileType: string;

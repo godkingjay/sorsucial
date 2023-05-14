@@ -89,23 +89,25 @@ export default async function handler(
 						});
 					});
 
-				const newGroupState = await groupsCollection
-					.updateOne(
-						{
-							id: groupImageData.groupId,
-						},
-						{
-							$set: {
-								[type as string]: groupImageData,
-								updatedAt: groupImageData.updatedAt,
+				if (type === "cover" || type === "image") {
+					await groupsCollection
+						.updateOne(
+							{
+								id: groupImageData.groupId,
 							},
-						}
-					)
-					.catch((error) => {
-						res
-							.status(400)
-							.json({ error: `Error updating group: ${error.message}` });
-					});
+							{
+								$set: {
+									[type as string]: groupImageData,
+									updatedAt: groupImageData.updatedAt,
+								},
+							}
+						)
+						.catch((error) => {
+							res
+								.status(400)
+								.json({ error: `Error updating group: ${error.message}` });
+						});
+				}
 
 				res.status(200).json({
 					groupImageData,

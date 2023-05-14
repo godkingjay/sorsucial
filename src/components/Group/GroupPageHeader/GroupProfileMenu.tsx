@@ -1,7 +1,7 @@
-import { UserData } from "@/atoms/userAtom";
-import useInput from "@/hooks/useInput";
-import useUser from "@/hooks/useUser";
-import { UserImage } from "@/lib/interfaces/user";
+import { GroupData } from "@/atoms/groupAtom";
+import useGroup from "@/hooks/useGroup";
+import useInput, { ImageOrVideoType } from "@/hooks/useInput";
+import { GroupImage } from "@/lib/interfaces/group";
 import { validImageTypes } from "@/lib/types/validFiles";
 import Link from "next/link";
 import React, { useCallback, useRef, useState } from "react";
@@ -10,13 +10,13 @@ import { FiLoader } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdInsertPhoto } from "react-icons/md";
 
-type UserProfileMenuProps = {
-	userData: UserData;
+type GroupProfileMenuProps = {
+	groupData: GroupData;
 };
 
-const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
-	const { userOptionsStateValue, setUserOptionsStateValue, changePhoto } =
-		useUser();
+const GroupProfileMenu: React.FC<GroupProfileMenuProps> = ({ groupData }) => {
+	const { groupOptionsStateValue, setGroupOptionsStateValue, changePhoto } =
+		useGroup();
 
 	const { uploadImageOrVideo } = useInput();
 
@@ -25,16 +25,16 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 	const uploadProfilePhotoRef = useRef<HTMLInputElement>(null);
 	const uploadCoverPhotoRef = useRef<HTMLInputElement>(null);
 
-	const handleUserProfileMenu = () => {
-		if (userOptionsStateValue.menu === userData.user.uid) {
-			setUserOptionsStateValue((prev) => ({
+	const handleGroupProfileMenu = () => {
+		if (groupOptionsStateValue.menu === groupData.group.id) {
+			setGroupOptionsStateValue((prev) => ({
 				...prev,
 				menu: "",
 			}));
 		} else {
-			setUserOptionsStateValue((prev) => ({
+			setGroupOptionsStateValue((prev) => ({
 				...prev,
-				menu: userData.user.uid,
+				menu: groupData.group.id,
 			}));
 		}
 	};
@@ -49,33 +49,31 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 					if (image) {
 						await changePhoto({
 							image,
-							type: event.target.name as UserImage["type"],
+							type: event.target.name as GroupImage["type"],
 						});
 					}
 
 					setUploadingPhoto(false);
 				}
 			} catch (error: any) {
-				console.log(
-					`=>Hook: Hook Fetch Current User Data Error:\n${error.message}`
-				);
+				console.log(`=>Hook: Change User Photo Error:\n${error.message}`);
 				setUploadingPhoto(false);
 			}
 		},
-		[]
+		[changePhoto, uploadImageOrVideo, uploadingPhoto]
 	);
 
 	return (
 		<>
 			<div
 				className="w-8 relative group"
-				data-open={userOptionsStateValue.menu === userData.user.uid}
+				data-open={groupOptionsStateValue.menu === groupData.group.id}
 			>
 				<button
 					type="button"
 					title="User Menu"
 					className="h-8 w-8 aspect-square rounded-full p-2 duration-100 text-gray-700 hover:bg-gray-100"
-					onClick={handleUserProfileMenu}
+					onClick={handleGroupProfileMenu}
 				>
 					<BsThreeDots className="h-full w-full" />
 				</button>
@@ -92,9 +90,9 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 							<button
 								type="button"
 								title="Change Profile Photo"
-								className="user-menu-item"
+								className="group-menu-item"
 								tabIndex={
-									userOptionsStateValue.menu === userData.user.uid ? 0 : -1
+									groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 								}
 								onClick={() =>
 									!uploadingPhoto && uploadProfilePhotoRef.current?.click()
@@ -104,15 +102,15 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 									<BsPersonBoundingBox className="icon" />
 								</div>
 								<div className="label-container">
-									<p className="label">Change Profile Photo</p>
+									<p className="label">Change Group Photo</p>
 								</div>
 							</button>
 							<button
 								type="button"
 								title="Change Cover Photo"
-								className="user-menu-item"
+								className="group-menu-item"
 								tabIndex={
-									userOptionsStateValue.menu === userData.user.uid ? 0 : -1
+									groupOptionsStateValue.menu === groupData.group.id ? 0 : -1
 								}
 								onClick={() =>
 									!uploadingPhoto && uploadCoverPhotoRef.current?.click()
@@ -128,7 +126,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 						</>
 					) : (
 						<>
-							<div className="user-menu-item justify-center text-blue-500 animate-pulse pointer-events-none">
+							<div className="group-menu-item justify-center text-blue-500 animate-pulse pointer-events-none">
 								<div className="icon-container animate-spin">
 									<FiLoader className="icon" />
 								</div>
@@ -138,24 +136,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 							</div>
 						</>
 					)}
-					<Link
-						href={`/user/${userData.user.uid}/settings/`}
-						title="Settings"
-						className="user-menu-item"
-						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}
-					>
-						<div className="icon-container">
-							<IoSettingsOutline className="icon" />
-						</div>
-						<div className="label-container">
-							<p className="label">Settings</p>
-						</div>
-					</Link>
 				</div>
 			</div>
 			<input
 				type="file"
-				name="profile"
+				name={"image" as GroupImage["type"]}
 				title="Upload Photo"
 				accept={validImageTypes.ext.join(",")}
 				ref={uploadProfilePhotoRef}
@@ -164,7 +149,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 			/>
 			<input
 				type="file"
-				name="cover"
+				name={"cover" as GroupImage["type"]}
 				title="Upload Photo"
 				accept={validImageTypes.ext.join(",")}
 				ref={uploadCoverPhotoRef}
@@ -175,4 +160,4 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 	);
 };
 
-export default UserProfileMenu;
+export default GroupProfileMenu;

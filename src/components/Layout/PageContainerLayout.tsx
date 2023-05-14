@@ -78,6 +78,7 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 
 				case "settings": {
 					return <UserSettingsPageLayout>{children}</UserSettingsPageLayout>;
+
 					break;
 				}
 

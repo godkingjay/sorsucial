@@ -1,8 +1,8 @@
 import React from "react";
 
-type SettingsPageProps = {};
+type UserSettingsProfilePageProps = {};
 
-const SettingsPage: React.FC<SettingsPageProps> = () => {
+const UserSettingsProfilePage: React.FC<UserSettingsProfilePageProps> = () => {
 	return (
 		<div className="w-full flex flex-col">
 			<p>Settings Page</p>
@@ -10,4 +10,4 @@ const SettingsPage: React.FC<SettingsPageProps> = () => {
 	);
 };
 
-export default SettingsPage;
+export default UserSettingsProfilePage;

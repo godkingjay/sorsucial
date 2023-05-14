@@ -4,6 +4,8 @@ import { IoSettingsOutline } from "react-icons/io5";
 import Link from "next/link";
 import { CgProfile } from "react-icons/cg";
 import { HiLockClosed } from "react-icons/hi";
+import { useRecoilValue } from "recoil";
+import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 
 type UserSettingsPageLayoutProps = {
 	children: React.ReactNode;
@@ -12,6 +14,8 @@ type UserSettingsPageLayoutProps = {
 const UserSettingsPageLayout: React.FC<UserSettingsPageLayoutProps> = ({
 	children,
 }) => {
+	const currentDirectoryStateValue = useRecoilValue(currentDirectoryState);
+
 	const [isOpen, setIsOpen] = useState(
 		window.matchMedia("(max-width: 640px)").matches ? false : true
 	);
@@ -47,21 +51,26 @@ const UserSettingsPageLayout: React.FC<UserSettingsPageLayoutProps> = ({
 								<div className="px-2 flex flex-col w-full">
 									<Link
 										href={"/user/settings/"}
-										className="p-2 flex flex-row items-center gap-x-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100"
+										className="user-settings-menu-item"
+										data-active={
+											currentDirectoryStateValue.third === "" ||
+											!currentDirectoryStateValue.third
+										}
 									>
-										<div className="h-6 w-6">
-											<CgProfile className="h-full w-full" />
+										<div className="icon-container">
+											<CgProfile className="icon" />
 										</div>
 										<div>
 											<p>Profile Information</p>
 										</div>
 									</Link>
 									<Link
-										href={"/user/settings/"}
-										className="p-2 flex flex-row items-center gap-x-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100"
+										href={"/user/settings/security/"}
+										className="user-settings-menu-item"
+										data-active={currentDirectoryStateValue.third === "security"}
 									>
-										<div className="h-6 w-6">
-											<HiLockClosed className="h-full w-full" />
+										<div className="icon-container">
+											<HiLockClosed className="icon" />
 										</div>
 										<div>
 											<p>Security</p>

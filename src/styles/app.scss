@@ -2751,6 +2751,43 @@
 		}
 	}
 
+	/**
+	 * * User Settings
+	 * * User Settings
+	 * * User Settings
+	 * * User Settings
+	 * * User Settings
+	 */
+
+	.user-settings-menu-item {
+		@apply p-2 flex flex-row items-center gap-x-2 rounded-md font-semibold text-gray-700;
+
+		.icon-container {
+			@apply h-6 w-6;
+
+			.icon {
+				@apply h-full w-full;
+			}
+		}
+
+		&:hover,
+		&:focus {
+			@apply bg-gray-100;
+		}
+
+		&[data-active="true"] {
+			@apply bg-blue-100 text-blue-500;
+		}
+	}
+
+	/**
+	 * *
+	 * *
+	 * *
+	 * *
+	 * *
+	 */
+
 	.modal-container {
 		animation: entrance-animation-float-up 0.25s ease-in-out;
 		@apply w-full max-w-xl bg-white flex flex-col rounded-xl shadow-around-lg pointer-events-auto;

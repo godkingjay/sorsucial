@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import LimitedBodyLayout from "./LimitedBodyLayout";
 import { IoSettingsOutline } from "react-icons/io5";
+import Link from "next/link";
+import { CgProfile } from "react-icons/cg";
+import { HiLockClosed } from "react-icons/hi";
 
 type UserSettingsPageLayoutProps = {
 	children: React.ReactNode;
@@ -29,7 +32,7 @@ const UserSettingsPageLayout: React.FC<UserSettingsPageLayoutProps> = ({
 				<div className="z-[570] sticky top-14 max-h-[calc(100vh-56px)]">
 					<div className="w-0 absolute sm:relative sm:w-[224px] h-full flex flex-col">
 						<div
-							className="relative flex flex-col w-[224px] max-w-[224px] flex-1 h-full duration-100 !-translate-x-full data-[open=true]:!translate-x-0 sm:!translate-x-0"
+							className="relative flex flex-col w-[224px] max-w-[224px] flex-1 h-full duration-100 translate-x-0 data-[open=false]:-translate-x-full sm:!translate-x-0"
 							data-open={
 								window.matchMedia("(max-width: 640px)").matches ? isOpen : true
 							}
@@ -41,8 +44,29 @@ const UserSettingsPageLayout: React.FC<UserSettingsPageLayoutProps> = ({
 									</h1>
 									<div className="divider"></div>
 								</div>
-								<div className="p-2">
-									<p></p>
+								<div className="px-2 flex flex-col w-full">
+									<Link
+										href={"/user/settings/"}
+										className="p-2 flex flex-row items-center gap-x-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100"
+									>
+										<div className="h-6 w-6">
+											<CgProfile className="h-full w-full" />
+										</div>
+										<div>
+											<p>Profile Information</p>
+										</div>
+									</Link>
+									<Link
+										href={"/user/settings/"}
+										className="p-2 flex flex-row items-center gap-x-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100"
+									>
+										<div className="h-6 w-6">
+											<HiLockClosed className="h-full w-full" />
+										</div>
+										<div>
+											<p>Security</p>
+										</div>
+									</Link>
 								</div>
 							</div>
 							<button

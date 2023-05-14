@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import GroupPageLayout from "./GroupPageLayout";
 import useUser from "@/hooks/useUser";
 import UserPageLayout from "./UserPageLayout";
+import UserSettingsPageLayout from "./UserSettingsPageLayout";
 
 type PageContainerLayoutProps = {
 	children: React.ReactNode;
@@ -68,10 +69,23 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 		}
 
 		case "user": {
-			if (currentDirectoryStateValue.second === "[userId]") {
-				return <UserPageLayout>{children}</UserPageLayout>;
-			} else {
-				return defaultPage();
+			switch (currentDirectoryStateValue.second) {
+				case "[userId]": {
+					return <UserPageLayout>{children}</UserPageLayout>;
+
+					break;
+				}
+
+				case "settings": {
+					return <UserSettingsPageLayout>{children}</UserSettingsPageLayout>;
+					break;
+				}
+
+				default: {
+					return defaultPage();
+
+					break;
+				}
 			}
 
 			break;

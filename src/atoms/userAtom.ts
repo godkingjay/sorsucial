@@ -5,6 +5,21 @@ import { atom } from "recoil";
 import { SiteDiscussion } from "@/lib/interfaces/discussion";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 
+export interface UserOptionsState {
+	menu: string;
+	profile: string;
+}
+
+export const defaultUserOptionsState: UserOptionsState = {
+	menu: "",
+	profile: "",
+};
+
+export const userOptionsState = atom<UserOptionsState>({
+	key: "userOptionsState",
+	default: defaultUserOptionsState,
+});
+
 export interface UserState {
 	user: SiteUser;
 	userConnections: SiteUser[];

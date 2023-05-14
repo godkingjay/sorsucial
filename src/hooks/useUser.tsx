@@ -8,7 +8,7 @@ import {
 } from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { postOptionsState, postState } from "@/atoms/postAtom";
-import { userState } from "@/atoms/userAtom";
+import { userOptionsState, userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { clientAuth, clientDb, clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -21,11 +21,14 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useResetRecoilState } from "recoil";
+import { ImageOrVideoType } from "./useInput";
 
 const useUser = () => {
 	const [user, loading, error] = useAuthState(clientAuth);
 	const [loadingUser, setLoadingUser] = useState(false);
 	const [userStateValue, setUserStateValue] = useRecoilState(userState);
+	const [userOptionsStateValue, setUserOptionsStateValue] =
+		useRecoilState(userOptionsState);
 
 	const router = useRouter();
 	const currentUserMounted = useRef(false);
@@ -49,10 +52,22 @@ const useUser = () => {
 	const resetGroupStateValue = useResetRecoilState(groupState);
 
 	const userMemo = useMemo(() => user, [user]);
+
 	const userStateValueMemo = useMemo(() => userStateValue, [userStateValue]);
+
 	const setUserStateValueMemo = useMemo(
 		() => setUserStateValue,
 		[setUserStateValue]
+	);
+
+	const userOptionsStateValueMemo = useMemo(
+		() => userOptionsStateValue,
+		[userOptionsStateValue]
+	);
+
+	const setUserOptionsStateValueMemo = useMemo(
+		() => setUserOptionsStateValue,
+		[setUserOptionsStateValue]
 	);
 
 	/**
@@ -135,8 +150,12 @@ const useUser = () => {
 	 * @param {string} imageId
 	 * @return {*}
 	 */
-	const uploadProfilePhoto = useCallback(
-		async (image: CreateUserType["profilePhoto"], imageId: string) => {
+	const uploadUserPhoto = useCallback(
+		async (
+			image: ImageOrVideoType,
+			imageId: string,
+			type: UserImage["type"]
+		) => {
 			try {
 				const storageRef = ref(
 					clientStorage,
@@ -147,7 +166,7 @@ const useUser = () => {
 
 				await uploadBytes(storageRef, blob).catch((error: any) => {
 					console.log(
-						"Firebase Storage: Uploading Profile Photo Error: ",
+						"Firebase Storage: Uploading User Photo Error: ",
 						error.message
 					);
 					throw error;
@@ -156,7 +175,7 @@ const useUser = () => {
 				const downloadURL = await getDownloadURL(storageRef).catch(
 					(error: any) => {
 						console.log(
-							"Firebase Storage: Getting Profile Photo Download URL Error: ",
+							"Firebase Storage: Getting User Photo Download URL Error: ",
 							error.message
 						);
 						throw error;
@@ -168,6 +187,7 @@ const useUser = () => {
 					userId: userMemo?.uid as string,
 					height: image?.height as number,
 					width: image?.width as number,
+					type: type,
 					fileName: image?.name as string,
 					fileType: image?.type as string,
 					filePath: storageRef.fullPath,
@@ -177,9 +197,13 @@ const useUser = () => {
 					createdAt: new Date(),
 				};
 
-				await axios.post(apiConfig.apiEndpoint + "/users/images/", {
-					newImage,
-				});
+				await axios
+					.post(apiConfig.apiEndpoint + "/users/images/", {
+						newImage,
+					})
+					.catch((error) => {
+						console.log(`=>API: Upload User Photo Error:\n${error.message}`);
+					});
 
 				return newImage;
 			} catch (error: any) {
@@ -226,11 +250,14 @@ const useUser = () => {
 						collection(clientDb, `users/${userMemo?.uid}/images`)
 					);
 
-					const userProfilePhoto = await uploadProfilePhoto(
+					const userProfilePhoto = await uploadUserPhoto(
 						userData.profilePhoto,
-						imageDocRef.id
+						imageDocRef.id,
+						"profile"
 					).catch((error: any) => {
-						console.log("Hook: Upload Profile Photo Error: ", error.message);
+						throw new Error(
+							`=>Hook: Upload User Photo Error:\n${error.message}`
+						);
 					});
 
 					if (userProfilePhoto) {
@@ -246,7 +273,7 @@ const useUser = () => {
 					})
 					.then((res) => res.data.newUser)
 					.catch((error) => {
-						console.log("API: Create User Error: ", error.message);
+						throw new Error(`=>API: Create User Error:\n${error.message}`);
 					});
 
 				setUserStateValueMemo((prev) => ({
@@ -262,7 +289,119 @@ const useUser = () => {
 		},
 		[
 			setUserStateValueMemo,
-			uploadProfilePhoto,
+			uploadUserPhoto,
+			userMemo?.uid,
+			userStateValueMemo.api?.keys,
+			userStateValueMemo.user,
+		]
+	);
+
+	const changePhoto = useCallback(
+		async ({
+			image = undefined as ImageOrVideoType | undefined,
+			type = undefined as UserImage["type"] | undefined,
+		}) => {
+			try {
+				if (image && user) {
+					const imageDocRef = doc(
+						collection(clientDb, `users/${userMemo?.uid}/images`)
+					);
+
+					const userPhoto = await uploadUserPhoto(
+						image,
+						imageDocRef.id,
+						"profile"
+					).catch((error: any) => {
+						throw new Error(
+							`=>Hook: Upload User Photo Error:\n${error.message}`
+						);
+					});
+
+					if (userPhoto) {
+						const { _id, ...currentUser } =
+							userStateValueMemo.user as SiteUser & { _id: any };
+
+						const newUserData = await axios
+							.put(apiConfig.apiEndpoint + "/users/", {
+								apiKey: userStateValueMemo.api?.keys[0].key,
+								userData: {
+									...currentUser,
+									imageURL:
+										type === "profile"
+											? userPhoto.fileURL
+											: userStateValueMemo.user.imageURL,
+									coverImageURL:
+										type === "cover"
+											? userPhoto.fileURL
+											: userStateValueMemo.user.coverImageURL,
+								},
+								userId: userMemo?.uid,
+							})
+							.then((res) => res.data.newUser)
+							.catch((error) => {
+								throw new Error(`=>API: Create User Error:\n${error.message}`);
+							});
+
+						switch (type) {
+							case "profile": {
+								setUserStateValueMemo((prev) => ({
+									...prev,
+									user: {
+										...newUserData,
+										imageURL: userPhoto.fileURL,
+									},
+									userPage:
+										prev.user.uid === userPhoto.userId && prev.userPage
+											? {
+													...prev.userPage,
+													user: {
+														...newUserData,
+														imageURL: userPhoto.fileURL,
+													},
+											  }
+											: prev.userPage,
+								}));
+
+								break;
+							}
+
+							case "cover": {
+								setUserStateValueMemo((prev) => ({
+									...prev,
+									user: {
+										...prev.user,
+										coverImageURL: userPhoto.fileURL,
+									},
+									userPage:
+										prev.user.uid === userPhoto.userId && prev.userPage
+											? {
+													...prev.userPage,
+													user: {
+														...prev.userPage.user,
+														coverImageURL: userPhoto.fileURL,
+													},
+											  }
+											: prev.userPage,
+								}));
+
+								break;
+							}
+
+							default: {
+								throw new Error("Invalid Image Type!");
+								break;
+							}
+						}
+					}
+				}
+			} catch (error: any) {
+				console.log(`=>Mongo: Changing User Photo Error:\n${error.message}`);
+			}
+		},
+		[
+			setUserStateValueMemo,
+			uploadUserPhoto,
+			user,
 			userMemo?.uid,
 			userStateValueMemo.api?.keys,
 			userStateValueMemo.user,
@@ -364,17 +503,20 @@ const useUser = () => {
 	 */
 	const logOutUser = useCallback(async () => {
 		try {
-			await signOut(clientAuth).catch((error: any) => {
-				console.log("Hook: Sign Out Error: ", error.message);
-				throw error;
-			});
+			if (!loadingUser) {
+				setLoadingUser(true);
+				await signOut(clientAuth).catch((error: any) => {
+					throw new Error(`=>Hook: Sign Out Error:\n${error.message}`);
+				});
 
-			await resetUserData();
+				await resetUserData();
+				setLoadingUser(false);
+			}
 		} catch (error: any) {
-			console.log("Hook: Sign Out Error!");
-			throw error;
+			console.log(`=>Hook: Log Out User Error:\n${error.message}`);
+			setLoadingUser(false);
 		}
-	}, [resetUserData]);
+	}, [loadingUser, resetUserData]);
 
 	useEffect(() => {
 		if (
@@ -422,8 +564,11 @@ const useUser = () => {
 		createAccount,
 		userStateValue: userStateValueMemo,
 		setUserStateValue: setUserStateValueMemo,
+		userOptionsStateValue: userOptionsStateValueMemo,
+		setUserOptionsStateValue: setUserOptionsStateValueMemo,
 		userMounted: currentUserMounted.current,
 		createUser,
+		changePhoto,
 		logOutUser,
 	};
 };

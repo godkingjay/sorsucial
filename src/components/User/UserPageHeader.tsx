@@ -4,6 +4,8 @@ import Image from "next/image";
 import React from "react";
 import UserIcon from "../Icons/UserIcon";
 import Link from "next/link";
+import UserProfileMenu from "./UserPageHeader/UserProfileMenu";
+import { FaUserCircle } from "react-icons/fa";
 
 type UserPageHeaderProps = {
 	userData: UserData;
@@ -15,7 +17,7 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 	return (
 		<div className="w-full flex flex-col items-center shadow-page-box-1 bg-white">
 			<div className="flex flex-col w-full max-w-5xl">
-				<div className="relative flex flex-col px-0 md:mx-8 aspect-[3/1] bg-gray-200 overflow-hidden md:rounded-b-2xl">
+				<div className="relative flex flex-col px-0 md:mx-8 aspect-[3/1] min-h-[192px] bg-gray-200 overflow-hidden md:rounded-b-2xl">
 					{userData.user.coverImageURL ? (
 						<>
 							<Image
@@ -35,14 +37,19 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 						<UserIcon user={userData.user} />
 					</div>
 					<div className="flex-1 flex flex-col">
-						<div className="w-full flex flex-row">
-							<Link
-								href={`/user/${userData.user.uid}`}
-								className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"
-							>
-								{`${userData.user.firstName} ${userData.user.lastName}`}
-								<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
-							</Link>
+						<div className="w-full flex flex-row gap-x-4 justify-between pr-0 md:pr-4">
+							<div className="flex-1 flex flex-row">
+								<Link
+									href={`/user/${userData.user.uid}`}
+									className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"
+								>
+									{`${userData.user.firstName} ${userData.user.lastName}`}
+									<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
+								</Link>
+							</div>
+							{userStateValue.user.uid === userData.user.uid && (
+								<UserProfileMenu userData={userData} />
+							)}
 						</div>
 						<div className="flex flex-row gap-x-2 gap-y-1 flex-wrap mt-1">
 							{userData.user.roles.map((role) => (

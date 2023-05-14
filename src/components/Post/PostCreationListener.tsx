@@ -14,6 +14,7 @@ import {
 	postCreationModalState,
 } from "@/atoms/modalAtom";
 import { RiLinkM } from "react-icons/ri";
+import UserIcon from "../Icons/UserIcon";
 
 type PostCreationListenerProps = {
 	useStateValue: UserState;
@@ -40,23 +41,9 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 	return (
 		<div className="post-creation-listener page-box-1 entrance-animation-slide-from-right">
 			<div className="post-creation-listener-head">
-				<Link
-					href={`/user/${userStateValue.user.uid}`}
-					className="image-icon-container"
-				>
-					{userStateValue.user.imageURL ? (
-						<Image
-							src={userStateValue.user.imageURL}
-							alt="User Profile Picture"
-							width={64}
-							height={64}
-							loading="lazy"
-							className="image"
-						/>
-					) : (
-						<FaUserCircle className="icon" />
-					)}
-				</Link>
+				<div className="image-icon-container flex">
+					<UserIcon user={userStateValue.user} />
+				</div>
 				<div className="input-box-wrapper">
 					<button
 						type="button"

@@ -530,7 +530,7 @@
 		@apply flex flex-row h-12 gap-x-4;
 
 		.image-icon-container {
-			@apply h-12 w-12 aspect-square bg-gray-200 rounded-full text-gray-300;
+			@apply h-12 w-12 flex aspect-square bg-gray-200 rounded-full text-gray-300;
 
 			.image {
 				@apply rounded-full h-full w-full;
@@ -2647,6 +2647,40 @@
 
 		.icon-container {
 			@apply h-4 w-4;
+
+			.icon {
+				@apply h-full w-full;
+			}
+		}
+
+		&:hover,
+		&:focus {
+			@apply bg-blue-100 text-blue-500;
+		}
+
+		&[aria-label="accept"] {
+			@apply text-green-500;
+
+			&:hover,
+			&:focus {
+				@apply bg-green-100 text-green-700;
+			}
+		}
+		&[aria-label="reject"] {
+			@apply text-red-500;
+
+			&:hover,
+			&:focus {
+				@apply bg-red-100 text-red-700;
+			}
+		}
+	}
+
+	.user-menu-item {
+		@apply px-2 py-1.5 text-gray-500 font-semibold text-sm w-full text-left truncate rounded-md flex flex-row gap-x-2 items-center;
+
+		.icon-container {
+			@apply h-5 w-5;
 
 			.icon {
 				@apply h-full w-full;

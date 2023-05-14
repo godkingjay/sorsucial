@@ -89,6 +89,7 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 
 				if (fetchedGroupLength !== undefined && fetchedGroupLength !== null) {
 					setEndReached(fetchedGroupLength < 10 ? true : false);
+					setFilteredGroupsLength((prev) => prev + fetchedGroupLength);
 					setLoadingGroups(false);
 				}
 			}
@@ -156,53 +157,43 @@ const GroupsFilter: React.FC<GroupsFilterProps> = ({
 										</React.Fragment>
 									))}
 							</>
-							{/* {(loadingGroups ||
-								!endReached) && (
-									<>
-										<GroupCardSkeleton index={filteredGroupsLength + 1} />
-										<GroupCardSkeleton index={filteredGroupsLength + 2} />
-										<GroupCardSkeleton index={filteredGroupsLength + 3} />
-										<GroupCardSkeleton index={filteredGroupsLength + 4} />
-										<GroupCardSkeleton index={filteredGroupsLength + 5} />
-									</>
-								)} */}
+							<div className="flex flex-col col-span-full">
+								<VisibleInViewPort
+									disabled={
+										loadingGroups ||
+										firstLoadingGroups ||
+										endReached ||
+										!userMounted ||
+										!groupsMounted
+									}
+									onVisible={() =>
+										loadingGroups ||
+										firstLoadingGroups ||
+										endReached ||
+										!userMounted ||
+										!groupsMounted
+											? () => {}
+											: handleFetchGroups()
+									}
+								>
+									{endReached ? (
+										<>
+											<PageEnd message={pageEnd || "End of Groups"} />
+										</>
+									) : (
+										<>
+											<div className="px-4 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+												<GroupCardSkeleton index={filteredGroupsLength + 1} />
+												<GroupCardSkeleton index={filteredGroupsLength + 2} />
+												<GroupCardSkeleton index={filteredGroupsLength + 3} />
+												<GroupCardSkeleton index={filteredGroupsLength + 4} />
+												<GroupCardSkeleton index={filteredGroupsLength + 5} />
+											</div>
+										</>
+									)}
+								</VisibleInViewPort>
+							</div>
 						</div>
-						<>
-							<VisibleInViewPort
-								disabled={
-									loadingGroups ||
-									firstLoadingGroups ||
-									endReached ||
-									!userMounted ||
-									!groupsMounted
-								}
-								onVisible={() =>
-									loadingGroups ||
-									firstLoadingGroups ||
-									endReached ||
-									!userMounted ||
-									!groupsMounted
-										? () => {}
-										: handleFetchGroups()
-								}
-							>
-								{endReached ? (
-									<>
-										<PageEnd message={pageEnd || "End of Groups"} />
-									</>
-								) : (
-									<>
-										<div className="px-4 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
-											<GroupCardSkeleton index={filteredGroupsLength + 1} />
-											<GroupCardSkeleton index={filteredGroupsLength + 2} />
-											<GroupCardSkeleton index={filteredGroupsLength + 3} />
-											<GroupCardSkeleton index={filteredGroupsLength + 4} />
-											<GroupCardSkeleton index={filteredGroupsLength + 5} />
-										</div>
-									</>
-								)}
-							</VisibleInViewPort>
-						</>
 					</>
 				)}
 			</div>

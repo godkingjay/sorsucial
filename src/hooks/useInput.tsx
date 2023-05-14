@@ -98,7 +98,7 @@ const useInput = () => {
 										resolve(imageOrVideo);
 									}
 								},
-								"image/jpeg",
+								"image/webp",
 								0.8
 							);
 

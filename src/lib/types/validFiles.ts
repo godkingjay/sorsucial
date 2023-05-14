@@ -101,7 +101,7 @@ export const validHTMLTypes = {
 };
 
 export const validImageTypes = {
-	ext: ["image/png", "image/jpeg", "image/jpg"],
+	ext: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
 	type: "image",
 };
 

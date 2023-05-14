@@ -139,7 +139,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
 						</>
 					)}
 					<Link
-						href={`/user/${userData.user.uid}/settings/`}
+						href={`/user/settings/`}
 						title="Settings"
 						className="user-menu-item"
 						tabIndex={userOptionsStateValue.menu === userData.user.uid ? 0 : -1}

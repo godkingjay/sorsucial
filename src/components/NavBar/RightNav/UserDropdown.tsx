@@ -66,7 +66,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 						<ul className="flex flex-col">
 							<li>
 								<Link
-									href={`/user/${userStateValue.user.uid}/settings/`}
+									href={`/user/settings/`}
 									title="Settings"
 									className="user-dropdown-group"
 								>

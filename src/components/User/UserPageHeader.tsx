@@ -5,7 +5,6 @@ import React from "react";
 import UserIcon from "../Icons/UserIcon";
 import Link from "next/link";
 import UserProfileMenu from "./UserPageHeader/UserProfileMenu";
-import { FaUserCircle } from "react-icons/fa";
 
 type UserPageHeaderProps = {
 	userData: UserData;
@@ -41,10 +40,10 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 							<div className="flex-1 flex flex-row">
 								<Link
 									href={`/user/${userData.user.uid}`}
-									className="pb-1 relative truncate font-bold text-xl sm:text-2xl md:text-3xl group"
+									className="pb-1 relative truncate font-bold text-gray-700 text-xl sm:text-2xl md:text-3xl group"
 								>
 									{`${userData.user.firstName} ${userData.user.lastName}`}
-									<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-black"></span>
+									<span className="group-hover:w-full duration-200 absolute block left-0 w-0 bottom-0 h-[2px] bg-gray-700"></span>
 								</Link>
 							</div>
 							{userStateValue.user.uid === userData.user.uid && (

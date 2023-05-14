@@ -3,7 +3,7 @@ import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
 import PostsFilter from "@/components/Post/PostsFilter";
 import UserPageLoader from "@/components/User/UserPageLoader";
 import useUser from "@/hooks/useUser";
-import clientPromise from "@/lib/mongodb";
+import userDb from "@/lib/db/userDb";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -61,9 +61,7 @@ const UserProfilePage: React.FC<UserProfileProps> = ({
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	try {
-		const client = await clientPromise;
-		const db = client.db("sorsu-db");
-		const usersCollection = db.collection("users");
+		const { usersCollection } = await userDb();
 		const { userId } = context.query;
 
 		const userPageData = {

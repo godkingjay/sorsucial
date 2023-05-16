@@ -1,5 +1,6 @@
 import { UserState } from "@/atoms/userAtom";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import UserProfileInformation from "@/components/User/Settings/UserProfileInformation";
 import UserSettingsPageLoader from "@/components/User/UserSettingsPageLoader";
 import useUser from "@/hooks/useUser";
 import userDb from "@/lib/db/userDb";
@@ -27,13 +28,7 @@ const UserSettingsProfilePage: React.FC<UserSettingsProfilePageProps> = ({
 				{userStateValue.user.uid === authUser?.uid && (
 					<>
 						<LimitedBodyLayout>
-							<div className="page-wrapper">
-								<div className="flex flex-col gap-y-4">
-									<div className="shadow-page-box-1 page-box-1">
-										<h1>Profile Information</h1>
-									</div>
-								</div>
-							</div>
+							<UserProfileInformation userData={userStateValue} />
 						</LimitedBodyLayout>
 					</>
 				)}

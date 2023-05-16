@@ -8,7 +8,7 @@ import {
 } from "@/atoms/modalAtom";
 import { navigationBarState } from "@/atoms/navigationBarAtom";
 import { postOptionsState, postState } from "@/atoms/postAtom";
-import { userOptionsState, userState } from "@/atoms/userAtom";
+import { UserData, userOptionsState, userState } from "@/atoms/userAtom";
 import { CreateUserType } from "@/components/Form/Auth/CreateUser/CreateUserForm";
 import { clientAuth, clientDb, clientStorage } from "@/firebase/clientApp";
 import { apiConfig } from "@/lib/api/apiConfig";
@@ -458,6 +458,46 @@ const useUser = () => {
 		}
 	}, [loadingUser, setUserStateValueMemo, userMemo, userStateValue.api]);
 
+	const updateUser = useCallback(
+		async (userData: Partial<SiteUser>) => {
+			try {
+				const { newUser } = await axios
+					.put(apiConfig.apiEndpoint + "/users/", {
+						apiKey: userStateValueMemo.api?.keys[0].key,
+						userData: userData,
+						userId: userMemo?.uid,
+					})
+					.then((response) => response.data)
+					.catch((error) => {
+						throw new Error(`=>API: Update User Error:\n${error.message}`);
+					});
+
+				if (newUser) {
+					setUserStateValueMemo((prev) => ({
+						...prev,
+						user: {
+							...prev.user,
+							...newUser,
+						},
+						userPage:
+							prev.userPage && prev.userPage.user.uid === userMemo?.uid
+								? {
+										...prev.userPage,
+										user: {
+											...prev.userPage.user,
+											...newUser,
+										},
+								  }
+								: prev.userPage,
+					}));
+				}
+			} catch (error: any) {
+				console.log(`=>Mongo: Error updating user:\n${error.message}`);
+			}
+		},
+		[setUserStateValueMemo, userMemo?.uid, userStateValueMemo.api?.keys]
+	);
+
 	/**
 	 * ~ ██████╗ ███████╗███████╗███████╗████████╗    ██╗   ██╗███████╗███████╗██████╗     ███████╗████████╗ █████╗ ████████╗███████╗
 	 * ~ ██╔══██╗██╔════╝██╔════╝██╔════╝╚══██╔══╝    ██║   ██║██╔════╝██╔════╝██╔══██╗    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
@@ -569,6 +609,7 @@ const useUser = () => {
 		userMounted: currentUserMounted.current,
 		createUser,
 		changePhoto,
+		updateUser,
 		logOutUser,
 	};
 };

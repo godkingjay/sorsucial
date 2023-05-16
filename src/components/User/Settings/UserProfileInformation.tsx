@@ -163,7 +163,7 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 									</div>
 								</button>
 								<button
-									type="button"
+									type="reset"
 									title="Save Changes"
 									className="flex flex-row gap-x-2 text-sm items-center px-2 py-1.5 border-2 border-red-500 text-red-500 rounded-md shadow-md"
 									onClick={() => !updating && resetForm()}

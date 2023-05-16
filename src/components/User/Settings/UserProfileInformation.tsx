@@ -1,6 +1,7 @@
 import { UserData } from "@/atoms/userAtom";
 import InputEditable from "@/components/Form/Input/InputEditable";
 import useUser from "@/hooks/useUser";
+import { NameRegex } from "@/lib/input/regex";
 import { SiteUser } from "@/lib/interfaces/user";
 import React, { useCallback, useState } from "react";
 import { FiLoader } from "react-icons/fi";
@@ -21,6 +22,7 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 	const [middleName, setMiddleName] = useState(userData.user.middleName || "");
 
 	const [updating, setUpdating] = useState(false);
+	const [error, setError] = useState(false);
 
 	const handleSubmit = useCallback(
 		async (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,6 +52,16 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 		setMiddleName(userData.user.middleName || "");
 	};
 
+	const handleError = () => {
+		setError(() => {
+			return (
+				(firstName ? !NameRegex.test(firstName) : false) ||
+				(lastName ? !NameRegex.test(lastName) : false) ||
+				(middleName ? !NameRegex.test(middleName) : false)
+			);
+		});
+	};
+
 	return (
 		<>
 			<div className="page-wrapper">
@@ -72,6 +84,14 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 									placeholder={userData.user.firstName}
 									name="firstName"
 									type="text"
+									regex={NameRegex}
+									onError={handleError}
+									message={{
+										errorRegex:
+											"First name must be 1-48 characters long.\n" +
+											"1. Must contain only letters.\n" +
+											"2. Must start with a capital letter.",
+									}}
 								/>
 								<InputEditable
 									value={lastName}
@@ -80,6 +100,14 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 									placeholder={userData.user.lastName}
 									name="lastName"
 									type="text"
+									regex={NameRegex}
+									onError={handleError}
+									message={{
+										errorRegex:
+											"Last name must be 1-48 characters long.\n" +
+											"1. Must contain only letters." +
+											"2. Must start with a capital letter.",
+									}}
 								/>
 								<InputEditable
 									value={middleName}
@@ -88,6 +116,14 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 									placeholder={userData.user.middleName}
 									name="middleName"
 									type="text"
+									regex={NameRegex}
+									onError={handleError}
+									message={{
+										errorRegex:
+											"Middle name must be 1-48 characters long.\n" +
+											"1. Must contain only letters." +
+											"2. Must start with a capital letter.",
+									}}
 								/>
 							</div>
 
@@ -105,9 +141,14 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 									title="Save Changes"
 									className="flex flex-row w-36 gap-x-2 text-sm items-center px-2 py-1.5 bg-green-500 text-white border-2 border-green-500 rounded-md shadow-md disabled:grayscale"
 									disabled={
-										firstName === userData.user.firstName &&
-										lastName === userData.user.lastName &&
-										middleName === userData.user.middleName
+										((firstName
+											? firstName === userData.user.firstName
+											: true) &&
+											(lastName ? lastName === userData.user.lastName : true) &&
+											(middleName
+												? middleName === userData.user.middleName
+												: true)) ||
+										error
 									}
 								>
 									<div className="h-5 w-5">

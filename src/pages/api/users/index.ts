@@ -43,17 +43,21 @@ export default async function handler(
 			typeof rawUserData === "string" ? JSON.parse(rawUserData) : rawUserData;
 
 		if (!apiKey && !privateKey) {
-			res.status(400).json({ error: "No API Key or Private key provided!" });
+			return res
+				.status(400)
+				.json({ error: "No API Key or Private key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		const userAPI =
@@ -84,12 +88,11 @@ export default async function handler(
 			 */
 			case "POST": {
 				if (!userData) {
-					res.status(400).json({ error: "No user provided" });
-					return;
+					return res.status(400).json({ error: "No user provided" });
 				}
 
 				if (!privateKey || privateKey !== apiConfig.privateKey) {
-					res.status(401).json({ error: "Unauthorized" });
+					return res.status(401).json({ error: "Unauthorized" });
 				}
 
 				const newUserState = await usersCollection.insertOne(userData);
@@ -117,7 +120,7 @@ export default async function handler(
 
 				const newUserAPIState = await apiKeysCollection.insertOne(newUserAPIKey);
 
-				res.status(200).json({ newUserState, newUser: userData });
+				return res.status(200).json({ newUserState, newUser: userData });
 				break;
 			}
 
@@ -138,18 +141,18 @@ export default async function handler(
 			 */
 			case "GET": {
 				if (!userId) {
-					res.status(400).json({ error: "No user id provided" });
+					return res.status(400).json({ error: "No user id provided" });
 				}
 
 				if (!userAPI) {
-					res.status(401).json({ error: "Unauthorized" });
+					return res.status(401).json({ error: "Unauthorized" });
 				}
 
 				const userData = await usersCollection.findOne({
 					uid: userId,
 				});
 
-				res.status(200).json({ userData });
+				return res.status(200).json({ userData });
 				break;
 			}
 
@@ -170,23 +173,34 @@ export default async function handler(
 			 */
 			case "PUT": {
 				if (!userData || !userId) {
-					res.status(400).json({ error: "No user data provided" });
+					return res.status(400).json({ error: "No user data provided" });
 				}
 
 				if (currentUser.uid !== userId) {
 					if (!currentUser.roles.includes("admin")) {
-						res.status(401).json({ error: "Unauthorized!" });
+						return res.status(401).json({ error: "Unauthorized!" });
 					}
 				}
 
-				const updatedUserState = await usersCollection.updateOne(
-					{ uid: userId },
-					{ $set: userData }
+				const updatedUserState = await usersCollection.findOneAndUpdate(
+					{
+						uid: userId,
+					},
+					{
+						$set: {
+							...userData,
+							updatedAt: new Date().toISOString(),
+						},
+					},
+					{
+						returnDocument: "after",
+					}
 				);
 
-				res
-					.status(200)
-					.json({ newUserState: updatedUserState, newUser: userData });
+				return res.status(200).json({
+					newUserState: updatedUserState,
+					newUser: updatedUserState.value,
+				});
 				break;
 			}
 
@@ -207,8 +221,7 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				if (!userId) {
-					res.status(500).json({ error: "No user id provided" });
-					return;
+					return res.status(500).json({ error: "No user id provided" });
 				}
 
 				if (currentUser?.uid !== userId) {
@@ -217,7 +230,7 @@ export default async function handler(
 						!privateKey ||
 						privateKey !== apiConfig.privateKey
 					) {
-						res.status(401).json({ error: "Unauthorized!" });
+						return res.status(401).json({ error: "Unauthorized!" });
 					}
 				}
 
@@ -225,7 +238,7 @@ export default async function handler(
 					uid: userId,
 				});
 
-				res.status(200).json({ deleteState });
+				return res.status(200).json({ deleteState });
 				break;
 			}
 
@@ -245,11 +258,11 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "Invalid request method" });
+				return res.status(500).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

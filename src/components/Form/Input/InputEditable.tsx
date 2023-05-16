@@ -8,6 +8,7 @@ type InputEditableProps = {
 	placeholder?: string;
 	name: string;
 	type: HTMLInputElement["type"];
+	disabled?: boolean;
 };
 
 const InputEditable: React.FC<InputEditableProps> = ({
@@ -17,6 +18,7 @@ const InputEditable: React.FC<InputEditableProps> = ({
 	placeholder,
 	name,
 	type = "text",
+	disabled = false,
 }) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const inputBoxRef = useRef<HTMLInputElement>(null);
@@ -56,13 +58,15 @@ const InputEditable: React.FC<InputEditableProps> = ({
 					onChange={handleChange}
 					ref={inputBoxRef}
 					placeholder={placeholder}
-					className="group-data-[edit=false]:hidden min-w-0 w-auto text-sm outline-none"
+					className="group-data-[edit=false]:hidden min-w-0 w-auto text-sm outline-none disabled:pointer-events-none"
+					disabled={disabled}
 				/>
 				<button
 					type="button"
 					title="Edit"
-					className="text-blue-500 group-data-[edit=true]:hidden hover:text-blue-700 focus:text-blue-700"
-					onClick={() => !isEditing && handleEdit()}
+					className="text-blue-500 group-data-[edit=true]:hidden hover:text-blue-700 focus:text-blue-700 disabled:grayscale disabled:pointer-events-none"
+					onClick={() => !isEditing && !disabled && handleEdit()}
+					disabled={disabled}
 				>
 					<FiEdit className="h-full w-full" />
 				</button>

@@ -31,11 +31,22 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 			try {
 				if (!updating) {
 					setUpdating(true);
-					await updateUser({
-						firstName,
-						lastName,
-						middleName,
-					});
+
+					let userForm: Partial<SiteUser> = {};
+
+					if (firstName !== userData.user.firstName && firstName) {
+						userForm.firstName = firstName;
+					}
+
+					if (lastName !== userData.user.lastName && lastName) {
+						userForm.lastName = lastName;
+					}
+
+					if (middleName !== userData.user.middleName && middleName) {
+						userForm.middleName = middleName;
+					}
+
+					await updateUser(userForm);
 					setUpdating(false);
 				}
 			} catch (error: any) {

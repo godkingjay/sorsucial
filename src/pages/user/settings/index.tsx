@@ -1,6 +1,6 @@
 import { UserState } from "@/atoms/userAtom";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
-import UserProfileInformation from "@/components/User/Settings/UserProfileInformation";
+import UserSettingsProfileInformation from "@/components/User/Settings/UserSettingsProfileInformation";
 import UserSettingsPageLoader from "@/components/User/UserSettingsPageLoader";
 import useUser from "@/hooks/useUser";
 import userDb from "@/lib/db/userDb";
@@ -28,7 +28,7 @@ const UserSettingsProfilePage: React.FC<UserSettingsProfilePageProps> = ({
 				{userStateValue.user.uid === authUser?.uid && (
 					<>
 						<LimitedBodyLayout>
-							<UserProfileInformation userData={userStateValue} />
+							<UserSettingsProfileInformation userData={userStateValue} />
 						</LimitedBodyLayout>
 					</>
 				)}

@@ -498,6 +498,30 @@ const useUser = () => {
 		[setUserStateValueMemo, userMemo?.uid, userStateValueMemo.api?.keys]
 	);
 
+	const changePassword = useCallback(
+		async (oldPassword: string, newPassword: string) => {
+			try {
+				if (userMemo) {
+					await axios
+						.post(apiConfig.apiEndpoint + "/auth/change-password", {
+							apiKey: userStateValueMemo.api?.keys[0].key,
+							privateKey: apiConfig.privateKey,
+							oldPassword,
+							newPassword,
+						})
+						.catch((error: any) => {
+							const { error: apiError } = error.response.data;
+
+							throw new Error(`=>API: Change Password Error:\n${error.message}`);
+						});
+				}
+			} catch (error: any) {
+				console.log(`=>Mongo: Error changing password:\n${error.message}`);
+			}
+		},
+		[userMemo, userStateValueMemo.api?.keys]
+	);
+
 	/**
 	 * ~ ██████╗ ███████╗███████╗███████╗████████╗    ██╗   ██╗███████╗███████╗██████╗     ███████╗████████╗ █████╗ ████████╗███████╗
 	 * ~ ██╔══██╗██╔════╝██╔════╝██╔════╝╚══██╔══╝    ██║   ██║██╔════╝██╔════╝██╔══██╗    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
@@ -608,8 +632,9 @@ const useUser = () => {
 		setUserOptionsStateValue: setUserOptionsStateValueMemo,
 		userMounted: currentUserMounted.current,
 		createUser,
-		changePhoto,
 		updateUser,
+		changePassword,
+		changePhoto,
 		logOutUser,
 	};
 };

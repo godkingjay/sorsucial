@@ -1,6 +1,7 @@
 import { UserData } from "@/atoms/userAtom";
 import InputBoxFloatingLabel from "@/components/Form/Input/InputBoxFloatingLabel";
 import InputBoxFloatingLabel2 from "@/components/Form/Input/InputBoxFloatingLabel2";
+import useUser from "@/hooks/useUser";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PasswordRegex } from "@/lib/input/regex";
 import React, { useCallback, useState } from "react";
@@ -14,8 +15,9 @@ type UserSettingsSecurityProps = {
 const UserSettingsSecurity: React.FC<UserSettingsSecurityProps> = ({
 	userData,
 }) => {
-	const [changingPassword, setChangingPassword] = useState(false);
+	const { changePassword } = useUser();
 
+	const [changingPassword, setChangingPassword] = useState(false);
 	const [oldPassword, setOldPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,6 +30,12 @@ const UserSettingsSecurity: React.FC<UserSettingsSecurityProps> = ({
 				if (!changingPassword) {
 					setChangingPassword(true);
 
+					await changePassword(oldPassword, newPassword);
+
+					setOldPassword("");
+					setNewPassword("");
+					setConfirmPassword("");
+
 					setChangingPassword(false);
 				}
 			} catch (error: any) {
@@ -35,7 +43,7 @@ const UserSettingsSecurity: React.FC<UserSettingsSecurityProps> = ({
 				setChangingPassword(false);
 			}
 		},
-		[changingPassword]
+		[changePassword, changingPassword, newPassword, oldPassword]
 	);
 
 	return (

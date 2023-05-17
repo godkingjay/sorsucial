@@ -60,17 +60,19 @@ export default async function handler(
 			typeof rawCreator === "string" ? JSON.parse(rawCreator) : rawCreator;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (
@@ -79,11 +81,15 @@ export default async function handler(
 			!postCommentsCollection ||
 			!postCommentLikesCollection
 		) {
-			res.status(401).json({ error: "Cannot connect with the Post Database!" });
+			return res
+				.status(401)
+				.json({ error: "Cannot connect with the Post Database!" });
 		}
 
 		if (!groupsCollection) {
-			res.status(401).json({ error: "Cannot connect with the Group Database!" });
+			return res
+				.status(401)
+				.json({ error: "Cannot connect with the Group Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -91,7 +97,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -118,15 +124,17 @@ export default async function handler(
 			 */
 			case "POST": {
 				if (!postData || !postData.postTitle) {
-					res.status(500).json({ error: "No post provided" });
+					return res.status(500).json({ error: "No post provided" });
 				}
 
 				if (!creator) {
-					res.status(500).json({ error: "No creator provided" });
+					return res.status(500).json({ error: "No creator provided" });
 				}
 
 				if (postData.creatorId !== creator.uid) {
-					res.status(500).json({ error: "Creator id does not match creator" });
+					return res
+						.status(500)
+						.json({ error: "Creator id does not match creator" });
 				}
 
 				const objectId = new ObjectId();
@@ -181,7 +189,7 @@ export default async function handler(
 					);
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					newPostState,
 					newPost: {
 						...postData,
@@ -207,7 +215,7 @@ export default async function handler(
 			 */
 			case "GET": {
 				const post = await postsCollection.find({}).limit(1).toArray();
-				res.status(200).json({ post });
+				return res.status(200).json({ post });
 				break;
 			}
 
@@ -258,7 +266,7 @@ export default async function handler(
 					{ returnDocument: "after" }
 				);
 
-				res.status(200).json({ notFound: !updateState, updateState });
+				return res.status(200).json({ notFound: !updateState, updateState });
 				break;
 			}
 
@@ -279,12 +287,12 @@ export default async function handler(
 			 */
 			case "DELETE": {
 				if (!postData) {
-					res.status(400).json({ error: "No post provided" });
+					return res.status(400).json({ error: "No post provided" });
 				}
 
 				if (postData.creatorId !== userData.uid) {
 					if (!userData.roles.includes("admin")) {
-						res.status(403).json({
+						return res.status(403).json({
 							error: "User is not the creator of the post or an admin!",
 						});
 					}
@@ -293,7 +301,7 @@ export default async function handler(
 				const existingPost = await postsCollection.findOne({ id: postData.id });
 
 				if (!existingPost) {
-					res.status(200).json({
+					return res.status(200).json({
 						isDeleted: true,
 						error: "Post does not exist!",
 					});
@@ -371,7 +379,7 @@ export default async function handler(
 					);
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					isDeleted: deleteState ? deleteState.acknowledged : false,
 					deleteState,
 					deletePostLikesState,
@@ -395,11 +403,11 @@ export default async function handler(
 			 * -------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "Invalid method" });
+				return res.status(500).json({ error: "Invalid method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

@@ -150,6 +150,24 @@ const useInput = () => {
 		[validateImageOrVideo]
 	);
 
+	const calculateDaysAway = (
+		fromDate: Date | string,
+		toDate: Date | string
+	): number => {
+		const timeDiff = Math.abs(
+			(typeof fromDate === "string"
+				? new Date(fromDate).getTime()
+				: fromDate.getTime()) -
+				(typeof toDate === "string"
+					? new Date(toDate).getTime()
+					: toDate.getTime())
+		);
+
+		const daysAway = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+		return daysAway;
+	};
+
 	const formatNumberWithSuffix = useCallback((number: number) => {
 		const suffixes = ["", "K", "M", "B"];
 		let suffixIndex = 0;
@@ -175,6 +193,7 @@ const useInput = () => {
 
 	return {
 		uploadImageOrVideo,
+		calculateDaysAway,
 		formatNumberWithSuffix,
 		formatFileSize,
 	};

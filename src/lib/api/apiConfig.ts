@@ -4,5 +4,4 @@ export const apiConfig = {
 		/\\n/g,
 		"\n"
 	) as string,
-	salt: process.env.NEXT_PUBLIC_SALT,
 };

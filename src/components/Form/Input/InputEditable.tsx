@@ -28,6 +28,7 @@ const InputEditable: React.FC<InputEditableProps> = ({
 	message,
 	onError,
 }) => {
+	const [prevValue] = useState(value);
 	const [isEditing, setIsEditing] = useState(false);
 	const [errorRegex, setErrorRegex] = useState(false);
 
@@ -92,6 +93,7 @@ const InputEditable: React.FC<InputEditableProps> = ({
 					pattern={regex?.source}
 					className="group-data-[edit=false]/input-box:hidden group-data-[error=true]/input-box:text-red-500 min-w-0 w-auto text-sm outline-none disabled:pointer-events-none"
 					disabled={disabled}
+					onBlur={() => value === prevValue && handleEdit()}
 				/>
 				<button
 					type="button"

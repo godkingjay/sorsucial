@@ -151,11 +151,13 @@ const UserSettingsSecurity: React.FC<UserSettingsSecurityProps> = ({
 											},
 										}}
 									/>
-									{oldPassword === newPassword && (
-										<div className="bg-red-500 text-white text-xs p-3 rounded-md w-full max-w-sm">
-											<p>Must change to new password!</p>
-										</div>
-									)}
+									{oldPassword === newPassword &&
+										oldPassword !== "" &&
+										newPassword !== "" && (
+											<div className="bg-red-500 text-white text-xs p-3 rounded-md w-full max-w-sm">
+												<p>Must change to new password!</p>
+											</div>
+										)}
 								</div>
 							</div>
 							<div className="divider mt-2 mb-1"></div>

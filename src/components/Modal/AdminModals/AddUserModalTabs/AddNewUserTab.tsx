@@ -4,7 +4,6 @@ import {
 	NameRegex,
 	genderOptions,
 } from "@/components/Form/Auth/CreateUser/CreateUserForm";
-import { SignInRegex } from "@/components/Form/Auth/SignInForm";
 import {
 	OptionsData,
 	getBarangay,
@@ -12,6 +11,7 @@ import {
 	getProvinces,
 } from "@/lib/api/psgc";
 import { FiLoader } from "react-icons/fi";
+import { EmailRegex, PasswordRegex } from "@/lib/input/regex";
 
 type AddNewUserTabProps = {
 	addNewUser: (newUser: NewUserType) => void;
@@ -104,14 +104,14 @@ const AddNewUserTab: React.FC<AddNewUserTabProps> = ({
 			setUserExists(false);
 			setNewUserFormError((prev) => ({
 				...prev,
-				email: !SignInRegex.email.test(value),
+				email: !EmailRegex.test(value),
 			}));
 		}
 
 		if (name === "password") {
 			setNewUserFormError((prev) => ({
 				...prev,
-				password: !SignInRegex.password.test(value),
+				password: !PasswordRegex.test(value),
 			}));
 		}
 

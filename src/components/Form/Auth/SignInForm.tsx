@@ -7,14 +7,10 @@ import { FiLoader } from "react-icons/fi";
 import { authForm } from "../AuthForm";
 import { useRouter } from "next/router";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
+import { EmailRegex, PasswordRegex } from "@/lib/input/regex";
 
 type SignInFormProps = {
 	handleFormChange: (form: authForm) => void;
-};
-
-export const SignInRegex = {
-	email: /^[a-zA-Z0-9._-]*@sorsu.edu.ph$/,
-	password: /^(?=.*[A-Za-z\d@$!%*?&])[A-Za-z\d@$!%*?&]{8,256}$/,
 };
 
 const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
@@ -44,15 +40,11 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 		const { name, value } = e.target;
 
 		if (name === "email") {
-			setValidEmail(() =>
-				e.target.value.match(SignInRegex.email) ? true : false
-			);
+			setValidEmail(() => EmailRegex.test(value));
 		}
 
 		if (name === "password") {
-			setValidPassword(() =>
-				value.match(SignInRegex.password) ? true : false
-			);
+			setValidPassword(() => PasswordRegex.test(value));
 		}
 
 		setSignInForm((prev) => ({
@@ -64,7 +56,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ handleFormChange }) => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (SignInRegex.email.test(signInForm.email)) {
+		if (EmailRegex.test(signInForm.email)) {
 			setValidEmail(true);
 		} else {
 			setValidEmail(false);

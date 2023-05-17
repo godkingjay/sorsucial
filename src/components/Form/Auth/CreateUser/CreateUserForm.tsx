@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { errorModalState } from "@/atoms/modalAtom";
 import { validImageTypes } from "@/lib/types/validFiles";
+import useInput from "@/hooks/useInput";
 
 type CreateUserFormProps = {};
 
@@ -67,6 +68,8 @@ export const genderOptions = [
 ];
 
 const CreateUserForm: React.FC<CreateUserFormProps> = () => {
+	const { uploadImageOrVideo } = useInput();
+
 	const [creatingUser, setCreatingUser] = useState(false);
 	const [createUserForm, setCreateUserForm] = useState<CreateUserType>({
 		firstName: "",
@@ -149,80 +152,20 @@ const CreateUserForm: React.FC<CreateUserFormProps> = () => {
 		return true;
 	};
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files?.[0]) {
-			const profilePhoto = e.target.files[0];
-			if (validateImage(profilePhoto)) {
-				const reader = new FileReader();
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		try {
+			if (e.target.files?.[0]) {
+				const profilePhoto = await uploadImageOrVideo(e.target.files[0]);
 
-				reader.onload = (readerEvent) => {
-					const result = readerEvent.target?.result;
-					if (result) {
-						const img = new Image();
-
-						img.onload = () => {
-							const canvas = document.createElement("canvas");
-							const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
-							let width = 0,
-								height = 0;
-
-							if (img.width > img.height) {
-								width = img.height;
-								height = img.height;
-							} else {
-								width = img.width;
-								height = img.width;
-							}
-
-							canvas.height = height;
-							canvas.width = width;
-
-							const xOffset = (img.width - width) / 2;
-							const yOffset = (img.height - height) / 2;
-
-							ctx.fillStyle = "#fff";
-							ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-							ctx.drawImage(
-								img,
-								xOffset,
-								yOffset,
-								width,
-								height,
-								0,
-								0,
-								width,
-								height
-							);
-
-							canvas.toBlob(
-								(blob) => {
-									if (blob) {
-										setCreateUserForm((prev) => ({
-											...prev,
-											profilePhoto: {
-												name: profilePhoto.name,
-												url: URL.createObjectURL(blob),
-												size: blob.size,
-												type: blob.type,
-												height: height,
-												width: width,
-											},
-										}));
-									}
-								},
-								"image/jpeg",
-								0.8
-							);
-						};
-
-						img.src = result as string;
-					}
-				};
-
-				reader.readAsDataURL(profilePhoto);
+				if (profilePhoto) {
+					setCreateUserForm((prev) => ({
+						...prev,
+						profilePhoto: profilePhoto,
+					}));
+				}
 			}
+		} catch (error: any) {
+			console.log(`=>Hook: useInput: uploadImageOrVideo: ${error.message}`);
 		}
 	};
 

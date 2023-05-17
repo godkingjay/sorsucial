@@ -46,6 +46,7 @@ const NameAndPhoto: React.FC<NameAndPhotoProps> = ({
 									width={256}
 									height={256}
 									className="object-cover h-full w-full"
+									loading="lazy"
 								/>
 							</div>
 						</>

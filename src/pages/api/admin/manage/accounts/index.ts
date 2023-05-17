@@ -31,7 +31,7 @@ export default async function handler(
 		const { email, password, privateKey, userId } = req.body || req.query;
 
 		if (!privateKey || privateKey !== apiConfig.privateKey) {
-			res.status(401).json({ error: "Unauthorized!" });
+			return res.status(401).json({ error: "Unauthorized!" });
 		}
 
 		switch (req.method) {
@@ -54,7 +54,9 @@ export default async function handler(
 				// Create a new user in the Firebase Authentication service.
 
 				if (!email || !password) {
-					res.status(400).json({ message: "Email and password are required" });
+					return res
+						.status(400)
+						.json({ message: "Email and password are required" });
 					return;
 				}
 
@@ -64,13 +66,13 @@ export default async function handler(
 						password: password,
 					})
 					.then((user) => {
-						res.status(200).json({
+						return res.status(200).json({
 							message: "Account created successfully",
 							userId: user.uid,
 						});
 					})
 					.catch((error) => {
-						res.status(500).json({
+						return res.status(500).json({
 							message: "Error creating account",
 							error: error.message,
 						});
@@ -98,12 +100,12 @@ export default async function handler(
 				// Delete a user from the Firebase Authentication service.
 
 				if (!userId) {
-					res.status(400).json({ message: "User ID is required" });
+					return res.status(400).json({ message: "User ID is required" });
 					return;
 				}
 
 				authAdmin.deleteUser(userId).catch((error) => {
-					res.status(500).json({
+					return res.status(500).json({
 						message: "Error deleting account",
 						error: error.message,
 						isDeleted: false,
@@ -111,7 +113,7 @@ export default async function handler(
 					return;
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					message: "Account deleted successfully",
 					isDeleted: true,
 				});
@@ -135,12 +137,12 @@ export default async function handler(
 			 * -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(405).json({ message: "Method not allowed" });
+				return res.status(405).json({ message: "Method not allowed" });
 				return;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 		return;
 	}
 }

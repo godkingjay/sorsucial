@@ -1,8 +1,10 @@
 import { UserData } from "@/atoms/userAtom";
 import InputEditable from "@/components/Form/Input/InputEditable";
+import useInput from "@/hooks/useInput";
 import useUser from "@/hooks/useUser";
 import { NameRegex } from "@/lib/input/regex";
 import { SiteUser } from "@/lib/interfaces/user";
+import moment from "moment";
 import React, { useCallback, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 import { MdSave } from "react-icons/md";
@@ -16,6 +18,8 @@ const UserSettingsProfileInformation: React.FC<
 	UserSettingsProfileInformationProps
 > = ({ userData }) => {
 	const { updateUser } = useUser();
+
+	const { calculateDaysAway } = useInput();
 
 	const [firstName, setFirstName] = useState(userData.user.firstName);
 	const [lastName, setLastName] = useState(userData.user.lastName);
@@ -46,7 +50,10 @@ const UserSettingsProfileInformation: React.FC<
 						userForm.middleName = middleName;
 					}
 
-					await updateUser(userForm);
+					await updateUser({
+						...userForm,
+						previousNameChangeAt: new Date(),
+					});
 					setUpdating(false);
 				}
 			} catch (error: any) {
@@ -54,7 +61,16 @@ const UserSettingsProfileInformation: React.FC<
 				setUpdating(false);
 			}
 		},
-		[firstName, lastName, middleName, updateUser, updating]
+		[
+			firstName,
+			lastName,
+			middleName,
+			updateUser,
+			updating,
+			userData.user.firstName,
+			userData.user.lastName,
+			userData.user.middleName,
+		]
 	);
 
 	const resetForm = () => {

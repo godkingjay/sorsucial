@@ -1,8 +1,11 @@
 import { UserState } from "@/atoms/userAtom";
 import LimitedBodyLayout from "@/components/Layout/LimitedBodyLayout";
+import UserAboutCard from "@/components/User/UserAboutCard";
 import UserPageLoader from "@/components/User/UserPageLoader";
+import useUser from "@/hooks/useUser";
 import clientPromise from "@/lib/mongodb";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import safeJsonStringify from "safe-json-stringify";
 
@@ -15,6 +18,12 @@ const UserPageAboutPage: React.FC<UserPageAboutPageProps> = ({
 	userPageData,
 	loadingPage = true,
 }) => {
+	const { userStateValue } = useUser();
+
+	const router = useRouter();
+
+	const { userId } = router.query;
+
 	return (
 		<>
 			<UserPageLoader
@@ -22,7 +31,11 @@ const UserPageAboutPage: React.FC<UserPageAboutPageProps> = ({
 				loadingUser={loadingPage}
 			>
 				<LimitedBodyLayout>
-					<div>User About Page</div>
+					{userStateValue.userPage?.user.uid === userId && (
+						<>
+							<UserAboutCard />
+						</>
+					)}
 				</LimitedBodyLayout>
 			</UserPageLoader>
 		</>

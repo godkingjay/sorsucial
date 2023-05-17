@@ -147,6 +147,8 @@ const useReply = () => {
 							);
 						});
 
+					console.log(isUpdated);
+
 					if (isUpdated) {
 						setDiscussionStateValue((prev) => ({
 							...prev,

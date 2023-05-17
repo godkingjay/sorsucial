@@ -1,7 +1,6 @@
 import UserIcon from "@/components/Icons/UserIcon";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { UserState } from "@/atoms/userAtom";
 import moment from "moment";
 import { DiscussionData, DiscussionReplyData } from "@/atoms/discussionAtom";
 import { DiscussionReplyFormType } from "./DiscussionReplies";
@@ -22,6 +21,7 @@ import { FiAlertCircle } from "react-icons/fi";
 import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
 import useUser from "@/hooks/useUser";
 import useInput from "@/hooks/useInput";
+import useGroup from "@/hooks/useGroup";
 
 type ReplyItemProps = {
 	currentDiscussion: DiscussionData;
@@ -71,6 +71,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 	onChange,
 }) => {
 	const { userStateValue } = useUser();
+
+	const { groupStateValue } = useGroup();
 
 	const { formatNumberWithSuffix } = useInput();
 
@@ -304,21 +306,29 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 								</button>
 							</div>
 							<div className="reply-buttons-container">
-								{replyData.reply.replyLevel < 2 && (
-									<button
-										type="button"
-										title="Reply"
-										className="button"
-										onClick={handleShowReplyBox}
-									>
-										<div className="icon-container translate-y-0.5">
-											<GoComment className="icon" />
-										</div>
-										<div className="label-container">
-											<p className="label">Reply</p>
-										</div>
-									</button>
-								)}
+								{replyData.reply.replyLevel < maxReplyLevel &&
+									(groupStateValue.currentGroup &&
+									currentDiscussion.discussion.groupId ===
+										groupStateValue.currentGroup.group.id &&
+									currentDiscussion.discussion.privacy !== "public"
+										? groupStateValue.currentGroup.userJoin?.roles.includes(
+												"member"
+										  )
+										: true) && (
+										<button
+											type="button"
+											title="Reply"
+											className="button"
+											onClick={handleShowReplyBox}
+										>
+											<div className="icon-container translate-y-0.5">
+												<GoComment className="icon" />
+											</div>
+											<div className="label-container">
+												<p className="label">Reply</p>
+											</div>
+										</button>
+									)}
 								{/* <button
 									type="button"
 									title="Share"
@@ -427,7 +437,13 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
 						)}
 					{showReplyBox &&
 						discussionReplyForm.replyLevel < maxReplyLevel &&
-						!replyData.replyDeleted && (
+						!replyData.replyDeleted &&
+						(groupStateValue.currentGroup &&
+						currentDiscussion.discussion.groupId ===
+							groupStateValue.currentGroup.group.id &&
+						currentDiscussion.discussion.privacy !== "public"
+							? groupStateValue.currentGroup.userJoin?.roles.includes("member")
+							: true) && (
 							<ReplyBox
 								replyForm={discussionReplyForm}
 								setReplyForm={setDiscussionReplyForm}

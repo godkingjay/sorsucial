@@ -1,10 +1,7 @@
 import { ObjectId } from "mongodb";
-import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
-import { CommentLike, PostComment, SitePost } from "@/lib/interfaces/post";
-import axios from "axios";
-import { apiConfig } from "@/lib/api/apiConfig";
+import { PostComment, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import userDb from "@/lib/db/userDb";
 import postDb from "@/lib/db/postDb";

@@ -154,7 +154,7 @@ const useReply = () => {
 								...prev.currentDiscussion!,
 								discussionReplies: prev.currentDiscussion!.discussionReplies.map(
 									(reply) => {
-										if (reply.reply.id === newReplyData.replyForId) {
+										if (reply.reply.id === updatedReply.id) {
 											return {
 												...reply,
 												reply: {

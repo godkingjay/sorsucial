@@ -8,6 +8,7 @@ import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment/Post
 import CommentItemCard from "./CommentItem/CommentItemCard";
 import { FiAlertCircle } from "react-icons/fi";
 import useUser from "@/hooks/useUser";
+import useGroup from "@/hooks/useGroup";
 
 type CommentItemProps = {
 	currentPost: PostData;
@@ -56,6 +57,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
 	onChange,
 }) => {
 	const { userStateValue } = useUser();
+
+	const { groupStateValue } = useGroup();
+
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: commentData.comment.postId,
 		groupId: commentData.comment.groupId,
@@ -166,16 +170,24 @@ const CommentItem: React.FC<CommentItemProps> = ({
 											? "Liked"
 											: "Like"}
 									</button>
-									{postCommentForm.commentLevel < maxCommentLevel && (
-										<button
-											type="button"
-											title="Reply"
-											className="btn-text"
-											onClick={handleShowCommentBox}
-										>
-											Reply
-										</button>
-									)}
+									{postCommentForm.commentLevel < maxCommentLevel &&
+										(groupStateValue.currentGroup &&
+										currentPost.post.groupId ===
+											groupStateValue.currentGroup.group.id &&
+										currentPost.post.privacy !== "public"
+											? groupStateValue.currentGroup.userJoin?.roles.includes(
+													"member"
+											  )
+											: true) && (
+											<button
+												type="button"
+												title="Reply"
+												className="btn-text"
+												onClick={handleShowCommentBox}
+											>
+												Reply
+											</button>
+										)}
 									{(userStateValue.user.uid === commentData.comment.creatorId ||
 										userStateValue.user.roles.includes("admin")) && (
 										<button
@@ -208,49 +220,51 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						)}
 					</div>
 					{showComments && commentData.comment.numberOfReplies && (
-						<div className="flex flex-col gap-y-2">
-							{commenting && (
-								<>
-									<PostCommentItemSkeleton
-										commentLevel={commentData.comment.commentLevel + 1}
-										parentShowCommentBox={true}
-									/>
-								</>
-							)}
-							{currentPost?.postComments
-								.filter(
-									(comment) =>
-										comment.comment.commentLevel ===
-											commentData.comment.commentLevel + 1 &&
-										comment.comment.commentForId === commentData.comment.id
-								)
-								.map((comment) => (
-									<React.Fragment key={comment.comment.id}>
-										<CommentItem
-											currentPost={currentPost}
-											commentData={comment}
-											parentShowCommentBox={showCommentBox}
-											fetchPostComments={fetchPostComments}
-											handleCommentLike={handleCommentLike}
-											handleCommentDelete={handleCommentDelete}
-											onSubmit={onSubmit}
-											onChange={onChange}
+						<>
+							<div className="flex flex-col gap-y-2">
+								{commenting && (
+									<>
+										<PostCommentItemSkeleton
+											commentLevel={commentData.comment.commentLevel + 1}
+											parentShowCommentBox={true}
 										/>
-									</React.Fragment>
-								))}
-							{loadingComments && (
-								<>
-									<PostCommentItemSkeleton
-										commentLevel={commentData.comment.commentLevel + 1}
-										parentShowCommentBox={showCommentBox}
-									/>
-									<PostCommentItemSkeleton
-										commentLevel={commentData.comment.commentLevel + 1}
-										parentShowCommentBox={showCommentBox}
-									/>
-								</>
-							)}
-						</div>
+									</>
+								)}
+								{currentPost?.postComments
+									.filter(
+										(comment) =>
+											comment.comment.commentLevel ===
+												commentData.comment.commentLevel + 1 &&
+											comment.comment.commentForId === commentData.comment.id
+									)
+									.map((comment) => (
+										<React.Fragment key={comment.comment.id}>
+											<CommentItem
+												currentPost={currentPost}
+												commentData={comment}
+												parentShowCommentBox={showCommentBox}
+												fetchPostComments={fetchPostComments}
+												handleCommentLike={handleCommentLike}
+												handleCommentDelete={handleCommentDelete}
+												onSubmit={onSubmit}
+												onChange={onChange}
+											/>
+										</React.Fragment>
+									))}
+								{loadingComments && (
+									<>
+										<PostCommentItemSkeleton
+											commentLevel={commentData.comment.commentLevel + 1}
+											parentShowCommentBox={showCommentBox}
+										/>
+										<PostCommentItemSkeleton
+											commentLevel={commentData.comment.commentLevel + 1}
+											parentShowCommentBox={showCommentBox}
+										/>
+									</>
+								)}
+							</div>
+						</>
 					)}
 					{commentData.comment.numberOfReplies > remainingReplies &&
 						!commentData.commentDeleted && (
@@ -278,7 +292,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						)}
 					{showCommentBox &&
 						postCommentForm.commentLevel < maxCommentLevel &&
-						!commentData.commentDeleted && (
+						!commentData.commentDeleted &&
+						(groupStateValue.currentGroup &&
+						currentPost.post.groupId === groupStateValue.currentGroup.group.id &&
+						currentPost.post.privacy !== "public"
+							? groupStateValue.currentGroup.userJoin?.roles.includes("member")
+							: true) && (
 							<CommentBox
 								commentForm={postCommentForm}
 								setCommentForm={setPostCommentForm}

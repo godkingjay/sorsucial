@@ -186,7 +186,7 @@ export default async function handler(
 
 				const updatedCommentState = await postCommentsCollection.updateOne(
 					{
-						id: commentData!.id,
+						id: commentData?.id,
 					},
 					{
 						$set: updatedComment,
@@ -206,10 +206,13 @@ export default async function handler(
 					);
 				}
 
-				if (updatedCommentState.modifiedCount > 0) {
-					res.status(200).json({ message: "Comment updated" });
+				if (updatedCommentState.acknowledged) {
+					return res.status(200).json({
+						isUpdated: updatedCommentState.acknowledged,
+						message: "Comment updated",
+					});
 				} else {
-					res.status(200).json({ message: "Comment not updated" });
+					return res.status(200).json({ message: "Comment not updated" });
 				}
 				break;
 			}

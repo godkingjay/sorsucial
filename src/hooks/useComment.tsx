@@ -163,7 +163,7 @@ const useComment = () => {
 							currentPost: {
 								...prev.currentPost!,
 								postComments: prev.currentPost!.postComments.map((comment) => {
-									if (comment.comment.id === newCommentData.commentForId) {
+									if (comment.comment.id === updatedComment.id) {
 										return {
 											...comment,
 											comment: {
@@ -172,32 +172,12 @@ const useComment = () => {
 											},
 										};
 									}
+
 									return comment;
 								}),
 							},
 						}));
 					}
-				}
-
-				if (postStateValue.currentPost?.post.id == newCommentData.postId) {
-					setPostStateValue((prev) => ({
-						...prev,
-						currentPost: {
-							...prev.currentPost!,
-							post: {
-								...prev.currentPost!.post,
-								numberOfComments: prev.currentPost!.post.numberOfComments + 1,
-							},
-							postComments: [
-								{
-									comment: newCommentData,
-									creator,
-									userCommentLike: null,
-								},
-								...prev.currentPost!.postComments,
-							],
-						},
-					}));
 				}
 
 				setPostStateValue((prev) => ({
@@ -214,6 +194,20 @@ const useComment = () => {
 						}
 						return post;
 					}),
+					currentPost:
+						prev.currentPost && commentForm.postId === prev.currentPost.post.id
+							? {
+									...prev.currentPost!,
+									postComments: [
+										{
+											comment: newCommentData,
+											creator,
+											userCommentLike: null,
+										},
+										...prev.currentPost!.postComments,
+									],
+							  }
+							: prev.currentPost,
 				}));
 			}
 		} catch (error: any) {

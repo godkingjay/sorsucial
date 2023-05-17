@@ -9,8 +9,11 @@ import {
 import { FaBullhorn } from "react-icons/fa";
 import { RiDiscussFill } from "react-icons/ri";
 import { HiUserGroup } from "react-icons/hi";
-import { NavigationBarState } from "@/atoms/navigationBarAtom";
-import { SetterOrUpdater } from "recoil";
+import {
+	NavigationBarState,
+	currentDirectoryState,
+} from "@/atoms/navigationBarAtom";
+import { SetterOrUpdater, useRecoilValue } from "recoil";
 import { UserState } from "@/atoms/userAtom";
 import { AiOutlineMenu } from "react-icons/ai";
 
@@ -25,6 +28,8 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 	setNavigationBarStateValue,
 	userStateValue,
 }) => {
+	const currentDirectoryStateValue = useRecoilValue(currentDirectoryState);
+
 	const handleOpen = () => {
 		setNavigationBarStateValue((prev) => ({
 			...prev,
@@ -227,8 +232,16 @@ const PageLeftSidebar: React.FC<PageLeftSidebarProps> = ({
 						title={
 							navigationBarStateValue.pageLeftSidebar.open ? "Close" : "Open"
 						}
-						className="sm:hidden absolute top-8 translate-y-[-50%] left-[100%] p-2 bg-logo-500 shadow-md hover:bg-logo-400 focus:bg-logo-400 text-white rounded-r-full"
+						className="
+							sm:hidden absolute top-8 translate-y-[-50%] left-[100%] p-2 bg-logo-500 shadow-md hover:bg-logo-400 focus:bg-logo-400 text-white rounded-r-full
+							data-[nav-page=true]:top-20
+						"
 						onClick={handleOpen}
+						data-nav-page={
+							currentDirectoryStateValue.main === "admin" ||
+							currentDirectoryStateValue.second === "[userId]" ||
+							currentDirectoryStateValue.second === "[groupId]"
+						}
 					>
 						<div className="h-6 w-6">
 							<AiOutlineMenu className="h-full w-full" />

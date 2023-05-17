@@ -36,6 +36,7 @@
 		"typescript": "^4.9.5"
 	},
 	"devDependencies": {
+		"@types/bcrypt": "^5.0.0",
 		"@types/safe-json-stringify": "^1.1.2",
 		"autoprefixer": "^10.4.13",
 		"postcss": "^8.4.21",

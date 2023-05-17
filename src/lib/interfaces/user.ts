@@ -67,10 +67,10 @@ export interface SiteUser {
 	cityOrMunicipality?: string;
 	barangay?: string;
 	streetAddress?: string;
-	previousNameChangeAt?: Date;
-	lastLoginAt?: Date;
-	updatedAt: Date;
-	createdAt: Date;
+	previousNameChangeAt?: Date | string;
+	lastLoginAt?: Date | string;
+	updatedAt: Date | string;
+	createdAt: Date | string;
 }
 
 /**

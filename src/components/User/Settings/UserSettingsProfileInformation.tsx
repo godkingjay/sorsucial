@@ -8,13 +8,13 @@ import { FiLoader } from "react-icons/fi";
 import { MdSave } from "react-icons/md";
 import { RiRestartLine } from "react-icons/ri";
 
-type UserProfileInformationProps = {
+type UserSettingsProfileInformationProps = {
 	userData: UserData;
 };
 
-const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
-	userData,
-}) => {
+const UserSettingsProfileInformation: React.FC<
+	UserSettingsProfileInformationProps
+> = ({ userData }) => {
 	const { updateUser } = useUser();
 
 	const [firstName, setFirstName] = useState(userData.user.firstName);
@@ -46,7 +46,10 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 						userForm.middleName = middleName;
 					}
 
-					await updateUser(userForm);
+					await updateUser({
+						...userForm,
+						previousNameChangeAt: new Date(),
+					});
 					setUpdating(false);
 				}
 			} catch (error: any) {
@@ -54,7 +57,16 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 				setUpdating(false);
 			}
 		},
-		[firstName, lastName, middleName, updateUser, updating]
+		[
+			firstName,
+			lastName,
+			middleName,
+			updateUser,
+			updating,
+			userData.user.firstName,
+			userData.user.lastName,
+			userData.user.middleName,
+		]
 	);
 
 	const resetForm = () => {
@@ -196,4 +208,4 @@ const UserProfileInformation: React.FC<UserProfileInformationProps> = ({
 	);
 };
 
-export default UserProfileInformation;
+export default UserSettingsProfileInformation;

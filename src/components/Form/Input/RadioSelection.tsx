@@ -8,7 +8,7 @@ export type RadioSelectionOption = {
 
 type RadioSelectionProps = {
 	title?: string;
-	options: RadioSelectionOption[];
+	options: (RadioSelectionOption & any)[];
 	selected: string;
 	disabled?: boolean;
 	required?: boolean;
@@ -53,8 +53,17 @@ const RadioSelection: React.FC<RadioSelectionProps> = ({
 							disabled={disabled}
 							onChange={() => handleOptionChange(option.value)}
 						/>
-						{option.icon && <div className="icon-container">{option.icon}</div>}
-						<span className="label">{option.label}</span>
+						<div className="info-container">
+							<div className="item-label-container">
+								{option.icon && (
+									<div className="icon-container">{option.icon}</div>
+								)}
+								<p className="label">{option.label}</p>
+							</div>
+							{option.description && (
+								<p className="description">{option.description}</p>
+							)}
+						</div>
 					</label>
 				))}
 			</div>

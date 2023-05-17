@@ -157,18 +157,30 @@
 			@apply flex flex-col gap-y-3;
 
 			.selection-item {
-				@apply flex flex-row gap-x-2 items-center cursor-pointer;
+				@apply flex flex-row gap-x-2 cursor-pointer;
 
 				.radio-button {
 					@apply h-5 w-5 text-gray-600;
 				}
 
-				.icon-container {
-					@apply h-4 w-4 aspect-square text-gray-600;
-				}
+				.info-container {
+					@apply flex flex-col flex-1;
 
-				.label {
-					@apply text-gray-600 mr-2 font-semibold text-sm;
+					.item-label-container {
+						@apply flex flex-row gap-x-2;
+
+						.icon-container {
+							@apply h-4 w-4 aspect-square text-gray-600;
+						}
+
+						.label {
+							@apply text-gray-600 mr-2 font-semibold text-sm;
+						}
+					}
+
+					.description {
+						@apply text-sm;
+					}
 				}
 
 				&[data-selected="true"] {
@@ -178,12 +190,16 @@
 						@apply text-blue-500;
 					}
 
-					.icon-container {
-						@apply text-blue-500;
-					}
+					.info-container {
+						.item-label-container {
+							.icon-container {
+								@apply text-blue-500;
+							}
 
-					.label {
-						@apply text-blue-500;
+							.label {
+								@apply text-blue-500;
+							}
+						}
 					}
 				}
 			}

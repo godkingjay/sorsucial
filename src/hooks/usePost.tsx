@@ -6,7 +6,7 @@ import {
 } from "@/atoms/postAtom";
 import {
 	CreatePostFileType,
-	CreatePostImageOrVideoType,
+	PostImageOrVideoType,
 	CreatePostType,
 } from "@/components/Modal/PostCreationModal";
 import { clientDb, clientStorage } from "@/firebase/clientApp";
@@ -29,9 +29,10 @@ import {
 } from "firebase/storage";
 import { collection, doc } from "firebase/firestore";
 import { APIEndpointPostsParams, QueryPostsSortBy } from "@/lib/types/api";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useGroup from "./useGroup";
 import { GroupState } from "@/atoms/groupAtom";
+import { postCreationModalState } from "@/atoms/modalAtom";
 
 /**
  * ~ ██████╗  ██████╗ ███████╗████████╗    ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗
@@ -59,6 +60,10 @@ const usePost = () => {
 	 */
 	const [postOptionsStateValue, setPostOptionsStateValue] =
 		useRecoilState(postOptionsState);
+
+	const [postCreationModalStateValue, setPostCreationModalStateValue] =
+		useRecoilState(postCreationModalState);
+
 	/**
 	 * The authUser is the current authenticated user.
 	 *
@@ -70,6 +75,16 @@ const usePost = () => {
 	const { groupStateValue, setGroupStateValue } = useGroup();
 
 	const [fetchingPostsFor, setFetchingPostsFor] = useState("");
+
+	const postCreationModalStateValueMemo = useMemo(
+		() => postCreationModalStateValue,
+		[postCreationModalStateValue]
+	);
+
+	const setPostCreationModalStateValueMemo = useMemo(
+		() => setPostCreationModalStateValue,
+		[setPostCreationModalStateValue]
+	);
 
 	const actionPostDeleted = (postDeleted: boolean, postId: string) => {
 		setPostStateValue((prev) => ({
@@ -219,6 +234,7 @@ const usePost = () => {
 							 */
 							if (postImageOrVideo) {
 								newPostData.postImagesOrVideos.push(postImageOrVideo);
+								URL.revokeObjectURL(imageOrVideo.url);
 							}
 						})
 					).then(async () => {
@@ -383,8 +399,6 @@ const usePost = () => {
 						(newPostData.postType === "announcement" ? "-sorsu" : "")]: 0,
 					};
 
-					console.log(index);
-
 					return index;
 				}
 
@@ -465,14 +479,14 @@ const usePost = () => {
 	 * as an object array item in the post document.
 	 *
 	 * @param {SitePost} post - The post to which the image or video belongs to
-	 * @param {CreatePostImageOrVideoType} imageOrVideo - The type of image or video to upload to the storage (image or video)
+	 * @param {PostImageOrVideoType} imageOrVideo - The type of image or video to upload to the storage (image or video)
 	 * @param {string} imageOrVideoId - The id of the image or video to upload to the storage
 	 *
 	 * @returns {Promise<PostImageOrVideo | PostImageOrVideo | undefined>} - The uploaded image or video object or undefined if there is an error uploading the image or video to the storage.
 	 */
 	const uploadPostImageOrVideo = async (
 		post: SitePost,
-		imageOrVideo: CreatePostImageOrVideoType,
+		imageOrVideo: PostImageOrVideoType,
 		imageOrVideoId: string
 	) => {
 		/**
@@ -1344,6 +1358,8 @@ const usePost = () => {
 
 		postOptionsStateValue,
 		setPostOptionsStateValue,
+		postCreationModalStateValue: postCreationModalStateValueMemo,
+		setPostCreationModalStateValue: setPostCreationModalStateValueMemo,
 
 		/**
 		 * & CRUD Post

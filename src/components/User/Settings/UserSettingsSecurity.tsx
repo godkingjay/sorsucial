@@ -1,8 +1,6 @@
 import { UserData } from "@/atoms/userAtom";
-import InputBoxFloatingLabel from "@/components/Form/Input/InputBoxFloatingLabel";
 import InputBoxFloatingLabel2 from "@/components/Form/Input/InputBoxFloatingLabel2";
 import useUser from "@/hooks/useUser";
-import { apiConfig } from "@/lib/api/apiConfig";
 import { PasswordRegex } from "@/lib/input/regex";
 import React, { useCallback, useState } from "react";
 import { FiLoader } from "react-icons/fi";

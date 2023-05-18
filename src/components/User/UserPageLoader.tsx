@@ -7,14 +7,11 @@ import { UserState } from "@/atoms/userAtom";
 import { useRecoilValue } from "recoil";
 import { currentDirectoryState } from "@/atoms/navigationBarAtom";
 import PostCardSkeleton from "../Skeleton/Post/PostCardSkeleton";
-import DiscussionCardSkeleton from "../Skeleton/Discussion/DiscussionCardSkeleton";
 import MemberCardSkeleton from "../Skeleton/Member/MemberCardSkeleton";
 import UserHeaderSkeleton from "../Skeleton/User/UserHeaderSkeleton";
 import GroupCardSkeleton from "../Skeleton/Group/GroupCardSkeleton";
-import { BsPersonExclamation } from "react-icons/bs";
-import Link from "next/link";
-import { RxCaretRight } from "react-icons/rx";
 import UserNotFound from "../Error/UserNotFound";
+import UserAboutCardSkeleton from "../Skeleton/User/UserAboutCardSkeleton";
 
 type UserPageLoaderProps = {
 	children?: React.ReactNode;
@@ -150,6 +147,18 @@ const UserPageLoader: React.FC<UserPageLoaderProps> = ({
 							<div className="px-4 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-4">
 								{renderGroupsLoading(11)}
 							</div>
+						</div>
+					</>
+				);
+
+				break;
+			}
+
+			case "about": {
+				return (
+					<>
+						<div className="p-4">
+							<UserAboutCardSkeleton />
 						</div>
 					</>
 				);

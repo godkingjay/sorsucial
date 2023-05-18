@@ -1,12 +1,11 @@
-import bcrypt from "bcrypt";
-import { adminApp, authAdmin } from "@/firebase/adminApp";
+import { authAdmin } from "@/firebase/adminApp";
 import { apiConfig } from "@/lib/api/apiConfig";
 import userDb from "@/lib/db/userDb";
 import { SiteUserAPI } from "@/lib/interfaces/api";
 import { SiteUser } from "@/lib/interfaces/user";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
-import { clientApp, clientAuth } from "@/firebase/clientApp";
+import { clientAuth } from "@/firebase/clientApp";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default async function handler(

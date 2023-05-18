@@ -45,17 +45,19 @@ export default async function handler(
 			typeof rawCreator === "string" ? JSON.parse(rawCreator) : rawCreator;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (
@@ -76,7 +78,9 @@ export default async function handler(
 		}
 
 		if (!tagsCollection) {
-			res.status(500).json({ error: "Cannot connect with the Tags Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Tags Database!" });
 		}
 
 		const userAPI = (await apiKeysCollection.findOne({
@@ -84,7 +88,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -92,25 +96,27 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid User" });
+			return res.status(401).json({ error: "Invalid User" });
 		}
 
 		switch (req.method) {
 			case "POST": {
 				if (!discussionData) {
-					res.status(400).json({ error: "No discussion data provided!" });
+					return res.status(400).json({ error: "No discussion data provided!" });
 				}
 
 				if (!creator) {
-					res.status(400).json({ error: "No creator data provided!" });
+					return res.status(400).json({ error: "No creator data provided!" });
 				}
 
 				if (creator.uid !== userAPI.userId) {
-					res.status(400).json({ error: "Creator UID does not match API key!" });
+					return res
+						.status(400)
+						.json({ error: "Creator UID does not match API key!" });
 				}
 
 				if (discussionData.creatorId !== creator.uid) {
-					res
+					return res
 						.status(400)
 						.json({ error: "Creator ID does not match creator UID!" });
 				}
@@ -126,7 +132,7 @@ export default async function handler(
 						_id: objectId,
 					})
 					.catch((error: any) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: "Mongo: Creating document error: " + error.message,
 						});
 					});
@@ -167,7 +173,7 @@ export default async function handler(
 					);
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					newDiscussionState,
 					newDiscussion: discussionData,
 				});
@@ -176,12 +182,12 @@ export default async function handler(
 
 			case "DELETE": {
 				if (!discussionData) {
-					res.status(400).json({ error: "No discussion data provided!" });
+					return res.status(400).json({ error: "No discussion data provided!" });
 				}
 
 				if (userData.uid !== discussionData.creatorId) {
 					if (!userData.roles.includes("admin")) {
-						res.status(400).json({
+						return res.status(400).json({
 							error: "User is not the creator of the discussion or an admin!",
 						});
 					}
@@ -192,7 +198,7 @@ export default async function handler(
 				})) as unknown as SiteDiscussion;
 
 				if (!existingDiscussion) {
-					res
+					return res
 						.status(200)
 						.json({ isDeleted: true, error: "Discussion does not exist!" });
 				}
@@ -234,7 +240,7 @@ export default async function handler(
 						id: discussionData.id,
 					})
 					.catch((error: any) => {
-						res.status(500).json({
+						return res.status(500).json({
 							error: "Mongo(API): Deleting document error: " + error.message,
 						});
 					});
@@ -277,7 +283,7 @@ export default async function handler(
 					);
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					isDeleted: deleteState ? deleteState.acknowledged : false,
 					deleteDiscussionVotesState,
 				});
@@ -286,11 +292,11 @@ export default async function handler(
 			}
 
 			default: {
-				res.status(405).json({ error: "Method not allowed" });
+				return res.status(405).json({ error: "Method not allowed" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

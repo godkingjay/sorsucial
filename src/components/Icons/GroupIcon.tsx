@@ -30,12 +30,12 @@ const GroupIcon: React.FC<GroupIconProps> = ({ group, disabled = false }) => {
 							className="w-full bg-center object-cover"
 						/>
 					) : (
-						<RiGroup2Fill className="h-full w-full" />
+						<RiGroup2Fill className="h-full w-full scale-125" />
 					)}
 				</Link>
 			) : (
 				<div className="h-full w-full aspect-square rounded-full overflow-hidden border border-transparent text-gray-300">
-					<RiGroup2Fill className="h-full w-full" />
+					<RiGroup2Fill className="h-full w-full scale-125" />
 				</div>
 			)}
 		</>

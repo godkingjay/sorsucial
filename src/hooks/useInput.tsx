@@ -102,7 +102,6 @@ const useInput = () => {
 								0.8
 							);
 
-							URL.revokeObjectURL(result);
 							img.remove();
 							canvas.remove();
 							reader.abort();
@@ -133,7 +132,6 @@ const useInput = () => {
 							};
 							resolve(imageOrVideo);
 
-							URL.revokeObjectURL(imageOrVideo.url);
 							video.remove();
 							reader.abort();
 						};

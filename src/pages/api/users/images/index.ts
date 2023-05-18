@@ -51,14 +51,14 @@ export default async function handler(
 				const { newImage } = req.body;
 
 				if (!newImage) {
-					res.status(500).json({ error: "No image provided" });
+					return res.status(500).json({ error: "No image provided" });
 				}
 
 				const newImageState = await userProfilePhotosCollection.insertOne(
 					newImage
 				);
 
-				res.status(200).json({ newImageState });
+				return res.status(200).json({ newImageState });
 				break;
 			}
 
@@ -81,14 +81,14 @@ export default async function handler(
 				const { getImageId } = req.query;
 
 				if (!getImageId) {
-					res.status(500).json({ error: "No image id provided" });
+					return res.status(500).json({ error: "No image id provided" });
 				}
 
 				const imageData = await userProfilePhotosCollection.findOne({
 					id: getImageId,
 				});
 
-				res.status(200).json({ imageData });
+				return res.status(200).json({ imageData });
 				break;
 			}
 
@@ -146,11 +146,11 @@ export default async function handler(
 			 * -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "Invalid request method" });
+				return res.status(500).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

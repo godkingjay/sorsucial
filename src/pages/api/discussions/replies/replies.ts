@@ -27,21 +27,23 @@ export default async function handler(
 		} = req.body || req.query;
 
 		if (!apiKey) {
-			res.status(400).json({ error: "No API key provided!" });
+			return res.status(400).json({ error: "No API key provided!" });
 		}
 
 		if (!apiKeysCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the API Keys Database!" });
 		}
 
 		if (!usersCollection) {
-			res.status(500).json({ error: "Cannot connect with the Users Database!" });
+			return res
+				.status(500)
+				.json({ error: "Cannot connect with the Users Database!" });
 		}
 
 		if (!discussionRepliesCollection || !discussionReplyVotesCollection) {
-			res
+			return res
 				.status(500)
 				.json({ error: "Cannot connect with the Discussions Database!" });
 		}
@@ -51,8 +53,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(400).json({ error: "Invalid API key!" });
-			return;
+			return res.status(400).json({ error: "Invalid API key!" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -60,25 +61,23 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(400).json({ error: "User not found!" });
-			return;
+			return res.status(400).json({ error: "User not found!" });
 		}
 
 		if (userData.uid !== userId) {
-			res.status(404).json({ error: "Please use the correct API!" });
-			return;
+			return res.status(404).json({ error: "Please use the correct API!" });
 		}
 
 		switch (req.method) {
 			case "GET": {
 				if (!discussionId) {
-					res.status(400).json({ error: "No discussion ID provided!" });
-					return;
+					return res.status(400).json({ error: "No discussion ID provided!" });
 				}
 
 				if (!replyForId) {
-					res.status(400).json({ error: "Reply receiver ID not provided!" });
-					return;
+					return res
+						.status(400)
+						.json({ error: "Reply receiver ID not provided!" });
 				}
 
 				const replies = await Promise.all(
@@ -145,20 +144,20 @@ export default async function handler(
 				)) as unknown as DiscussionReplyData[];
 
 				if (replies.length) {
-					res.status(200).json({ repliesData });
+					return res.status(200).json({ repliesData });
 				} else {
-					res.status(200).json({ repliesData: [] });
+					return res.status(200).json({ repliesData: [] });
 				}
 
 				break;
 			}
 
 			default: {
-				res.status(405).json({ error: "Invalid request method!" });
+				return res.status(405).json({ error: "Invalid request method!" });
 				break;
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 }

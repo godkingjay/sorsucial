@@ -1,10 +1,9 @@
 import { PostCreationModalState, errorModalState } from "@/atoms/modalAtom";
-import { UserState } from "@/atoms/userAtom";
 import { PollItem, PostPoll, SitePost } from "@/lib/interfaces/post";
 import React, { useRef, useState } from "react";
 import { FaEye, FaLock } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { SetterOrUpdater, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { DropdownOption } from "../Controls/CustomDropdown";
 import { MdPublic } from "react-icons/md";
 import PostCreationModalFormHead from "./PostCreationModal/PostCreationModalFormHead";
@@ -13,11 +12,7 @@ import PostCreationTabs from "./PostCreationModal/PostCreationTabs";
 import usePost from "@/hooks/usePost";
 import { FiLoader } from "react-icons/fi";
 import PostImagesOrVideosTab from "./PostCreationModal/PostCreationTabs/PostImagesOrVideosTab";
-import {
-	validAllTypes,
-	validImageTypes,
-	validVideoTypes,
-} from "@/lib/types/validFiles";
+import { validAllTypes } from "@/lib/types/validFiles";
 import PostFilesTab from "./PostCreationModal/PostCreationTabs/PostFilesTab";
 import { checkIsValidLink } from "@/lib/functions/checks";
 import PostLinksTab from "./PostCreationModal/PostCreationTabs/PostLinksTab";
@@ -25,14 +20,12 @@ import { BiPoll } from "react-icons/bi";
 import AddTags from "../Form/Tag/AddTags";
 import { useRouter } from "next/router";
 import useGroup from "@/hooks/useGroup";
+import useInput from "@/hooks/useInput";
+import useUser from "@/hooks/useUser";
 
-type PostCreationModalProps = {
-	postCreationModalStateValue: PostCreationModalState;
-	setPostCreationModalStateValue: SetterOrUpdater<PostCreationModalState>;
-	userStateValue: UserState;
-};
+type PostCreationModalProps = {};
 
-export type CreatePostImageOrVideoType = {
+export type PostImageOrVideoType = {
 	name: string;
 	url: string;
 	index: number;
@@ -95,7 +88,7 @@ export type CreatePostType = {
 	postType: SitePost["postType"];
 	isCommentable: SitePost["isCommentable"];
 	privacy: SitePost["privacy"];
-	imagesOrVideos: CreatePostImageOrVideoType[];
+	imagesOrVideos: PostImageOrVideoType[];
 	files: CreatePostFileType[];
 	links: CreatePostLinkType[];
 	poll: CreatePostPollType | null;
@@ -131,12 +124,16 @@ export type currentLinkType = {
 	link: string;
 };
 
-const PostCreationModal: React.FC<PostCreationModalProps> = ({
-	postCreationModalStateValue,
-	setPostCreationModalStateValue,
-	userStateValue,
-}) => {
+const PostCreationModal: React.FC<PostCreationModalProps> = () => {
+	const { userStateValue } = useUser();
+
 	const { groupStateValue } = useGroup();
+
+	const { postCreationModalStateValue, setPostCreationModalStateValue } =
+		usePost();
+
+	const { uploadImageOrVideo } = useInput();
+
 	const { groupId } = useRouter().query;
 
 	const defaultCreatePostForm: CreatePostType = {
@@ -245,180 +242,26 @@ const PostCreationModal: React.FC<PostCreationModalProps> = ({
 				maxPostItems.imagesOrVideos - createPostForm.imagesOrVideos.length
 			);
 
-			imagesOrVideos.map((imageOrVideo) => {
-				if (validateImageOrVideo(imageOrVideo)) {
-					if (validImageTypes.ext.includes(imageOrVideo.type)) {
-						const reader = new FileReader();
+			imagesOrVideos.map(async (imageOrVideo) => {
+				const imageOrVideoData = await uploadImageOrVideo(imageOrVideo);
 
-						reader.onload = (readerEvent) => {
-							const result = readerEvent.target?.result;
-
-							if (result) {
-								const img = new Image();
-
-								img.onload = () => {
-									const canvas = document.createElement("canvas");
-									const ctx = canvas.getContext(
-										"2d"
-									) as CanvasRenderingContext2D;
-
-									const height = img.height;
-									const width = img.width;
-
-									canvas.height = height;
-									canvas.width = width;
-
-									ctx.fillStyle = "#fff";
-									ctx.fillRect(0, 0, width, height);
-
-									ctx.drawImage(img, 0, 0, width, height);
-
-									canvas.toBlob(
-										(blob) => {
-											if (blob) {
-												setCreatePostForm((prev) => ({
-													...prev,
-													imagesOrVideos: [
-														...prev.imagesOrVideos,
-														{
-															name: imageOrVideo.name,
-															url: URL.createObjectURL(blob),
-															index: prev.imagesOrVideos.length
-																? prev.imagesOrVideos[
-																		prev.imagesOrVideos.length - 1
-																  ].index + 1
-																: 0,
-															size: blob.size,
-															type: blob.type,
-															height: height,
-															width: width,
-														},
-													],
-												}));
-											}
-										},
-										"image/jpeg",
-										0.8
-									);
-
-									URL.revokeObjectURL(result as string);
-									img.remove();
-									canvas.remove();
-									reader.abort();
-								};
-
-								img.src = result as string;
-							} else {
-								setErrorModalStateValue((prev) => ({
-									...prev,
-									open: true,
-									view: "upload",
-									message: "Image not loaded.",
-								}));
-							}
-						};
-
-						reader.readAsDataURL(imageOrVideo);
-					} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
-						const reader = new FileReader();
-
-						reader.onload = () => {
-							const result = reader.result;
-
-							if (result) {
-								const blob = new Blob([result], {
-									type: imageOrVideo.type || "video/mp4",
-								});
-
-								const video = document.createElement("video");
-
-								video.onloadedmetadata = () => {
-									setCreatePostForm((prev) => ({
-										...prev,
-										imagesOrVideos: [
-											...prev.imagesOrVideos,
-											{
-												name: imageOrVideo.name,
-												url: URL.createObjectURL(blob),
-												index: prev.imagesOrVideos.length
-													? prev.imagesOrVideos[prev.imagesOrVideos.length - 1]
-															.index + 1
-													: 0,
-												size: blob.size,
-												type: blob.type,
-												height: video.videoHeight,
-												width: video.videoWidth,
-											},
-										],
-									}));
-
-									URL.revokeObjectURL(result as string);
-									video.remove();
-									reader.abort();
-								};
-
-								video.src = URL.createObjectURL(blob) as string;
-							} else {
-								setErrorModalStateValue((prev) => ({
-									...prev,
-									open: true,
-									view: "upload",
-									message: "Video not loaded.",
-								}));
-							}
-						};
-
-						reader.readAsArrayBuffer(imageOrVideo);
-					}
-					// else {
-					// 	setErrorModalStateValue((prev) => ({
-					// 		...prev,
-					// 		open: true,
-					// 		view: "upload",
-					// 		message: "Invalid file type",
-					// 	}));
-					// }
+				if (imageOrVideo) {
+					setCreatePostForm((prev) => ({
+						...prev,
+						imagesOrVideos: [
+							...prev.imagesOrVideos,
+							{
+								...(imageOrVideoData as Partial<PostImageOrVideoType>),
+								index: prev.imagesOrVideos.length
+									? prev.imagesOrVideos[prev.imagesOrVideos.length - 1].index + 1
+									: 0,
+							} as PostImageOrVideoType,
+						],
+					}));
 				}
 			});
 
 			event.target.value = "";
-		}
-	};
-
-	const validateImageOrVideo = (imageOrVideo: File) => {
-		if (validImageTypes.ext.includes(imageOrVideo.type)) {
-			if (imageOrVideo.size > 1024 * 1024 * 2) {
-				setErrorModalStateValue((prev) => ({
-					...prev,
-					open: true,
-					view: "upload",
-					message: "Image size should be less than 2MB",
-				}));
-				return false;
-			}
-
-			return true;
-		} else if (validVideoTypes.ext.includes(imageOrVideo.type)) {
-			if (imageOrVideo.size > 1024 * 1024 * 20) {
-				setErrorModalStateValue((prev) => ({
-					...prev,
-					open: true,
-					view: "upload",
-					message: "Video size should be less than 20MB",
-				}));
-				return false;
-			}
-
-			return true;
-		} else {
-			setErrorModalStateValue((prev) => ({
-				...prev,
-				open: true,
-				view: "upload",
-				message: "Invalid file type",
-			}));
-
-			return false;
 		}
 	};
 

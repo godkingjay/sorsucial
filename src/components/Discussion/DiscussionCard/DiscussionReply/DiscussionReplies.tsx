@@ -1,4 +1,3 @@
-import { UserState } from "@/atoms/userAtom";
 import React, { useCallback, useEffect } from "react";
 import ReplyBox from "./ReplyBox";
 import { Reply } from "@/lib/interfaces/discussion";
@@ -7,8 +6,8 @@ import useReply from "@/hooks/useReply";
 import ReplyItem from "./ReplyItem";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import DiscussionReplyItemSkeleton from "@/components/Skeleton/Discussion/DiscussionReply/DiscussionReplyItemSkeleton";
-import useInput from "@/hooks/useInput";
 import useUser from "@/hooks/useUser";
+import useGroup from "@/hooks/useGroup";
 
 type DiscussionRepliesProps = {
 	currentDiscussion: DiscussionState["currentDiscussion"];
@@ -29,7 +28,7 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 }) => {
 	const { userStateValue, userMounted } = useUser();
 
-	const { formatNumberWithSuffix } = useInput();
+	const { groupStateValue } = useGroup();
 
 	const { createReply, onReplyVote, fetchReplies, deleteReply } = useReply();
 	const [discussionReplyForm, setDiscussionReplyForm] =
@@ -265,6 +264,18 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 										/>
 									</>
 								)}
+								{!loadingReplies &&
+									currentDiscussion.discussionReplies.filter(
+										(reply) =>
+											reply.reply.replyLevel === 0 &&
+											reply.reply.replyForId === currentDiscussion.discussion.id
+									).length === 0 && (
+										<>
+											<p className="font-bold text-center text-gray-500">
+												This discussion has no replies yet.
+											</p>
+										</>
+									)}
 								{currentDiscussion.discussion.numberOfFirstLevelReplies >
 									currentDiscussion.discussionReplies.filter(
 										(reply) =>
@@ -284,7 +295,15 @@ const DiscussionReplies: React.FC<DiscussionRepliesProps> = ({
 										</div>
 									)}
 								{currentDiscussion.discussion.isOpen &&
-									!currentDiscussion.discussionDeleted && (
+									!currentDiscussion.discussionDeleted &&
+									(groupStateValue.currentGroup &&
+									currentDiscussion.discussion.groupId ===
+										groupStateValue.currentGroup.group.id &&
+									currentDiscussion.discussion.privacy !== "public"
+										? groupStateValue.currentGroup.userJoin?.roles.includes(
+												"member"
+										  )
+										: true) && (
 										<ReplyBox
 											replyForm={discussionReplyForm}
 											setReplyForm={setDiscussionReplyForm}

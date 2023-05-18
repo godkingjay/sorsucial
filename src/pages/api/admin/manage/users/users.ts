@@ -52,8 +52,7 @@ export default async function handler(
 				const { getFromDate, getPrivateKey, getUserLimit } = req.query;
 
 				if (!getPrivateKey || getPrivateKey !== apiConfig.privateKey) {
-					res.status(500).json({ error: "Unauthorized" });
-					return;
+					return res.status(500).json({ error: "Unauthorized" });
 				}
 
 				const users = getFromDate
@@ -68,8 +67,7 @@ export default async function handler(
 							.limit(parseInt(getUserLimit as string))
 							.toArray();
 
-				res.status(200).json({ users });
-				return;
+				return res.status(200).json({ users });
 				break;
 			}
 
@@ -89,11 +87,11 @@ export default async function handler(
 			 * --------------------------------------------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "Invalid request method" });
+				return res.status(500).json({ error: "Invalid request method" });
 				break;
 			}
 		}
 	} catch (error) {
-		res.status(500).json({ error: "Something went wrong" });
+		return res.status(500).json({ error: "Something went wrong" });
 	}
 }

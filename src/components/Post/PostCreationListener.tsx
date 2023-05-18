@@ -108,7 +108,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 					<button
 						type="button"
 						title="Add Link"
-						className="button !hidden xs:!flex"
+						className="button"
 						onClick={() => handlePostCreationModal("link")}
 					>
 						<div className="icon-container text-cyan-500">
@@ -118,7 +118,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 							<p className="label">Add Link</p>
 						</div>
 					</button>
-					<button
+					{/* <button
 						type="button"
 						title="Create a Poll"
 						className="button"
@@ -130,7 +130,7 @@ const PostCreationListener: React.FC<PostCreationListenerProps> = ({
 						<div className="label-container">
 							<p className="label">Create a Poll</p>
 						</div>
-					</button>
+					</button> */}
 				</div>
 			</div>
 		</div>

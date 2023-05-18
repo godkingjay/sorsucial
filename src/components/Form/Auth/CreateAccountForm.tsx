@@ -3,7 +3,7 @@ import React, { SetStateAction, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLoader } from "react-icons/fi";
 import SorSUcialLogo from "public/assets/logo/sorsucial.svg";
-import { SignInRegex } from "./SignInForm";
+import { PasswordRegex } from "@/lib/input/regex";
 
 type CreateAccountFormProps = {
 	createAccountForm: CreateAccountType;
@@ -38,7 +38,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 		if (name === "password") {
 			setCreateAccountFormError((prev) => ({
 				...prev,
-				password: !SignInRegex.password.test(value),
+				password: !PasswordRegex.test(value),
 			}));
 		}
 
@@ -168,8 +168,8 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 										</li>
 										<li>
 											<p>
-												2. Password should only contain A-Z, a-z, 0-9, or
-												special characters(@, $, !, %, *, ?, &), and no spaces.
+												2. Password should only contain A-Z, a-z, 0-9, or special
+												characters(@, $, !, %, *, ?, &), and no spaces.
 											</p>
 										</li>
 									</ul>

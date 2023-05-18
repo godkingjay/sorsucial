@@ -52,8 +52,7 @@ export default async function handler(
 				const { deleteUserId } = req.body;
 
 				if (!deleteUserId) {
-					res.status(500).json({ error: "No user id provided" });
-					return;
+					return res.status(500).json({ error: "No user id provided" });
 				}
 
 				const deleteProfilePhotos = await userProfilePhotosCollection
@@ -63,12 +62,11 @@ export default async function handler(
 					.toArray();
 
 				if (deleteProfilePhotos.length === 0) {
-					res.status(200).json({
+					return res.status(200).json({
 						deleteProfilePhotoState: "No profile photos found",
 						deleteUserId,
 						isDeleted: true,
 					});
-					return;
 				}
 
 				await Promise.all(
@@ -83,14 +81,14 @@ export default async function handler(
 					})
 				)
 					.then(() => {
-						res.status(200).json({
+						return res.status(200).json({
 							deleteProfilePhotoState: "Profile photos deleted",
 							deleteUserId,
 							isDeleted: true,
 						});
 					})
 					.catch((err) => {
-						res.status(500).json({ error: err, isDeleted: false });
+						return res.status(500).json({ error: err, isDeleted: false });
 					});
 
 				break;
@@ -112,12 +110,10 @@ export default async function handler(
 			 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 			 */
 			default: {
-				res.status(500).json({ error: "No method provided" });
-				return;
+				return res.status(500).json({ error: "No method provided" });
 			}
 		}
 	} catch (error: any) {
-		res.status(500).json({ message: error.message });
-		return;
+		return res.status(500).json({ message: error.message });
 	}
 }

@@ -21,41 +21,13 @@ const PageContainerLayout: React.FC<PageContainerLayoutProps> = ({
 }) => {
 	const currentDirectoryStateValue = useRecoilValue(currentDirectoryState);
 
-	const {
-		authUser,
-		loadingUser,
-		authLoading,
-		setLoadingUser,
-		userStateValue,
-		logOutUser,
-		userMounted,
-	} = useUser();
-
-	const [navigationBarStateValue, setNavigationBarStateValue] =
-		useRecoilState(navigationBarState);
-
-	const router = useRouter();
-
 	const defaultPage = () => {
 		return <MainPageLayout>{children}</MainPageLayout>;
 	};
 
 	switch (currentDirectoryStateValue.main) {
 		case "admin": {
-			return (
-				<AdminPageLayout
-					navigationBarStateValue={navigationBarStateValue}
-					setNavigationBarStateValue={setNavigationBarStateValue}
-					router={router}
-					loadingUser={loadingUser}
-					authLoading={authLoading}
-					authUser={authUser}
-					userStateValue={userStateValue}
-					userMounted={userMounted}
-				>
-					{children}
-				</AdminPageLayout>
-			);
+			return <AdminPageLayout>{children}</AdminPageLayout>;
 		}
 
 		case "groups": {

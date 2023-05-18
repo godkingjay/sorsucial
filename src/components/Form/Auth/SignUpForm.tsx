@@ -10,9 +10,9 @@ import {
 	sendSignInLinkToEmail,
 } from "firebase/auth";
 import Link from "next/link";
-import { SignInRegex } from "./SignInForm";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import { siteDetails } from "@/lib/host";
+import { EmailRegex } from "@/lib/input/regex";
 
 type SignUpFormProps = {
 	handleFormChange: (form: authForm) => void;
@@ -45,7 +45,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ handleFormChange }) => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (SignInRegex.email.test(signUpForm.email)) {
+		if (EmailRegex.test(signUpForm.email)) {
 			setValidEmail(true);
 		} else {
 			setValidEmail(false);

@@ -8,6 +8,7 @@ import PostCommentItemSkeleton from "@/components/Skeleton/Post/PostComment/Post
 import { PostComment } from "@/lib/interfaces/post";
 import ErrorBannerTextSm from "@/components/Banner/ErrorBanner/ErrorBannerTextSm";
 import useUser from "@/hooks/useUser";
+import useGroup from "@/hooks/useGroup";
 
 type PostCommentsProps = {
 	currentPost: PostState["currentPost"];
@@ -27,6 +28,9 @@ const PostComments: React.FC<PostCommentsProps> = ({
 	commentBoxRef,
 }) => {
 	const { userStateValue, userMounted } = useUser();
+
+	const { groupStateValue } = useGroup();
+
 	const [postCommentForm, setPostCommentForm] = useState<PostCommentFormType>({
 		postId: currentPost?.post.id!,
 		groupId: currentPost?.post.groupId,
@@ -262,6 +266,18 @@ const PostComments: React.FC<PostCommentsProps> = ({
 										/>
 									</>
 								)}
+								{!loadingComments &&
+									currentPost?.postComments.filter(
+										(comment) =>
+											comment.comment.commentLevel === 0 &&
+											comment.comment.commentForId === currentPost?.post.id
+									).length === 0 && (
+										<>
+											<p className="font-bold text-center text-gray-500">
+												This post has no comments yet.
+											</p>
+										</>
+									)}
 								{currentPost.post.numberOfFirstLevelComments >
 									currentPost.postComments.filter(
 										(comment) =>
@@ -280,19 +296,27 @@ const PostComments: React.FC<PostCommentsProps> = ({
 											</button>
 										</div>
 									)}
-								{!currentPost.postDeleted && (
-									<CommentBox
-										commentForm={postCommentForm}
-										setCommentForm={setPostCommentForm}
-										commentLevel={0}
-										commentForId={currentPost?.post.id}
-										onChange={handleInputChange}
-										onSubmit={handleCommentSubmit}
-										commenting={creatingComment}
-										setCommenting={setCreatingComment}
-										commentBoxRef={commentBoxRef}
-									/>
-								)}
+								{!currentPost.postDeleted &&
+									(groupStateValue.currentGroup &&
+									currentPost.post.groupId ===
+										groupStateValue.currentGroup.group.id &&
+									currentPost.post.privacy !== "public"
+										? groupStateValue.currentGroup.userJoin?.roles.includes(
+												"member"
+										  )
+										: true) && (
+										<CommentBox
+											commentForm={postCommentForm}
+											setCommentForm={setPostCommentForm}
+											commentLevel={0}
+											commentForId={currentPost?.post.id}
+											onChange={handleInputChange}
+											onSubmit={handleCommentSubmit}
+											commenting={creatingComment}
+											setCommenting={setCreatingComment}
+											commentBoxRef={commentBoxRef}
+										/>
+									)}
 							</>
 						)}
 					</div>

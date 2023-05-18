@@ -223,12 +223,12 @@ const DiscussionCreationModal: React.FC<DiscussionCreationModalProps> = ({
 									/>
 								</div>
 							</div>
-							<DiscussionCreationTabs
+							{/* <DiscussionCreationTabs
 								handleFormTabChange={handleFormTabChange}
 								discussionCreationModalStateValue={
 									discussionCreationModalStateValue
 								}
-							/>
+							/> */}
 						</div>
 						<AddTags
 							title="Discussion Tags"

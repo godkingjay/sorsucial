@@ -1,10 +1,7 @@
 import { ObjectId } from "mongodb";
-import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
-import { CommentLike, PostComment, SitePost } from "@/lib/interfaces/post";
-import axios from "axios";
-import { apiConfig } from "@/lib/api/apiConfig";
+import { PostComment, SitePost } from "@/lib/interfaces/post";
 import { SiteUser } from "@/lib/interfaces/user";
 import userDb from "@/lib/db/userDb";
 import postDb from "@/lib/db/postDb";
@@ -65,7 +62,7 @@ export default async function handler(
 		})) as unknown as SiteUserAPI;
 
 		if (!userAPI) {
-			res.status(401).json({ error: "Invalid API key" });
+			return res.status(401).json({ error: "Invalid API key" });
 		}
 
 		const userData = (await usersCollection.findOne({
@@ -73,7 +70,7 @@ export default async function handler(
 		})) as unknown as SiteUser;
 
 		if (!userData) {
-			res.status(401).json({ error: "Invalid user" });
+			return res.status(401).json({ error: "Invalid user" });
 		}
 
 		const postData = (await postsCollection.findOne({
@@ -81,7 +78,7 @@ export default async function handler(
 		})) as unknown as SitePost;
 
 		if (!postData) {
-			res.status(404).json({
+			return res.status(404).json({
 				postDeleted: true,
 				commentDeleted: true,
 				error: "Post not found",
@@ -94,7 +91,7 @@ export default async function handler(
 			})) as unknown as PostComment;
 
 			if (!parentCommentData) {
-				res.status(404).json({
+				return res.status(404).json({
 					parentCommentDeleted: true,
 					error: "Parent Comment not found",
 				});
@@ -159,7 +156,7 @@ export default async function handler(
 								}
 						  );
 
-				res.status(201).json({
+				return res.status(201).json({
 					newCommentState,
 					newComment: commentData,
 				});
@@ -168,7 +165,7 @@ export default async function handler(
 
 			case "PUT": {
 				if (!commentData) {
-					res.status(400).json({ error: "No comment data provided" });
+					return res.status(400).json({ error: "No comment data provided" });
 				}
 
 				const existingComment = (await postCommentsCollection.findOne({
@@ -176,7 +173,7 @@ export default async function handler(
 				})) as unknown as PostComment;
 
 				if (!existingComment) {
-					res.status(404).json({
+					return res.status(404).json({
 						commentDeleted: true,
 						error: "Comment not found",
 					});
@@ -186,7 +183,7 @@ export default async function handler(
 
 				const updatedCommentState = await postCommentsCollection.updateOne(
 					{
-						id: commentData!.id,
+						id: commentData?.id,
 					},
 					{
 						$set: updatedComment,
@@ -206,22 +203,25 @@ export default async function handler(
 					);
 				}
 
-				if (updatedCommentState.modifiedCount > 0) {
-					res.status(200).json({ message: "Comment updated" });
+				if (updatedCommentState.acknowledged) {
+					return res.status(200).json({
+						isUpdated: updatedCommentState.acknowledged,
+						message: "Comment updated",
+					});
 				} else {
-					res.status(200).json({ message: "Comment not updated" });
+					return res.status(200).json({ message: "Comment not updated" });
 				}
 				break;
 			}
 
 			case "DELETE": {
 				if (!commentData!) {
-					res.status(500).json({ error: "No comment data provided" });
+					return res.status(500).json({ error: "No comment data provided" });
 				}
 
 				if (commentData?.creatorId !== userData.uid) {
 					if (!userData.roles.includes("admin")) {
-						res.status(401).json({
+						return res.status(401).json({
 							error: "You are not authorized to delete this comment",
 						});
 					}
@@ -232,7 +232,7 @@ export default async function handler(
 				})) as unknown as PostComment;
 
 				if (!existingComment) {
-					res.status(404).json({
+					return res.status(404).json({
 						commentDeleted: true,
 						error: "Comment not found",
 					});
@@ -301,7 +301,7 @@ export default async function handler(
 					}
 				);
 
-				res.status(200).json({
+				return res.status(200).json({
 					isDeleted: count > 0,
 					deletedCount: count,
 				});
@@ -310,11 +310,11 @@ export default async function handler(
 			}
 
 			default: {
-				res.status(405).json({ error: "Method not allowed" });
+				return res.status(405).json({ error: "Method not allowed" });
 				break;
 			}
 		}
 	} catch (error) {
-		res.status(500).json({ error: "Internal server error" });
+		return res.status(500).json({ error: "Internal server error" });
 	}
 }

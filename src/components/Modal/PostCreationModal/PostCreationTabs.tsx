@@ -54,7 +54,7 @@ const PostCreationTabs: React.FC<PostTabsProps> = ({
 				>
 					<RiLinkM className="icon" />
 				</button>
-				<button
+				{/* <button
 					type="button"
 					title="Create Poll"
 					className="post-creation-form-tab-button text-yellow-500 data-[active=true]:!bg-yellow-100"
@@ -71,7 +71,7 @@ const PostCreationTabs: React.FC<PostTabsProps> = ({
 					data-active={postCreationModalStateValue.tab === "settings"}
 				>
 					<IoSettingsSharp className="icon" />
-				</button>
+				</button> */}
 			</div>
 		</div>
 	);

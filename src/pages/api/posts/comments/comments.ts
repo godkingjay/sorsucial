@@ -1,10 +1,7 @@
-import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
 import { CommentLike, PostComment } from "@/lib/interfaces/post";
-import axios from "axios";
-import { apiConfig } from "@/lib/api/apiConfig";
 import { SiteUser } from "@/lib/interfaces/user";
 
 export default async function handler(
@@ -15,7 +12,6 @@ export default async function handler(
 		const client = await clientPromise;
 		const db = client.db("sorsu-db");
 		const usersCollection = db.collection("users");
-		const postsCollection = db.collection("posts");
 		const postCommentsCollection = db.collection("post-comments");
 		const postCommentLikesCollection = db.collection("post-comment-likes");
 
@@ -31,13 +27,13 @@ export default async function handler(
 				} = req.query;
 
 				if (!getCommentPostId) {
-					res.status(500).json({ error: "No post id provided" });
-					return;
+					return res.status(500).json({ error: "No post id provided" });
 				}
 
 				if (!getCommentForId) {
-					res.status(500).json({ error: "Comment receiver Id not provide" });
-					return;
+					return res
+						.status(500)
+						.json({ error: "Comment receiver Id not provide" });
 				}
 
 				const comments = getFromDate
@@ -103,20 +99,20 @@ export default async function handler(
 				);
 
 				if (commentsData.length) {
-					res.status(200).json({ comments: commentsData });
+					return res.status(200).json({ comments: commentsData });
 				} else {
-					res.status(200).json({ comments: [] });
+					return res.status(200).json({ comments: [] });
 				}
 
 				break;
 			}
 
 			default: {
-				res.status(405).json({ error: "Method not allowed" });
+				return res.status(405).json({ error: "Method not allowed" });
 				break;
 			}
 		}
 	} catch (error) {
-		res.status(500).json({ error: "Internal server error" });
+		return res.status(500).json({ error: "Internal server error" });
 	}
 }

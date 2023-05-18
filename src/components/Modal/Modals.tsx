@@ -5,13 +5,13 @@ import {
 	discussionCreationModalState,
 	errorModalState,
 	groupCreationModalState,
-	postCreationModalState,
 } from "@/atoms/modalAtom";
 import PostCreationModal from "./PostCreationModal";
 import { UserState } from "@/atoms/userAtom";
 import DiscussionCreationModal from "./DiscussionCreationModal";
 import GroupCreationModal from "./GroupCreationModal";
 import useInput from "@/hooks/useInput";
+import usePost from "@/hooks/usePost";
 
 type ModalsProps = {
 	userStateValue: UserState;
@@ -19,10 +19,12 @@ type ModalsProps = {
 
 const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
 	const { uploadImageOrVideo } = useInput();
+
+	const { postCreationModalStateValue } = usePost();
+
 	const [errorModalStateValue, setErrorModalStateValue] =
 		useRecoilState(errorModalState);
-	const [postCreationModalStateValue, setPostCreationModalStateValue] =
-		useRecoilState(postCreationModalState);
+
 	const [
 		discussionCreationModalStateValue,
 		setDiscussionCreationModalStateValue,
@@ -38,13 +40,7 @@ const Modals: React.FC<ModalsProps> = ({ userStateValue }) => {
 					setErrorModalStateValue={setErrorModalStateValue}
 				/>
 			)}
-			{postCreationModalStateValue.open && (
-				<PostCreationModal
-					postCreationModalStateValue={postCreationModalStateValue}
-					setPostCreationModalStateValue={setPostCreationModalStateValue}
-					userStateValue={userStateValue}
-				/>
-			)}
+			{postCreationModalStateValue.open && <PostCreationModal />}
 			{discussionCreationModalStateValue.open && (
 				<DiscussionCreationModal
 					discussionCreationModalStateValue={discussionCreationModalStateValue}

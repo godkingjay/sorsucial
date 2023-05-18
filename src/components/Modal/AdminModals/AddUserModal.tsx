@@ -144,7 +144,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 								New User
 							</button>
 						</li>
-						<li>
+						{/* <li>
 							<button
 								type="button"
 								title="Bulk Add"
@@ -171,7 +171,7 @@ const AddUserModal: React.FC<AddUserModal> = ({
 							>
 								Import Users
 							</button>
-						</li>
+						</li> */}
 						<li className="h-max w-max mx-auto">
 							<div className="h-10 w-[1px] bg-black bg-opacity-10"></div>
 						</li>

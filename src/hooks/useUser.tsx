@@ -422,7 +422,7 @@ const useUser = () => {
 	 */
 	const setCurrentUserState = useCallback(async () => {
 		try {
-			if (!loadingUser && !userStateValue.api) {
+			if (!loadingUser && !userStateValue.api && userMemo) {
 				setLoadingUser(true);
 
 				if (userMemo) {

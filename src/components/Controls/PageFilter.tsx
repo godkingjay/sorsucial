@@ -103,7 +103,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 
 	return (
 		<>
-			{/* <div className="z-[10] shadow-page-box-1 page-box-1 flex flex-row items-center h-12 py-1 px-4 sm:px-1 entrance-animation-slide-from-right">
+			<div className="z-[10] shadow-page-box-1 page-box-1 flex flex-row items-center h-12 py-1 px-4 sm:px-1 entrance-animation-slide-from-right">
 				<button
 					type="button"
 					title="Recent"
@@ -249,7 +249,7 @@ const PageFilter: React.FC<PageFilterProps> = () => {
 						</div>
 					)}
 				</div>
-			</div> */}
+			</div>
 		</>
 	);
 };

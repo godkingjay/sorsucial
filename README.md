@@ -2,7 +2,43 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+#or
+yarn install
+```
+
+Second, configure the environment variables in `.env.example` and rename to to `.env.local`:
+
+```bash
+NEXT_PUBLIC_API_KEY=#Firebase APP API Key
+NEXT_PUBLIC_AUTH_DOMAIN=#Firebase App Auth Domain
+NEXT_PUBLIC_DATABASE_URL=#Firebase App Database
+NEXT_PUBLIC_PROJECT_ID=#Firebase App Project ID
+NEXT_PUBLIC_STORAGE_BUCKET=#Firebase App Storage Bucket
+NEXT_PUBLIC_MESSAGING_SENDER_ID=#Firebase App Sender ID
+NEXT_PUBLIC_APP_ID=#Firebase APP ID
+NEXT_PUBLIC_MEASUREMENT_ID=#Firebase APP Measurement ID
+
+NEXT_PUBLIC_BASE_URL=#The Website base URL
+NEXT_PUBLIC_API_ENDPOINT=#The API Endpoint base URL
+
+NEXT_PUBLIC_ADMIN_TYPE=service_account
+NEXT_PUBLIC_ADMIN_PRIVATE_KEY_ID=#Firebase Admin SDK Private Key
+NEXT_PUBLIC_ADMIN_CLIENT_EMAIL=#Firebase Admin SDK Client Email
+NEXT_PUBLIC_ADMIN_CLIENT_ID=#Firebase Admin SDK Client ID
+NEXT_PUBLIC_ADMIN_AUTH_URI=#Firebase Admin SDK Auth URI
+NEXT_PUBLIC_ADMIN_TOKEN_URI=#Firebase Admin SDK Token URI
+NEXT_PUBLIC_ADMIN_CERT_AUTH_PROVIDER=#Firebase Admin SDK Certificate Provider
+NEXT_PUBLIC_ADMIN_CERT_CLIENT=#Firebase Admin SDK Client Certificate
+
+MONGODB_URI=#MongoDB Database Link
+
+```
+
+Third, run the development server:
 
 ```bash
 npm run dev
@@ -16,7 +52,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/](http://localhost:3000/api/). This endpoint can be edited in `pages/api/index.ts`.
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 

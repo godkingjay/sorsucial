@@ -21,6 +21,8 @@ import { useCallback, useMemo } from "react";
  * - createNewUsers - This function is used to create new users.
  * - deleteUser - This function is used to delete a user from the database.
  *
+ * @see {@link https://reactjs.org/docs/hooks-intro.html - Introducing Hooks | React}
+ * @see {@link https://reactjs.org/docs/hooks-reference.html - Hooks API Reference | React}
  * @see {@link https://legacy.reactjs.org/docs/hooks-custom.html - Custom Hook}
  */
 const useAdmin = () => {

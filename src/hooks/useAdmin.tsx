@@ -20,47 +20,67 @@ import { useCallback, useMemo } from "react";
  * - setAdminModalStateValue - The function used to set the admin modal state.
  * - createNewUsers - This function is used to create new users.
  * - deleteUser - This function is used to delete a user from the database.
+ *
+ * @see {@link https://legacy.reactjs.org/docs/hooks-custom.html - Custom Hook}
  */
 const useAdmin = () => {
 	/**
-	 * adminStateValue - The current value of the admin state.
+	 * This code is using the `useRecoilState` hook from the `Recoil` library to declare a state
+	 * variable called `adminStateValue` and a corresponding function called `setAdminStateValue` to
+	 * update the state. The `adminState` variable is likely defined elsewhere in the code and is being
+	 * passed as an argument to the `useRecoilState` hook to initialize the state. This code is likely
+	 * part of a React component and is used to manage the state of the component.
 	 *
-	 * setAdminStateValue - The function used to set the admin state.
-	 *
-	 * @param {object} - {manageUsers: SiteUser[], manageGroups: SiteGroup[], manageDiscussions: SiteDiscussion[], manageFeeds: SiteFeed[]}
-	 *
-	 * manageUsers - The list of users to be managed.
-	 *
-	 * manageGroups - The list of groups to be managed.
-	 *
-	 * manageDiscussions - The list of discussions to be managed.
-	 *
-	 * manageFeeds - The list of feeds to be managed.
+	 * @see {@link https://recoiljs.org/docs/api-reference/core/useRecoilState - useRecoilState}
 	 */
 	const [adminStateValue, setAdminStateValue] = useRecoilState(adminState);
+
 	/**
-	 * adminModalStateValue - The current value of the admin modal state.
+	 * This code is using the `useRecoilState` hook from the `Recoil` library to get the current
+	 * value and a function to update the value of the `adminModalState` atom. The current value is stored
+	 * in the `adminModalStateValue` variable and the function to update the value is stored in the
+	 * `setAdminModalStateValue` variable. This code is typically used in a React component to manage the
+	 * state of a `Recoil` atom.
 	 *
-	 * setAdminModalStateValue - The function used to set the admin modal state.
-	 *
-	 * @param {object} - {isOpen: boolean, modalType: string, modalProps: object}
-	 *
-	 * isOpen - The boolean value that determines if the modal is open or not.
-	 *
-	 * modalType - The type of modal to be opened.
-	 *
-	 * modalProps - The props to be passed to the modal.
+	 * @see {@link https://recoiljs.org/docs/api-reference/core/useRecoilState - useRecoilState}
 	 */
 	const [adminModalStateValue, setAdminModalStateValue] =
 		useRecoilState(adminModalState);
 
+	/**
+	 * This code is using the `useUser` hook to retrieve the `userStateValue` from the user state in
+	 * a TypeScript React component. It is likely that the `userStateValue` contains information about the
+	 * currently logged in user.
+	 *
+	 * The `useUser` hook is defined in the `src\hooks\useUser.tsx` file and is used to retrieve the
+	 * `userStateValue` from the user state in a TypeScript React component.
+	 *
+	 * @see {@link useUser}
+	 */
 	const { userStateValue } = useUser();
 
+	/**
+	 * This code is using the `useMemo` hook in a TypeScript React component to memoize the values of
+	 * `adminModalStateValue` and `setAdminStateValue` and store them in the `adminStateValueMemo`
+	 * variable. This means that the values will only be recalculated if either of the dependencies
+	 * (`adminModalStateValue` or `setAdminStateValue`) change. This can help improve performance by
+	 * avoiding unnecessary re-renders of the component.
+	 *
+	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usememo - useMemo}
+	 */
 	const [adminStateValueMemo, setAdminStateValueMemo] = useMemo(
 		() => [adminModalStateValue, setAdminStateValue],
 		[adminModalStateValue, setAdminStateValue]
 	);
 
+	/**
+	 * The above code is using the `useMemo` hook from React to memoize the state value and state setter
+	 * function for an admin modal. This means that the values will only be recomputed if the dependencies
+	 * (in this case, the state value and state setter function) change. This can help improve performance
+	 * by avoiding unnecessary re-renders.
+	 *
+	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usememo - useMemo}
+	 */
 	const [adminModalStateValueMemo, setAdminModalStateValueMemo] = useMemo(
 		() => [adminModalStateValue, setAdminModalStateValue],
 		[adminModalStateValue, setAdminModalStateValue]

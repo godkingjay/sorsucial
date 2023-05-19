@@ -1,6 +1,5 @@
-import { clientAuth, clientDb } from "@/firebase/clientApp";
+import { clientAuth } from "@/firebase/clientApp";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
 
 const useCheck = () => {
 	const checkUserEmailExists = async (userEmail: string): Promise<boolean> => {

@@ -25,6 +25,7 @@ const UserPageHeader: React.FC<UserPageHeaderProps> = ({ userData }) => {
 								sizes="(min-width: 1200px) 900px, (min-width: 768px) 700px, 100vw"
 								fill
 								className="w-full bg-center object-cover"
+								loading="lazy"
 							/>
 						</>
 					) : (

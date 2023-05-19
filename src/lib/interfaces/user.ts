@@ -102,9 +102,9 @@ export interface UserConnection {
 	userId: string;
 	isAccepted: boolean;
 	isRejected: boolean;
-	requestAt?: Date;
-	acceptAt?: Date;
+	requestedAt?: Date;
 	updatedAt?: Date;
+	acceptedAt?: Date;
 }
 
 /**

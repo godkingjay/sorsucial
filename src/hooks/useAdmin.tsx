@@ -87,26 +87,31 @@ const useAdmin = () => {
 	);
 
 	/**
-	 * createNewUsers
+	 * This code is a TypeScript React function that creates new users in a database and adds them to
+	 * the admin state. It takes in an array of new users as an argument and uses Axios to send requests
+	 * to an API to create new accounts and user documents in the database. It then adds the new users to
+	 * the admin state using the setAdminStateValueMemo function. The function is wrapped in a useCallback
+	 * hook and uses async/await and Promise.all to handle asynchronous operations.
 	 *
-	 * This function is used to create new users.
+	 * @param newUsers - The list of new users to be added to the admin state.
 	 *
-	 * This function will create a new user in the admin state and in the database.
-	 * It will send a request to the API to create a new account in firebase account.
-	 * After creating an account in firebase, it will send another request to the API to create a new user document in the database.
-	 * After creating a new user, it will then add the new user to the admin state.
+	 * @returns This function does not return anything.
 	 *
-	 * @param {NewUserType[]} newUsers - The list of new users to be created.
+	 * @see {@link NewUserType}
+	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usecallback - useCallback}
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function - async/await}
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all - Promise.all}
+	 * @see {@link axios}
 	 */
 	const createNewUsers = useCallback(
 		async (newUsers: NewUserType[]) => {
 			try {
 				/**
-				 * newAdminStateUsers - The list of new users to be added to the admin state.
+				 * This code is declaring a new constant variable named "newAdminStateUsers" which is an array
+				 * of objects of type "SiteUser". The array is currently empty. This code is written in TypeScript
+				 * and is likely used in a React application.
 				 *
-				 * This list will be used to add the new users to the admin state.
-				 *
-				 * @type {SiteUser[]}
+				 * @see {@link SiteUser}
 				 */
 				const newAdminStateUsers: SiteUser[] = [];
 

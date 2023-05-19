@@ -23,7 +23,7 @@ const DiscussionHead: React.FC<DiscussionHeadProps> = ({
 }) => {
 	return (
 		<div className="p-2 flex flex-row h-18 items-center gap-x-4">
-			<div className="flex flex-row h-10 w-10">
+			<div className="h-10 w-10">
 				<UserIcon user={discussionData.creator} />
 			</div>
 			<div className="flex-1 flex flex-col h-full pr-6">

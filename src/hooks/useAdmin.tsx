@@ -6,13 +6,20 @@ import { SiteUser } from "@/lib/interfaces/user";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import useUser from "./useUser";
+import { useMemo } from "react";
 
 /**
- * useAdmin
+ * This is a TypeScript React hook that provides functions for managing users, including creating new
+ * users, deleting users, and fetching users from a database.
  *
- * This hook is used to manage the admin state and admin modal state.
- *
- * @returns {object} - {adminStateValue, setAdminStateValue, adminModalStateValue, setAdminModalStateValue, createNewUsers, deleteUser}
+ * @returns An object containing the following properties and their respective values:
+ * - adminStateValue - The current value of the admin state.
+ * - setAdminStateValue - The function used to set the admin state.
+ * - adminFetchUsers - This function is used to fetch users from the database.
+ * - adminModalStateValue - The current value of the admin modal state.
+ * - setAdminModalStateValue - The function used to set the admin modal state.
+ * - createNewUsers - This function is used to create new users.
+ * - deleteUser - This function is used to delete a user from the database.
  */
 const useAdmin = () => {
 	/**
@@ -48,6 +55,16 @@ const useAdmin = () => {
 		useRecoilState(adminModalState);
 
 	const { userStateValue } = useUser();
+
+	const [adminStateValueMemo, setAdminStateValueMemo] = useMemo(
+		() => [adminModalStateValue, setAdminStateValue],
+		[adminModalStateValue, setAdminStateValue]
+	);
+
+	const [adminModalStateValueMemo, setAdminModalStateValueMemo] = useMemo(
+		() => [adminModalStateValue, setAdminModalStateValue],
+		[adminModalStateValue, setAdminModalStateValue]
+	);
 
 	/**
 	 * createNewUsers
@@ -208,7 +225,7 @@ const useAdmin = () => {
 			/**
 			 * This will add the new users to the admin state.
 			 */
-			setAdminStateValue((prev) => ({
+			setAdminStateValueMemo((prev) => ({
 				...prev,
 				manageUsers: [...newAdminStateUsers, ...prev.manageUsers],
 			}));
@@ -299,7 +316,7 @@ const useAdmin = () => {
 							/**
 							 * This will delete the user from the admin state.
 							 */
-							setAdminStateValue((prev) => ({
+							setAdminStateValueMemo((prev) => ({
 								...prev,
 								manageUsers: prev.manageUsers.filter(
 									(user) => user.uid !== userId
@@ -381,7 +398,7 @@ const useAdmin = () => {
 			 * Else it will throw an error.
 			 */
 			if (usersData.length) {
-				setAdminStateValue((prev) => ({
+				setAdminStateValueMemo((prev) => ({
 					...prev,
 					manageUsers: [...prev.manageUsers, ...usersData] as SiteUser[],
 				}));
@@ -394,11 +411,11 @@ const useAdmin = () => {
 	};
 
 	return {
-		adminStateValue,
-		setAdminStateValue,
+		adminStateValue: adminStateValueMemo,
+		setAdminStateValue: setAdminStateValueMemo,
 		adminFetchUsers,
-		adminModalStateValue,
-		setAdminModalStateValue,
+		adminModalStateValue: adminModalStateValueMemo,
+		setAdminModalStateValue: setAdminModalStateValueMemo,
 		createNewUsers,
 		deleteUser,
 	};

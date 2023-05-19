@@ -61,7 +61,10 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!fetchingUsersMounted.current && adminStateValue.manageUsers.length === 0) {
+		if (
+			!fetchingUsersMounted.current &&
+			adminStateValue.manageUsers.length === 0
+		) {
 			fetchingUsersMounted.current = true;
 			handleFetchUsers();
 		}
@@ -96,7 +99,9 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 												<TiUserAdd className="h-full w-full" />
 											</div>
 											<div className="h-full flex flex-row items-center flex-1">
-												<p className="text-white text-xs font-bold">Add New User</p>
+												<p className="text-white text-xs font-bold">
+													Add New User
+												</p>
 											</div>
 										</button>
 									</div>
@@ -122,7 +127,9 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 															<tr
 																key={user.uid}
 																className={
-																	user.uid === deletingUser ? "deleting-user" : ""
+																	user.uid === deletingUser
+																		? "deleting-user"
+																		: ""
 																}
 															>
 																<td className="index">
@@ -166,7 +173,9 @@ const AdminManageUsersPage: React.FC<AdminManageUsersPageProps> = () => {
 																				type="button"
 																				title="Delete"
 																				className="action-delete action"
-																				onClick={() => handleDeleteUser(user.uid)}
+																				onClick={() =>
+																					handleDeleteUser(user.uid)
+																				}
 																				disabled={user.uid === deletingUser}
 																			>
 																				<div className="icon-container">

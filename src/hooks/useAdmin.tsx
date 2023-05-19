@@ -62,17 +62,18 @@ const useAdmin = () => {
 	const { userStateValue } = useUser();
 
 	/**
-	 * This code is using the `useMemo` hook in a TypeScript React component to memoize the values of
-	 * `adminModalStateValue` and `setAdminStateValue` and store them in the `adminStateValueMemo`
-	 * variable. This means that the values will only be recalculated if either of the dependencies
-	 * (`adminModalStateValue` or `setAdminStateValue`) change. This can help improve performance by
-	 * avoiding unnecessary re-renders of the component.
+	 * This code is using the `useMemo` hook in a React functional component to memoize the
+	 * `adminStateValue` and `setAdminStateValue` values. This means that the values will only be
+	 * recomputed if the dependencies (in this case, `adminStateValue` and `setAdminStateValue`) change.
+	 * The memoized values are then returned as an array and assigned to the `adminStateValueMemo` and
+	 * `setAdminStateValueMemo` variables using array destructuring.
 	 *
 	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usememo - useMemo}
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment - Destructuring assignment}
 	 */
 	const [adminStateValueMemo, setAdminStateValueMemo] = useMemo(
-		() => [adminModalStateValue, setAdminStateValue],
-		[adminModalStateValue, setAdminStateValue]
+		() => [adminStateValue, setAdminStateValue],
+		[adminStateValue, setAdminStateValue]
 	);
 
 	/**
@@ -82,6 +83,7 @@ const useAdmin = () => {
 	 * by avoiding unnecessary re-renders.
 	 *
 	 * @see {@link https://reactjs.org/docs/hooks-reference.html#usememo - useMemo}
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment - Destructuring assignment}
 	 */
 	const [adminModalStateValueMemo, setAdminModalStateValueMemo] = useMemo(
 		() => [adminModalStateValue, setAdminModalStateValue],

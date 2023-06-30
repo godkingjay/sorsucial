@@ -1,8 +1,32 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SorSUcial
 
-## Getting Started
+A social networking platform for Sorsogon State University's students, staff, and professors. Users of the platform can:
 
-First, install the dependencies:
+1. **Create Posts**. Which may include:
+   1.1. Photos
+   1.2. Videos
+   1.3. Files
+   1.4. Links
+   1.5. Tags
+
+2. **Create Discussions**. Which may include:
+   2.1. Tags
+
+3. **Create Groups**. Which may be:
+   3.1. Public - A public group is a group where members or non-members can create posts, discussions, comments, replies, like posts and comments, and vote on discussions and replies.
+   3.2. Restricted - A restricted group is a group where only members can create content but non-members can like or vote in posts, comments, discussions, and replies.
+   3.3. Private - A private group is a group where only members can view and interact with its contents.
+
+4. **Manage Profile**. Manage user:
+   4.1. Information
+   4.2. Authentication
+
+5. **Create Comments** in posts and comments.
+6. **Create Replies** in discussions and replies.
+
+## Setup
+
+1. Install the dependencies:
 
 ```bash
 npm install
@@ -10,7 +34,7 @@ npm install
 yarn install
 ```
 
-Second, configure the environment variables in `.env.example` and rename to to `.env.local`:
+2. Configure the environment variables in `.env.example` and rename it to `.env.local`:
 
 ```bash
 NEXT_PUBLIC_API_KEY=#Firebase APP API Key
@@ -38,7 +62,7 @@ MONGODB_URI=#MongoDB Database Link
 
 ```
 
-Third, run the development server:
+3. Run the development server:
 
 ```bash
 npm run dev
@@ -48,15 +72,11 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/](http://localhost:3000/api/). This endpoint can be edited in `pages/api/index.ts`.
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Learn More
 

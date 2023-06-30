@@ -3,27 +3,23 @@
 A social networking platform for Sorsogon State University's students, staff, and professors. Users of the platform can:
 
 1. **Create Posts**. Which may include:
+   a. Photos
+   b. Videos
+   c. Files
+   d. Links
+   e. Tags
 
-   1.1. Photos
-   1.2. Videos
-   1.3. Files
-   1.4. Links
-   1.5. Tags
+2. **Create Discussions**. This may include:
+   a. Tags
 
-2. **Create Discussions**. Which may include:
-
-   2.1. Tags
-
-3. **Create Groups**. Which may be:
-
-   3.1. Public - A public group is a group where members or non-members can create posts, discussions, comments, replies, like posts and comments, and vote on discussions and replies.
-   3.2. Restricted - A restricted group is a group where only members can create content but non-members can like or vote in posts, comments, discussions, and replies.
-   3.3. Private - A private group is a group where only members can view and interact with its contents.
+3. **Create Groups**. This may be:
+   a. Public - A public group is a group where members or non-members can create posts, discussions, comments, replies, like posts and comments, and vote on discussions and replies.
+   b. Restricted - A restricted group is a group where only members can create content but non-members can like or vote in posts, comments, discussions, and replies.
+   c. Private - A private group is a group where only members can view and interact with its contents.
 
 4. **Manage Profile**. Manage user:
-
-   4.1. Information
-   4.2. Authentication
+   a. Information
+   b. Authentication
 
 5. **Create Comments** in posts and comments.
 6. **Create Replies** in discussions and replies.
@@ -66,7 +62,7 @@ MONGODB_URI=#MongoDB Database Link
 
 ```
 
-3. Run the development server:
+1. Run the development server:
 
 ```bash
 npm run dev

@@ -3,22 +3,33 @@
 A social networking platform for Sorsogon State University's students, staff, and professors. Users of the platform can:
 
 1. **Create Posts**. Which may include:
+
    a. Photos
+
    b. Videos
+
    c. Files
+
    d. Links
+
    e. Tags
 
 2. **Create Discussions**. This may include:
+
    a. Tags
 
 3. **Create Groups**. This may be:
+
    a. Public - A public group is a group where members or non-members can create posts, discussions, comments, replies, like posts and comments, and vote on discussions and replies.
+
    b. Restricted - A restricted group is a group where only members can create content but non-members can like or vote in posts, comments, discussions, and replies.
+
    c. Private - A private group is a group where only members can view and interact with its contents.
 
 4. **Manage Profile**. Manage user:
+
    a. Information
+
    b. Authentication
 
 5. **Create Comments** in posts and comments.
